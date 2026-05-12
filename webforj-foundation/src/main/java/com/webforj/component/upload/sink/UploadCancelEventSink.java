@@ -1,21 +1,21 @@
-package com.webforj.component.fileupload.sink;
+package com.webforj.component.upload.sink;
 
 import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import com.webforj.component.event.sink.AbstractDwcEventSink;
-import com.webforj.component.fileupload.FileUpload;
-import com.webforj.component.fileupload.event.FileUploadCancelEvent;
+import com.webforj.component.upload.Upload;
+import com.webforj.component.upload.event.UploadCancelEvent;
 import com.webforj.dispatcher.EventDispatcher;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Maps the BBj cancel event to {@link FileUploadCancelEvent}.
+ * Maps the BBj cancel event to {@link UploadCancelEvent}.
  *
  * @author Hyyan Abo Fakher
  * @since 26.01
  */
-public final class FileUploadCancelEventSink extends AbstractDwcEventSink {
+public final class UploadCancelEventSink extends AbstractDwcEventSink {
 
   /**
    * Creates a new sink for the given component and dispatcher.
@@ -23,7 +23,7 @@ public final class FileUploadCancelEventSink extends AbstractDwcEventSink {
    * @param component the component
    * @param dispatcher the events dispatcher
    */
-  public FileUploadCancelEventSink(FileUpload component, EventDispatcher dispatcher) {
+  public UploadCancelEventSink(Upload component, EventDispatcher dispatcher) {
     super(component, dispatcher, SysGuiEventConstants.ON_FILECHOOSER_CANCEL);
   }
 
@@ -33,7 +33,7 @@ public final class FileUploadCancelEventSink extends AbstractDwcEventSink {
   @Override
   public void handleEvent(BBjEvent ev) {
     Map<String, Object> map = new HashMap<>();
-    FileUploadCancelEvent dwcEv = new FileUploadCancelEvent((FileUpload) getComponent(), map);
+    UploadCancelEvent dwcEv = new UploadCancelEvent((Upload) getComponent(), map);
     getEventDispatcher().dispatchEvent(dwcEv);
   }
 }

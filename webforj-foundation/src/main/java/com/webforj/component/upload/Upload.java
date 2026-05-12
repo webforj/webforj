@@ -1,25 +1,37 @@
-package com.webforj.component.fileupload;
+package com.webforj.component.upload;
 
+import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.bbj.proxies.sysgui.BBjFileChooser;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import com.google.gson.annotations.SerializedName;
+import com.webforj.Environment;
+import com.webforj.Page;
+import com.webforj.UploadedFile;
 import com.webforj.bridge.ComponentAccessor;
 import com.webforj.bridge.WindowAccessor;
+import com.webforj.component.Component;
+import com.webforj.component.ComponentRegistry;
 import com.webforj.component.DwcFocusableComponent;
 import com.webforj.component.event.ComponentEventSinkRegistry;
-import com.webforj.component.fileupload.event.FileUploadCancelEvent;
-import com.webforj.component.fileupload.event.FileUploadChangeEvent;
-import com.webforj.component.fileupload.event.FileUploadEvent;
-import com.webforj.component.fileupload.event.FileUploadFilterChangeEvent;
-import com.webforj.component.fileupload.sink.FileUploadCancelEventSink;
-import com.webforj.component.fileupload.sink.FileUploadChangeEventSink;
-import com.webforj.component.fileupload.sink.FileUploadEventSink;
-import com.webforj.component.fileupload.sink.FileUploadFilterChangeEventSink;
 import com.webforj.component.optiondialog.FileChooserFilter;
 import com.webforj.component.optiondialog.FileUploadI18n;
+import com.webforj.component.upload.event.UploadCancelEvent;
+import com.webforj.component.upload.event.UploadChangeEvent;
+import com.webforj.component.upload.event.UploadCompleteEvent;
+import com.webforj.component.upload.event.UploadErrorEvent;
+import com.webforj.component.upload.event.UploadEvent;
+import com.webforj.component.upload.event.UploadFilterChangeEvent;
+import com.webforj.component.upload.event.UploadListProgressEvent;
+import com.webforj.component.upload.event.UploadProgressEvent;
+import com.webforj.component.upload.event.UploadRejectEvent;
+import com.webforj.component.upload.sink.UploadCancelEventSink;
+import com.webforj.component.upload.sink.UploadChangeEventSink;
+import com.webforj.component.upload.sink.UploadEventSink;
+import com.webforj.component.upload.sink.UploadFilterChangeEventSink;
 import com.webforj.component.window.Window;
+import com.webforj.concern.HasComponents;
 import com.webforj.concern.HasFileChooserFilters;
 import com.webforj.concern.HasFileChooserFiltersVisible;
 import com.webforj.concern.HasFileChooserMultiFilterSelection;
@@ -29,6 +41,7 @@ import com.webforj.concern.HasFocusStatus;
 import com.webforj.concern.HasI18n;
 import com.webforj.concern.HasMaxFileSize;
 import com.webforj.concern.HasMaxFiles;
+import com.webforj.concern.HasTheme;
 import com.webforj.data.concern.HasSelectionMode;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
@@ -37,8 +50,11 @@ import com.webforj.utilities.BBjFunctionalityHelper;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
+import java.util.EventObject;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * An inline component that lets the user select one or more files from the local machine and upload
@@ -47,11 +63,11 @@ import java.util.Objects;
  * @author Hyyan Abo Fakher
  * @since 26.01
  */
-public final class FileUpload extends DwcFocusableComponent<FileUpload> implements HasFocusStatus,
-    HasI18n<FileUpload, FileUploadI18n>, HasFileChooserFilters<FileUpload>,
-    HasFileChooserFiltersVisible<FileUpload>, HasFileChooserMultiFilterSelection<FileUpload>,
-    HasFileDrop<FileUpload>, HasMaxFileSize<FileUpload>, HasMaxFiles<FileUpload>,
-    HasFileSystemAccess<FileUpload>, HasSelectionMode<FileUpload, FileUpload.SelectionMode> {
+public final class Upload extends DwcFocusableComponent<Upload>
+    implements HasFocusStatus, HasI18n<Upload, FileUploadI18n>, HasFileChooserFilters<Upload>,
+    HasFileChooserFiltersVisible<Upload>, HasFileChooserMultiFilterSelection<Upload>,
+    HasFileDrop<Upload>, HasMaxFileSize<Upload>, HasMaxFiles<Upload>, HasFileSystemAccess<Upload>,
+    HasSelectionMode<Upload, Upload.SelectionMode>, HasTheme<Upload, UploadTheme>, HasComponents {
 
   /**
    * What the picker selects from the user's machine.
@@ -90,9 +106,9 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
    * which files the clear targets based on their upload state.
    *
    * <p>
-   * Each file in the list is in one of three states: <b>queued</b> (selected but never uploaded),
+   * Each file in the list is in one of three states. <b>queued</b> (selected but never uploaded),
    * <b>in progress</b> (currently uploading), or <b>completed</b> (upload finished, successfully or
-   * with an error). Auto clear only removes files in the states it targets; queued files are always
+   * with an error). Auto clear only removes files in the states it targets. Queued files are always
    * kept.
    * </p>
    */
@@ -145,27 +161,39 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
   }
 
   /**
-   * Identifies a sub-part of the {@link FileUpload} component for the part-aware
+   * Identifies a sub part of the {@link Upload} component for the part aware
    * {@link #setVisible(boolean, Part) setVisible} and {@link #isVisible(Part) isVisible} overloads.
    */
   public enum Part {
     /**
+     * The picker button that opens the file picker.
+     */
+    PICKER_BUTTON("pickerButton"),
+    /**
+     * The drop label area that shows the drop zone hint.
+     */
+    DROP_LABEL("dropLabel"),
+    /**
+     * The rendered list of selected files.
+     */
+    LIST("list"),
+    /**
      * The Upload button that triggers the upload of the current selection.
      */
-    UPLOAD_BUTTON("approveButtonVisible"),
+    UPLOAD_BUTTON("approveButton"),
     /**
      * The Cancel button that clears the current selection.
      */
-    CANCEL_BUTTON("cancelButtonVisible");
+    CANCEL_BUTTON("cancelButton");
 
-    private final String property;
+    private final String token;
 
-    Part(String property) {
-      this.property = property;
+    Part(String token) {
+      this.token = token;
     }
 
-    String property() {
-      return property;
+    String token() {
+      return token;
     }
   }
 
@@ -190,20 +218,52 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
     ENVIRONMENT
   }
 
-  private final ComponentEventSinkRegistry<FileUploadChangeEvent> changeEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new FileUploadChangeEventSink(this, getEventDispatcher()),
-          FileUploadChangeEvent.class);
-  private final ComponentEventSinkRegistry<FileUploadEvent> uploadEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new FileUploadEventSink(this, getEventDispatcher()),
-          FileUploadEvent.class);
-  private final ComponentEventSinkRegistry<FileUploadCancelEvent> cancelEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new FileUploadCancelEventSink(this, getEventDispatcher()),
-          FileUploadCancelEvent.class);
-  private final ComponentEventSinkRegistry<FileUploadFilterChangeEvent> filterChangeEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(
-          new FileUploadFilterChangeEventSink(this, getEventDispatcher()),
-          FileUploadFilterChangeEvent.class);
+  /**
+   * Named preset bundles that flip multiple settings at once to produce a common picker shape.
+   */
+  public enum Preset {
+    /**
+     * Full preset. The picker button, drop label, file list, and Upload button are visible.
+     */
+    FULL,
+    /**
+     * Inline preset. Only the picker button is visible. The drop label, file list, and the Upload
+     * and Cancel buttons are hidden. The current selection is rendered as text next to the picker
+     * button.
+     */
+    INLINE,
+    /**
+     * Button only preset. Only the picker button is visible. The drop label, file list, and the
+     * Upload and Cancel buttons are hidden. The picker button keeps its default label across
+     * selections.
+     */
+    BUTTON_ONLY,
+    /**
+     * Drop zone preset. Only the drop label and the file list are shown. The picker button and the
+     * Upload and Cancel buttons are hidden.
+     */
+    DROPZONE,
+    /**
+     * Headless preset. Hides every chrome part and collapses the component's outer border, border
+     * radius, and padding so that any custom content sits flush inside the component bounds.
+     */
+    HEADLESS
+  }
 
+  private final ComponentEventSinkRegistry<UploadChangeEvent> changeEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new UploadChangeEventSink(this, getEventDispatcher()),
+          UploadChangeEvent.class);
+  private final ComponentEventSinkRegistry<UploadEvent> uploadEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new UploadEventSink(this, getEventDispatcher()),
+          UploadEvent.class);
+  private final ComponentEventSinkRegistry<UploadCancelEvent> cancelEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new UploadCancelEventSink(this, getEventDispatcher()),
+          UploadCancelEvent.class);
+  private final ComponentEventSinkRegistry<UploadFilterChangeEvent> filterChangeEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new UploadFilterChangeEventSink(this, getEventDispatcher()),
+          UploadFilterChangeEvent.class);
+
+  private final ComponentRegistry componentRegistry = new ComponentRegistry(this, this::doAdd);
   private final List<FileChooserFilter> filters = new ArrayList<>();
   private FileChooserFilter activeFilter = null;
   private SelectionMode selectionMode = SelectionMode.MULTIPLE;
@@ -213,21 +273,26 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
   private boolean multiFilterSelection = false;
   private boolean fileSystemAccess = true;
   private boolean allFilesFilterEnabled = true;
-  private boolean uploadButtonVisible = true;
-  private boolean cancelButtonVisible = true;
+  private final EnumSet<Part> visibleParts =
+      EnumSet.of(Part.PICKER_BUTTON, Part.DROP_LABEL, Part.LIST, Part.UPLOAD_BUTTON);
+  private Preset preset = Preset.FULL;
+  private ListenerRegistration<UploadChangeEvent> inlineLabelListener = null;
   private AutoUpload autoUpload = AutoUpload.NONE;
   private AutoClear autoClear = AutoClear.NONE;
   private Capture capture = Capture.NONE;
   private Number maxFileSize = null;
   private Number maxFiles = null;
   private FileUploadI18n i18n = new FileUploadI18n();
+  private UploadTheme theme = UploadTheme.DEFAULT;
+  private String registeredClientId = null;
 
   /**
    * Creates a new component with default settings.
    */
-  public FileUpload() {
+  public Upload() {
     super();
     setDrop(drop);
+    setVisible(false, Part.CANCEL_BUTTON);
   }
 
   /**
@@ -235,7 +300,7 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
    *
    * @param filters the supported filters
    */
-  public FileUpload(List<FileChooserFilter> filters) {
+  public Upload(List<FileChooserFilter> filters) {
     this();
     setFilters(filters);
   }
@@ -245,7 +310,7 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
    *
    * @param listener the listener invoked when the selection changes
    */
-  public FileUpload(EventListener<FileUploadChangeEvent> listener) {
+  public Upload(EventListener<UploadChangeEvent> listener) {
     this();
     if (listener != null) {
       addChangeListener(listener);
@@ -256,7 +321,7 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
    * {@inheritDoc}
    */
   @Override
-  public FileUpload setFilters(List<FileChooserFilter> filters) {
+  public Upload setFilters(List<FileChooserFilter> filters) {
     for (FileChooserFilter existing : this.filters) {
       applyRemoveFilter(existing);
     }
@@ -285,7 +350,7 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
    * {@inheritDoc}
    */
   @Override
-  public FileUpload addFilter(FileChooserFilter filter) {
+  public Upload addFilter(FileChooserFilter filter) {
     if (filter == null) {
       return this;
     }
@@ -300,7 +365,7 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
    * {@inheritDoc}
    */
   @Override
-  public FileUpload removeFilter(FileChooserFilter filter) {
+  public Upload removeFilter(FileChooserFilter filter) {
     if (filter == null) {
       return this;
     }
@@ -320,7 +385,7 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
    * {@inheritDoc}
    */
   @Override
-  public FileUpload setActiveFilter(FileChooserFilter filter) {
+  public Upload setActiveFilter(FileChooserFilter filter) {
     this.activeFilter = filter;
     applyActiveFilter(filter);
 
@@ -341,7 +406,7 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
    * @param enabled {@code true} to show, {@code false} to hide
    * @return the component itself
    */
-  public FileUpload setAllFilesFilterEnabled(boolean enabled) {
+  public Upload setAllFilesFilterEnabled(boolean enabled) {
     this.allFilesFilterEnabled = enabled;
     setUnrestrictedProperty("allFilesFilterEnabled", enabled);
 
@@ -361,7 +426,7 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
    * {@inheritDoc}
    */
   @Override
-  public FileUpload setFiltersVisible(boolean filtersVisible) {
+  public Upload setFiltersVisible(boolean filtersVisible) {
     this.filtersVisible = filtersVisible;
     setUnrestrictedProperty("filtersVisible", filtersVisible);
 
@@ -380,7 +445,7 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
    * {@inheritDoc}
    */
   @Override
-  public FileUpload setDrop(boolean drop) {
+  public Upload setDrop(boolean drop) {
     this.drop = drop;
     setUnrestrictedProperty("drop", drop);
 
@@ -399,7 +464,7 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
    * {@inheritDoc}
    */
   @Override
-  public FileUpload setMultiFilterSelection(boolean multiFilterSelection) {
+  public Upload setMultiFilterSelection(boolean multiFilterSelection) {
     this.multiFilterSelection = multiFilterSelection;
     setUnrestrictedProperty("multiFilterSelection", multiFilterSelection);
 
@@ -422,7 +487,7 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
    *         positive value.
    */
   @Override
-  public FileUpload setMaxFileSize(Number maxFileSize) {
+  public Upload setMaxFileSize(Number maxFileSize) {
     Objects.requireNonNull(maxFileSize, "maxFileSize must not be null.");
     this.maxFileSize = maxFileSize;
     setUnrestrictedProperty("maxSize", maxFileSize);
@@ -443,11 +508,11 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
    *
    * @throws NullPointerException if {@code maxFiles} is {@code null}. The client coerces
    *         {@code null} to zero and would block the picker, so the contract requires an explicit
-   *         positive count. Single-selection mode is controlled by
+   *         positive count. Single selection mode is controlled by
    *         {@link #setSelectionMode(SelectionMode)}, not by clearing this value.
    */
   @Override
-  public FileUpload setMaxFiles(Number maxFiles) {
+  public Upload setMaxFiles(Number maxFiles) {
     Objects.requireNonNull(maxFiles, "maxFiles must not be null.");
     this.maxFiles = maxFiles;
     setUnrestrictedProperty("maxFiles", maxFiles);
@@ -467,7 +532,7 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
    * {@inheritDoc}
    */
   @Override
-  public FileUpload setFileSystemAccess(boolean fileSystemAccess) {
+  public Upload setFileSystemAccess(boolean fileSystemAccess) {
     this.fileSystemAccess = fileSystemAccess;
     setUnrestrictedProperty("fs", fileSystemAccess);
 
@@ -486,14 +551,15 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
    * {@inheritDoc}
    *
    * <p>
-   * Controls whether the picker accepts one entry at a time or several. Single-selection mode also
+   * Controls whether the picker accepts one entry at a time or several. Single selection mode also
    * caps {@code maxFiles} at one on the client.
    * </p>
    */
   @Override
-  public FileUpload setSelectionMode(SelectionMode selectionMode) {
+  public Upload setSelectionMode(SelectionMode selectionMode) {
     this.selectionMode = selectionMode == null ? SelectionMode.MULTIPLE : selectionMode;
     applySelectionMode(this.selectionMode);
+    reapplyMaxFiles();
 
     return this;
   }
@@ -510,11 +576,11 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
    * Sets what the picker selects from the user's machine.
    *
    * @param picker {@link Picker#FILES} to pick files, {@link Picker#DIRECTORY} to pick a directory
-   *        with its top-level files, or {@link Picker#DIRECTORY_RECURSIVE} to pick a directory and
+   *        with its top level files, or {@link Picker#DIRECTORY_RECURSIVE} to pick a directory and
    *        all of its descendants
    * @return the component itself
    */
-  public FileUpload setPicker(Picker picker) {
+  public Upload setPicker(Picker picker) {
     this.picker = picker == null ? Picker.FILES : picker;
     applyPicker(this.picker);
 
@@ -534,7 +600,26 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
    * {@inheritDoc}
    */
   @Override
-  public FileUpload setI18n(FileUploadI18n i18n) {
+  public Upload setTheme(UploadTheme theme) {
+    this.theme = theme == null ? UploadTheme.DEFAULT : theme;
+    setUnrestrictedProperty("theme", this.theme);
+
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public UploadTheme getTheme() {
+    return theme;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Upload setI18n(FileUploadI18n i18n) {
     this.i18n = i18n == null ? new FileUploadI18n() : i18n;
     setUnrestrictedProperty("i18n", this.i18n);
 
@@ -555,7 +640,7 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
    * @param mode the auto upload mode, or {@code null} to default to {@link AutoUpload#NONE}
    * @return the component itself
    */
-  public FileUpload setAutoUpload(AutoUpload mode) {
+  public Upload setAutoUpload(AutoUpload mode) {
     this.autoUpload = mode == null ? AutoUpload.NONE : mode;
     setUnrestrictedProperty("autoUpload",
         this.autoUpload == AutoUpload.ON_SELECT || this.autoUpload == AutoUpload.ALWAYS);
@@ -580,17 +665,17 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
    *
    * <p>
    * Auto clear runs every time the user picks new files (through the file picker or by drop) and
-   * removes files already in the list that match the configured mode. The pick-then-clear-then-add
-   * sequence happens automatically on the next user selection; selecting files programmatically
+   * removes files already in the list that match the configured mode. The pick then clear then add
+   * sequence happens automatically on the next user selection. Selecting files programmatically
    * does not trigger it.
    * </p>
    *
    * <p>
-   * Each file in the list is in one of three states: <b>queued</b> (selected but never uploaded),
+   * Each file in the list is in one of three states. <b>queued</b> (selected but never uploaded),
    * <b>in progress</b> (currently uploading), or <b>completed</b> (upload finished, successfully or
-   * with an error). The mode controls which states get cleared; queued files are always kept. Auto
+   * with an error). The mode controls which states get cleared. Queued files are always kept. Auto
    * clear only takes effect once a previously picked file has actually started uploading or
-   * finished; without an upload happening between picks, no file matches the filter and the list
+   * finished. Without an upload happening between picks, no file matches the filter and the list
    * keeps growing.
    * </p>
    *
@@ -599,7 +684,7 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
    *
    * @see #setAutoUpload(AutoUpload)
    */
-  public FileUpload setAutoClear(AutoClear mode) {
+  public Upload setAutoClear(AutoClear mode) {
     this.autoClear = mode == null ? AutoClear.NONE : mode;
     setUnrestrictedProperty("autoClear", this.autoClear != AutoClear.NONE);
 
@@ -625,7 +710,7 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
    * @param capture the device input hint, or {@link Capture#NONE} to clear the hint
    * @return the component itself
    */
-  public FileUpload setCapture(Capture capture) {
+  public Upload setCapture(Capture capture) {
     this.capture = capture == null ? Capture.NONE : capture;
     setUnrestrictedProperty("capture", this.capture);
 
@@ -649,15 +734,21 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
    *
    * @return the component itself
    */
-  public FileUpload setVisible(boolean visible, Part part) {
+  public Upload setVisible(boolean visible, Part part) {
     Objects.requireNonNull(part, "part must not be null.");
-    switch (part) {
-      case UPLOAD_BUTTON -> uploadButtonVisible = visible;
-      case CANCEL_BUTTON -> cancelButtonVisible = visible;
-      default -> {
-        /* unreachable */ }
+    if (visible) {
+      visibleParts.add(part);
+    } else {
+      visibleParts.remove(part);
     }
-    setUnrestrictedProperty(part.property(), visible);
+
+    applyComponents();
+
+    if (part == Part.UPLOAD_BUTTON) {
+      setUnrestrictedProperty("approveButtonVisible", visible);
+    } else if (part == Part.CANCEL_BUTTON) {
+      setUnrestrictedProperty("cancelButtonVisible", visible);
+    }
 
     return this;
   }
@@ -670,10 +761,50 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
    */
   public boolean isVisible(Part part) {
     Objects.requireNonNull(part, "part must not be null.");
-    return switch (part) {
-      case UPLOAD_BUTTON -> uploadButtonVisible;
-      case CANCEL_BUTTON -> cancelButtonVisible;
-    };
+
+    return visibleParts.contains(part);
+  }
+
+  /**
+   * Sets a preconfigured preset.
+   *
+   * @param preset the preset to apply, or {@code null} to fall back to {@link Preset#FULL}
+   * @return the component itself
+   */
+  public Upload setPreset(Preset preset) {
+    this.preset = preset == null ? Preset.FULL : preset;
+    applyPreset(this.preset);
+
+    return this;
+  }
+
+  /**
+   * Gets the preset.
+   *
+   * @return the preset
+   */
+  public Preset getPreset() {
+    return preset;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Upload setText(String text) {
+    setUnrestrictedProperty("selectionLabel", text == null ? "" : text);
+
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getText() {
+    Object value = getProperty("selectionLabel");
+
+    return value == null ? "" : value.toString();
   }
 
   /**
@@ -682,8 +813,9 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
    *
    * @return the component itself
    */
-  public FileUpload upload() {
+  public Upload upload() {
     applyUploadSelection();
+
     return this;
   }
 
@@ -692,19 +824,20 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
    *
    * @return the component itself
    */
-  public FileUpload cancel() {
+  public Upload cancel() {
     applyCancel();
+
     return this;
   }
 
   /**
-   * Adds a {@link FileUploadChangeEvent} listener.
+   * Adds a {@link UploadChangeEvent} listener.
    *
    * @param listener the listener
    * @return the registration
    */
-  public ListenerRegistration<FileUploadChangeEvent> addChangeListener(
-      EventListener<FileUploadChangeEvent> listener) {
+  public ListenerRegistration<UploadChangeEvent> addChangeListener(
+      EventListener<UploadChangeEvent> listener) {
     return changeEventSinkListenerRegistry.addEventListener(listener);
   }
 
@@ -714,19 +847,18 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
    * @param listener the listener
    * @return the registration
    */
-  public ListenerRegistration<FileUploadChangeEvent> onChange(
-      EventListener<FileUploadChangeEvent> listener) {
+  public ListenerRegistration<UploadChangeEvent> onChange(
+      EventListener<UploadChangeEvent> listener) {
     return addChangeListener(listener);
   }
 
   /**
-   * Adds a {@link FileUploadEvent} listener.
+   * Adds a {@link UploadEvent} listener.
    *
    * @param listener the listener
    * @return the registration
    */
-  public ListenerRegistration<FileUploadEvent> addUploadListener(
-      EventListener<FileUploadEvent> listener) {
+  public ListenerRegistration<UploadEvent> addUploadListener(EventListener<UploadEvent> listener) {
     return uploadEventSinkListenerRegistry.addEventListener(listener);
   }
 
@@ -736,18 +868,18 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
    * @param listener the listener
    * @return the registration
    */
-  public ListenerRegistration<FileUploadEvent> onUpload(EventListener<FileUploadEvent> listener) {
+  public ListenerRegistration<UploadEvent> onUpload(EventListener<UploadEvent> listener) {
     return addUploadListener(listener);
   }
 
   /**
-   * Adds a {@link FileUploadCancelEvent} listener.
+   * Adds a {@link UploadCancelEvent} listener.
    *
    * @param listener the listener
    * @return the registration
    */
-  public ListenerRegistration<FileUploadCancelEvent> addCancelListener(
-      EventListener<FileUploadCancelEvent> listener) {
+  public ListenerRegistration<UploadCancelEvent> addCancelListener(
+      EventListener<UploadCancelEvent> listener) {
     return cancelEventSinkListenerRegistry.addEventListener(listener);
   }
 
@@ -757,19 +889,19 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
    * @param listener the listener
    * @return the registration
    */
-  public ListenerRegistration<FileUploadCancelEvent> onCancel(
-      EventListener<FileUploadCancelEvent> listener) {
+  public ListenerRegistration<UploadCancelEvent> onCancel(
+      EventListener<UploadCancelEvent> listener) {
     return addCancelListener(listener);
   }
 
   /**
-   * Adds a {@link FileUploadFilterChangeEvent} listener.
+   * Adds a {@link UploadFilterChangeEvent} listener.
    *
    * @param listener the listener
    * @return the registration
    */
-  public ListenerRegistration<FileUploadFilterChangeEvent> addFilterChangeListener(
-      EventListener<FileUploadFilterChangeEvent> listener) {
+  public ListenerRegistration<UploadFilterChangeEvent> addFilterChangeListener(
+      EventListener<UploadFilterChangeEvent> listener) {
     return filterChangeEventSinkListenerRegistry.addEventListener(listener);
   }
 
@@ -779,9 +911,124 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
    * @param listener the listener
    * @return the registration
    */
-  public ListenerRegistration<FileUploadFilterChangeEvent> onFilterChange(
-      EventListener<FileUploadFilterChangeEvent> listener) {
+  public ListenerRegistration<UploadFilterChangeEvent> onFilterChange(
+      EventListener<UploadFilterChangeEvent> listener) {
     return addFilterChangeListener(listener);
+  }
+
+  /**
+   * Adds a per file {@link UploadProgressEvent} listener that fires while a single file is being
+   * transferred to the server, reporting how many bytes have moved.
+   *
+   * @param listener the listener
+   * @return the registration
+   */
+  public ListenerRegistration<UploadProgressEvent> addProgressListener(
+      EventListener<UploadProgressEvent> listener) {
+    return getEventDispatcher().addListener(UploadProgressEvent.class, listener);
+  }
+
+  /**
+   * Alias for {@link #addProgressListener(EventListener)}.
+   *
+   * @param listener the listener
+   * @return the registration
+   */
+  public ListenerRegistration<UploadProgressEvent> onProgress(
+      EventListener<UploadProgressEvent> listener) {
+    return addProgressListener(listener);
+  }
+
+  /**
+   * Adds a {@link UploadListProgressEvent} listener that fires on every progress tick with the
+   * whole list state (list aggregates plus per file entries). Use when the consumer needs to
+   * compute custom aggregates beyond what {@link UploadProgressEvent} carries for one file.
+   *
+   * @param listener the listener
+   * @return the registration
+   */
+  public ListenerRegistration<UploadListProgressEvent> addListProgressListener(
+      EventListener<UploadListProgressEvent> listener) {
+    return getEventDispatcher().addListener(UploadListProgressEvent.class, listener);
+  }
+
+  /**
+   * Alias for {@link #addListProgressListener(EventListener)}.
+   *
+   * @param listener the listener
+   * @return the registration
+   */
+  public ListenerRegistration<UploadListProgressEvent> onListProgress(
+      EventListener<UploadListProgressEvent> listener) {
+    return addListProgressListener(listener);
+  }
+
+  /**
+   * Adds a per file {@link UploadErrorEvent} listener that fires when the transfer of a single file
+   * to the server has failed.
+   *
+   * @param listener the listener
+   * @return the registration
+   */
+  public ListenerRegistration<UploadErrorEvent> addErrorListener(
+      EventListener<UploadErrorEvent> listener) {
+    return getEventDispatcher().addListener(UploadErrorEvent.class, listener);
+  }
+
+  /**
+   * Alias for {@link #addErrorListener(EventListener)}.
+   *
+   * @param listener the listener
+   * @return the registration
+   */
+  public ListenerRegistration<UploadErrorEvent> onError(EventListener<UploadErrorEvent> listener) {
+    return addErrorListener(listener);
+  }
+
+  /**
+   * Adds a {@link UploadRejectEvent} listener that fires when a file picked or dropped on the
+   * component is rejected before uploading because it does not meet the configured constraints.
+   *
+   * @param listener the listener
+   * @return the registration
+   */
+  public ListenerRegistration<UploadRejectEvent> addRejectListener(
+      EventListener<UploadRejectEvent> listener) {
+    return getEventDispatcher().addListener(UploadRejectEvent.class, listener);
+  }
+
+  /**
+   * Alias for {@link #addRejectListener(EventListener)}.
+   *
+   * @param listener the listener
+   * @return the registration
+   */
+  public ListenerRegistration<UploadRejectEvent> onReject(
+      EventListener<UploadRejectEvent> listener) {
+    return addRejectListener(listener);
+  }
+
+  /**
+   * Adds a {@link UploadCompleteEvent} listener that fires when every file queued on the component
+   * has finished its transfer (whether succeeded or failed).
+   *
+   * @param listener the listener
+   * @return the registration
+   */
+  public ListenerRegistration<UploadCompleteEvent> addCompleteListener(
+      EventListener<UploadCompleteEvent> listener) {
+    return getEventDispatcher().addListener(UploadCompleteEvent.class, listener);
+  }
+
+  /**
+   * Alias for {@link #addCompleteListener(EventListener)}.
+   *
+   * @param listener the listener
+   * @return the registration
+   */
+  public ListenerRegistration<UploadCompleteEvent> onComplete(
+      EventListener<UploadCompleteEvent> listener) {
+    return addCompleteListener(listener);
   }
 
   /**
@@ -793,8 +1040,57 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
   }
 
   /**
-   * Attaches the FileUpload event sinks once the BBj control is available.
+   * Adds child components to the Upload's default slot.
+   *
+   * <p>
+   * Children render inside the upload's drop area and are typically combined with
+   * {@link Preset#HEADLESS} to take over the visual surface (for example, a {@code Table} that
+   * renders the parsed content of dropped files).
+   * </p>
+   *
+   * @param components the components to add
    */
+  @Override
+  public void add(Component... components) {
+    componentRegistry.add(components);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void remove(Component... components) {
+    componentRegistry.remove(components);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void removeAll() {
+    componentRegistry.removeAll();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<Component> getComponents() {
+    return componentRegistry.getComponents();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Component getComponent(String id) {
+    return componentRegistry.getComponent(id);
+  }
+
+  void dispatchClientEvent(EventObject event) {
+    getEventDispatcher().dispatchEvent(event);
+  }
+
   @Override
   protected void attachControlCallbacks() {
     super.attachControlCallbacks();
@@ -804,19 +1100,55 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
     filterChangeEventSinkListenerRegistry.attach();
   }
 
-  /**
-   * Pushes the buffered component state to the BBj control after it becomes available.
-   */
+  @Override
+  protected void onDestroy() {
+    if (registeredClientId != null && Environment.isPresent()) {
+      Page page = Page.getCurrent();
+      if (page != null) {
+        UploadEventBridge.ensure(page).unregister(registeredClientId);
+      }
+
+      registeredClientId = null;
+    }
+
+    super.onDestroy();
+  }
+
   @Override
   protected void onAttach() {
     super.onAttach();
 
     applySelectionMode(selectionMode);
+    reapplyMaxFiles();
     for (FileChooserFilter filter : filters) {
       applyAddFilter(filter);
     }
+
     applyActiveFilter(activeFilter);
     applyPicker(picker);
+
+    if (componentRegistry.getComponentCount() > 0) {
+      componentRegistry.getComponents().forEach(this::doAdd);
+    }
+
+    if (Environment.isPresent()) {
+      Page page = Page.getCurrent();
+      if (page != null) {
+        registeredClientId = getClientComponentId();
+        UploadEventBridge.ensure(page).register(registeredClientId, this);
+      }
+    }
+  }
+
+  private void doAdd(Component component) {
+    try {
+      ComponentAccessor.getDefault().create(component, getWindow());
+      BBjControl childControl = ComponentAccessor.getDefault().getControl(component);
+      inferFileChooser().setSlot("", childControl);
+    } catch (IllegalAccessException | BBjException e) {
+      throw new WebforjRuntimeException(
+          "Failed to add a child component to the Upload's default slot.", e);
+    }
   }
 
   /**
@@ -830,8 +1162,9 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
     List<String> properties = super.getRestrictedProperties();
     properties.addAll(Arrays.asList("activeFilter", "allFilesFilterEnabled", "approveButtonVisible",
         "autoClear", "autoClearBehavior", "autoUpload", "autoUploadOnDrop", "cancelButtonVisible",
-        "capture", "directory", "directoryRecursive", "drop", "files", "filters", "filtersVisible",
-        "fs", "i18n", "maxFiles", "maxSize", "multiFilterSelection"));
+        "capture", "components", "directory", "directoryRecursive", "drop", "files", "filters",
+        "filtersVisible", "fs", "i18n", "maxFiles", "maxSize", "multiFilterSelection",
+        "selectionLabel", "theme"));
 
     return properties;
   }
@@ -846,7 +1179,7 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(window);
       byte[] flags = BBjFunctionalityHelper.buildStandardCreationFlags(isVisible(), isEnabled());
-      // BBj flag $0004$ selects client filesystem so the widget renders inline.
+      // BBj flag $0004$ selects client filesystem.
       flags[1] |= (byte) 0x04;
       setControl(w.addFileChooser(resolveControlId(w), "", flags));
     } catch (BBjException | IllegalAccessException e) {
@@ -872,6 +1205,17 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
       fc.setMultiSelectionEnabled(mode == SelectionMode.MULTIPLE);
     } catch (BBjException e) {
       throw new WebforjRuntimeException("Failed to apply the selection mode.", e);
+    }
+  }
+
+  /**
+   * Re pushes the supplied {@code maxFiles} value to the client. Toggling the selection mode resets
+   * {@code maxFiles} on the client as a side effect, so any explicit cap the caller previously set
+   * must be republished after each selection mode change to remain in effect.
+   */
+  private void reapplyMaxFiles() {
+    if (maxFiles != null) {
+      setUnrestrictedProperty("maxFiles", maxFiles);
     }
   }
 
@@ -971,5 +1315,91 @@ public final class FileUpload extends DwcFocusableComponent<FileUpload> implemen
     } catch (BBjException e) {
       throw new WebforjRuntimeException("Failed to cancel the selection.", e);
     }
+  }
+
+  private void applyPreset(Preset preset) {
+    switch (preset) {
+      case INLINE -> {
+        setVisible(true, Part.PICKER_BUTTON);
+        setVisible(true, Part.DROP_LABEL);
+        setVisible(false, Part.LIST);
+        setVisible(false, Part.UPLOAD_BUTTON);
+        setVisible(false, Part.CANCEL_BUTTON);
+        attachInlineLabelListener();
+        updateInlineLabel(Collections.emptyList());
+      }
+      case BUTTON_ONLY -> {
+        setVisible(true, Part.PICKER_BUTTON);
+        setVisible(false, Part.DROP_LABEL);
+        setVisible(false, Part.LIST);
+        setVisible(false, Part.UPLOAD_BUTTON);
+        setVisible(false, Part.CANCEL_BUTTON);
+        detachInlineLabelListener();
+        setText("");
+      }
+      case DROPZONE -> {
+        setVisible(false, Part.PICKER_BUTTON);
+        setVisible(true, Part.DROP_LABEL);
+        setVisible(true, Part.LIST);
+        setVisible(false, Part.UPLOAD_BUTTON);
+        setVisible(false, Part.CANCEL_BUTTON);
+        detachInlineLabelListener();
+        setText("");
+      }
+      case HEADLESS -> {
+        setVisible(false, Part.PICKER_BUTTON);
+        setVisible(false, Part.DROP_LABEL);
+        setVisible(false, Part.LIST);
+        setVisible(false, Part.UPLOAD_BUTTON);
+        setVisible(false, Part.CANCEL_BUTTON);
+        detachInlineLabelListener();
+        setText("");
+      }
+      default -> {
+        setVisible(true, Part.PICKER_BUTTON);
+        setVisible(true, Part.DROP_LABEL);
+        setVisible(true, Part.LIST);
+        setVisible(true, Part.UPLOAD_BUTTON);
+        setVisible(false, Part.CANCEL_BUTTON);
+        detachInlineLabelListener();
+        setText("");
+      }
+    }
+
+    for (Preset other : Preset.values()) {
+      removeAttribute("data-" + other.name().toLowerCase().replace('_', '-'));
+    }
+
+    setUnrestrictedAttribute("data-" + preset.name().toLowerCase().replace('_', '-'), "");
+  }
+
+  private void applyComponents() {
+    String value = visibleParts.stream().map(Part::token).collect(Collectors.joining(","));
+    setUnrestrictedProperty("components", value);
+  }
+
+  private void attachInlineLabelListener() {
+    if (inlineLabelListener == null) {
+      inlineLabelListener = addChangeListener(ev -> updateInlineLabel(ev.getFiles()));
+    }
+  }
+
+  private void detachInlineLabelListener() {
+    if (inlineLabelListener != null) {
+      inlineLabelListener.remove();
+      inlineLabelListener = null;
+    }
+  }
+
+  private void updateInlineLabel(List<UploadedFile> files) {
+    String label;
+    if (files == null || files.isEmpty()) {
+      label = "";
+    } else if (files.size() == 1) {
+      label = files.get(0).getClientName();
+    } else {
+      label = String.format(i18n.getSelectionSummary(), files.size());
+    }
+    setText(label);
   }
 }

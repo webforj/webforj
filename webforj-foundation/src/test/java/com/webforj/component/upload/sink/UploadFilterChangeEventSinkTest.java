@@ -1,12 +1,12 @@
-package com.webforj.component.fileupload.sink;
+package com.webforj.component.upload.sink;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 import com.basis.bbj.proxies.event.BBjFileChooserFilterEvent;
-import com.webforj.component.fileupload.FileUpload;
-import com.webforj.component.fileupload.event.FileUploadFilterChangeEvent;
+import com.webforj.component.upload.Upload;
+import com.webforj.component.upload.event.UploadFilterChangeEvent;
 import com.webforj.dispatcher.EventDispatcher;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
@@ -19,23 +19,23 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class FileUploadFilterChangeEventSinkTest {
+class UploadFilterChangeEventSinkTest {
 
   @Mock
   BBjFileChooserFilterEvent bbjEvent;
 
-  FileUpload component;
+  Upload component;
   EventDispatcher dispatcher;
-  FileUploadFilterChangeEventSink sink;
-  AtomicReference<FileUploadFilterChangeEvent> captured;
+  UploadFilterChangeEventSink sink;
+  AtomicReference<UploadFilterChangeEvent> captured;
 
   @BeforeEach
   void setUp() {
-    component = new FileUpload();
+    component = new Upload();
     dispatcher = new EventDispatcher();
-    sink = new FileUploadFilterChangeEventSink(component, dispatcher);
+    sink = new UploadFilterChangeEventSink(component, dispatcher);
     captured = new AtomicReference<>();
-    dispatcher.addListener(FileUploadFilterChangeEvent.class, captured::set);
+    dispatcher.addListener(UploadFilterChangeEvent.class, captured::set);
   }
 
   @ParameterizedTest

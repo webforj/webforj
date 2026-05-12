@@ -1,4 +1,4 @@
-package com.webforj.component.fileupload;
+package com.webforj.component.upload;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -15,42 +15,53 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import com.basis.bbj.proxies.sysgui.BBjFileChooser;
 import com.basis.startup.type.BBjException;
 import com.webforj.component.ReflectionUtils;
-import com.webforj.component.fileupload.event.FileUploadCancelEvent;
-import com.webforj.component.fileupload.event.FileUploadChangeEvent;
-import com.webforj.component.fileupload.event.FileUploadEvent;
-import com.webforj.component.fileupload.event.FileUploadFilterChangeEvent;
 import com.webforj.component.optiondialog.FileChooserFilter;
 import com.webforj.component.optiondialog.FileUploadI18n;
+import com.webforj.component.upload.event.UploadCancelEvent;
+import com.webforj.component.upload.event.UploadChangeEvent;
+import com.webforj.component.upload.event.UploadCompleteEvent;
+import com.webforj.component.upload.event.UploadErrorEvent;
+import com.webforj.component.upload.event.UploadEvent;
+import com.webforj.component.upload.event.UploadFilterChangeEvent;
+import com.webforj.component.upload.event.UploadListProgressEvent;
+import com.webforj.component.upload.event.UploadProgressEvent;
+import com.webforj.component.upload.event.UploadRejectEvent;
 import com.webforj.dispatcher.EventListener;
 import java.util.Arrays;
+import java.util.EventObject;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class FileUploadTest {
+class UploadTest {
 
   @Mock
   BBjFileChooser control;
 
   @InjectMocks
-  FileUpload component = new FileUpload();
+  Upload component = new Upload();
 
   @Nested
   class Constructors {
 
     @Test
     void shouldCreateWithDefaults() {
-      FileUpload fresh = new FileUpload();
+      Upload fresh = new Upload();
       assertNotNull(fresh.getI18n());
       assertEquals(0, fresh.getFilters().size());
       assertNull(fresh.getActiveFilter());
-      assertEquals(FileUpload.SelectionMode.MULTIPLE, fresh.getSelectionMode());
-      assertEquals(FileUpload.Picker.FILES, fresh.getPicker());
+      assertEquals(Upload.SelectionMode.MULTIPLE, fresh.getSelectionMode());
+      assertEquals(Upload.Picker.FILES, fresh.getPicker());
       assertTrue(fresh.isDrop());
       assertTrue(fresh.isFiltersVisible());
       assertFalse(fresh.isMultiFilterSelection());
@@ -64,7 +75,7 @@ class FileUploadTest {
       List<FileChooserFilter> filters = Arrays.asList(new FileChooserFilter("Text", "*.txt"),
           new FileChooserFilter("Images", "*.png"));
 
-      FileUpload fresh = new FileUpload(filters);
+      Upload fresh = new Upload(filters);
 
       assertEquals(2, fresh.getFilters().size());
       assertEquals("Text", fresh.getFilters().get(0).getDescription());
@@ -73,19 +84,19 @@ class FileUploadTest {
 
     @Test
     void shouldCreateWithChangeListener() {
-      EventListener<FileUploadChangeEvent> listener = ev -> {
+      EventListener<UploadChangeEvent> listener = ev -> {
       };
 
-      FileUpload fresh = new FileUpload(listener);
+      Upload fresh = new Upload(listener);
 
-      assertEquals(1, fresh.getEventListeners(FileUploadChangeEvent.class).size());
+      assertEquals(1, fresh.getEventListeners(UploadChangeEvent.class).size());
     }
 
     @Test
     void shouldIgnoreNullChangeListener() {
-      FileUpload fresh = new FileUpload((EventListener<FileUploadChangeEvent>) null);
+      Upload fresh = new Upload((EventListener<UploadChangeEvent>) null);
 
-      assertEquals(0, fresh.getEventListeners(FileUploadChangeEvent.class).size());
+      assertEquals(0, fresh.getEventListeners(UploadChangeEvent.class).size());
     }
   }
 
@@ -423,29 +434,63 @@ class FileUploadTest {
   class PartVisibility {
 
     @Test
-    void shouldDefaultUploadButtonToVisible() {
-      assertTrue(component.isVisible(FileUpload.Part.UPLOAD_BUTTON));
+    void shouldDefaultPickerButtonToVisible() {
+      assertTrue(component.isVisible(Upload.Part.PICKER_BUTTON));
     }
 
     @Test
-    void shouldDefaultCancelButtonToVisible() {
-      assertTrue(component.isVisible(FileUpload.Part.CANCEL_BUTTON));
+    void shouldDefaultDropLabelToVisible() {
+      assertTrue(component.isVisible(Upload.Part.DROP_LABEL));
+    }
+
+    @Test
+    void shouldDefaultUploadButtonToVisible() {
+      assertTrue(component.isVisible(Upload.Part.UPLOAD_BUTTON));
+    }
+
+    @Test
+    void shouldDefaultCancelButtonToHidden() {
+      assertFalse(component.isVisible(Upload.Part.CANCEL_BUTTON));
+    }
+
+    @Test
+    void shouldDefaultListToVisible() {
+      assertTrue(component.isVisible(Upload.Part.LIST));
+    }
+
+    @Test
+    void shouldHidePickerButton() {
+      component.setVisible(false, Upload.Part.PICKER_BUTTON);
+
+      assertFalse(component.isVisible(Upload.Part.PICKER_BUTTON));
+    }
+
+    @Test
+    void shouldHideDropLabel() {
+      component.setVisible(false, Upload.Part.DROP_LABEL);
+
+      assertFalse(component.isVisible(Upload.Part.DROP_LABEL));
     }
 
     @Test
     void shouldHideUploadButton() {
-      component.setVisible(false, FileUpload.Part.UPLOAD_BUTTON);
+      component.setVisible(false, Upload.Part.UPLOAD_BUTTON);
 
-      assertFalse(component.isVisible(FileUpload.Part.UPLOAD_BUTTON));
-      assertTrue(component.isVisible(FileUpload.Part.CANCEL_BUTTON));
+      assertFalse(component.isVisible(Upload.Part.UPLOAD_BUTTON));
     }
 
     @Test
-    void shouldHideCancelButton() {
-      component.setVisible(false, FileUpload.Part.CANCEL_BUTTON);
+    void shouldShowCancelButton() {
+      component.setVisible(true, Upload.Part.CANCEL_BUTTON);
 
-      assertFalse(component.isVisible(FileUpload.Part.CANCEL_BUTTON));
-      assertTrue(component.isVisible(FileUpload.Part.UPLOAD_BUTTON));
+      assertTrue(component.isVisible(Upload.Part.CANCEL_BUTTON));
+    }
+
+    @Test
+    void shouldHideList() {
+      component.setVisible(false, Upload.Part.LIST);
+
+      assertFalse(component.isVisible(Upload.Part.LIST));
     }
 
     @Test
@@ -460,14 +505,14 @@ class FileUploadTest {
 
     @Test
     void shouldDefaultToMultiple() {
-      assertEquals(FileUpload.SelectionMode.MULTIPLE, component.getSelectionMode());
+      assertEquals(Upload.SelectionMode.MULTIPLE, component.getSelectionMode());
     }
 
     @Test
     void shouldCallBbjWhenAttached() throws BBjException {
-      component.setSelectionMode(FileUpload.SelectionMode.SINGLE);
+      component.setSelectionMode(Upload.SelectionMode.SINGLE);
 
-      assertEquals(FileUpload.SelectionMode.SINGLE, component.getSelectionMode());
+      assertEquals(Upload.SelectionMode.SINGLE, component.getSelectionMode());
       verify(control, times(1)).setMultiSelectionEnabled(false);
     }
 
@@ -475,16 +520,16 @@ class FileUploadTest {
     void shouldFallBackToMultipleWhenNull() {
       component.setSelectionMode(null);
 
-      assertEquals(FileUpload.SelectionMode.MULTIPLE, component.getSelectionMode());
+      assertEquals(Upload.SelectionMode.MULTIPLE, component.getSelectionMode());
     }
 
     @Test
     void shouldStoreValueWhenDetached() throws IllegalAccessException {
       ReflectionUtils.nullifyControl(component);
 
-      component.setSelectionMode(FileUpload.SelectionMode.SINGLE);
+      component.setSelectionMode(Upload.SelectionMode.SINGLE);
 
-      assertEquals(FileUpload.SelectionMode.SINGLE, component.getSelectionMode());
+      assertEquals(Upload.SelectionMode.SINGLE, component.getSelectionMode());
       verifyNoInteractions(control);
     }
   }
@@ -494,30 +539,30 @@ class FileUploadTest {
 
     @Test
     void shouldDefaultToFiles() {
-      assertEquals(FileUpload.Picker.FILES, component.getPicker());
+      assertEquals(Upload.Picker.FILES, component.getPicker());
     }
 
     @Test
     void shouldCallBbjWithFilesOnlyForFilesMode() throws BBjException {
-      component.setPicker(FileUpload.Picker.FILES);
+      component.setPicker(Upload.Picker.FILES);
 
-      assertEquals(FileUpload.Picker.FILES, component.getPicker());
+      assertEquals(Upload.Picker.FILES, component.getPicker());
       verify(control, times(1)).setFileSelectionMode(BBjFileChooser.FILES_ONLY);
     }
 
     @Test
     void shouldCallBbjWithDirectoriesOnlyForDirectoryMode() throws BBjException {
-      component.setPicker(FileUpload.Picker.DIRECTORY);
+      component.setPicker(Upload.Picker.DIRECTORY);
 
-      assertEquals(FileUpload.Picker.DIRECTORY, component.getPicker());
+      assertEquals(Upload.Picker.DIRECTORY, component.getPicker());
       verify(control, times(1)).setFileSelectionMode(BBjFileChooser.DIRECTORIES_ONLY);
     }
 
     @Test
     void shouldCallBbjWithDirectoriesOnlyForRecursiveMode() throws BBjException {
-      component.setPicker(FileUpload.Picker.DIRECTORY_RECURSIVE);
+      component.setPicker(Upload.Picker.DIRECTORY_RECURSIVE);
 
-      assertEquals(FileUpload.Picker.DIRECTORY_RECURSIVE, component.getPicker());
+      assertEquals(Upload.Picker.DIRECTORY_RECURSIVE, component.getPicker());
       verify(control, times(1)).setFileSelectionMode(BBjFileChooser.DIRECTORIES_ONLY);
     }
 
@@ -525,16 +570,16 @@ class FileUploadTest {
     void shouldFallBackToFilesWhenNull() {
       component.setPicker(null);
 
-      assertEquals(FileUpload.Picker.FILES, component.getPicker());
+      assertEquals(Upload.Picker.FILES, component.getPicker());
     }
 
     @Test
     void shouldStoreValueWhenDetached() throws IllegalAccessException {
       ReflectionUtils.nullifyControl(component);
 
-      component.setPicker(FileUpload.Picker.DIRECTORY_RECURSIVE);
+      component.setPicker(Upload.Picker.DIRECTORY_RECURSIVE);
 
-      assertEquals(FileUpload.Picker.DIRECTORY_RECURSIVE, component.getPicker());
+      assertEquals(Upload.Picker.DIRECTORY_RECURSIVE, component.getPicker());
       verifyNoInteractions(control);
     }
   }
@@ -606,44 +651,43 @@ class FileUploadTest {
   @Nested
   class EventListeners {
 
-    @Test
-    void shouldRegisterChangeListener() {
-      component.addChangeListener(ev -> {
-      });
-      component.onChange(ev -> {
-      });
-
-      assertEquals(2, component.getEventListeners(FileUploadChangeEvent.class).size());
+    static Stream<Arguments> listenerRegistrations() {
+      return Stream.of(
+          listenerCase("change", Upload::addChangeListener, Upload::onChange,
+              UploadChangeEvent.class),
+          listenerCase("upload", Upload::addUploadListener, Upload::onUpload, UploadEvent.class),
+          listenerCase("cancel", Upload::addCancelListener, Upload::onCancel,
+              UploadCancelEvent.class),
+          listenerCase("filterChange", Upload::addFilterChangeListener, Upload::onFilterChange,
+              UploadFilterChangeEvent.class),
+          listenerCase("progress", Upload::addProgressListener, Upload::onProgress,
+              UploadProgressEvent.class),
+          listenerCase("listProgress", Upload::addListProgressListener, Upload::onListProgress,
+              UploadListProgressEvent.class),
+          listenerCase("error", Upload::addErrorListener, Upload::onError, UploadErrorEvent.class),
+          listenerCase("reject", Upload::addRejectListener, Upload::onReject,
+              UploadRejectEvent.class),
+          listenerCase("complete", Upload::addCompleteListener, Upload::onComplete,
+              UploadCompleteEvent.class));
     }
 
-    @Test
-    void shouldRegisterUploadListener() {
-      component.addUploadListener(ev -> {
-      });
-      component.onUpload(ev -> {
-      });
-
-      assertEquals(2, component.getEventListeners(FileUploadEvent.class).size());
+    private static <E extends EventObject> Arguments listenerCase(String name,
+        BiConsumer<Upload, EventListener<E>> add, BiConsumer<Upload, EventListener<E>> on,
+        Class<E> eventType) {
+      return Arguments.of(name, add, on, eventType);
     }
 
-    @Test
-    void shouldRegisterCancelListener() {
-      component.addCancelListener(ev -> {
+    @ParameterizedTest(name = "registers add{0}Listener and on{0}")
+    @MethodSource("listenerRegistrations")
+    <E extends EventObject> void shouldRegisterBothListenerAliases(String name,
+        BiConsumer<Upload, EventListener<E>> add, BiConsumer<Upload, EventListener<E>> on,
+        Class<E> eventType) {
+      add.accept(component, ev -> {
       });
-      component.onCancel(ev -> {
-      });
-
-      assertEquals(2, component.getEventListeners(FileUploadCancelEvent.class).size());
-    }
-
-    @Test
-    void shouldRegisterFilterChangeListener() {
-      component.addFilterChangeListener(ev -> {
-      });
-      component.onFilterChange(ev -> {
+      on.accept(component, ev -> {
       });
 
-      assertEquals(2, component.getEventListeners(FileUploadFilterChangeEvent.class).size());
+      assertEquals(2, component.getEventListeners(eventType).size());
     }
   }
 
@@ -654,8 +698,8 @@ class FileUploadTest {
     void shouldReapplyFiltersSelectionModeAndPicker() throws BBjException, IllegalAccessException {
       ReflectionUtils.nullifyControl(component);
 
-      component.setSelectionMode(FileUpload.SelectionMode.SINGLE);
-      component.setPicker(FileUpload.Picker.DIRECTORY_RECURSIVE);
+      component.setSelectionMode(Upload.SelectionMode.SINGLE);
+      component.setPicker(Upload.Picker.DIRECTORY_RECURSIVE);
       component.addFilter("Text", "*.txt");
       component.setActiveFilter("Text");
       verifyNoInteractions(control);
@@ -667,6 +711,84 @@ class FileUploadTest {
       verify(control, times(1)).setFileSelectionMode(BBjFileChooser.DIRECTORIES_ONLY);
       verify(control, times(1)).addFileFilter("Text", "*.txt");
       verify(control, times(1)).setActiveFileFilter("Text");
+    }
+  }
+
+  @Nested
+  class PresetBehavior {
+
+    @Test
+    void shouldDefaultToFull() {
+      assertEquals(Upload.Preset.FULL, component.getPreset());
+    }
+
+    @Test
+    void shouldShowPickerAndDropLabelWhenInline() {
+      component.setPreset(Upload.Preset.INLINE);
+
+      assertEquals(Upload.Preset.INLINE, component.getPreset());
+      assertTrue(component.isVisible(Upload.Part.PICKER_BUTTON));
+      assertTrue(component.isVisible(Upload.Part.DROP_LABEL));
+      assertFalse(component.isVisible(Upload.Part.LIST));
+      assertFalse(component.isVisible(Upload.Part.UPLOAD_BUTTON));
+      assertFalse(component.isVisible(Upload.Part.CANCEL_BUTTON));
+    }
+
+    @Test
+    void shouldShowOnlyPickerButtonWhenButtonOnly() {
+      component.setPreset(Upload.Preset.BUTTON_ONLY);
+
+      assertEquals(Upload.Preset.BUTTON_ONLY, component.getPreset());
+      assertTrue(component.isVisible(Upload.Part.PICKER_BUTTON));
+      assertFalse(component.isVisible(Upload.Part.DROP_LABEL));
+      assertFalse(component.isVisible(Upload.Part.LIST));
+      assertFalse(component.isVisible(Upload.Part.UPLOAD_BUTTON));
+      assertFalse(component.isVisible(Upload.Part.CANCEL_BUTTON));
+    }
+
+    @Test
+    void shouldShowDropLabelAndListWhenDropzone() {
+      component.setPreset(Upload.Preset.DROPZONE);
+
+      assertEquals(Upload.Preset.DROPZONE, component.getPreset());
+      assertFalse(component.isVisible(Upload.Part.PICKER_BUTTON));
+      assertTrue(component.isVisible(Upload.Part.DROP_LABEL));
+      assertTrue(component.isVisible(Upload.Part.LIST));
+      assertFalse(component.isVisible(Upload.Part.UPLOAD_BUTTON));
+      assertFalse(component.isVisible(Upload.Part.CANCEL_BUTTON));
+    }
+
+    @Test
+    void shouldHideEveryPartWhenHeadless() {
+      component.setPreset(Upload.Preset.HEADLESS);
+
+      assertEquals(Upload.Preset.HEADLESS, component.getPreset());
+      assertFalse(component.isVisible(Upload.Part.PICKER_BUTTON));
+      assertFalse(component.isVisible(Upload.Part.DROP_LABEL));
+      assertFalse(component.isVisible(Upload.Part.LIST));
+      assertFalse(component.isVisible(Upload.Part.UPLOAD_BUTTON));
+      assertFalse(component.isVisible(Upload.Part.CANCEL_BUTTON));
+    }
+
+    @Test
+    void shouldRestoreAllChromeWhenFull() {
+      component.setPreset(Upload.Preset.INLINE);
+      component.setPreset(Upload.Preset.FULL);
+
+      assertEquals(Upload.Preset.FULL, component.getPreset());
+      assertTrue(component.isVisible(Upload.Part.PICKER_BUTTON));
+      assertTrue(component.isVisible(Upload.Part.DROP_LABEL));
+      assertTrue(component.isVisible(Upload.Part.LIST));
+      assertTrue(component.isVisible(Upload.Part.UPLOAD_BUTTON));
+      assertFalse(component.isVisible(Upload.Part.CANCEL_BUTTON));
+    }
+
+    @Test
+    void shouldFallBackToFullWhenNull() {
+      component.setPreset(Upload.Preset.INLINE);
+      component.setPreset(null);
+
+      assertEquals(Upload.Preset.FULL, component.getPreset());
     }
   }
 }

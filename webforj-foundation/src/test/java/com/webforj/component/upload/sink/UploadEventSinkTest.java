@@ -1,4 +1,4 @@
-package com.webforj.component.fileupload.sink;
+package com.webforj.component.upload.sink;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -6,8 +6,8 @@ import static org.mockito.Mockito.when;
 
 import com.basis.bbj.proxies.event.BBjFileChooserApproveEvent;
 import com.basis.startup.type.BBjVector;
-import com.webforj.component.fileupload.FileUpload;
-import com.webforj.component.fileupload.event.FileUploadEvent;
+import com.webforj.component.upload.Upload;
+import com.webforj.component.upload.event.UploadEvent;
 import com.webforj.dispatcher.EventDispatcher;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
@@ -21,23 +21,23 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class FileUploadEventSinkTest {
+class UploadEventSinkTest {
 
   @Mock
   BBjFileChooserApproveEvent bbjEvent;
 
-  FileUpload component;
+  Upload component;
   EventDispatcher dispatcher;
-  FileUploadEventSink sink;
-  AtomicReference<FileUploadEvent> captured;
+  UploadEventSink sink;
+  AtomicReference<UploadEvent> captured;
 
   @BeforeEach
   void setUp() {
-    component = new FileUpload();
+    component = new Upload();
     dispatcher = new EventDispatcher();
-    sink = new FileUploadEventSink(component, dispatcher);
+    sink = new UploadEventSink(component, dispatcher);
     captured = new AtomicReference<>();
-    dispatcher.addListener(FileUploadEvent.class, captured::set);
+    dispatcher.addListener(UploadEvent.class, captured::set);
   }
 
   @ParameterizedTest
@@ -47,7 +47,7 @@ class FileUploadEventSinkTest {
 
     sink.handleEvent(bbjEvent);
 
-    FileUploadEvent dispatched = captured.get();
+    UploadEvent dispatched = captured.get();
     assertNotNull(dispatched);
     assertEquals(expectedNames.length, dispatched.getFiles().size());
 

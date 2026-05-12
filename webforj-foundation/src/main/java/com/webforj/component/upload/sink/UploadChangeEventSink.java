@@ -1,22 +1,22 @@
-package com.webforj.component.fileupload.sink;
+package com.webforj.component.upload.sink;
 
 import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.event.BBjFileChooserChangeEvent;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import com.webforj.component.event.sink.AbstractDwcEventSink;
-import com.webforj.component.fileupload.FileUpload;
-import com.webforj.component.fileupload.event.FileUploadChangeEvent;
+import com.webforj.component.upload.Upload;
+import com.webforj.component.upload.event.UploadChangeEvent;
 import com.webforj.dispatcher.EventDispatcher;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Maps {@link BBjFileChooserChangeEvent} to {@link FileUploadChangeEvent}.
+ * Maps {@link BBjFileChooserChangeEvent} to {@link UploadChangeEvent}.
  *
  * @author Hyyan Abo Fakher
  * @since 26.01
  */
-public final class FileUploadChangeEventSink extends AbstractDwcEventSink {
+public final class UploadChangeEventSink extends AbstractDwcEventSink {
 
   /**
    * Creates a new sink for the given component and dispatcher.
@@ -24,13 +24,12 @@ public final class FileUploadChangeEventSink extends AbstractDwcEventSink {
    * @param component the component
    * @param dispatcher the events dispatcher
    */
-  public FileUploadChangeEventSink(FileUpload component, EventDispatcher dispatcher) {
+  public UploadChangeEventSink(Upload component, EventDispatcher dispatcher) {
     super(component, dispatcher, SysGuiEventConstants.ON_FILECHOOSER_CHANGE);
   }
 
   /**
-   * Reads the selected files vector from the BBj event and dispatches a
-   * {@link FileUploadChangeEvent}.
+   * Reads the selected files vector from the BBj event and dispatches a {@link UploadChangeEvent}.
    *
    * @param ev the BBj event
    */
@@ -40,6 +39,6 @@ public final class FileUploadChangeEventSink extends AbstractDwcEventSink {
     Map<String, Object> map = new HashMap<>();
     map.put("files", change.getSelectedFiles());
 
-    getEventDispatcher().dispatchEvent(new FileUploadChangeEvent((FileUpload) getComponent(), map));
+    getEventDispatcher().dispatchEvent(new UploadChangeEvent((Upload) getComponent(), map));
   }
 }
