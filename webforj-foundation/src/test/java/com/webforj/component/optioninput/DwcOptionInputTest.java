@@ -185,4 +185,18 @@ class DwcOptionInputTest {
 
     assertEquals("helper text", component.getProperty("helperText"));
   }
+
+  @Nested
+  class LabelApi {
+
+    @Test
+    @DisplayName("setLabel then getLabel round trips")
+    void setLabelGetLabelRoundTrip() throws IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+
+      component.setLabel("Remember me");
+
+      assertEquals("Remember me", component.getLabel());
+    }
+  }
 }

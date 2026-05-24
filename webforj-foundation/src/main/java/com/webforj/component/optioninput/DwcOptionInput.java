@@ -17,6 +17,7 @@ import com.webforj.component.event.sink.UncheckEventSink;
 import com.webforj.concern.HasExpanse;
 import com.webforj.concern.HasFocusStatus;
 import com.webforj.concern.HasHelperText;
+import com.webforj.concern.HasLabel;
 import com.webforj.concern.HasTextPosition;
 import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.dispatcher.EventListener;
@@ -42,8 +43,8 @@ import com.webforj.exceptions.WebforjRuntimeException;
  * @since 23.05
  */
 public abstract class DwcOptionInput<T extends DwcValidatableComponent<T, Boolean> & HasTextPosition<T>>
-    extends DwcValidatableComponent<T, Boolean>
-    implements HasTextPosition<T>, HasExpanse<T, Expanse>, HasFocusStatus, HasHelperText<T> {
+    extends DwcValidatableComponent<T, Boolean> implements HasTextPosition<T>,
+    HasExpanse<T, Expanse>, HasFocusStatus, HasHelperText<T>, HasLabel<T> {
 
   private final ComponentEventSinkRegistry<CheckEvent> checkEventSinkListenerRegistry =
       new ComponentEventSinkRegistry<>(new CheckEventSink(this, getEventDispatcher()),
@@ -251,6 +252,24 @@ public abstract class DwcOptionInput<T extends DwcValidatableComponent<T, Boolea
   @Override
   public String getHelperText() {
     return this.helperText;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public T setLabel(String label) {
+    setText(label);
+
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getLabel() {
+    return getText();
   }
 
   /**
