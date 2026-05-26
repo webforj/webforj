@@ -607,6 +607,12 @@ public abstract class App {
       page.destroy();
     }
 
+    // dispose the geolocation subsystem
+    Geolocation geolocation = Geolocation.getCurrent();
+    if (geolocation != null) {
+      geolocation.destroy();
+    }
+
     // dispose the router
     Router router = Router.getCurrent();
     if (router != null) {
