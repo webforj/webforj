@@ -73,7 +73,7 @@ jobs:
       - name: Jacoco Report
         # if: github.event_name == 'pull_request'
         id: jacoco
-        uses: madrapps/jacoco-report@v1.6.1
+        uses: madrapps/jacoco-report@v1.7.2
         with:
           paths: |
             ${{ github.workspace }}/webforj-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
