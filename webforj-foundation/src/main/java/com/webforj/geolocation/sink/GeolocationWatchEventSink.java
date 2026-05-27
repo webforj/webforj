@@ -1,4 +1,4 @@
-package com.webforj.sink.geolocation;
+package com.webforj.geolocation.sink;
 
 import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.event.BBjGeolocationEvent;
@@ -6,13 +6,13 @@ import com.basis.bbj.proxies.sysgui.BBjGeolocation;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import com.basis.startup.type.BBjException;
 import com.webforj.Environment;
-import com.webforj.Geolocation;
 import com.webforj.component.event.sink.DwcEventSink;
 import com.webforj.dispatcher.EventDispatcher;
-import com.webforj.event.geolocation.GeolocationPosition;
-import com.webforj.event.geolocation.GeolocationStatus;
-import com.webforj.event.geolocation.GeolocationWatchEvent;
 import com.webforj.exceptions.WebforjRuntimeException;
+import com.webforj.geolocation.Geolocation;
+import com.webforj.geolocation.GeolocationPosition;
+import com.webforj.geolocation.GeolocationStatus;
+import com.webforj.geolocation.event.GeolocationWatchEvent;
 
 /**
  * The {@code GeolocationWatchEventSink} implements the required logic for setting and removing the

@@ -1,8 +1,8 @@
-package com.webforj.sink.geolocation;
+package com.webforj.geolocation.sink;
 
-import com.webforj.Geolocation;
 import com.webforj.component.event.EventSinkListenerRegistry;
-import com.webforj.event.geolocation.GeolocationWatchEvent;
+import com.webforj.geolocation.Geolocation;
+import com.webforj.geolocation.event.GeolocationWatchEvent;
 
 /**
  * {@code GeolocationWatchEventSinkRegistry} manages the event listeners for a geolocation watch

@@ -1,4 +1,4 @@
-package com.webforj;
+package com.webforj.geolocation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -23,13 +23,13 @@ import com.basis.bbj.proxies.sysgui.BBjGeolocation;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjNumber;
+import com.webforj.Environment;
+import com.webforj.PendingResult;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.environment.ObjectTable;
-import com.webforj.event.geolocation.GeolocationPosition;
-import com.webforj.event.geolocation.GeolocationStatus;
-import com.webforj.event.geolocation.GeolocationWatchEvent;
-import com.webforj.exceptions.WebforjGeolocationException;
+import com.webforj.geolocation.event.GeolocationWatchEvent;
+import com.webforj.geolocation.exception.WebforjGeolocationException;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,4 +1,4 @@
-package com.webforj.event.geolocation;
+package com.webforj.geolocation;
 
 import java.util.Objects;
 import java.util.Optional;

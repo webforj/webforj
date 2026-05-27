@@ -15,6 +15,7 @@ import com.webforj.exceptions.WebforjAppInitializeException;
 import com.webforj.exceptions.WebforjException;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.exceptions.WebforjWebManagerException;
+import com.webforj.geolocation.Geolocation;
 import com.webforj.i18n.BundleTranslationResolver;
 import com.webforj.i18n.LocaleObserver;
 import com.webforj.i18n.LocaleObserverRegistry;
