@@ -1,9 +1,11 @@
-package com.webforj.event.geolocation;
+package com.webforj.geolocation.event;
 
 import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.event.BBjGeolocationEvent;
 import com.webforj.PendingResult;
-import com.webforj.exceptions.WebforjGeolocationException;
+import com.webforj.geolocation.GeolocationPosition;
+import com.webforj.geolocation.GeolocationStatus;
+import com.webforj.geolocation.exception.WebforjGeolocationException;
 import java.lang.System.Logger;
 import java.util.ArrayDeque;
 import java.util.Deque;

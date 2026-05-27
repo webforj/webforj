@@ -1,6 +1,8 @@
-package com.webforj.event.geolocation;
+package com.webforj.geolocation.event;
 
-import com.webforj.Geolocation;
+import com.webforj.geolocation.Geolocation;
+import com.webforj.geolocation.GeolocationPosition;
+import com.webforj.geolocation.GeolocationStatus;
 import java.util.EventObject;
 import java.util.Optional;
 

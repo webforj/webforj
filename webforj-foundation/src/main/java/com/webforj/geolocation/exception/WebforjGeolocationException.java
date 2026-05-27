@@ -1,6 +1,7 @@
-package com.webforj.exceptions;
+package com.webforj.geolocation.exception;
 
-import com.webforj.event.geolocation.GeolocationStatus;
+import com.webforj.exceptions.WebforjRuntimeException;
+import com.webforj.geolocation.GeolocationStatus;
 
 /**
  * Reports a failure returned by the browser when requesting the device's geographic position.

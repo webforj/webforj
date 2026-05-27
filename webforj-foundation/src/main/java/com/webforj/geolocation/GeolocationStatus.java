@@ -1,6 +1,4 @@
-package com.webforj.event.geolocation;
-
-import com.webforj.Geolocation;
+package com.webforj.geolocation;
 
 /**
  * The status reported by the browser for a {@link Geolocation} request.

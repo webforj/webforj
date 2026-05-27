@@ -1,21 +1,21 @@
-package com.webforj;
+package com.webforj.geolocation;
 
 import com.basis.bbj.proxies.sysgui.BBjGeolocation;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
+import com.webforj.Environment;
+import com.webforj.PendingResult;
 import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.environment.ObjectTable;
-import com.webforj.event.geolocation.GeolocationEventHandler;
-import com.webforj.event.geolocation.GeolocationPosition;
-import com.webforj.event.geolocation.GeolocationStatus;
-import com.webforj.event.geolocation.GeolocationWatchEvent;
-import com.webforj.exceptions.WebforjGeolocationException;
 import com.webforj.exceptions.WebforjRuntimeException;
-import com.webforj.sink.geolocation.GeolocationWatchEventSink;
-import com.webforj.sink.geolocation.GeolocationWatchEventSinkRegistry;
+import com.webforj.geolocation.event.GeolocationEventHandler;
+import com.webforj.geolocation.event.GeolocationWatchEvent;
+import com.webforj.geolocation.exception.WebforjGeolocationException;
+import com.webforj.geolocation.sink.GeolocationWatchEventSink;
+import com.webforj.geolocation.sink.GeolocationWatchEventSinkRegistry;
 import java.util.function.Consumer;
 
 /**
@@ -231,6 +231,15 @@ public final class Geolocation {
     return addWatchListener(listener);
   }
 
+  /**
+   * Removes all watch listeners and releases any resources associated with this geolocation
+   * instance.
+   */
+  public void destroy() {
+    eventDispatcher.removeAllListeners();
+    ObjectTable.put(Geolocation.class.getName(), null);
+  }
+
   private void ensurePositionCallbackRegistered() throws BBjException {
     if (positionCallbackRegistered) {
       return;
@@ -263,10 +272,5 @@ public final class Geolocation {
 
   Environment getEnvironment() {
     return Environment.getCurrent();
-  }
-
-  void destroy() {
-    eventDispatcher.removeAllListeners();
-    ObjectTable.put(Geolocation.class.getName(), null);
   }
 }
