@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -33,10 +34,13 @@ import com.webforj.event.page.PageEvent;
 import com.webforj.event.page.PageEventOptions;
 import com.webforj.event.page.PageUnloadEvent;
 import com.webforj.exceptions.WebforjWebManagerException;
+import com.webforj.utilities.Assets;
+import java.awt.Color;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -154,6 +158,79 @@ class PageTest {
     void getTitleShouldThrowException() throws BBjException {
       doThrow(BBjException.class).when(webManager).getTitle();
       assertThrows(WebforjWebManagerException.class, () -> page.getTitle());
+    }
+  }
+
+  @Nested
+  class IconBadge {
+
+    MockedStatic<Assets> mockedAssets;
+    MockedStatic<Environment> mockedEnv;
+
+    @BeforeEach
+    void prepare() {
+      ObjectTable.clear(Page.ICON_BADGE_ASSET_KEY);
+      mockedAssets = mockStatic(Assets.class);
+      mockedAssets.when(() -> Assets.isWebServerUrl(anyString()))
+          .thenAnswer(inv -> ((String) inv.getArgument(0)).startsWith("ws://"));
+      mockedAssets.when(() -> Assets.resolveWebServerUrl(anyString()))
+          .thenAnswer(inv -> "/" + ((String) inv.getArgument(0)).substring(5));
+      mockedAssets.when(() -> Assets.contentOf(anyString())).thenReturn("/* asset body */");
+      mockedEnv = mockStatic(Environment.class);
+      mockedEnv.when(Environment::isRunningWithBBjServices).thenReturn(false);
+    }
+
+    @AfterEach
+    void teardown() {
+      mockedEnv.close();
+      mockedAssets.close();
+    }
+
+    @Test
+    void shouldDrawNumericBadge() throws BBjException {
+      page.setIconBadge(5);
+      verify(webManager).executeAsyncScript(contains("count: 5"), eq(true), eq(false));
+    }
+
+    @Test
+    void shouldDrawDotWhenNoArgument() throws BBjException {
+      page.setIconBadge();
+      verify(webManager).executeAsyncScript(contains("count: ''"), eq(true), eq(false));
+    }
+
+    @Test
+    void shouldRestoreOriginalWhenNull() throws BBjException {
+      page.setIconBadge((Integer) null);
+      verify(webManager).executeAsyncScript(contains("count: null"), eq(true), eq(false));
+    }
+
+    @Test
+    void shouldRestoreOriginalWhenZero() throws BBjException {
+      page.setIconBadge(0);
+      verify(webManager).executeAsyncScript(contains("count: null"), eq(true), eq(false));
+    }
+
+    @Test
+    void shouldRejectNegativeCount() {
+      assertThrows(IllegalArgumentException.class, () -> page.setIconBadge(-1));
+    }
+
+    @Test
+    void shouldRejectNullOptions() {
+      assertThrows(NullPointerException.class, () -> page.setIconBadge(1, null));
+      assertThrows(NullPointerException.class, () -> page.setIconBadge((IconBadgeOptions) null));
+    }
+
+    @Test
+    void shouldEmitConfiguredOptions() throws BBjException {
+      IconBadgeOptions options = new IconBadgeOptions().setColor(new Color(0x33, 0x66, 0x99))
+          .setShape(IconBadgeOptions.Shape.SQUARE).setSize(1.5);
+
+      page.setIconBadge(7, options);
+
+      verify(webManager).executeAsyncScript(contains("color: '#336699'"), eq(true), eq(false));
+      verify(webManager).executeAsyncScript(contains("shape: 'square'"), eq(true), eq(false));
+      verify(webManager).executeAsyncScript(contains("size: 1.5"), eq(true), eq(false));
     }
   }
 

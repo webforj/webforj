@@ -1,7 +1,7 @@
 /**
- * Minifies view-transitions.css using esbuild
+ * Minifies webforJ client-side resources using esbuild.
  *
- * Usage: node scripts/minify-view-transitions.js
+ * Usage: node scripts/minify.js
  *
  * Requires esbuild to be installed: npm install -g esbuild
  * Or download standalone binary from: https://github.com/evanw/esbuild/releases
@@ -19,14 +19,24 @@ const BANNER = `/*!
  */
 `;
 
-const RESOURCES_DIR = path.join(
+const FOUNDATION_RESOURCES = path.join(
   __dirname,
-  '../webforj-foundation/src/main/resources/META-INF/resources/webforj'
+  '../webforj-foundation/src/main/resources'
 );
 
 const files = [
-  { input: 'view-transitions.css', output: 'view-transitions.min.css' },
-  { input: 'view-transitions.js', output: 'view-transitions.min.js' }
+  {
+    input: 'META-INF/resources/webforj/view-transitions.css',
+    output: 'META-INF/resources/webforj/view-transitions.min.css'
+  },
+  {
+    input: 'META-INF/resources/webforj/view-transitions.js',
+    output: 'META-INF/resources/webforj/view-transitions.min.js'
+  },
+  {
+    input: 'static/webforj/icon-badge/icon-badge.js',
+    output: 'static/webforj/icon-badge/icon-badge.min.js'
+  }
 ];
 
 function checkEsbuild() {
@@ -39,8 +49,8 @@ function checkEsbuild() {
 }
 
 function minify(inputFile, outputFile) {
-  const inputPath = path.join(RESOURCES_DIR, inputFile);
-  const outputPath = path.join(RESOURCES_DIR, outputFile);
+  const inputPath = path.join(FOUNDATION_RESOURCES, inputFile);
+  const outputPath = path.join(FOUNDATION_RESOURCES, outputFile);
 
   if (!fs.existsSync(inputPath)) {
     console.error(`Error: Input file not found: ${inputPath}`);
@@ -53,7 +63,6 @@ function minify(inputFile, outputFile) {
     stdio: 'pipe'
   });
 
-  // Prepend banner
   const minifiedContent = fs.readFileSync(outputPath, 'utf8');
   fs.writeFileSync(outputPath, BANNER + minifiedContent, 'utf8');
 
@@ -66,7 +75,7 @@ function minify(inputFile, outputFile) {
 }
 
 function run() {
-  console.log('Minifying view transitions...\n');
+  console.log('Minifying webforJ resources...\n');
 
   if (!checkEsbuild()) {
     console.error('Error: esbuild not found.');

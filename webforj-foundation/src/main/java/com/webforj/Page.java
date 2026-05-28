@@ -32,6 +32,7 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -46,6 +47,12 @@ public final class Page implements HasJsExecution {
   public static final String DEFAULT_TITLE_FORMAT =
       "{WindowTitle ?? ''} {BrowserTitle ? ((WindowTitle ? '- ' : '') + BrowserTitle) : ''}";
   private static final String FAILED_TO_DOWNLOAD_FILE = "Failed to download file.";
+  private static final String ICON_BADGE_ASSET_PATH = "static/webforj/icon-badge/icon-badge.min.js";
+  private static final String ICON_BADGE_ASSET_URL = "ws://webforj/icon-badge/icon-badge.min.js";
+  static final String ICON_BADGE_ASSET_KEY = "webforj.icon-badge.asset-loaded";
+  private static final String ICON_BADGE_STUB =
+      "window.__webforjIconBadge = window.__webforjIconBadge || (function() {"
+          + " var q = []; return { _q: q, apply: function(o) { q.push(o); } };" + " })();";
   private PageExecuteJsAsyncHandler executeJsAsyncHandler = null;
   private Environment environment = Environment.getCurrent();
   private boolean isBrowserCloseEventRegistered = false;
@@ -194,6 +201,89 @@ public final class Page implements HasJsExecution {
     } catch (BBjException e) {
       throw new WebforjWebManagerException("Failed to get title.", e);
     }
+  }
+
+  /**
+   * Draws a numeric badge on the browser tab favicon with default styling.
+   *
+   * @param count the badge count, {@code null} or {@code 0} to restore the original favicon
+   * @return The current page instance
+   * @throws IllegalArgumentException if {@code count} is negative
+   *
+   * @see #setIconBadge(Integer, IconBadgeOptions)
+   * @since 26.01
+   */
+  public Page setIconBadge(Integer count) {
+    return setIconBadge(count, new IconBadgeOptions());
+  }
+
+  /**
+   * Draws a numeric badge on the browser tab favicon.
+   *
+   * <p>
+   * The original favicon is captured on the first call and used as the base layer for every
+   * subsequent overlay. Passing {@code null} or {@code 0} restores the original favicon. Counts
+   * greater than 99 are rendered as {@code "99+"}. Browsers that block runtime favicon swaps, such
+   * as Safari, silently leave the icon unchanged.
+   * </p>
+   *
+   * <p>
+   * The favicon overlay is independent of the document title. To also show the count in the tab
+   * strip text use {@link #setTitle(String)}.
+   * </p>
+   *
+   * @param count the badge count, {@code null} or {@code 0} to restore the original favicon
+   * @param options the badge style options
+   * @return The current page instance
+   * @throws IllegalArgumentException if {@code count} is negative
+   * @throws NullPointerException if {@code options} is {@code null}
+   *
+   * @since 26.01
+   */
+  public Page setIconBadge(Integer count, IconBadgeOptions options) {
+    if (count != null && count < 0) {
+      throw new IllegalArgumentException("Tab badge count cannot be negative.");
+    }
+
+    Objects.requireNonNull(options, "Tab badge options cannot be null.");
+
+    String value = (count == null || count == 0) ? "null" : count.toString();
+    invokeIconBadge(value, options);
+
+    return this;
+  }
+
+  /**
+   * Draws a dot indicator on the browser tab favicon with default styling.
+   *
+   * @return The current page instance
+   *
+   * @see #setIconBadge(IconBadgeOptions)
+   * @since 26.01
+   */
+  public Page setIconBadge() {
+    return setIconBadge(new IconBadgeOptions());
+  }
+
+  /**
+   * Draws a dot indicator on the browser tab favicon without a numeric value.
+   *
+   * <p>
+   * The original favicon is captured on the first call and used as the base layer. Browsers that
+   * block runtime favicon swaps, such as Safari, silently leave the icon unchanged.
+   * </p>
+   *
+   * @param options the badge style options
+   * @return The current page instance
+   * @throws NullPointerException if {@code options} is {@code null}
+   *
+   * @since 26.01
+   */
+  public Page setIconBadge(IconBadgeOptions options) {
+    Objects.requireNonNull(options, "Tab badge options cannot be null.");
+    invokeIconBadge("''", options);
+
+    return this;
   }
 
   /**
@@ -1138,6 +1228,27 @@ public final class Page implements HasJsExecution {
         logger.log(Logger.Level.WARNING, "Failed to delete temp file: " + tempFilePath, e);
       }
     }
+  }
+
+  private void invokeIconBadge(String countLiteral, IconBadgeOptions options) {
+    if (!ObjectTable.contains(ICON_BADGE_ASSET_KEY)) {
+      executeJsVoidAsync(ICON_BADGE_STUB);
+
+      if (Environment.isRunningWithBBjServices()) {
+        executeJsVoidAsync(Assets.contentOf(ICON_BADGE_ASSET_PATH));
+      } else {
+        addJavaScript(ICON_BADGE_ASSET_URL, true);
+      }
+
+      ObjectTable.put(ICON_BADGE_ASSET_KEY, true);
+    }
+
+    String script = String.format(
+        "window.__webforjIconBadge.apply({count: %s, color: '%s', shape: '%s', size: %s});",
+        countLiteral, options.colorHex(), options.getShape().name().toLowerCase(),
+        options.getSize());
+
+    executeJsVoidAsync(script);
   }
 
   private EventDispatcher getEventDispatcher() {
