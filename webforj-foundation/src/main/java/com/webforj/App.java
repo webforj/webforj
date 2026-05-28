@@ -548,7 +548,7 @@ public abstract class App {
    *
    * <p>
    * Passing {@code null} or {@code 0} clears the badge. Any positive value displays as the numeric
-   * badge content. Browsers that do not implement the Web Badging API silently ignore the call.
+   * badge content. Browsers that do not support application badges silently ignore the call.
    * </p>
    *
    * <p>
@@ -558,7 +558,7 @@ public abstract class App {
    * </p>
    *
    * <p>
-   * The Web Badging API is available only in secure contexts. The application must be served over
+   * Application badges are available only in secure contexts. The application must be served over
    * HTTPS, or {@code localhost} during development. Plain HTTP origins reject the call.
    * </p>
    *
@@ -585,7 +585,7 @@ public abstract class App {
    *
    * <p>
    * The exact visual is defined by the platform and is typically a small dot. Browsers that do not
-   * implement the Web Badging API silently ignore the call.
+   * support application badges silently ignore the call.
    * </p>
    *
    * <p>
@@ -595,7 +595,7 @@ public abstract class App {
    * </p>
    *
    * <p>
-   * The Web Badging API is available only in secure contexts. The application must be served over
+   * Application badges are available only in secure contexts. The application must be served over
    * HTTPS, or {@code localhost} during development. Plain HTTP origins reject the call.
    * </p>
    *

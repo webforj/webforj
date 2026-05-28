@@ -65,7 +65,7 @@ public class IconBadgeOptions {
    * </p>
    *
    * @param shape the shape
-   * @return the tab badge options
+   * @return the icon badge options
    */
   public IconBadgeOptions setShape(Shape shape) {
     this.shape = shape;
@@ -93,7 +93,7 @@ public class IconBadgeOptions {
    * </p>
    *
    * @param size the relative size
-   * @return the tab badge options
+   * @return the icon badge options
    * @throws IllegalArgumentException if {@code size} is not positive
    */
   public IconBadgeOptions setSize(double size) {

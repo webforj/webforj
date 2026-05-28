@@ -242,10 +242,10 @@ public final class Page implements HasJsExecution {
    */
   public Page setIconBadge(Integer count, IconBadgeOptions options) {
     if (count != null && count < 0) {
-      throw new IllegalArgumentException("Tab badge count cannot be negative.");
+      throw new IllegalArgumentException("Icon badge count cannot be negative.");
     }
 
-    Objects.requireNonNull(options, "Tab badge options cannot be null.");
+    Objects.requireNonNull(options, "Icon badge options cannot be null.");
 
     String value = (count == null || count == 0) ? "null" : count.toString();
     invokeIconBadge(value, options);
@@ -280,7 +280,7 @@ public final class Page implements HasJsExecution {
    * @since 26.01
    */
   public Page setIconBadge(IconBadgeOptions options) {
-    Objects.requireNonNull(options, "Tab badge options cannot be null.");
+    Objects.requireNonNull(options, "Icon badge options cannot be null.");
     invokeIconBadge("''", options);
 
     return this;
