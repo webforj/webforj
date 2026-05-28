@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -33,6 +34,7 @@ import com.webforj.environment.ObjectTable;
 import com.webforj.event.page.PageEvent;
 import com.webforj.event.page.PageEventOptions;
 import com.webforj.event.page.PageUnloadEvent;
+import com.webforj.event.page.PageVisibilityChangeEvent;
 import com.webforj.exceptions.WebforjWebManagerException;
 import com.webforj.utilities.Assets;
 import java.awt.Color;
@@ -44,6 +46,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 
 class PageTest {
@@ -336,6 +341,73 @@ class PageTest {
       EventListener<PageUnloadEvent> listener = mock(EventListener.class);
 
       assertThrows(WebforjWebManagerException.class, () -> page.onUnload(listener));
+    }
+  }
+
+  @Nested
+  class VisibilityChange {
+
+    MockedStatic<Environment> mockedEnvironment;
+
+    @BeforeEach
+    void setUpVisibility() throws BBjException {
+      when(webManager.newEventOptions()).thenReturn(mock(BBjWebEventOptions.class));
+      mockedEnvironment = mockStatic(Environment.class);
+      mockedEnvironment.when(Environment::getCurrent).thenReturn(environment);
+    }
+
+    @AfterEach
+    void tearDownVisibility() {
+      mockedEnvironment.close();
+    }
+
+    @Test
+    void shouldRegisterBrowserCallbackOnceAcrossListeners() throws BBjException {
+      page.onVisibilityChange(event -> {
+      });
+      page.onVisibilityChange(event -> {
+      });
+
+      verify(webManager, times(1)).setCallback(eq("visibilitychange"), any(), eq("handleEvent"),
+          any());
+    }
+
+    @ParameterizedTest
+    @CsvSource({"visible, VISIBLE", "hidden, HIDDEN"})
+    void shouldDispatchEventForBrowserState(String value, PageVisibilityState expected) {
+      AtomicReference<PageVisibilityChangeEvent> captured = new AtomicReference<>();
+      page.onVisibilityChange(captured::set);
+
+      fireVisibilityChangeWithState(value);
+
+      assertEquals(expected, captured.get().getState());
+      assertEquals(page, captured.get().getPage());
+    }
+
+    @ParameterizedTest
+    @CsvSource({"visible, VISIBLE", "hidden, HIDDEN"})
+    void getVisibilityStateShouldMapBrowserValue(String value, PageVisibilityState expected) {
+      PendingResult<Object> raw = new PendingResult<>();
+      doReturn(raw).when(page).executeJsAsync("document.visibilityState");
+
+      AtomicReference<PageVisibilityState> captured = new AtomicReference<>();
+      page.getVisibilityState().thenAccept(captured::set);
+
+      raw.complete(value);
+
+      assertEquals(expected, captured.get());
+    }
+
+    @SuppressWarnings("unchecked")
+    private void fireVisibilityChangeWithState(String state) {
+      ArgumentCaptor<EventListener<PageEvent>> listenerCaptor =
+          ArgumentCaptor.forClass(EventListener.class);
+      verify(page).addEventListener(eq("visibilitychange"), listenerCaptor.capture(),
+          any(PageEventOptions.class));
+
+      PageEvent pageEvent = new PageEvent(page, Map.of("state", state), "visibilitychange", 1,
+          new PageEventOptions());
+      listenerCaptor.getValue().onEvent(pageEvent);
     }
   }
 
