@@ -7,6 +7,7 @@ import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import com.typesafe.config.Config;
 import com.webforj.annotation.AnnotationProcessor;
+import com.webforj.annotation.AppProfile;
 import com.webforj.annotation.Routify;
 import com.webforj.component.window.Frame;
 import com.webforj.environment.ObjectTable;
@@ -540,6 +541,70 @@ public abstract class App {
    */
   public static BusyIndicator busy(String text) {
     return busy(text, false);
+  }
+
+  /**
+   * Sets the badge on the application icon to the given count.
+   *
+   * <p>
+   * Passing {@code null} or {@code 0} clears the badge. Any positive value displays as the numeric
+   * badge content. Browsers that do not support application badges silently ignore the call.
+   * </p>
+   *
+   * <p>
+   * The badge is shown only after the application has been installed, which requires a manifest.
+   * Annotate the {@link App} subclass with {@link AppProfile} to generate one. Without it, the call
+   * succeeds but nothing is visible to the user.
+   * </p>
+   *
+   * <p>
+   * Application badges are available only in secure contexts. The application must be served over
+   * HTTPS, or {@code localhost} during development. Plain HTTP origins reject the call.
+   * </p>
+   *
+   * @param count the badge count, {@code null} or {@code 0} to clear
+   * @throws IllegalArgumentException if {@code count} is negative
+   *
+   * @see AppProfile
+   * @since 26.01
+   */
+  public static void setBadge(Integer count) {
+    if (count != null && count < 0) {
+      throw new IllegalArgumentException("Badge count cannot be negative.");
+    }
+
+    String script = (count == null || count == 0)
+        ? "if ('clearAppBadge' in navigator) navigator.clearAppBadge();"
+        : "if ('setAppBadge' in navigator) navigator.setAppBadge(" + count + ");";
+
+    Page.ifPresent(page -> page.executeJsVoidAsync(script));
+  }
+
+  /**
+   * Shows a flag indicator on the application icon without a numeric value.
+   *
+   * <p>
+   * The exact visual is defined by the platform and is typically a small dot. Browsers that do not
+   * support application badges silently ignore the call.
+   * </p>
+   *
+   * <p>
+   * The badge is shown only after the application has been installed, which requires a manifest.
+   * Annotate the {@link App} subclass with {@link AppProfile} to generate one. Without it, the call
+   * succeeds but nothing is visible to the user.
+   * </p>
+   *
+   * <p>
+   * Application badges are available only in secure contexts. The application must be served over
+   * HTTPS, or {@code localhost} during development. Plain HTTP origins reject the call.
+   * </p>
+   *
+   * @see AppProfile
+   * @since 26.01
+   */
+  public static void setBadge() {
+    Page.ifPresent(page -> page
+        .executeJsVoidAsync("if ('setAppBadge' in navigator) navigator.setAppBadge();"));
   }
 
   /**

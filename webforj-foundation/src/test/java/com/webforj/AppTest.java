@@ -1,7 +1,10 @@
 package com.webforj;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
@@ -22,6 +25,7 @@ import com.webforj.i18n.TranslationResolver;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -235,6 +239,71 @@ class AppTest {
 
         assertTrue(resolver.getSupportedLocales().isEmpty());
       }
+    }
+  }
+
+  @Nested
+  class Badge {
+
+    Page pageMock;
+
+    void stubIfPresent(MockedStatic<Page> mockedPage) {
+      pageMock = mock(Page.class);
+      mockedPage.when(() -> Page.ifPresent(any())).thenAnswer(inv -> {
+        Consumer<Page> c = inv.getArgument(0);
+        c.accept(pageMock);
+
+        return null;
+      });
+    }
+
+    @Test
+    void shouldSetNumericBadge() {
+      try (MockedStatic<Page> mockedPage = mockStatic(Page.class)) {
+        stubIfPresent(mockedPage);
+
+        App.setBadge(5);
+
+        verify(pageMock).executeJsVoidAsync(contains("navigator.setAppBadge(5)"));
+      }
+    }
+
+    @Test
+    void shouldSetFlagBadgeWithNoArgument() {
+      try (MockedStatic<Page> mockedPage = mockStatic(Page.class)) {
+        stubIfPresent(mockedPage);
+
+        App.setBadge();
+
+        verify(pageMock).executeJsVoidAsync(contains("navigator.setAppBadge()"));
+      }
+    }
+
+    @Test
+    void shouldClearBadgeWhenNull() {
+      try (MockedStatic<Page> mockedPage = mockStatic(Page.class)) {
+        stubIfPresent(mockedPage);
+
+        App.setBadge(null);
+
+        verify(pageMock).executeJsVoidAsync(contains("navigator.clearAppBadge()"));
+      }
+    }
+
+    @Test
+    void shouldClearBadgeWhenZero() {
+      try (MockedStatic<Page> mockedPage = mockStatic(Page.class)) {
+        stubIfPresent(mockedPage);
+
+        App.setBadge(0);
+
+        verify(pageMock).executeJsVoidAsync(contains("navigator.clearAppBadge()"));
+      }
+    }
+
+    @Test
+    void shouldRejectNegativeCount() {
+      assertThrows(IllegalArgumentException.class, () -> App.setBadge(-1));
     }
   }
 }
