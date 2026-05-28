@@ -18,6 +18,7 @@ import com.webforj.event.page.PageEvent;
 import com.webforj.event.page.PageEventOptions;
 import com.webforj.event.page.PageUnloadEvent;
 import com.webforj.event.page.PageUnloadEventHandler;
+import com.webforj.event.page.PageVisibilityChangeEvent;
 import com.webforj.exceptions.WebforjWebManagerException;
 import com.webforj.sink.page.PageEventSink;
 import com.webforj.sink.page.PageEventSinkRegistry;
@@ -56,6 +57,7 @@ public final class Page implements HasJsExecution {
   private PageExecuteJsAsyncHandler executeJsAsyncHandler = null;
   private Environment environment = Environment.getCurrent();
   private boolean isBrowserCloseEventRegistered = false;
+  private boolean isVisibilityChangeEventRegistered = false;
   private ViewTransitionManager viewTransitionManager;
   private final Map<String, PageEventSinkRegistry> registries = new HashMap<>();
   private final EventDispatcher eventDispatcher = new EventDispatcher();
@@ -1107,6 +1109,22 @@ public final class Page implements HasJsExecution {
   }
 
   /**
+   * Returns the current visibility state of the page reported by the browser.
+   *
+   * <p>
+   * The value is read asynchronously from the browser and delivered through the returned
+   * {@link PendingResult}.
+   * </p>
+   *
+   * @return a pending result that resolves with the current {@link PageVisibilityState}
+   * @since 26.01
+   */
+  public PendingResult<PageVisibilityState> getVisibilityState() {
+    return executeJsAsync("document.visibilityState")
+        .thenApply(value -> PageVisibilityState.fromValue(String.valueOf(value)));
+  }
+
+  /**
    * Adds a {@link PageEvent} listener for the page.
    *
    * @param type the type/name of the event. (e.g. "click").
@@ -1147,7 +1165,6 @@ public final class Page implements HasJsExecution {
       }
     }, finalEventOptions);
   }
-
 
   /**
    * Adds a {@link PageEvent} listener for the page.
@@ -1211,6 +1228,50 @@ public final class Page implements HasJsExecution {
    */
   public ListenerRegistration<PageUnloadEvent> onUnload(EventListener<PageUnloadEvent> listener) {
     return addUnloadListener(listener);
+  }
+
+  /**
+   * Adds a listener that is notified each time the browser reports a change in the page's
+   * visibility state.
+   *
+   * <p>
+   * The browser fires the underlying event whenever the document moves between the foreground and a
+   * hidden state, for example when the user switches tabs or minimizes the window. The event is
+   * registered with the browser the first time a listener is added.
+   * </p>
+   *
+   * @param listener the listener to add
+   * @return the registration object that can be used to remove the listener
+   * @since 26.01
+   */
+  public ListenerRegistration<PageVisibilityChangeEvent> addVisibilityChangeListener(
+      EventListener<PageVisibilityChangeEvent> listener) {
+    if (!isVisibilityChangeEventRegistered) {
+      isVisibilityChangeEventRegistered = true;
+
+      PageEventOptions options = new PageEventOptions();
+      options.addData("state", "document.visibilityState");
+
+      addEventListener("visibilitychange", ev -> {
+        String value = String.valueOf(ev.getData().get("state"));
+        getEventDispatcher().dispatchEvent(
+            new PageVisibilityChangeEvent(this, PageVisibilityState.fromValue(value)));
+      }, options);
+    }
+
+    return getEventDispatcher().addListener(PageVisibilityChangeEvent.class, listener);
+  }
+
+  /**
+   * Alias for {@link #addVisibilityChangeListener(EventListener)}.
+   *
+   * @param listener the listener to add
+   * @return the registration object that can be used to remove the listener
+   * @since 26.01
+   */
+  public ListenerRegistration<PageVisibilityChangeEvent> onVisibilityChange(
+      EventListener<PageVisibilityChangeEvent> listener) {
+    return addVisibilityChangeListener(listener);
   }
 
   private void performDownload(String sourceFilePath, String fileName) throws BBjException {
