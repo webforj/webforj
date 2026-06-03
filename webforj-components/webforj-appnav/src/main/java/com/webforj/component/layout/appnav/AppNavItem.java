@@ -13,12 +13,8 @@ import com.webforj.concern.HasStyle;
 import com.webforj.concern.HasText;
 import com.webforj.concern.HasVisibility;
 import com.webforj.router.Router;
-import com.webforj.router.history.Location;
 import com.webforj.router.history.ParametersBag;
-import com.webforj.router.history.SegmentsBag;
 import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -55,6 +51,10 @@ public class AppNavItem extends NavigationContainer<AppNavItem> implements HasSt
       PropertyDescriptor.property("routerIgnore", false);
   private final PropertyDescriptor<NavigationTarget> targetProp =
       PropertyDescriptor.property("target", NavigationTarget.SELF);
+  private final PropertyDescriptor<Boolean> pinnedProp =
+      PropertyDescriptor.property("pinned", false);
+  @PropertyExclude
+  private final PropertyDescriptor<String> pinKeyProp = PropertyDescriptor.property("pinKey", "");
 
   /**
    * Describes the target of the navigation item.
@@ -305,6 +305,60 @@ public class AppNavItem extends NavigationContainer<AppNavItem> implements HasSt
    */
   public NavigationTarget getTarget() {
     return get(targetProp);
+  }
+
+  /**
+   * Sets whether the navigation item is pinned.
+   *
+   * <p>
+   * A pinned item is moved into the group at the top of the navigation. Pinning must be enabled on
+   * the {@link AppNav} through {@code getPinning().setEnabled(true)} for this to take effect.
+   * </p>
+   *
+   * @param pin {@code true} to pin the item, {@code false} otherwise
+   * @return the component itself
+   */
+  public AppNavItem setPinned(boolean pin) {
+    set(pinnedProp, pin);
+
+    return this;
+  }
+
+  /**
+   * Returns whether the navigation item is pinned.
+   *
+   * @return {@code true} if the item is pinned, {@code false} otherwise
+   */
+  public boolean isPinned() {
+    return isAttached() ? get(pinnedProp, true, Boolean.class) : get(pinnedProp);
+  }
+
+  /**
+   * Sets the stable key that identifies the item for pinning.
+   *
+   * <p>
+   * The key is used to persist pins and match them across reloads. When not set, the item's path is
+   * used. Set an explicit key when the path can change at runtime.
+   * </p>
+   *
+   * @param pinKey the pin key
+   * @return the component itself
+   */
+  public AppNavItem setPinKey(String pinKey) {
+    set(pinKeyProp, pinKey);
+
+    return this;
+  }
+
+  /**
+   * Gets the stable key that identifies the item for pinning.
+   *
+   * @return the explicit pin key, or the path when none was set
+   */
+  public String getPinKey() {
+    String pinKey = get(pinKeyProp);
+
+    return pinKey == null || pinKey.isEmpty() ? getPath() : pinKey;
   }
 
   /**

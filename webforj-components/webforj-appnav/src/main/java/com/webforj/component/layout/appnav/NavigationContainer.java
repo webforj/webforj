@@ -3,6 +3,7 @@ package com.webforj.component.layout.appnav;
 import com.webforj.component.ComponentLifecycleObserver;
 import com.webforj.component.element.ElementCompositeContainer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -61,6 +62,15 @@ abstract class NavigationContainer<T extends ElementCompositeContainer>
     items.remove(item);
     item.destroy();
     return getSelf();
+  }
+
+  /**
+   * Returns the direct navigation items of this container.
+   *
+   * @return an unmodifiable list of the direct navigation items
+   */
+  public List<AppNavItem> getItems() {
+    return Collections.unmodifiableList(items);
   }
 
   /**
