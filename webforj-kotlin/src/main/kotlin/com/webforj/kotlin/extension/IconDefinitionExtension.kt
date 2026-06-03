@@ -7,4 +7,4 @@ import com.webforj.component.icons.IconDefinition
  *
  * @return The Icon pool and name in the format "pool:name".
  */
-fun IconDefinition<*>.asString() = "$pool:$name"
+fun IconDefinition<*>.toQualifiedName() = "$pool:$name"

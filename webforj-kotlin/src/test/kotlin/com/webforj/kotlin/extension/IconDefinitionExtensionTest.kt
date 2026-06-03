@@ -24,9 +24,9 @@ class IconDefinitionExtensionTest {
   fun shouldCreateInfiniteScrollWithIcon() {
     root.build {
       val scroll = infiniteScroll {
-        icon = FeatherIcon.FEATHER.create().asString()
+        icon = FeatherIcon.FEATHER.create().toQualifiedName()
       }
-      assertEquals(FeatherIcon.FEATHER.create().asString(), scroll.icon)
+      assertEquals(FeatherIcon.FEATHER.create().toQualifiedName(), scroll.icon)
     }
   }
 
@@ -34,9 +34,9 @@ class IconDefinitionExtensionTest {
   fun shouldCreateRefresherWithArrowIcon() {
     root.build {
       val refresher = refresher {
-        arrowIcon = DwcIcon.ARROW_DOWN.create().asString()
+        arrowIcon = DwcIcon.ARROW_DOWN.create().toQualifiedName()
       }
-      assertEquals(DwcIcon.ARROW_DOWN.create().asString(), refresher.arrowIcon)
+      assertEquals(DwcIcon.ARROW_DOWN.create().toQualifiedName(), refresher.arrowIcon)
     }
   }
 
@@ -44,9 +44,9 @@ class IconDefinitionExtensionTest {
   fun shouldCreateTreeWithLeafIcon() {
     root.build {
       val tree = tree {
-        leafIcon = TablerIcon.create("leaf").asString()
+        leafIcon = TablerIcon.create("leaf").toQualifiedName()
       }
-      assertEquals(TablerIcon.create("leaf").asString(), tree.leafIcon)
+      assertEquals(TablerIcon.create("leaf").toQualifiedName(), tree.leafIcon)
     }
   }
 }
