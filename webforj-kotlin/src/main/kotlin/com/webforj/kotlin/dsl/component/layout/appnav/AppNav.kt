@@ -108,6 +108,44 @@ fun @WebforjDsl AppNavItem.appNavItem(
   return item
 }
 
+/**
+ * Configures the `AppNav`'s embedded search field.
+ * ```
+ * appNav {
+ *   search {
+ *     setFieldVisible(true)
+ *     setPlaceholder("Search")
+ *   }
+ *   appNavItem("Home", "/home")
+ * }
+ * ```
+ *
+ * @param block The configuration steps for the search field.
+ * @return The configured `AppNav.Search`.
+ * @see AppNav.Search
+ */
+fun @WebforjDsl AppNav.search(block: @WebforjDsl AppNav.Search.() -> Unit): AppNav.Search =
+  search.apply(block)
+
+/**
+ * Configures the `AppNav`'s pinning.
+ * ```
+ * appNav {
+ *   pinning {
+ *     setEnabled(true)
+ *     setAutosave(true)
+ *   }
+ *   appNavItem("Home", "/home")
+ * }
+ * ```
+ *
+ * @param block The configuration steps for pinning.
+ * @return The configured `AppNav.Pinning`.
+ * @see AppNav.Pinning
+ */
+fun @WebforjDsl AppNav.pinning(block: @WebforjDsl AppNav.Pinning.() -> Unit): AppNav.Pinning =
+  pinning.apply(block)
+
 private fun createAppNavItem(
   text: String,
   path: String? = null,

@@ -166,6 +166,29 @@ class AppNavItemTest {
       component.setPath(View.class);
       assertEquals("/test", component.getFullPath());
     }
+
+    @Test
+    void shouldSetGetPinned() {
+      assertFalse(component.isPinned());
+
+      component.setPinned(true);
+      assertTrue(component.isPinned());
+    }
+
+    @Test
+    void shouldSetGetPinKey() {
+      component.setPinKey("dashboard");
+      assertEquals("dashboard", component.getPinKey());
+    }
+
+    @Test
+    void shouldFallBackToPathWhenNoPinKey() {
+      component.setPath("/dashboard");
+      assertEquals("/dashboard", component.getPinKey());
+
+      component.setPinKey("explicit");
+      assertEquals("explicit", component.getPinKey());
+    }
   }
 
   @Nested

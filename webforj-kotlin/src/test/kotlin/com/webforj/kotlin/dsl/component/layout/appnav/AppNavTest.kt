@@ -139,6 +139,32 @@ class AppNavTest {
   }
 
   @Test
+  fun shouldConfigureSearch() {
+    val appNav = root.appNav {
+      search {
+        isFieldVisible = true
+        placeholder = "Find"
+      }
+    }
+
+    assertTrue(appNav.search.isFieldVisible)
+    assertEquals("Find", appNav.search.placeholder)
+  }
+
+  @Test
+  fun shouldConfigurePinning() {
+    val appNav = root.appNav {
+      pinning {
+        isEnabled = true
+        title = "Pinned Custom Title"
+      }
+    }
+
+    assertTrue(appNav.pinning.isEnabled)
+    assertEquals("Pinned Custom Title", appNav.pinning.title)
+  }
+
+  @Test
   fun shouldCreateAppNavItemWithInitializationBlock() {
     val appNav = root.appNav {
       val item = appNavItem("Custom Item") {
