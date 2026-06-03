@@ -1,3 +1,8 @@
 # Environment Post Processors
 org.springframework.boot.EnvironmentPostProcessor=\
 com.webforj.spring.devtools.browser.HeadlessModeConfigurer
+
+# Application Run Listeners
+org.springframework.boot.SpringApplicationRunListener=\
+com.webforj.spring.devtools.RestartClasspathAugmenter,\
+com.webforj.spring.devtools.RestartBannerSuppressor
