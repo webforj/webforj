@@ -49,6 +49,18 @@ public class SpringConfigurationProperties {
   private Boolean debug;
 
   /**
+   * Legacy HTML in text setters configuration.
+   *
+   * <p>
+   * Controls whether a value wrapped in {@code <html>} passed to a text setter such as setText is
+   * rendered as HTML. While enabled the wrapped content is sanitized before rendering and the usage
+   * is reported as deprecated. Set to false to treat such values as plain text. Defaults to true
+   * and will be removed in webforJ 27.
+   * </p>
+   */
+  private Boolean legacyHtmlInText;
+
+  /**
    * Base path for loading DWC components.
    *
    * <p>
@@ -289,6 +301,26 @@ public class SpringConfigurationProperties {
    */
   public void setDebug(Boolean debug) {
     this.debug = debug;
+  }
+
+  /**
+   * Gets whether legacy HTML in text setters is enabled.
+   *
+   * @return true if a value wrapped in {@code <html>} passed to a text setter is rendered as HTML,
+   *         false if treated as plain text, null if not set
+   */
+  public Boolean getLegacyHtmlInText() {
+    return legacyHtmlInText;
+  }
+
+  /**
+   * Sets whether legacy HTML in text setters is enabled.
+   *
+   * @param legacyHtmlInText true to render a value wrapped in {@code <html>} passed to a text
+   *        setter as HTML, false to treat it as plain text
+   */
+  public void setLegacyHtmlInText(Boolean legacyHtmlInText) {
+    this.legacyHtmlInText = legacyHtmlInText;
   }
 
   /**

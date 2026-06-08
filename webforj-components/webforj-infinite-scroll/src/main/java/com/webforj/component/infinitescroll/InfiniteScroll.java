@@ -17,6 +17,7 @@ import com.webforj.concern.HasText;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.utilities.Assets;
+import com.webforj.utilities.HtmlText;
 
 /**
  * A component to load content continuously as the user scrolls down, eliminating the need for
@@ -170,7 +171,8 @@ public class InfiniteScroll extends ElementCompositeContainer
    */
   @Override
   public InfiniteScroll setText(String text) {
-    setHtml(sanitizeHtml(text));
+    setHtml(HtmlText.forHtmlSink(text));
+
     return this;
   }
 
@@ -179,7 +181,7 @@ public class InfiniteScroll extends ElementCompositeContainer
    */
   @Override
   public String getText() {
-    return sanitizeHtml(getHtml());
+    return HtmlText.toText(getHtml());
   }
 
   /**
@@ -219,10 +221,6 @@ public class InfiniteScroll extends ElementCompositeContainer
   public ListenerRegistration<InfiniteScrollEvent> onScroll(
       EventListener<InfiniteScrollEvent> listener) {
     return addScrollListener(listener);
-  }
-
-  private String sanitizeHtml(String html) {
-    return html.replaceAll("\\<[^>]*>", "");
   }
 
   Element getOriginalElement() {

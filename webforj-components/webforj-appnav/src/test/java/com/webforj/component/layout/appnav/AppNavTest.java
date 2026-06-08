@@ -154,10 +154,10 @@ class AppNavTest {
     }
 
     @Test
-    void shouldSanitizeTagsFromPlainTextEmptyMessage() {
+    void shouldEscapeTagsInPlainTextEmptyMessage() {
       component.getSearch().setEmptyMessage("Nothing <b>found</b>");
 
-      assertEquals("Nothing found", component.getSearch().getEmptyMessage());
+      assertEquals("Nothing &lt;b&gt;found&lt;/b&gt;", component.getSearch().getEmptyMessage());
     }
 
     @Test

@@ -91,6 +91,34 @@ class AlertTest {
   }
 
   @Nested
+  class TextApi {
+
+    @Test
+    void shouldShowTextLiterally() {
+      component.setText("<b>hi</b> world");
+
+      assertEquals("<b>hi</b> world", component.getText());
+      assertEquals("&lt;b&gt;hi&lt;/b&gt; world", component.getHtml());
+    }
+
+    @Test
+    void shouldExtractTextFromHtml() {
+      component.setHtml("<b>hello</b>");
+
+      assertEquals("<b>hello</b>", component.getHtml());
+      assertEquals("hello", component.getText());
+    }
+
+    @Test
+    void shouldRenderHtmlWhenTextIsWrappedWithHtmlTag() {
+      component.setText("<html><b>hi</b></html>");
+
+      assertEquals("<html><b>hi</b></html>", component.getHtml());
+      assertEquals("hi", component.getText());
+    }
+  }
+
+  @Nested
   @DisplayName("Slots API")
   class SlotsApi {
 

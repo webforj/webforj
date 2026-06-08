@@ -31,6 +31,7 @@ import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRestrictedAccessException;
 import com.webforj.exceptions.WebforjRuntimeException;
+import com.webforj.utilities.HtmlText;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.lang.reflect.Type;
@@ -415,11 +416,15 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   @Override
   public T setText(String text) {
     String value = text == null ? "" : text;
-    if (!isWrappedWithHtmlTag(value)) {
-      value = sanitizeHtml(value);
-      doSetText(value);
+
+    if (HtmlText.isWrappedWithHtmlTag(value)) {
+      if (HtmlText.isLegacyHtmlInTextEnabled()) {
+        setHtml(HtmlText.forHtmlSink(value));
+      } else {
+        doSetText(removeHtmlTag(value));
+      }
     } else {
-      setHtml(value);
+      doSetText(value);
     }
 
     return getSelf();
@@ -430,7 +435,9 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    */
   @Override
   public String getText() {
-    return sanitizeHtml(doGetText());
+    String value = doGetText();
+
+    return HtmlText.isWrappedWithHtmlTag(value) ? HtmlText.toText(value) : value;
   }
 
   /**
@@ -1360,17 +1367,9 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
     return self;
   }
 
-  private String sanitizeHtml(String html) {
-    return (html == null ? "" : html).replaceAll("\\<[^>]*>", "");
-  }
-
-  private boolean isWrappedWithHtmlTag(String text) {
-    return (text == null ? "" : text).trim().startsWith("<html>");
-  }
-
   private String addHtmlTag(String text) {
     String value = text == null ? "" : text;
-    if (!isWrappedWithHtmlTag(value)) {
+    if (!HtmlText.isWrappedWithHtmlTag(value)) {
       value = "<html>" + value + "</html>";
     }
 

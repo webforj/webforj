@@ -383,6 +383,31 @@ class DwcComponentTest {
     }
 
     @Test
+    void shouldPassMarkupRawSoControlRendersItLiterally() throws BBjException {
+      String markup = "<b>hi</b> world";
+      doReturn(markup).when(control).getText();
+
+      component.setText(markup);
+      assertEquals(markup, component.getText());
+
+      verify(control, times(1)).setText(markup);
+    }
+
+    @Test
+    void shouldRouteHtmlWrappedTextToHtmlSink() throws BBjException {
+      component.setText("<html><b>hi</b></html>");
+
+      verify(control, times(1)).setText("<html><b>hi</b></html>");
+    }
+
+    @Test
+    void shouldPassHtmlWrappedTextThroughRawToHtmlSink() throws BBjException {
+      component.setText("<html><b>hi</b><script>alert(1)</script></html>");
+
+      verify(control, times(1)).setText("<html><b>hi</b><script>alert(1)</script></html>");
+    }
+
+    @Test
     @DisplayName("When value is null then empty string is returned")
     void whenValueIsNullThenEmptyStringIsReturned() throws IllegalAccessException {
       ReflectionUtils.nullifyControl(component);
