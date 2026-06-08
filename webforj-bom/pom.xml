@@ -86,13 +86,34 @@
       </dependency>
       <!-- Webswing -->
 
-      <!-- webforj-kotlin -->
+      <!-- webforj kotlin -->
       <dependency>
         <groupId>com.webforj</groupId>
         <artifactId>webforj-kotlin</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <!-- webforj-kotlin -->
+      <!-- webforj kotlin -->
+
+      <!-- webforj bundle -->
+      <dependency>
+        <groupId>com.webforj</groupId>
+        <artifactId>webforj-bundle-foundation</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.webforj</groupId>
+        <artifactId>webforj-bundle-bun</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <!-- webforj bundle -->
+
+      <!-- webforj devtools -->
+      <dependency>
+        <groupId>com.webforj</groupId>
+        <artifactId>webforj-devtools</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <!-- webforj devtools -->
 
       <!-- Extensions -->
       <dependency>
@@ -221,6 +242,14 @@
         <version>${project.version}</version>
       </dependency>
       <!-- Extensions -->
+
+      <!-- Plugin foundation, a regular jar the runtime live reload depends on. The Maven plugin
+          itself is not managed here, since a dependency BOM cannot supply a plugin version. -->
+      <dependency>
+        <groupId>com.webforj</groupId>
+        <artifactId>webforj-plugin-foundation</artifactId>
+        <version>${project.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 </project>

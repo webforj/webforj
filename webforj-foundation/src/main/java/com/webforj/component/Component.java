@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.UUID;
 
 /**
@@ -177,6 +178,8 @@ public abstract class Component {
     for (ComponentLifecycleObserver observer : lifecycleObservers) {
       observer.onComponentLifecycleEvent(this, LifecycleEvent.DESTROY);
     }
+
+    fireGlobalLifecycleEvent(LifecycleEvent.DESTROY);
   }
 
   /**
@@ -356,6 +359,7 @@ public abstract class Component {
       LocaleObserverRegistry.getCurrent().register(observer);
     }
 
+    fireGlobalLifecycleEvent(LifecycleEvent.CREATE);
     for (ComponentLifecycleObserver observer : lifecycleObservers) {
       observer.onComponentLifecycleEvent(this, LifecycleEvent.CREATE);
     }
@@ -363,5 +367,43 @@ public abstract class Component {
     this.attached = true;
     this.onAttach();
     whenAttachedResults.forEach(r -> r.complete(this));
+  }
+
+  /**
+   * Notifies the globally registered {@link ComponentLifecycleObserver}s of a lifecycle event. The
+   * observers are discovered through the {@link ServiceLoader}, so a feature acts on every
+   * component as it is created and destroyed without being added to each instance. On creation they
+   * run before the per instance observers, and on destruction after them, so a global concern
+   * brackets the per instance lifecycle.
+   *
+   * @param event the lifecycle event to deliver
+   */
+  private void fireGlobalLifecycleEvent(LifecycleEvent event) {
+    for (ComponentLifecycleObserver observer : GlobalObservers.ALL) {
+      try {
+        observer.onComponentLifecycleEvent(this, event);
+      } catch (RuntimeException e) {
+        System.getLogger(Component.class.getName()).log(System.Logger.Level.ERROR,
+            "Global component lifecycle observer " + observer.getClass().getName() + " failed", e);
+      }
+    }
+  }
+
+  /**
+   * Lazily discovers the global {@link ComponentLifecycleObserver}s once, on first component
+   * lifecycle event.
+   */
+  private static final class GlobalObservers {
+    static final List<ComponentLifecycleObserver> ALL = discover();
+
+    private GlobalObservers() {}
+
+    private static List<ComponentLifecycleObserver> discover() {
+      List<ComponentLifecycleObserver> observers = new ArrayList<>();
+      ServiceLoader.load(ComponentLifecycleObserver.class, Component.class.getClassLoader())
+          .forEach(observers::add);
+
+      return List.copyOf(observers);
+    }
   }
 }

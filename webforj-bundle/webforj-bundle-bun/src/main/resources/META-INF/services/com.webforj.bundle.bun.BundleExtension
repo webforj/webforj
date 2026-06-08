@@ -1,0 +1,6 @@
+com.webforj.bundle.bun.plugin.ScssBundleRegistrar
+com.webforj.bundle.bun.plugin.LessBundleRegistrar
+com.webforj.bundle.bun.plugin.StylusBundleRegistrar
+com.webforj.bundle.bun.plugin.SvelteBundleRegistrar
+com.webforj.bundle.bun.plugin.VueBundleRegistrar
+com.webforj.bundle.bun.plugin.TailwindBundleRegistrar

@@ -22,6 +22,12 @@
     </dependency>
 
     <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-devtools</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-autoconfigure</artifactId>
       <scope>provided</scope>
@@ -50,12 +56,6 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-autoconfigure-processor</artifactId>
       <optional>true</optional>
-    </dependency>
-
-    <dependency>
-      <groupId>org.java-websocket</groupId>
-      <artifactId>Java-WebSocket</artifactId>
-      <version>1.6.0</version>
     </dependency>
 
     <!-- Test dependencies -->

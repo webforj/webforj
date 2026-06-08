@@ -1,21 +1,15 @@
 package com.webforj.spring.devtools.livereload;
 
+import com.webforj.devtools.livereload.LiveReloadLifecycle;
+import com.webforj.devtools.livereload.LiveReloadOptions;
+import com.webforj.spring.SpringConfigurationProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Spring Boot auto-configuration for webforJ DevTools browser reload functionality.
- *
- * <p>
- * This configuration activates when:
- * </p>
- * <ul>
- * <li>Spring DevTools is on the classpath</li>
- * <li>webforj.devtools.livereload.enabled=true</li>
- * </ul>
+ * Registers the Spring DevTools restart to browser reload bridge.
  *
  * @author Hyyan Abo Fakher
  * @since 25.02
@@ -24,86 +18,42 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnClass(name = "org.springframework.boot.devtools.restart.Restarter")
 @ConditionalOnProperty(prefix = "webforj.devtools.livereload", name = "enabled",
     havingValue = "true", matchIfMissing = false)
-@EnableConfigurationProperties(LiveReloadProperties.class)
 public class LiveReloadSocketConfiguration {
 
-  private static final System.Logger logger =
-      System.getLogger(LiveReloadSocketConfiguration.class.getName());
-
   /**
-   * Creates and configures the live reload service.
+   * Creates the live reload lifecycle owned by the context, stopped on teardown.
    *
-   * <p>
-   * This bean manages the WebSocket server lifecycle:
-   * </p>
-   * <ul>
-   * <li>On first startup: Creates and starts a new WebSocket server</li>
-   * <li>On DevTools restart: Reuses existing server to maintain connections</li>
-   * </ul>
-   *
-   * @param properties configuration properties for the reload functionality
-   * @return configured DevTools reload service
+   * @return the live reload lifecycle
    */
-  @Bean
-  public LiveReloadService liveReloadService(LiveReloadProperties properties) {
-    LiveReloadService service = new LiveReloadService();
-
-    // Start the WebSocket server if not already started
-    LiveReloadServer existingServer = LiveReloadState.getWebSocketServer();
-    if (existingServer == null || !existingServer.isOpen()) {
-      int port = properties.getWebsocketPort();
-      try {
-        LiveReloadServer server = new LiveReloadServer(port);
-        server.start();
-        LiveReloadState.setWebSocketServer(server);
-        logger.log(System.Logger.Level.INFO, "Started webforJ livereload server on port " + port);
-      } catch (Exception e) {
-        logger.log(System.Logger.Level.ERROR,
-            "Failed to start webforJ livereload server on port " + port, e);
-      }
-    } else {
-      logger.log(System.Logger.Level.INFO,
-          "webforJ livereload server already running on port " + existingServer.getPort() + " with "
-              + existingServer.getConnectionCount() + " connections");
-    }
-
-    if (LiveReloadState.getWebSocketServer() != null) {
-      service.setWebSocketServer(LiveReloadState.getWebSocketServer());
-    }
-
-    return service;
+  @Bean(destroyMethod = "stop")
+  LiveReloadLifecycle liveReloadLifecycle() {
+    return new LiveReloadLifecycle();
   }
 
   /**
-   * Creates the listener that detects DevTools restarts.
+   * Creates the listener that brings the live reload up on every context start.
    *
-   * <p>
-   * This listener monitors application lifecycle events to trigger browser reloads when DevTools
-   * completes a restart.
-   * </p>
-   *
-   * @param reloadService service used to trigger browser reloads
-   * @return configured DevTools reload listener
+   * @param properties the webforJ configuration bound by the Spring integration
+   * @param lifecycle the live reload lifecycle owned by the context
+   * @return the context start to live reload listener
    */
   @Bean
-  public LiveReloadListener liveReloadListener(LiveReloadService reloadService) {
-    return new LiveReloadListener(reloadService);
+  LiveReloadListener liveReloadListener(SpringConfigurationProperties properties,
+      LiveReloadLifecycle lifecycle) {
+    return new LiveReloadListener(lifecycle, readOptions(properties.getDevtools().getLivereload()));
   }
 
-  /**
-   * Creates the listener that detects static resource changes.
-   *
-   * <p>
-   * This listener monitors file system changes to CSS, JavaScript, and image files, enabling hot
-   * reloading without full page refresh if possible.
-   * </p>
-   *
-   * @return configured resource change listener
-   */
-  @Bean
-  @ConditionalOnProperty(prefix = "webforj.devtools.livereload", name = "static-resources-enabled",
-      havingValue = "true", matchIfMissing = true)
-  public LiveReloadResourceChangeListener liveReloadResourceChangeListener() {
-    return new LiveReloadResourceChangeListener();
+  private static LiveReloadOptions readOptions(
+      SpringConfigurationProperties.LiveReload livereload) {
+    LiveReloadOptions options = new LiveReloadOptions().setEnabled(true);
+    if (livereload.getWebsocketPort() != null) {
+      options.setWebsocketPort(livereload.getWebsocketPort());
+    }
+
+    if (livereload.getStaticResourcesEnabled() != null) {
+      options.setStaticResourcesEnabled(livereload.getStaticResourcesEnabled());
+    }
+
+    return options;
   }
 }

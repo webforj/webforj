@@ -35,7 +35,7 @@
       <version>${project.version}</version>
     </dependency>
 
-    <!-- webforj-spring -->
+    <!-- webforj spring -->
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-spring-integration</artifactId>
@@ -48,29 +48,29 @@
       <version>${project.version}</version>
     </dependency>
 
-    <!-- webforj-webswing -->
+    <!-- webforj webswing -->
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-webswing</artifactId>
       <version>${project.version}</version>
     </dependency>
 
-    <!-- webforj-jbang -->
+    <!-- webforj jbang -->
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-jbang-starter</artifactId>
       <version>${project.version}</version>
     </dependency>
 
-    <!-- webforj-kotlin -->
+    <!-- webforj kotlin -->
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-kotlin</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!-- webforj-kotlin -->
+    <!-- webforj kotlin -->
 
-    <!-- webforj-plugins -->
+    <!-- webforj plugins -->
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-install-bbj-plugin</artifactId>
@@ -102,14 +102,14 @@
       <version>${project.version}</version>
     </dependency>
 
-    <!-- webforj-rewrite -->
+    <!-- webforj rewrite -->
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-rewrite</artifactId>
       <version>${project.version}</version>
     </dependency>
 
-    <!-- webforj-components -->
+    <!-- webforj components -->
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-alert</artifactId>
@@ -228,6 +228,35 @@
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-terminal</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <!-- webforj bundle -->
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-bundle-foundation</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-bundle-bun</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <!-- webforj devtools -->
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-devtools</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-plugin-foundation</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-maven-plugin</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

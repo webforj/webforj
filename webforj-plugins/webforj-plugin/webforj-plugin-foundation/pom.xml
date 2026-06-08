@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.webforj</groupId>
+    <artifactId>webforj-plugin</artifactId>
+    <version>26.01-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>webforj-plugin-foundation</artifactId>
+  <name>${project.artifactId}</name>
+  <description>Pure Java watch logic shared by every webforJ build plugin and the runtime live reload</description>
+
+  <!-- Pure Java, no build tool API. The watch discovery file, its wire protocol, the broadcast
+       socket and the quiet close are defined once here so the Maven plugin, a future Gradle plugin
+       and the runtime live reload all reach the same implementation. -->
+  <dependencies>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

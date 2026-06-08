@@ -250,6 +250,13 @@ public class SpringConfigurationProperties {
   private I18n i18n = new I18n();
 
   /**
+   * Development tools configuration.
+   *
+   * @since 26.01
+   */
+  private DevTools devtools = new DevTools();
+
+  /**
    * Sets the URL mapping for the Webforj servlet.
    *
    * @param servletMapping the URL mapping for the Webforj servlet
@@ -652,6 +659,26 @@ public class SpringConfigurationProperties {
   }
 
   /**
+   * Gets the development tools configuration.
+   *
+   * @return the development tools configuration
+   * @since 26.01
+   */
+  public DevTools getDevtools() {
+    return devtools;
+  }
+
+  /**
+   * Sets the development tools configuration.
+   *
+   * @param devtools the development tools configuration
+   * @since 26.01
+   */
+  public void setDevtools(DevTools devtools) {
+    this.devtools = devtools;
+  }
+
+  /**
    * File upload configuration properties.
    */
   public static class FileUpload {
@@ -956,6 +983,160 @@ public class SpringConfigurationProperties {
      */
     public void setAutoDetect(boolean autoDetect) {
       this.autoDetect = autoDetect;
+    }
+  }
+
+  /**
+   * Development tools configuration properties.
+   *
+   * @since 26.01
+   */
+  public static class DevTools {
+
+    /**
+     * Live reload configuration.
+     */
+    private LiveReload livereload = new LiveReload();
+
+    /**
+     * Gets the live reload configuration.
+     *
+     * @return the live reload configuration
+     */
+    public LiveReload getLivereload() {
+      return livereload;
+    }
+
+    /**
+     * Sets the live reload configuration.
+     *
+     * @param livereload the live reload configuration
+     */
+    public void setLivereload(LiveReload livereload) {
+      this.livereload = livereload;
+    }
+  }
+
+  /**
+   * Live reload configuration properties.
+   *
+   * @since 26.01
+   */
+  public static class LiveReload {
+
+    /**
+     * Whether browser live reload is enabled.
+     */
+    private Boolean enabled;
+
+    /**
+     * The live reload socket port.
+     */
+    private Integer websocketPort;
+
+    /**
+     * The live reload socket path used to build the client connection URL.
+     */
+    private String websocketPath;
+
+    /**
+     * The client heartbeat interval in milliseconds.
+     */
+    private Integer heartbeatInterval;
+
+    /**
+     * Whether hot reload for static resources is enabled.
+     */
+    private Boolean staticResourcesEnabled;
+
+    /**
+     * Gets whether browser live reload is enabled.
+     *
+     * @return whether browser live reload is enabled
+     */
+    public Boolean getEnabled() {
+      return enabled;
+    }
+
+    /**
+     * Sets whether browser live reload is enabled.
+     *
+     * @param enabled whether browser live reload is enabled
+     */
+    public void setEnabled(Boolean enabled) {
+      this.enabled = enabled;
+    }
+
+    /**
+     * Gets the live reload socket port.
+     *
+     * @return the live reload socket port
+     */
+    public Integer getWebsocketPort() {
+      return websocketPort;
+    }
+
+    /**
+     * Sets the live reload socket port.
+     *
+     * @param websocketPort the live reload socket port
+     */
+    public void setWebsocketPort(Integer websocketPort) {
+      this.websocketPort = websocketPort;
+    }
+
+    /**
+     * Gets the live reload socket path.
+     *
+     * @return the live reload socket path
+     */
+    public String getWebsocketPath() {
+      return websocketPath;
+    }
+
+    /**
+     * Sets the live reload socket path.
+     *
+     * @param websocketPath the live reload socket path
+     */
+    public void setWebsocketPath(String websocketPath) {
+      this.websocketPath = websocketPath;
+    }
+
+    /**
+     * Gets the client heartbeat interval in milliseconds.
+     *
+     * @return the client heartbeat interval in milliseconds
+     */
+    public Integer getHeartbeatInterval() {
+      return heartbeatInterval;
+    }
+
+    /**
+     * Sets the client heartbeat interval in milliseconds.
+     *
+     * @param heartbeatInterval the client heartbeat interval in milliseconds
+     */
+    public void setHeartbeatInterval(Integer heartbeatInterval) {
+      this.heartbeatInterval = heartbeatInterval;
+    }
+
+    /**
+     * Gets whether hot reload for static resources is enabled.
+     *
+     * @return whether hot reload for static resources is enabled
+     */
+    public Boolean getStaticResourcesEnabled() {
+      return staticResourcesEnabled;
+    }
+
+    /**
+     * Sets whether hot reload for static resources is enabled.
+     *
+     * @param staticResourcesEnabled whether hot reload for static resources is enabled
+     */
+    public void setStaticResourcesEnabled(Boolean staticResourcesEnabled) {
+      this.staticResourcesEnabled = staticResourcesEnabled;
     }
   }
 }

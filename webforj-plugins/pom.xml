@@ -18,5 +18,6 @@
     <module>webforj-install-maven-plugin</module>
     <module>webforj-install-bbj-plugin</module>
     <module>webforj-minify</module>
+    <module>webforj-plugin</module>
   </modules>
 </project>
