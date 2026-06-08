@@ -36,7 +36,8 @@ class WebforjConfigBuilder {
         .add("webforj.components", properties::getComponents)
         .add("webforj.locale", properties::getLocale)
         .add("webforj.quiet", properties::getQuiet, false)
-        .add("webforj.reloadOnServerError", properties::getReloadOnServerError, false);
+        .add("webforj.reloadOnServerError", properties::getReloadOnServerError, false)
+        .add("webforj.legacyHtmlInText", properties::getLegacyHtmlInText, true);
 
     // Client configuration
     builder.add("webforj.clientHeartbeatRate", properties::getClientHeartbeatRate)

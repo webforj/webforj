@@ -19,6 +19,7 @@ import com.webforj.concern.HasText;
 import com.webforj.concern.HasVisibility;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
+import com.webforj.utilities.HtmlText;
 
 /**
  * The alert component provides contextual feedback messages for the user.
@@ -199,23 +200,6 @@ public class Alert extends ElementCompositeContainer
    * {@inheritDoc}
    */
   @Override
-  public Alert setText(String text) {
-    setHtml(sanitizeHtml(text));
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public String getText() {
-    return sanitizeHtml(getHtml());
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   public Alert setVisible(boolean visible) {
     return visible ? open() : close();
   }
@@ -226,6 +210,24 @@ public class Alert extends ElementCompositeContainer
   @Override
   public boolean isVisible() {
     return isOpened();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Alert setText(String text) {
+    setHtml(HtmlText.forHtmlSink(text));
+
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getText() {
+    return HtmlText.toText(getHtml());
   }
 
   /**
@@ -265,10 +267,6 @@ public class Alert extends ElementCompositeContainer
    */
   public ListenerRegistration<AlertCloseEvent> onClose(EventListener<AlertCloseEvent> listener) {
     return addCloseListener(listener);
-  }
-
-  private String sanitizeHtml(String html) {
-    return html.replaceAll("\\<[^>]*>", "");
   }
 
   Element getOriginalElement() {

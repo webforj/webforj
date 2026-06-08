@@ -52,9 +52,9 @@ class LoadingTest {
     }
 
     @Test
-    void shouldRemoveHtmlWhenSetGetTextUsed() {
+    void shouldShowTextLiterallyAndExtractTextFromHtml() {
       component.setText("<div>Hello, World!</div>");
-      assertEquals("Hello, World!", component.getText());
+      assertEquals("<div>Hello, World!</div>", component.getText());
 
       component.setHtml("<div>Hello, World!</div>");
       assertEquals("<div>Hello, World!</div>", component.getHtml());

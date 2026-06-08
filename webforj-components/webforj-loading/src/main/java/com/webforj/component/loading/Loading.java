@@ -13,6 +13,7 @@ import com.webforj.concern.HasClassName;
 import com.webforj.concern.HasHtml;
 import com.webforj.concern.HasStyle;
 import com.webforj.concern.HasText;
+import com.webforj.utilities.HtmlText;
 
 /**
  * An overlay that can be used to indicate activity while blocking user interaction. The loading
@@ -98,7 +99,8 @@ public class Loading extends ElementCompositeContainer
    */
   @Override
   public Loading setText(String text) {
-    setHtml(sanitizeHtml(text));
+    setHtml(HtmlText.forHtmlSink(text));
+
     return this;
   }
 
@@ -107,7 +109,7 @@ public class Loading extends ElementCompositeContainer
    */
   @Override
   public String getText() {
-    return sanitizeHtml(getHtml());
+    return HtmlText.toText(getHtml());
   }
 
   /**
@@ -167,10 +169,6 @@ public class Loading extends ElementCompositeContainer
   @Override
   public DwcSpinner<LoadingSpinner> getSpinner() {
     return new LoadingSpinner();
-  }
-
-  private String sanitizeHtml(String html) {
-    return html.replaceAll("\\<[^>]*>", "");
   }
 
   /**

@@ -15,6 +15,7 @@ import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.router.Router;
 import com.webforj.router.history.Location;
+import com.webforj.utilities.HtmlText;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -308,8 +309,7 @@ public class AppNav extends NavigationContainer<AppNav>
      * @return the search configuration itself
      */
     public Search setEmptyMessage(String emptyMessage) {
-      String value = emptyMessage == null ? "" : emptyMessage;
-      set(emptyMessageProp, isWrappedWithHtmlTag(value) ? value : sanitizeHtml(value));
+      set(emptyMessageProp, HtmlText.forHtmlSink(emptyMessage));
 
       return this;
     }
@@ -321,14 +321,6 @@ public class AppNav extends NavigationContainer<AppNav>
      */
     public String getEmptyMessage() {
       return get(emptyMessageProp);
-    }
-
-    private boolean isWrappedWithHtmlTag(String text) {
-      return (text == null ? "" : text).trim().startsWith("<html>");
-    }
-
-    private String sanitizeHtml(String html) {
-      return (html == null ? "" : html).replaceAll("\\<[^>]*>", "");
     }
   }
 

@@ -224,3 +224,26 @@ recipeList:
   - org.openrewrite.maven.RemoveDependency:
       groupId: com.webforj
       artifactId: webforj
+
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.webforj.rewrite.v26.UpgradeWebforj_26_01
+displayName: Upgrade to webforJ 26.01
+description: Upgrades webforJ projects to version 26.01.
+tags:
+  - webforj
+recipeList:
+  - com.webforj.rewrite.v26.UpgradeWebforj
+  - com.webforj.rewrite.v26.MigrateHtmlInSetText
+
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.webforj.rewrite.v26.UpgradeWebforjSpring_26_01
+displayName: Upgrade to webforJ Spring 26.01
+description: Upgrades webforJ Spring Boot projects to version 26.01.
+tags:
+  - webforj
+  - spring
+recipeList:
+  - com.webforj.rewrite.v26.UpgradeWebforjSpring
+  - com.webforj.rewrite.v26.MigrateHtmlInSetText

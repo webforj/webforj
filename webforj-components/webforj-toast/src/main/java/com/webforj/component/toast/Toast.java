@@ -16,6 +16,7 @@ import com.webforj.concern.HasHtml;
 import com.webforj.concern.HasStyle;
 import com.webforj.concern.HasText;
 import com.webforj.exceptions.WebforjAppInitializeException;
+import com.webforj.utilities.HtmlText;
 import java.util.List;
 
 /**
@@ -218,7 +219,8 @@ public class Toast extends ElementCompositeContainer
    */
   @Override
   public Toast setText(String text) {
-    setHtml(sanitizeHtml(text));
+    setHtml(HtmlText.forHtmlSink(text));
+
     return this;
   }
 
@@ -227,7 +229,7 @@ public class Toast extends ElementCompositeContainer
    */
   @Override
   public String getText() {
-    return sanitizeHtml(getHtml());
+    return HtmlText.toText(getHtml());
   }
 
   /**
@@ -459,9 +461,5 @@ public class Toast extends ElementCompositeContainer
       });
     }
     return frame;
-  }
-
-  private String sanitizeHtml(String html) {
-    return html.replaceAll("\\<[^>]*>", "");
   }
 }
