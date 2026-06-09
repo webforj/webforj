@@ -191,40 +191,7 @@ public final class ClasspathPackageScanner {
         .overrideClasspath(classpathRoots);
 
     try (ScanResult scan = graph.scan()) {
-      List<ClassInfo> directlyAnnotated =
-          scan.getClassesWithAnnotation(BundlePackage.class.getName());
-      List<ClassInfo> containerAnnotated =
-          scan.getClassesWithAnnotation(BundlePackage.Container.class.getName());
-
-      for (ClassInfo cls : directlyAnnotated) {
-        for (AnnotationInfo ann : cls.getAnnotationInfo()) {
-          if (BundlePackage.class.getName().equals(ann.getName())) {
-            BundlePackageDeclaration parsed = createDeclaration(ann);
-            if (parsed != null) {
-              raw.add(parsed);
-            }
-          }
-        }
-      }
-
-      for (ClassInfo cls : containerAnnotated) {
-        for (AnnotationInfo container : cls.getAnnotationInfo()) {
-          if (BundlePackage.Container.class.getName().equals(container.getName())) {
-            Object nested = container.getParameterValues().getValue("value");
-            if (nested instanceof Object[] array) {
-              for (Object element : array) {
-                if (element instanceof AnnotationInfo nestedAnn) {
-                  BundlePackageDeclaration parsed = createDeclaration(nestedAnn);
-                  if (parsed != null) {
-                    raw.add(parsed);
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-
+      collectPackages(scan, raw);
       collectSources(scan, sources, debugSources, bindings);
     }
 
@@ -248,6 +215,38 @@ public final class ClasspathPackageScanner {
     }
 
     return all.toArray(String[]::new);
+  }
+
+  private static void collectPackages(ScanResult scan, List<BundlePackageDeclaration> raw) {
+    for (ClassInfo cls : scan.getClassesWithAnnotation(BundlePackage.class.getName())) {
+      for (AnnotationInfo ann : cls.getAnnotationInfo()) {
+        if (BundlePackage.class.getName().equals(ann.getName())) {
+          addDeclaration(ann, raw);
+        }
+      }
+    }
+
+    for (ClassInfo cls : scan.getClassesWithAnnotation(BundlePackage.Container.class.getName())) {
+      for (AnnotationInfo container : cls.getAnnotationInfo()) {
+        if (BundlePackage.Container.class.getName().equals(container.getName())) {
+          Object nested = container.getParameterValues().getValue("value");
+          if (nested instanceof Object[] array) {
+            for (Object element : array) {
+              if (element instanceof AnnotationInfo nestedAnn) {
+                addDeclaration(nestedAnn, raw);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private static void addDeclaration(AnnotationInfo ann, List<BundlePackageDeclaration> raw) {
+    BundlePackageDeclaration parsed = createDeclaration(ann);
+    if (parsed != null) {
+      raw.add(parsed);
+    }
   }
 
   private static void collectSources(ScanResult scan, Set<String> sources, Set<String> debugSources,
