@@ -5,7 +5,7 @@
  * @since 26.01
  */
 import less from 'less';
-import { readFileSync } from 'fs';
+import { readFileSync } from 'node:fs';
 
 export default (options) => ({
   name: 'webforj-less',

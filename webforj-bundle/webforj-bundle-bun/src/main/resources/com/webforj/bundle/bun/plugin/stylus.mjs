@@ -5,7 +5,7 @@
  * @since 26.01
  */
 import stylus from 'stylus';
-import { readFileSync } from 'fs';
+import { readFileSync } from 'node:fs';
 
 export default (options) => ({
   name: 'webforj-stylus',
