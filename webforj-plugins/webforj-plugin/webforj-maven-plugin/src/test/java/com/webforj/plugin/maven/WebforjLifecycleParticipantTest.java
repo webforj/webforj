@@ -40,7 +40,7 @@ class WebforjLifecycleParticipantTest {
   @Test
   void shouldKeepAnExistingGoalBinding() {
     MavenProject project = projectWithPlugin();
-    Plugin plugin = webforjPlugin(project);
+    final Plugin plugin = webforjPlugin(project);
     PluginExecution custom = new PluginExecution();
     custom.setId("my-bundle");
     custom.setPhase("package");
@@ -55,7 +55,7 @@ class WebforjLifecycleParticipantTest {
   }
 
   @Test
-  void shouldIgnoreAProjectWithoutThePlugin() {
+  void shouldIgnoreProjectsWithoutThePlugin() {
     MavenProject project = new MavenProject();
     project.setBuild(new Build());
 
@@ -71,7 +71,7 @@ class WebforjLifecycleParticipantTest {
   }
 
   private MavenProject projectWithPlugin() {
-    MavenProject project = new MavenProject();
+    final MavenProject project = new MavenProject();
     Build build = new Build();
     Plugin plugin = new Plugin();
     plugin.setGroupId("com.webforj");

@@ -53,7 +53,7 @@ class TestMojoTest {
   }
 
   private static TestMojo newMojo(BundlerExecution execution, Path tmp) throws Exception {
-    Path frontend = Files.createDirectories(tmp.resolve("src/main/frontend"));
+    final Path frontend = Files.createDirectories(tmp.resolve("src/main/frontend"));
     Path classes = Files.createDirectories(tmp.resolve("target/classes"));
 
     Build build = new Build();

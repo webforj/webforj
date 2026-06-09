@@ -15,8 +15,8 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.model.Build;
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -79,7 +79,7 @@ class WatchMojoTest {
   }
 
   private static WatchMojo newMojo(BundlerExecution execution, Path tmp) throws Exception {
-    Path frontend = Files.createDirectories(tmp.resolve("src/main/frontend"));
+    final Path frontend = Files.createDirectories(tmp.resolve("src/main/frontend"));
     Path classes = Files.createDirectories(tmp.resolve("target/classes"));
 
     Build build = new Build();
