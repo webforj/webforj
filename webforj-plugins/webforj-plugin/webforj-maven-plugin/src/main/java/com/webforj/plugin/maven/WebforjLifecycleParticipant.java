@@ -1,4 +1,4 @@
-package com.webforj.maven;
+package com.webforj.plugin.maven;
 
 import org.apache.maven.AbstractMavenLifecycleParticipant;
 import org.apache.maven.execution.MavenSession;

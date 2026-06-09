@@ -1,4 +1,4 @@
-package com.webforj.maven;
+package com.webforj.plugin.maven;
 
 import com.webforj.bundle.bun.BundlerExecution;
 import java.util.Arrays;

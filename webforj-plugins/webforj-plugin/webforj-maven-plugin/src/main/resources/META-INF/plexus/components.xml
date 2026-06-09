@@ -7,7 +7,7 @@
     <component>
       <role>org.apache.maven.AbstractMavenLifecycleParticipant</role>
       <role-hint>webforj</role-hint>
-      <implementation>com.webforj.maven.WebforjLifecycleParticipant</implementation>
+      <implementation>com.webforj.plugin.maven.WebforjLifecycleParticipant</implementation>
     </component>
   </components>
 </component-set>
