@@ -397,8 +397,9 @@ public final class BundlerExecution {
     prepareOutputDir(outputDir);
 
     Path metafile = workDir.resolve(META_FILE);
-    List<String> runArgs = writeDriverFiles(request, workDir, driverEntries, outputDir, metafile,
-        plugins, compileContext.isProduction(), !eager);
+    BundleDriverWriter.Config config = createDriverConfig(request, driverEntries, outputDir,
+        metafile, plugins, compileContext.isProduction(), !eager);
+    List<String> runArgs = writeDriverFiles(workDir, plugins, config);
 
     return new Prepared().setMetafile(metafile).setRunArgs(runArgs).setBindings(bindings)
         .setDebugSources(debugSources).setEager(eager);
@@ -651,13 +652,11 @@ public final class BundlerExecution {
         .setUserConfig(userConfigPath);
   }
 
-  private List<String> writeDriverFiles(Request request, Path workDir,
-      List<BundleEntryDeclaration> driverEntries, Path outputDir, Path metafile,
-      List<BunPlugin> plugins, boolean production, boolean splitting) throws IOException {
+  private List<String> writeDriverFiles(Path workDir, List<BunPlugin> plugins,
+      BundleDriverWriter.Config config) throws IOException {
     Path scriptPath = driverWriter.writeDriver(workDir);
     driverWriter.writePlugins(workDir, plugins);
-    driverWriter.writeConfig(workDir, createDriverConfig(request, driverEntries, outputDir,
-        metafile, plugins, production, splitting));
+    driverWriter.writeConfig(workDir, config);
 
     return List.of("run", scriptPath.toAbsolutePath().toString());
   }
