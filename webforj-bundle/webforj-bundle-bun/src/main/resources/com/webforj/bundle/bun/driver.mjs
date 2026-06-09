@@ -13,7 +13,7 @@ const cfg = JSON.parse(readFileSync(resolve(here, 'driver.config.json'), 'utf8')
 
 // Load the optional app bun.config.ts once. Its default export is extra plugins to append to the build.
 const userMod = cfg.userConfig ? await import(pathToFileURL(cfg.userConfig).href) : {};
-const pluginOptions = (userMod && userMod.options) || {};
+const pluginOptions = userMod?.options || {};
 
 // Each curated wrapper default-exports a factory. webforJ calls it with the project supplied options
 // for that plugin id (or an empty object), then appends the app's own plugins.
@@ -94,7 +94,7 @@ const ok = await runBuild();
 if (watching) {
   let timer;
   const watcher = watch(cfg.root, { recursive: true }, (event, file) => {
-    if (file && file.split(/[\\/]/).includes('node_modules')) {
+    if (file?.split(/[\\/]/).includes('node_modules')) {
       return;
     }
 
