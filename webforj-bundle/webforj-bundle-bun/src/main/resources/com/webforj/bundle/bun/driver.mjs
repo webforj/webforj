@@ -4,10 +4,10 @@
  * @author Hyyan Abo Fakher
  */
 
-import { watch } from 'fs';
-import { writeFileSync, mkdirSync, readFileSync } from 'fs';
-import { relative, dirname, resolve } from 'path';
-import { fileURLToPath, pathToFileURL } from 'url';
+import { watch } from 'node:fs';
+import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
+import { relative, dirname, resolve } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const cfg = JSON.parse(readFileSync(resolve(here, 'driver.config.json'), 'utf8'));
