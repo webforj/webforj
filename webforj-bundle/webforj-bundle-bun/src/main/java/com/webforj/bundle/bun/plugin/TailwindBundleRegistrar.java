@@ -83,7 +83,15 @@ public class TailwindBundleRegistrar implements BundleExtension {
    * @return the stylesheet content
    */
   private String stylesheet(Path entryDir, List<Path> sources) {
-    StringBuilder css = new StringBuilder("@import \"tailwindcss\" source(none);\n");
+    // Import the theme and the utilities, but not the preflight base reset. Preflight restyles
+    // every bare element across the page, which fights the styling webforJ already applies to its
+    // components. The utilities stay unlayered so a utility class wins over a component style the
+    // same as a hand written rule would. Automatic content detection is turned off so only the
+    // declared source paths are scanned, which keeps the build from reading the frontend output and
+    // the generated sources.
+    StringBuilder css = new StringBuilder();
+    css.append("@import \"tailwindcss/theme.css\";\n");
+    css.append("@import \"tailwindcss/utilities.css\" source(none);\n");
     for (Path source : sources) {
       String relative = entryDir.relativize(source).toString().replace('\\', '/');
       css.append("@source \"").append(relative).append("\";\n");

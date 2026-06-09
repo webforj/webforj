@@ -79,7 +79,11 @@ class ExtensionRegistrarTest {
 
     Path css = context.getGeneratedPath().resolve("tailwind").resolve("tailwind.css");
     assertTrue(Files.exists(css), "the stylesheet entry is generated");
-    assertTrue(Files.readString(css).contains("@import \"tailwindcss\" source(none);"));
+    String content = Files.readString(css);
+    assertTrue(content.contains("@import \"tailwindcss/theme.css\";"), "the theme is imported");
+    assertTrue(content.contains("@import \"tailwindcss/utilities.css\" source(none);"),
+        "the utilities are imported unlayered with source detection off");
+    assertFalse(content.contains("preflight"), "the preflight base reset is not emitted");
 
     assertEquals(Set.of("generated/tailwind/tailwind.css"),
         context.getBindings().get(BundleIndex.GLOBAL_KEY), "an unowned entry loads for every view");
