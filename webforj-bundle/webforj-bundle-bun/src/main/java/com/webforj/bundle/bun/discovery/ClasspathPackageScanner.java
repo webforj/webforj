@@ -40,6 +40,9 @@ public final class ClasspathPackageScanner {
       "org.objectweb", "org.reactivestreams", "org.checkerframework", "io.micrometer", "io.netty",
       "io.github.classgraph"};
 
+  /** The name of the {@code value} parameter shared by the bundle annotations. */
+  private static final String VALUE_PARAM = "value";
+
   /**
    * The result of a scan.
    */
@@ -229,7 +232,7 @@ public final class ClasspathPackageScanner {
     for (ClassInfo cls : scan.getClassesWithAnnotation(BundlePackage.Container.class.getName())) {
       for (AnnotationInfo container : cls.getAnnotationInfo()) {
         if (BundlePackage.Container.class.getName().equals(container.getName())) {
-          Object nested = container.getParameterValues().getValue("value");
+          Object nested = container.getParameterValues().getValue(VALUE_PARAM);
           if (nested instanceof Object[] array) {
             for (Object element : array) {
               if (element instanceof AnnotationInfo nestedAnn) {
@@ -262,7 +265,7 @@ public final class ClasspathPackageScanner {
     for (ClassInfo cls : scan.getClassesWithAnnotation(BundleEntry.Container.class.getName())) {
       for (AnnotationInfo container : cls.getAnnotationInfo()) {
         if (BundleEntry.Container.class.getName().equals(container.getName())) {
-          Object nested = container.getParameterValues().getValue("value");
+          Object nested = container.getParameterValues().getValue(VALUE_PARAM);
           if (nested instanceof Object[] array) {
             for (Object element : array) {
               if (element instanceof AnnotationInfo nestedAnn) {
@@ -277,7 +280,7 @@ public final class ClasspathPackageScanner {
 
   private static void collectEntry(AnnotationInfo entry, String className, Set<String> sources,
       Set<String> debugSources, Map<String, Set<String>> bindings) {
-    Object value = entry.getParameterValues().getValue("value");
+    Object value = entry.getParameterValues().getValue(VALUE_PARAM);
     if (value == null) {
       return;
     }
@@ -315,7 +318,7 @@ public final class ClasspathPackageScanner {
 
   private static BundlePackageDeclaration createDeclaration(AnnotationInfo ann) {
     AnnotationParameterValueList params = ann.getParameterValues();
-    Object name = params.getValue("value");
+    Object name = params.getValue(VALUE_PARAM);
     Object version = params.getValue("version");
 
     if (name == null || version == null) {
