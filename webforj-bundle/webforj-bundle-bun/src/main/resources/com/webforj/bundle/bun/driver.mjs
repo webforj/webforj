@@ -4,8 +4,7 @@
  * @author Hyyan Abo Fakher
  */
 
-import { watch } from 'node:fs';
-import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
+import { watch, writeFileSync, mkdirSync, readFileSync } from 'node:fs';
 import { relative, dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
