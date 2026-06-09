@@ -16,6 +16,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
 
 /**
  * Scans a set of classpath URLs for {@link BundlePackage} and {@link BundleEntry} packages.
@@ -195,7 +196,7 @@ public final class ClasspathPackageScanner {
 
     try (ScanResult scan = graph.scan()) {
       collectPackages(scan, raw);
-      collectSources(scan, sources, debugSources, bindings);
+      collectEntries(scan, sources, debugSources, bindings);
     }
 
     Result merged = merge(raw);
@@ -221,28 +222,8 @@ public final class ClasspathPackageScanner {
   }
 
   private static void collectPackages(ScanResult scan, List<BundlePackageDeclaration> raw) {
-    for (ClassInfo cls : scan.getClassesWithAnnotation(BundlePackage.class.getName())) {
-      for (AnnotationInfo ann : cls.getAnnotationInfo()) {
-        if (BundlePackage.class.getName().equals(ann.getName())) {
-          addDeclaration(ann, raw);
-        }
-      }
-    }
-
-    for (ClassInfo cls : scan.getClassesWithAnnotation(BundlePackage.Container.class.getName())) {
-      for (AnnotationInfo container : cls.getAnnotationInfo()) {
-        if (BundlePackage.Container.class.getName().equals(container.getName())) {
-          Object nested = container.getParameterValues().getValue(VALUE_PARAM);
-          if (nested instanceof Object[] array) {
-            for (Object element : array) {
-              if (element instanceof AnnotationInfo nestedAnn) {
-                addDeclaration(nestedAnn, raw);
-              }
-            }
-          }
-        }
-      }
-    }
+    forEachAnnotation(scan, BundlePackage.class, BundlePackage.Container.class,
+        (ann, cls) -> addDeclaration(ann, raw));
   }
 
   private static void addDeclaration(AnnotationInfo ann, List<BundlePackageDeclaration> raw) {
@@ -252,33 +233,58 @@ public final class ClasspathPackageScanner {
     }
   }
 
-  private static void collectSources(ScanResult scan, Set<String> sources, Set<String> debugSources,
+  private static void collectEntries(ScanResult scan, Set<String> sources, Set<String> debugSources,
       Map<String, Set<String>> bindings) {
-    for (ClassInfo cls : scan.getClassesWithAnnotation(BundleEntry.class.getName())) {
+    forEachAnnotation(scan, BundleEntry.class, BundleEntry.Container.class,
+        (ann, cls) -> doCollectEntry(ann, cls.getName(), sources, debugSources, bindings));
+  }
+
+  private static void forEachAnnotation(ScanResult scan, Class<?> annotation, Class<?> container,
+      BiConsumer<AnnotationInfo, ClassInfo> action) {
+    forEachDirect(scan, annotation.getName(), action);
+    forEachContained(scan, container.getName(), action);
+  }
+
+  private static void forEachDirect(ScanResult scan, String name,
+      BiConsumer<AnnotationInfo, ClassInfo> action) {
+    for (ClassInfo cls : scan.getClassesWithAnnotation(name)) {
       for (AnnotationInfo ann : cls.getAnnotationInfo()) {
-        if (BundleEntry.class.getName().equals(ann.getName())) {
-          collectEntry(ann, cls.getName(), sources, debugSources, bindings);
+        if (name.equals(ann.getName())) {
+          action.accept(ann, cls);
         }
       }
     }
+  }
 
-    for (ClassInfo cls : scan.getClassesWithAnnotation(BundleEntry.Container.class.getName())) {
+  private static void forEachContained(ScanResult scan, String containerName,
+      BiConsumer<AnnotationInfo, ClassInfo> action) {
+    for (ClassInfo cls : scan.getClassesWithAnnotation(containerName)) {
       for (AnnotationInfo container : cls.getAnnotationInfo()) {
-        if (BundleEntry.Container.class.getName().equals(container.getName())) {
-          Object nested = container.getParameterValues().getValue(VALUE_PARAM);
-          if (nested instanceof Object[] array) {
-            for (Object element : array) {
-              if (element instanceof AnnotationInfo nestedAnn) {
-                collectEntry(nestedAnn, cls.getName(), sources, debugSources, bindings);
-              }
-            }
+        if (containerName.equals(container.getName())) {
+          for (AnnotationInfo nested : getNestedAnnotations(container)) {
+            action.accept(nested, cls);
           }
         }
       }
     }
   }
 
-  private static void collectEntry(AnnotationInfo entry, String className, Set<String> sources,
+  private static List<AnnotationInfo> getNestedAnnotations(AnnotationInfo container) {
+    if (!(container.getParameterValues().getValue(VALUE_PARAM) instanceof Object[] array)) {
+      return List.of();
+    }
+
+    List<AnnotationInfo> nested = new ArrayList<>();
+    for (Object element : array) {
+      if (element instanceof AnnotationInfo annotation) {
+        nested.add(annotation);
+      }
+    }
+
+    return nested;
+  }
+
+  private static void doCollectEntry(AnnotationInfo entry, String className, Set<String> sources,
       Set<String> debugSources, Map<String, Set<String>> bindings) {
     Object value = entry.getParameterValues().getValue(VALUE_PARAM);
     if (value == null) {
