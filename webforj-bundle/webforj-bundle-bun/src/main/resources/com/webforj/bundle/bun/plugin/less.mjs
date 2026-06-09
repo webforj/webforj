@@ -7,7 +7,7 @@
 import less from 'less';
 import { readFileSync } from 'node:fs';
 
-export default (options) => ({
+const lessPlugin = (options) => ({
   name: 'webforj-less',
   setup(build) {
     build.onLoad({ filter: /\.less$/ }, async (args) => {
@@ -21,3 +21,5 @@ export default (options) => ({
     });
   }
 });
+
+export default lessPlugin;

@@ -6,4 +6,6 @@
  */
 import { SveltePlugin } from 'bun-plugin-svelte';
 
-export default (options) => SveltePlugin({ forceSide: 'client', ...options });
+const sveltePlugin = (options) => SveltePlugin({ forceSide: 'client', ...options });
+
+export default sveltePlugin;

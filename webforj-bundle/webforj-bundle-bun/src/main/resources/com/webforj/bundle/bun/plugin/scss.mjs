@@ -6,7 +6,7 @@
  */
 import { compile } from 'sass';
 
-export default (options) => ({
+const scssPlugin = (options) => ({
   name: 'webforj-scss',
   setup(build) {
     build.onLoad({ filter: /\.s[ac]ss$/ }, (args) => ({
@@ -15,3 +15,5 @@ export default (options) => ({
     }));
   }
 });
+
+export default scssPlugin;

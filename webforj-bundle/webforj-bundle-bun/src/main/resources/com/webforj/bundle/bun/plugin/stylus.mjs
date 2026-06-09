@@ -7,7 +7,7 @@
 import stylus from 'stylus';
 import { readFileSync } from 'node:fs';
 
-export default (options) => ({
+const stylusPlugin = (options) => ({
   name: 'webforj-stylus',
   setup(build) {
     build.onLoad({ filter: /\.styl$/ }, (args) => ({
@@ -19,3 +19,5 @@ export default (options) => ({
     }));
   }
 });
+
+export default stylusPlugin;

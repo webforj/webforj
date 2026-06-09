@@ -6,4 +6,6 @@
  */
 import vue from 'bun-plugin-vue3';
 
-export default (options) => (typeof vue === 'function' ? vue(options) : vue);
+const vuePlugin = (options) => (typeof vue === 'function' ? vue(options) : vue);
+
+export default vuePlugin;
