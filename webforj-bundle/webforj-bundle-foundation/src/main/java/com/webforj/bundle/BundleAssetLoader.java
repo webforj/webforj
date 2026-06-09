@@ -19,6 +19,7 @@ class BundleAssetLoader {
   private static final String URL_PREFIX = "ws://frontend/";
   private static final String CONTEXT_PREFIX = "context://static/frontend/";
   private static final String LOADED_KEY_PREFIX = "com.webforj.bundle.BundleAssetLoader::loaded::";
+  private static final Map<String, String> MODULE_SCRIPT = Map.of("type", "module");
 
   private final BundleIndex fixedIndex;
 
@@ -60,7 +61,7 @@ class BundleAssetLoader {
         if (isStylesheet(url)) {
           page.addStyleSheet(url, false, Map.of());
         } else {
-          page.addJavaScript(url, false, Map.of("type", "module"));
+          page.addJavaScript(url, false, MODULE_SCRIPT);
         }
       }
     });
@@ -124,14 +125,14 @@ class BundleAssetLoader {
       if (stylesheet) {
         page.addInlineStyleSheet(url, false, Map.of());
       } else {
-        page.addInlineJavaScript(url, false, Map.of("type", "module"));
+        page.addInlineJavaScript(url, false, MODULE_SCRIPT);
       }
     } else {
       String url = URL_PREFIX + file;
       if (stylesheet) {
         page.addStyleSheet(url, false, Map.of());
       } else {
-        page.addJavaScript(url, false, Map.of("type", "module"));
+        page.addJavaScript(url, false, MODULE_SCRIPT);
       }
     }
   }
