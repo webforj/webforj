@@ -46,22 +46,29 @@ public final class DependencyEntryExtractor {
         new ClassGraph().overrideClasspath(classpathRoots).acceptPaths(RESOURCE_ROOT);
     try (ScanResult scan = graph.scan()) {
       for (Resource resource : scan.getAllResources()) {
-        String path = resource.getPath();
-        if (!path.startsWith(RESOURCE_ROOT + "/")) {
-          continue;
+        if (extractResource(resource, targetDir)) {
+          count++;
         }
-
-        Path dest = targetDir.resolve(path.substring(RESOURCE_ROOT.length() + 1)).normalize();
-        if (!dest.startsWith(targetDir)) {
-          continue;
-        }
-
-        Files.createDirectories(dest.getParent());
-        Files.write(dest, resource.load());
-        count++;
       }
     }
 
     return count;
+  }
+
+  private static boolean extractResource(Resource resource, Path targetDir) throws IOException {
+    String path = resource.getPath();
+    if (!path.startsWith(RESOURCE_ROOT + "/")) {
+      return false;
+    }
+
+    Path dest = targetDir.resolve(path.substring(RESOURCE_ROOT.length() + 1)).normalize();
+    if (!dest.startsWith(targetDir)) {
+      return false;
+    }
+
+    Files.createDirectories(dest.getParent());
+    Files.write(dest, resource.load());
+
+    return true;
   }
 }
