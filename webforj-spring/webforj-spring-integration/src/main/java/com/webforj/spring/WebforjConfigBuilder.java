@@ -2,6 +2,7 @@ package com.webforj.spring;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import com.webforj.spring.security.SpringSecurityConfigurationProperties;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +29,19 @@ class WebforjConfigBuilder {
    * @return a Config object with all configured values
    */
   public static Config buildConfig(SpringConfigurationProperties properties) {
+    return buildConfig(properties, new SpringSecurityConfigurationProperties());
+  }
+
+  /**
+   * Builds a Typesafe Config object from Spring configuration properties.
+   *
+   * @param properties the Spring configuration properties
+   * @param security the Spring security configuration properties
+   *
+   * @return a Config object with all configured values
+   */
+  public static Config buildConfig(SpringConfigurationProperties properties,
+      SpringSecurityConfigurationProperties security) {
     ConfigMapBuilder builder = new ConfigMapBuilder();
 
     // Basic configurations
@@ -42,6 +56,10 @@ class WebforjConfigBuilder {
     // Client configuration
     builder.add("webforj.clientHeartbeatRate", properties::getClientHeartbeatRate)
         .add("webforj.sessionTimeout", properties::getSessionTimeout, 60);
+
+    // Security configuration
+    builder.add("webforj.security.maxContentLength", security::getMaxContentLength, 0)
+        .add("webforj.security.maxInitPerMinute", security::getMaxInitPerMinute, 0);
 
     // Assets configurations
     builder.add("webforj.assetsDir", properties::getAssetsDir)

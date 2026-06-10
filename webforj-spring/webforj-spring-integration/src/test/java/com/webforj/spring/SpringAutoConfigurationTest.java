@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValue;
 import com.webforj.servlet.WebforjServlet;
+import com.webforj.spring.security.SpringSecurityConfigurationProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -109,7 +110,8 @@ class SpringAutoConfigurationTest {
 
     @Test
     void shouldCreateWebforjConfigFromProperties() {
-      Config configResult = autoConfiguration.webforjConfig(properties);
+      Config configResult =
+          autoConfiguration.webforjConfig(properties, new SpringSecurityConfigurationProperties());
 
       assertNotNull(configResult);
     }
