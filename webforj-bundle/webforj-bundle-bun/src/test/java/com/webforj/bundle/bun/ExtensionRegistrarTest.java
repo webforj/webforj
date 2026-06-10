@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.slf4j.LoggerFactory;
 
 class ExtensionRegistrarTest {
 
@@ -28,7 +27,7 @@ class ExtensionRegistrarTest {
     context.setGeneratedPath(frontend.resolve("generated"));
     context.setSourcePaths(List.of(java));
     context.setSourceExtensions(sourceExtensions);
-    context.setLog(new BundleLog(LoggerFactory.getLogger(ExtensionRegistrarTest.class)));
+    context.setLog(BundleLogger.system());
 
     return context;
   }

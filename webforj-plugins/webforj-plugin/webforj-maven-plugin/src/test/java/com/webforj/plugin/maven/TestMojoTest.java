@@ -22,7 +22,7 @@ class TestMojoTest {
   @Test
   void shouldAppendConfiguredTestArgsToTheRequest(@TempDir Path tmp) throws Exception {
     BundlerExecution execution = mock(BundlerExecution.class);
-    when(execution.test(any())).thenReturn(0);
+    when(execution.test(any(), any())).thenReturn(0);
     TestMojo mojo = newMojo(execution, tmp);
     mojo.testArgs = new String[] {"--reporter=junit", "--reporter-outfile=target/bun-junit.xml"};
 
@@ -35,7 +35,7 @@ class TestMojoTest {
   @Test
   void shouldDefaultToNoTestArgsWhenUnset(@TempDir Path tmp) throws Exception {
     BundlerExecution execution = mock(BundlerExecution.class);
-    when(execution.test(any())).thenReturn(0);
+    when(execution.test(any(), any())).thenReturn(0);
     TestMojo mojo = newMojo(execution, tmp);
 
     mojo.execute();
@@ -47,7 +47,7 @@ class TestMojoTest {
       throws Exception {
     ArgumentCaptor<BundlerExecution.Request> captor =
         ArgumentCaptor.forClass(BundlerExecution.Request.class);
-    verify(execution).test(captor.capture());
+    verify(execution).test(captor.capture(), any());
 
     return captor.getValue();
   }

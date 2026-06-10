@@ -11,7 +11,6 @@ import java.nio.file.Path;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.slf4j.event.Level;
 
 /**
  * Goal that runs the development bundle watch in the stable Maven process and forwards its output
@@ -57,9 +56,11 @@ public class WatchMojo extends AbstractBundlerMojo {
 
     BundlerExecution execution = createExecution();
     try {
-      Process watcher = execution.watch(createRequest(),
-          changed -> socket.send(WatchProtocol.rebuild(changed)), (level, line) -> socket
-              .send(level == Level.WARN ? WatchProtocol.warn(line) : WatchProtocol.log(line)));
+      Process watcher =
+          execution.watch(createRequest(), changed -> socket.send(WatchProtocol.rebuild(changed)),
+              (level, line) -> socket
+                  .send(level == System.Logger.Level.WARNING ? WatchProtocol.warn(line)
+                      : WatchProtocol.log(line)));
       installShutdownHook(watcher, socket, portFile);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();

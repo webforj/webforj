@@ -15,7 +15,6 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
-import org.slf4j.LoggerFactory;
 
 class BundleContextTest {
 
@@ -89,7 +88,7 @@ class BundleContextTest {
   @Test
   void shouldExposeTheBuildLog() {
     BundleContext context = new BundleContext();
-    BundleLog log = new BundleLog(LoggerFactory.getLogger(BundleContextTest.class));
+    BundleLogger log = BundleLogger.system();
 
     context.setLog(log);
 

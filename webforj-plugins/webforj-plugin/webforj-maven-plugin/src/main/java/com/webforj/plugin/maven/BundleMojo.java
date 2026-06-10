@@ -27,7 +27,7 @@ public class BundleMojo extends AbstractBundlerMojo {
   public void execute() throws MojoExecutionException {
     BundlerExecution execution = createExecution();
     try {
-      Path outputDir = execution.run(createRequest());
+      Path outputDir = execution.run(createRequest(), new MavenBundleLogger(getLog()));
       if (outputDir != null) {
         getLog().info("bundle output written to " + outputDir);
       }

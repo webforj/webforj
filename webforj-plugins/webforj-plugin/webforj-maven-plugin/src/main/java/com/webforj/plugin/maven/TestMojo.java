@@ -54,8 +54,9 @@ public class TestMojo extends AbstractBundlerMojo {
 
     BundlerExecution execution = createExecution();
     try {
-      int code = execution
-          .test(createRequest().setTestArgs(testArgs == null ? null : Arrays.asList(testArgs)));
+      int code = execution.test(
+          createRequest().setTestArgs(testArgs == null ? null : Arrays.asList(testArgs)),
+          new MavenBundleLogger(getLog()));
       if (code != 0) {
         throw new MojoExecutionException("bun test failed with exit code " + code);
       }

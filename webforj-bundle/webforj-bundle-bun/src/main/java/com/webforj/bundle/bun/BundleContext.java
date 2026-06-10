@@ -37,7 +37,7 @@ public final class BundleContext {
   private Set<String> sourceExtensions = Set.of();
   private boolean production = false;
   private boolean rebuild = false;
-  private BundleLog log = null;
+  private BundleLogger log = null;
   private final List<BundlePackageDeclaration> packages = new ArrayList<>();
   private final Map<String, BundleEntryDeclaration> entries = new LinkedHashMap<>();
   private final Map<String, Set<String>> bindings = new LinkedHashMap<>();
@@ -156,7 +156,7 @@ public final class BundleContext {
     return rebuild;
   }
 
-  void setLog(BundleLog log) {
+  void setLog(BundleLogger log) {
     this.log = log;
   }
 
@@ -167,7 +167,7 @@ public final class BundleContext {
    *
    * @return the build log
    */
-  public BundleLog getLog() {
+  public BundleLogger getLog() {
     return log;
   }
 

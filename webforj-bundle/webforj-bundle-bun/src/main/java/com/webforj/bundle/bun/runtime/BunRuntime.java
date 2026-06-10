@@ -1,5 +1,6 @@
 package com.webforj.bundle.bun.runtime;
 
+import com.webforj.bundle.bun.BundleLogger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -20,8 +21,6 @@ import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.apache.commons.lang3.SystemUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Resolves a Bun executable for the current platform.
@@ -50,7 +49,7 @@ public final class BunRuntime {
   private static final Set<String> INTEL_64 = Set.of("x64", "x8664", "amd64", "em64t", "ia32e");
   private static final Set<String> ARM_64 = Set.of("aarch64", "arm64");
 
-  private static final Logger log = LoggerFactory.getLogger(BunRuntime.class);
+  private volatile BundleLogger log = BundleLogger.system();
 
   private final Path cacheRoot;
   private final String version;
@@ -71,6 +70,15 @@ public final class BunRuntime {
    */
   public static BunRuntimeBuilder create() {
     return new BunRuntimeBuilder();
+  }
+
+  /**
+   * Sets where this runtime reports its output, so it shares the channel the bundler was given.
+   *
+   * @param logger the logger, the invoker owns it
+   */
+  public void setLogger(BundleLogger logger) {
+    this.log = logger != null ? logger : BundleLogger.system();
   }
 
   /**
@@ -118,9 +126,30 @@ public final class BunRuntime {
    * @throws InterruptedException if the wait is interrupted
    */
   public int execute(Path workDir, List<String> args) throws IOException, InterruptedException {
+    return execute(workDir, args, null);
+  }
+
+  /**
+   * Runs Bun with the given arguments and wait for completion, reporting every output line.
+   *
+   * <p>
+   * The line hook receives each line as Bun prints it, so a caller can surface the output where the
+   * default debug log would hide it, such as the result of a test run.
+   * </p>
+   *
+   * @param workDir the working directory for the process
+   * @param args the arguments passed to Bun (without the binary itself)
+   * @param lineHook notified with every output line, may be null
+   *
+   * @return the process exit code
+   * @throws IOException if the process cannot be started
+   * @throws InterruptedException if the wait is interrupted
+   */
+  public int execute(Path workDir, List<String> args, Consumer<String> lineHook)
+      throws IOException, InterruptedException {
     Process process = launch(workDir, args);
     try (InputStream out = process.getInputStream()) {
-      pump(out);
+      pump(out, lineHook);
     }
 
     return process.waitFor();
@@ -221,9 +250,12 @@ public final class BunRuntime {
       public void write(int b) {
         if (b == '\n') {
           String line = lineBuf.toString();
-          log.debug(line);
           if (lineHook != null) {
+            // The hook owns the line and reports it where the caller wants it seen, so the runtime
+            // does not also log it and forward it twice.
             lineHook.accept(line);
+          } else {
+            log.log(System.Logger.Level.DEBUG, line);
           }
           lineBuf.setLength(0);
         } else if (b != '\r') {

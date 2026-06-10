@@ -34,11 +34,8 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
-import org.slf4j.LoggerFactory;
-import org.slf4j.event.Level;
 
 /**
  * Carries out the end to end bundler workflow on behalf of the Mojos.
@@ -57,7 +54,7 @@ public final class BundlerExecution {
   private static final String EAGER_ENTRY = "bundle.js";
   private static final Set<String> SCRIPT_EXTENSIONS =
       Set.of(".js", ".mjs", ".cjs", ".jsx", ".ts", ".tsx");
-  private final BundleLog log = new BundleLog(LoggerFactory.getLogger(BundlerExecution.class));
+  private BundleLogger log = BundleLogger.system();
 
   private final ClasspathPackageScanner scanner;
   private final BundleEntryResolver resolver;
@@ -94,6 +91,23 @@ public final class BundlerExecution {
    * @throws InterruptedException if the run is interrupted
    */
   public Path run(Request request) throws IOException, InterruptedException {
+    return run(request, BundleLogger.system());
+  }
+
+  /**
+   * Runs a single shot production bundle with hashed, minified output, reporting through the given
+   * logger.
+   *
+   * @param request the parameters for this run
+   * @param logger where the output is reported, the invoker owns it
+   *
+   * @return the served output directory, or {@code null} when nothing was bundled
+   * @throws IOException on any IO failure
+   * @throws InterruptedException if the run is interrupted
+   */
+  public Path run(Request request, BundleLogger logger) throws IOException, InterruptedException {
+    useLogger(logger);
+
     // A production build must never ship the development index, which a watch leaves under the
     // served static folder. Remove it up front so a packaged application can never carry it, even
     // when there is nothing to bundle and the build returns early.
@@ -151,17 +165,18 @@ public final class BundlerExecution {
    * @param request the parameters for this run
    * @param rebuildListener notified with the changed served paths after each rebuild, never empty,
    *        may be null
-   * @param logListener notified with every bundler line and its level, may be null
+   * @param logger where the watch output is reported, a watch passes one that forwards to the
+   *        running application, may be null
    *
    * @return the running Bun watcher process, or {@code null} when there was nothing to watch
    * @throws IOException on any IO failure
    * @throws InterruptedException if the initial build is interrupted
    */
-  public Process watch(Request request, Consumer<List<String>> rebuildListener,
-      BiConsumer<Level, String> logListener) throws IOException, InterruptedException {
+  public Process watch(Request request, Consumer<List<String>> rebuildListener, BundleLogger logger)
+      throws IOException, InterruptedException {
     // During a watch every bundler line is forwarded to the running application, so nothing is
     // written to the build console while the application is up.
-    log.setSink(logListener);
+    useLogger(logger);
     CompileContext compileContext = createCompileContext(request, false);
     Path servedDir = getServedOutputDir(request);
     Path stagingDir = request.getWorkDir().resolve(WATCH_STAGING_DIR);
@@ -192,9 +207,7 @@ public final class BundlerExecution {
     AtomicBoolean baselineEstablished = new AtomicBoolean(false);
 
     return bun.start(request.getBundleSourceRoot(), watchArgs, line -> {
-      if (logListener != null) {
-        logListener.accept(Level.INFO, line);
-      }
+      log.info("{}", line);
 
       if (isRebuildComplete(line)) {
         List<String> changed = syncQuietly(stagingDir, servedDir);
@@ -228,6 +241,22 @@ public final class BundlerExecution {
    * @throws InterruptedException if the run is interrupted
    */
   public int test(Request request) throws IOException, InterruptedException {
+    return test(request, BundleLogger.system());
+  }
+
+  /**
+   * Runs the Bun test runner over the bundle source root, reporting through the given logger.
+   *
+   * @param request the parameters for this run
+   * @param logger where the output is reported, the invoker owns it
+   *
+   * @return the Bun test exit code, zero when there is nothing to test
+   * @throws IOException on any IO failure
+   * @throws InterruptedException if the run is interrupted
+   */
+  public int test(Request request, BundleLogger logger) throws IOException, InterruptedException {
+    useLogger(logger);
+
     Path sourceRoot = request.getBundleSourceRoot();
     if (sourceRoot == null || !Files.isDirectory(sourceRoot) || !hasTestFiles(sourceRoot)) {
       log.info("no frontend tests found, skipping bun test");
@@ -242,7 +271,7 @@ public final class BundlerExecution {
     args.add("test");
     args.addAll(request.getTestArgs());
 
-    return bun.execute(sourceRoot, args);
+    return bun.execute(sourceRoot, args, line -> log.info("{}", line));
   }
 
   private CompileContext createCompileContext(Request request, boolean production) {
@@ -838,6 +867,11 @@ public final class BundlerExecution {
 
     return stem.endsWith(".test") || stem.endsWith(".spec") || stem.endsWith("_test")
         || stem.endsWith("_spec");
+  }
+
+  private void useLogger(BundleLogger logger) {
+    this.log = logger != null ? logger : BundleLogger.system();
+    bun.setLogger(this.log);
   }
 
   private static final class CompileContext { // NOSONAR
