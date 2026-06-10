@@ -65,11 +65,11 @@ public abstract class WatchTask extends AbstractBundlerTask {
 
     BundlerExecution execution = createExecution();
     try {
-      Process watcher = execution.watch(createRequest(),
-          changed -> socket.send(WatchProtocol.rebuild(changed)),
-          (level, line) -> socket.send(level == System.Logger.Level.WARNING
-              ? WatchProtocol.warn(line)
-              : WatchProtocol.log(line)));
+      Process watcher =
+          execution.watch(createRequest(), changed -> socket.send(WatchProtocol.rebuild(changed)),
+              (level, line) -> socket
+                  .send(level == System.Logger.Level.WARNING ? WatchProtocol.warn(line)
+                      : WatchProtocol.log(line)));
       installShutdownHook(watcher, socket, portFile);
       getWatchLifecycle().get().track(watcher, socket, portFile);
     } catch (InterruptedException e) {
