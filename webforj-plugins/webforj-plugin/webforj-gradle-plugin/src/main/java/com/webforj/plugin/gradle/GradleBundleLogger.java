@@ -8,8 +8,8 @@ import org.gradle.api.logging.Logger;
  *
  * <p>
  * Gradle hides the info log unless the build runs with the info flag, so progress and results are
- * reported at the lifecycle level Gradle shows by default. The raw build output stays at info, where
- * a developer reaches for it only when something looks wrong.
+ * reported at the lifecycle level Gradle shows by default. The raw build output stays at info,
+ * where a developer reaches for it only when something looks wrong.
  * </p>
  *
  * @author Hyyan Abo Fakher

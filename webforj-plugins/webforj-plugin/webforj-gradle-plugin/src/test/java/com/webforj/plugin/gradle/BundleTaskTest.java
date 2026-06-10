@@ -89,7 +89,7 @@ class BundleTaskTest {
   }
 
   @Test
-  void shouldWrapAFailedBundle(@TempDir Path tmp) throws Exception {
+  void shouldWrapFailedBundle(@TempDir Path tmp) throws Exception {
     BundlerExecution execution = mock(BundlerExecution.class);
     when(execution.run(any(), any())).thenThrow(new RuntimeException("boom"));
     Project project = ProjectBuilder.builder().withProjectDir(tmp.toFile()).build();

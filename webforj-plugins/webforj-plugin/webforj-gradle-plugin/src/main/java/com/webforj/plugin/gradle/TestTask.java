@@ -23,8 +23,8 @@ public abstract class TestTask extends AbstractBundlerTask {
     List<String> testArgs = getExtension().get().getTestArgs().getOrElse(List.of());
     BundlerExecution execution = createExecution();
     try {
-      int code =
-          execution.test(createRequest().setTestArgs(testArgs), new GradleBundleLogger(getLogger()));
+      int code = execution.test(createRequest().setTestArgs(testArgs),
+          new GradleBundleLogger(getLogger()));
       if (code != 0) {
         throw new GradleException("bun test failed with exit code " + code);
       }

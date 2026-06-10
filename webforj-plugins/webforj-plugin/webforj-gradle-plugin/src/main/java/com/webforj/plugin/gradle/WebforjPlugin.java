@@ -110,7 +110,7 @@ public class WebforjPlugin implements Plugin<Project> {
     Provider<Directory> output = project.getLayout().dir(project.provider(
         () -> main.getOutput().getClassesDirs().getFiles().stream().findFirst().orElse(null)));
 
-    String classesTask = main.getClassesTaskName();
+    final String classesTask = main.getClassesTaskName();
 
     bindOutputs(bundle, classpath, output, main);
     bindOutputs(frontendTest, classpath, output, main);

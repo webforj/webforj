@@ -134,7 +134,7 @@ class BundleContextTest {
   }
 
   @Test
-  void shouldKeepTheFirstEntryForASourceAndMergeOwners() {
+  void shouldKeepTheFirstEntryForSourceAndMergeOwners() {
     BundleContext context = new BundleContext();
     context.addEntry(
         new BundleEntryDeclaration().setSource("react/card.tsx").addOwner("com.acme.CardView"));

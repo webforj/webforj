@@ -68,7 +68,7 @@ class TestTaskTest {
   }
 
   @Test
-  void shouldFailOnANonZeroExitCode(@TempDir Path tmp) throws Exception {
+  void shouldFailOnNonZeroExitCode(@TempDir Path tmp) throws Exception {
     BundlerExecution execution = mock(BundlerExecution.class);
     when(execution.test(any(), any())).thenReturn(2);
     Project project = ProjectBuilder.builder().withProjectDir(tmp.toFile()).build();
@@ -90,7 +90,7 @@ class TestTaskTest {
   }
 
   @Test
-  void shouldWrapAFailedRun(@TempDir Path tmp) throws Exception {
+  void shouldWrapFailedRun(@TempDir Path tmp) throws Exception {
     BundlerExecution execution = mock(BundlerExecution.class);
     when(execution.test(any(), any())).thenThrow(new RuntimeException("boom"));
     Project project = ProjectBuilder.builder().withProjectDir(tmp.toFile()).build();

@@ -40,7 +40,7 @@ class ExtensionRegistrarTest {
   }
 
   @Test
-  void scssTurnsOnWhenAScssFileIsPresent() {
+  void scssTurnsOnWhenScssFileIsPresent() {
     ScssBundleRegistrar scss = new ScssBundleRegistrar();
 
     assertEquals("webforj-scss", scss.getId());
@@ -71,7 +71,7 @@ class ExtensionRegistrarTest {
   }
 
   @Test
-  void tailwindGeneratesAGlobalEntryAndShipsItsPlugin(@TempDir Path tmp) throws IOException {
+  void tailwindGeneratesGlobalEntryAndShipsItsPlugin(@TempDir Path tmp) throws IOException {
     BundleContext context = context(tmp, Set.of());
 
     new TailwindBundleRegistrar().onWillBundle(context);

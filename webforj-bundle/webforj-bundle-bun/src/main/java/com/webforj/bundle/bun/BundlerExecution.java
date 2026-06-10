@@ -388,7 +388,7 @@ public final class BundlerExecution {
 
     entries.addAll(context.getEntries());
 
-    List<BunPlugin> plugins = context.getPlugins();
+    final List<BunPlugin> plugins = context.getPlugins();
     if (entries.isEmpty()) {
       log.info("nothing to bundle, skipping Bun invocation");
 
