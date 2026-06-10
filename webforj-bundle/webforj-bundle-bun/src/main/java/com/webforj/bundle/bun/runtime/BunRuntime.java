@@ -238,10 +238,6 @@ public final class BunRuntime {
     return pb.start();
   }
 
-  private void pump(InputStream out) throws IOException {
-    pump(out, null);
-  }
-
   private void pump(InputStream out, Consumer<String> lineHook) throws IOException {
     out.transferTo(new OutputStream() {
       private final StringBuilder lineBuf = new StringBuilder();
