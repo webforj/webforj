@@ -19,9 +19,12 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -779,7 +782,9 @@ public final class BundlerExecution {
       }
 
       return changed;
-    } catch (IOException e) {
+    } catch (IOException | RuntimeException e) {
+      // The watch rewrites the staging tree under the sync, so a transient filesystem race must
+      // never kill the watch thread. Report it and let the next rebuild reconcile.
       log.warn("failed to sync watch output: {}", e.getMessage());
 
       return List.of();
@@ -795,23 +800,44 @@ public final class BundlerExecution {
     Set<String> staged = new HashSet<>();
     List<String> changed = new ArrayList<>();
 
-    try (Stream<Path> walk = Files.walk(from)) {
-      for (Path src : (Iterable<Path>) walk::iterator) {
-        if (!Files.isRegularFile(src)) {
-          continue;
+    // The watch rebuild rewrites the staging tree while this sync reads it, so files and
+    // directories can vanish mid walk. the visitor skips whatever disappears instead of
+    // aborting the whole sync.
+    Files.walkFileTree(from, new SimpleFileVisitor<Path>() {
+      @Override
+      public FileVisitResult visitFile(Path src, BasicFileAttributes attrs) {
+        if (!attrs.isRegularFile()) {
+          return FileVisitResult.CONTINUE;
         }
 
         String relative = from.relativize(src).toString().replace('\\', '/');
         staged.add(relative);
         Path dst = to.resolve(relative);
 
-        if (!Files.exists(dst) || !isSameContent(src, dst)) {
-          Files.createDirectories(dst.getParent());
-          Files.copy(src, dst, StandardCopyOption.REPLACE_EXISTING);
-          changed.add(relative);
+        try {
+          if (!Files.exists(dst) || !isSameContent(src, dst)) {
+            Files.createDirectories(dst.getParent());
+            Files.copy(src, dst, StandardCopyOption.REPLACE_EXISTING);
+            changed.add(relative);
+          }
+        } catch (IOException e) {
+          // The source changed under the copy, keep the last good output and let the next
+          // rebuild reconcile it.
         }
+
+        return FileVisitResult.CONTINUE;
       }
-    }
+
+      @Override
+      public FileVisitResult visitFileFailed(Path file, IOException exc) {
+        return FileVisitResult.CONTINUE;
+      }
+
+      @Override
+      public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
+        return FileVisitResult.CONTINUE;
+      }
+    });
 
     List<Path> stale = new ArrayList<>();
     try (Stream<Path> walk = Files.walk(to)) {

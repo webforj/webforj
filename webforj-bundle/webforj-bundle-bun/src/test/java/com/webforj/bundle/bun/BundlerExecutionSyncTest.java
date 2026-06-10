@@ -2,16 +2,20 @@ package com.webforj.bundle.bun;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.webforj.bundle.BundleIndex;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -131,5 +135,64 @@ class BundlerExecutionSyncTest {
     Path to = Files.createDirectories(tmp.resolve("served"));
 
     assertTrue(BundlerExecution.syncChangedFiles(tmp.resolve("absent"), to).isEmpty());
+  }
+
+  @Test
+  void shouldNotFailWhenStagingDirectoriesVanishMidSync(@TempDir Path tmp)
+      throws IOException, InterruptedException {
+    Path from = Files.createDirectories(tmp.resolve("staging"));
+    Path to = Files.createDirectories(tmp.resolve("served"));
+    AtomicReference<Throwable> failure = new AtomicReference<>();
+    AtomicBoolean running = new AtomicBoolean(true);
+
+    // Mimics the watch rebuild rewriting the staging tree, creating and deleting nested
+    // directories while the sync walks it.
+    Thread churn = new Thread(() -> {
+      try {
+        while (running.get()) {
+          for (int i = 0; i < 40; i++) {
+            Path dir = from.resolve("clock").resolve("part-" + i);
+            Files.createDirectories(dir);
+            Files.writeString(dir.resolve("chunk.js"), "x" + i);
+          }
+
+          deleteRecursively(from.resolve("clock"));
+        }
+      } catch (IOException e) {
+        // The sync may delete files under the churn, that is the race being exercised.
+      }
+    });
+    churn.start();
+
+    try {
+      for (int i = 0; i < 300 && failure.get() == null; i++) {
+        try {
+          BundlerExecution.syncChangedFiles(from, to);
+        } catch (Throwable t) {
+          failure.set(t);
+        }
+      }
+    } finally {
+      running.set(false);
+      churn.join();
+    }
+
+    assertNull(failure.get(), "the sync tolerates a staging tree that changes under it");
+  }
+
+  private static void deleteRecursively(Path root) throws IOException {
+    if (!Files.exists(root)) {
+      return;
+    }
+
+    try (var walk = Files.walk(root)) {
+      walk.sorted(Comparator.reverseOrder()).forEach(path -> {
+        try {
+          Files.deleteIfExists(path);
+        } catch (IOException e) {
+          // Another delete may have removed it first, nothing to do.
+        }
+      });
+    }
   }
 }
