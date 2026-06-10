@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.typesafe.config.Config;
+import com.webforj.spring.security.SpringSecurityConfigurationProperties;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -550,6 +551,30 @@ class WebforjConfigBuilderTest {
       assertFalse(config.hasPath("webforj.components"));
       assertFalse(config.hasPath("webforj.locale"));
       assertFalse(config.hasPath("webforj.servlets"));
+    }
+  }
+
+  @Nested
+  class SecurityConfiguration {
+
+    @Test
+    void shouldDefaultLimitsToZero() {
+      Config config = WebforjConfigBuilder.buildConfig(properties);
+
+      assertEquals(0, config.getInt("webforj.security.maxContentLength"));
+      assertEquals(0, config.getInt("webforj.security.maxInitPerMinute"));
+    }
+
+    @Test
+    void shouldMergeSecurityLimits() {
+      SpringSecurityConfigurationProperties security = new SpringSecurityConfigurationProperties();
+      security.setMaxContentLength(1048576);
+      security.setMaxInitPerMinute(100);
+
+      Config config = WebforjConfigBuilder.buildConfig(properties, security);
+
+      assertEquals(1048576, config.getInt("webforj.security.maxContentLength"));
+      assertEquals(100, config.getInt("webforj.security.maxInitPerMinute"));
     }
   }
 }

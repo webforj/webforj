@@ -10,6 +10,7 @@ import com.webforj.spring.scope.SpringScopeCleanup;
 import com.webforj.spring.scope.processor.EnvironmentScopeProcessor;
 import com.webforj.spring.scope.processor.RouteScopeProcessor;
 import com.webforj.spring.scope.processor.SessionScopeProcessor;
+import com.webforj.spring.security.SpringSecurityConfigurationProperties;
 import java.lang.System.Logger;
 import java.util.List;
 import java.util.Locale;
@@ -35,7 +36,8 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @ConditionalOnClass(ServletContextInitializer.class)
 @AutoConfigureBefore(WebMvcAutoConfiguration.class)
-@EnableConfigurationProperties(SpringConfigurationProperties.class)
+@EnableConfigurationProperties({SpringConfigurationProperties.class,
+    SpringSecurityConfigurationProperties.class})
 @Import(WebforjServletConfiguration.class)
 public class SpringAutoConfiguration {
   private static Logger logger = System.getLogger(SpringAutoConfiguration.class.getName());
@@ -44,11 +46,13 @@ public class SpringAutoConfiguration {
    * Creates the webforJ configuration from Spring properties.
    *
    * @param properties the Spring configuration properties
+   * @param securityProperties the Spring security configuration properties
    * @return the webforJ configuration
    */
   @Bean(name = "webforjConfig")
-  Config webforjConfig(SpringConfigurationProperties properties) {
-    Config config = WebforjConfigBuilder.buildConfig(properties);
+  Config webforjConfig(SpringConfigurationProperties properties,
+      SpringSecurityConfigurationProperties securityProperties) {
+    Config config = WebforjConfigBuilder.buildConfig(properties, securityProperties);
     logger.log(Logger.Level.DEBUG, "Built webforJ configuration from Spring properties");
     return config;
   }
