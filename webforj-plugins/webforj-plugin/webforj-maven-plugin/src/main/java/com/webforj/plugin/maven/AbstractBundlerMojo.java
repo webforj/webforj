@@ -135,7 +135,7 @@ public abstract class AbstractBundlerMojo extends AbstractMojo {
       }
     });
 
-    return new BundlerExecution.Request().setProjectArtifactId(project.getArtifactId())
+    return new BundlerExecution.Request().setProjectName(project.getArtifactId())
         .setClasspathRoots(classpathRoots).setBundleSourceRoot(sourceRoot.toPath())
         .setWorkDir(workDir.toPath()).setClassesOutputDir(classesDir.toPath())
         .setNpmRoot(project.getBasedir().toPath()).setExtensionOverrides(toOverrides(plugins))

@@ -70,16 +70,16 @@ public final class PackageJsonWriter {
   /**
    * Merge the managed dependencies into the existing model without overwriting developer content.
    *
-   * @param projectArtifactId the Maven artifactId, used as the package name when absent
+   * @param projectName the project name, used as the package name when absent
    * @param packages the dependencies to pin from {@code @BundlePackage} and curated plugins
    * @param existing the existing package.json model, possibly empty
    *
    * @return the merged model ready for serialization
    */
-  public Map<String, Object> createModel(String projectArtifactId,
+  public Map<String, Object> createModel(String projectName,
       List<BundlePackageDeclaration> packages, Map<String, Object> existing) {
     Map<String, Object> root = existing == null ? new LinkedHashMap<>() : existing;
-    root.putIfAbsent("name", projectArtifactId);
+    root.putIfAbsent("name", projectName);
     root.putIfAbsent("private", true);
 
     Map<String, Object> dependencies = getOrCreateChildObject(root, DEPENDENCIES);

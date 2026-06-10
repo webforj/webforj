@@ -630,7 +630,7 @@ public final class BundlerExecution {
     Files.createDirectories(npmRoot);
     Map<String, Object> existing = packageJson.read(npmRoot.resolve(PACKAGE_JSON));
     Map<String, Object> model =
-        packageJson.createModel(request.getProjectArtifactId(), declarations, existing);
+        packageJson.createModel(request.getProjectName(), declarations, existing);
     Path written = packageJson.write(npmRoot, model);
     log.info("wrote {}", written);
 
@@ -1030,7 +1030,7 @@ public final class BundlerExecution {
    */
   public static class Request {
 
-    private String projectArtifactId = null;
+    private String projectName = null;
     private List<File> classpathRoots = null;
     private Path bundleSourceRoot = null;
     private Path workDir = null;
@@ -1043,13 +1043,13 @@ public final class BundlerExecution {
     private List<String> testArgs = List.of();
 
     /**
-     * Sets the host Maven artifactId, used as the package.json name and the output namespace.
+     * Sets the project name, used as the package.json name and the output namespace.
      *
-     * @param projectArtifactId the host Maven artifactId
+     * @param projectName the project name, used as the generated package.json name
      * @return the request
      */
-    public Request setProjectArtifactId(String projectArtifactId) {
-      this.projectArtifactId = projectArtifactId;
+    public Request setProjectName(String projectName) {
+      this.projectName = projectName;
 
       return this;
     }
@@ -1058,10 +1058,10 @@ public final class BundlerExecution {
      * Gets the host Maven artifactId, used as the package.json name and the output namespace.
      *
      * @return the host Maven artifactId
-     * @see #setProjectArtifactId(String)
+     * @see #setProjectName(String)
      */
-    public String getProjectArtifactId() {
-      return projectArtifactId;
+    public String getProjectName() {
+      return projectName;
     }
 
     /**
