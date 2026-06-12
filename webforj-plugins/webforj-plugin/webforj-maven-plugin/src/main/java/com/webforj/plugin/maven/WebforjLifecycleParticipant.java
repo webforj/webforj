@@ -5,6 +5,7 @@ import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.PluginExecution;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 /**
  * Binds the bundle, frontend test, and clean goals to the build automatically, so an application
@@ -54,6 +55,15 @@ public class WebforjLifecycleParticipant extends AbstractMavenLifecycleParticipa
     execution.setId(id);
     execution.setPhase(phase);
     execution.addGoal(goal);
+
+    // Maven pushes the plugin level configuration into executions during model building, which
+    // has already run by the time this participant adds an execution, so the configuration is
+    // copied here or it would never reach the goal.
+    Object configuration = plugin.getConfiguration();
+    if (configuration instanceof Xpp3Dom dom) {
+      execution.setConfiguration(new Xpp3Dom(dom));
+    }
+
     plugin.addExecution(execution);
     plugin.flushExecutionMap();
   }

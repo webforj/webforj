@@ -1,6 +1,9 @@
 package com.webforj.plugin.maven;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -10,6 +13,7 @@ import org.apache.maven.model.Build;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.PluginExecution;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -52,6 +56,37 @@ class WebforjLifecycleParticipantTest {
     long bundleBindings = plugin.getExecutions().stream()
         .filter(execution -> execution.getGoals().contains("bundle")).count();
     assertEquals(1, bundleBindings);
+  }
+
+  @Test
+  void shouldCopyPluginConfigurationToBoundGoals() {
+    MavenProject project = projectWithPlugin();
+    Plugin plugin = webforjPlugin(project);
+    Xpp3Dom configuration = new Xpp3Dom("configuration");
+    Xpp3Dom eager = new Xpp3Dom("eager");
+    eager.setValue("true");
+    configuration.addChild(eager);
+    plugin.setConfiguration(configuration);
+
+    runParticipant(project);
+
+    for (PluginExecution execution : plugin.getExecutions()) {
+      Xpp3Dom copy = (Xpp3Dom) execution.getConfiguration();
+      assertNotNull(copy, "expected configuration on execution " + execution.getId());
+      assertNotSame(configuration, copy);
+      assertEquals("true", copy.getChild("eager").getValue());
+    }
+  }
+
+  @Test
+  void shouldLeaveBoundGoalsWithoutConfigurationWhenThePluginHasNone() {
+    MavenProject project = projectWithPlugin();
+
+    runParticipant(project);
+
+    for (PluginExecution execution : webforjPlugin(project).getExecutions()) {
+      assertNull(execution.getConfiguration());
+    }
   }
 
   @Test
