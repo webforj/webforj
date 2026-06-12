@@ -1,5 +1,6 @@
 package com.webforj.plugin.maven;
 
+import com.webforj.bundle.bun.BundleLogger;
 import com.webforj.bundle.bun.BundlerExecution;
 import com.webforj.plugin.foundation.WatchPortFile;
 import com.webforj.plugin.foundation.WatchProtocol;
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.atomic.AtomicReference;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
@@ -54,13 +56,19 @@ public class WatchMojo extends AbstractBundlerMojo {
     // log with the rest of the watch output once the application connects.
     socket.send(WatchProtocol.log("webforj watch listening on port " + socket.getPort()));
 
+    // The initial blocking build reports to the build console, since no application is connected
+    // yet and a failure there must land where the developer is looking. Once the watcher is up the
+    // sink flips to the socket, so every later line reaches the running application log.
+    AtomicReference<BundleLogger> sink = new AtomicReference<>(new MavenBundleLogger(getLog()));
+
     BundlerExecution execution = createExecution();
     try {
       Process watcher =
           execution.watch(createRequest(), changed -> socket.send(WatchProtocol.rebuild(changed)),
-              (level, line) -> socket
-                  .send(level == System.Logger.Level.WARNING ? WatchProtocol.warn(line)
-                      : WatchProtocol.log(line)));
+              (level, line) -> sink.get().log(level, line));
+      sink.set((level, line) -> socket
+          .send(level == System.Logger.Level.WARNING ? WatchProtocol.warn(line)
+              : WatchProtocol.log(line)));
       installShutdownHook(watcher, socket, portFile);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
