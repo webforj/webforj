@@ -89,6 +89,18 @@ class WebforjConfigBuilder {
           .add("webforj.i18n.auto-detect", i18n::isAutoDetect, false);
     });
 
+    // Development tools configuration
+    builder.addNested(properties::getDevtools, devtools -> {
+      builder.addNested(devtools::getLivereload, livereload -> {
+        builder.add("webforj.devtools.livereload.enabled", livereload::getEnabled, false)
+            .add("webforj.devtools.livereload.websocket-port", livereload::getWebsocketPort)
+            .add("webforj.devtools.livereload.websocket-path", livereload::getWebsocketPath)
+            .add("webforj.devtools.livereload.heartbeat-interval", livereload::getHeartbeatInterval)
+            .add("webforj.devtools.livereload.static-resources-enabled",
+                livereload::getStaticResourcesEnabled);
+      });
+    });
+
     // Servlet configurations
     builder.add("webforj.servlets", () -> {
       if (properties.getServlets() == null || properties.getServlets().isEmpty()) {

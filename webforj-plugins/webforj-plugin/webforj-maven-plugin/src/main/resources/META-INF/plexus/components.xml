@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Registers the lifecycle participant so that an application which loads the plugin with
+    extensions=true gets the bundle and frontend test goals bound to its build automatically, with
+    no execution blocks. -->
+<component-set>
+  <components>
+    <component>
+      <role>org.apache.maven.AbstractMavenLifecycleParticipant</role>
+      <role-hint>webforj</role-hint>
+      <implementation>com.webforj.plugin.maven.WebforjLifecycleParticipant</implementation>
+    </component>
+  </components>
+</component-set>

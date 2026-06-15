@@ -63,6 +63,8 @@
     <module>webforj-jbang</module>
     <module>webforj-kotlin</module>
     <module>webforj-rewrite</module>
+    <module>webforj-bundle</module>
+    <module>webforj-devtools</module>
     <module>webforj-plugins</module>
     <module>webforj-report-aggregate</module>
     <module>webforj-spring</module>

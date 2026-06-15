@@ -5,7 +5,6 @@ import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.net.InetAddress;
 import java.net.URI;
-import java.util.concurrent.atomic.AtomicBoolean;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.web.server.context.WebServerInitializedEvent;
 import org.springframework.context.event.EventListener;
@@ -19,7 +18,13 @@ import org.springframework.core.env.Environment;
  */
 public class BrowserLauncher {
   private static final Logger LOG = System.getLogger(BrowserLauncher.class.getName());
-  private static final AtomicBoolean browserOpened = new AtomicBoolean(false);
+
+  /**
+   * JVM wide marker that the browser has been opened. It is a system property because it must
+   * survive a restart, where a static field would not since it lives on the restart classloader
+   * that DevTools discards.
+   */
+  private static final String OPENED_PROPERTY = "webforj.devtools.browser-opened";
   private final Environment environment;
   private Integer serverPort;
 
@@ -48,9 +53,10 @@ public class BrowserLauncher {
       return;
     }
 
-    // Check if browser was already opened for this application instance
-    if (browserOpened.get()) {
+    // The browser opens once on the first launch and stays put across every later restart.
+    if (System.getProperty(OPENED_PROPERTY) != null) {
       LOG.log(Level.DEBUG, "Browser already opened for this application, skipping");
+
       return;
     }
 
@@ -117,7 +123,7 @@ public class BrowserLauncher {
   }
 
   private static void markBrowserAsOpened(String url) {
-    browserOpened.set(true);
+    System.setProperty(OPENED_PROPERTY, "true");
     LOG.log(Level.INFO, "Opened browser at: {0}", url);
   }
 }

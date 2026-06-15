@@ -33,6 +33,11 @@
       <artifactId>webforj-foundation</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-bundle-foundation</artifactId>
+    </dependency>
+
     <!-- Extensions -->
     <dependency>
       <groupId>com.webforj</groupId>
