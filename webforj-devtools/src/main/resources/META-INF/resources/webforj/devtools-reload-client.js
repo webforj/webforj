@@ -20,6 +20,7 @@
   const reconnectMaxWaitMs = config.reconnectMaxWaitMs || 120000;
   const probeInterval = config.probeInterval || 400;
   const probeMaxWaitMs = config.probeMaxWaitMs || 120000;
+  const serverProgressbarId = 'dwc-page-progressbar';
 
   let ws;
   let heartbeatTimer;
@@ -29,6 +30,7 @@
   let pendingReload = false;
   let disconnectedAt = 0;
   let probeStartedAt = 0;
+  let progressbarObserver;
 
   function log(message) {
     console.log(
@@ -285,6 +287,30 @@
     document.getElementById('webforj-devtools-veil')?.remove();
   }
 
+  // The dwc client raises its own page progress bar the moment it loses the server, ahead of
+  // the reload socket noticing. Treat that as another disconnect signal: take the bar down and
+  // bring up the reload pill so a redeploy always shows the same single indicator.
+  function takeOverServerProgressbar() {
+    const bar = document.getElementById(serverProgressbarId);
+    if (!bar) {
+      return;
+    }
+
+    bar.remove();
+    showStatus('Server restarting…');
+  }
+
+  function watchForServerProgressbar() {
+    if (progressbarObserver || typeof MutationObserver === 'undefined' || !document.body) {
+      return;
+    }
+
+    progressbarObserver = new MutationObserver(takeOverServerProgressbar);
+    progressbarObserver.observe(document.body, { childList: true });
+    // It may already be on the page if it appeared before this started watching.
+    takeOverServerProgressbar();
+  }
+
   function handleResourceUpdate(message) {
     // The path comes from the server as the resource path (e.g., "css/style.css")
     const resourcePath = normalizePath(message.path);
@@ -365,12 +391,17 @@
 
   // Start connection
   connect();
+  watchForServerProgressbar();
 
   // Clean up on page unload
   window.addEventListener('beforeunload', function () {
     stopHeartbeat();
     if (reconnectTimer) {
       clearTimeout(reconnectTimer);
+    }
+
+    if (progressbarObserver) {
+      progressbarObserver.disconnect();
     }
 
     if (ws) {
