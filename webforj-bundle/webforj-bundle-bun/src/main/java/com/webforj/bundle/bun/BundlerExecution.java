@@ -380,6 +380,8 @@ public final class BundlerExecution {
 
     Path sourceRoot = request.getBundleSourceRoot();
     Path generatedDir = sourceRoot.resolve(NPM_ENTRY_DIR);
+
+    clearGeneratedDir(generatedDir);
     extractDependencyFrontend(classpath, generatedDir);
 
     List<BundleEntryDeclaration> entries =
@@ -394,6 +396,7 @@ public final class BundlerExecution {
     final List<BunPlugin> plugins = context.getPlugins();
     if (entries.isEmpty()) {
       log.info("nothing to bundle, skipping Bun invocation");
+      clearGeneratedDir(generatedDir);
 
       return null;
     }
@@ -419,6 +422,8 @@ public final class BundlerExecution {
       mergeBindings(bindings, context.getBindings());
       debugSources = scan.getDebugSources();
     }
+
+    writeGeneratedGitignore(generatedDir);
 
     Path workDir = request.getWorkDir();
     Files.createDirectories(workDir);
@@ -466,20 +471,28 @@ public final class BundlerExecution {
   private void extractDependencyFrontend(Set<URI> classpath, Path generatedDir) throws IOException {
     // A dependency can ship its own frontend inside its JAR. Extract it into the generated sources
     // directory before resolving entries, so the single build compiles it the same as local source.
-    ensureGeneratedDir(generatedDir);
     int extracted = new DependencyEntryExtractor().extract(classpath, generatedDir);
     if (extracted > 0) {
       log.info("extracted {} frontend file(s) shipped by dependencies", extracted);
     }
   }
 
-  private void ensureGeneratedDir(Path npmDir) throws IOException {
-    if (Files.isDirectory(npmDir)) {
-      clearDirectory(npmDir);
+  private void clearGeneratedDir(Path generatedDir) throws IOException {
+    // Remove a previous run's generated sources. This only deletes, it never creates, so a run that
+    // generates nothing leaves no directory behind.
+    if (Files.isDirectory(generatedDir)) {
+      clearDirectory(generatedDir);
+      Files.deleteIfExists(generatedDir);
     }
+  }
 
-    Files.createDirectories(npmDir);
-    Files.writeString(npmDir.resolve(".gitignore"), "*\n");
+  private void writeGeneratedGitignore(Path generatedDir) throws IOException {
+    // The directory exists only when this run wrote a generated source into it, so keep whatever it
+    // holds out of version control. When nothing needed generating the directory was never created,
+    // and there is nothing to ignore or to clean up.
+    if (Files.isDirectory(generatedDir)) {
+      Files.writeString(generatedDir.resolve(".gitignore"), "*\n");
+    }
   }
 
   private List<BundleEntryDeclaration> resolveEntries(ClasspathPackageScanner.Result scan,
@@ -546,6 +559,7 @@ public final class BundlerExecution {
           .append(";\n");
     }
 
+    Files.createDirectories(generatedDir);
     Files.writeString(generatedDir.resolve(EAGER_ENTRY), module.toString());
 
     return new BundleEntryDeclaration().setSource(BundleIndex.EAGER_KEY)
@@ -630,8 +644,16 @@ public final class BundlerExecution {
   private void installAtRoot(Request request, List<BundlePackageDeclaration> declarations)
       throws IOException, InterruptedException {
     Path npmRoot = request.getNpmRoot();
+    Path packageJsonFile = npmRoot.resolve(PACKAGE_JSON);
+
+    // Nothing declares an npm dependency and the project ships no package.json of its own. There is
+    // nothing to install and no manifest to maintain, so the project tree is left untouched.
+    if (declarations.isEmpty() && !Files.isRegularFile(packageJsonFile)) {
+      return;
+    }
+
     Files.createDirectories(npmRoot);
-    Map<String, Object> existing = packageJson.read(npmRoot.resolve(PACKAGE_JSON));
+    Map<String, Object> existing = packageJson.read(packageJsonFile);
     Map<String, Object> model =
         packageJson.createModel(request.getProjectName(), declarations, existing);
     Path written = packageJson.write(npmRoot, model);
