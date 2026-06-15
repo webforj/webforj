@@ -58,7 +58,7 @@
         // wait until the page actually answers with its bootstrap before reloading.
         if (hasDisconnected && reconnectAttempts > 0) {
           log('🔌 Server socket is back. Waiting until the app can serve before reloading...');
-          showProgressBar();
+          showStatus('Waiting for the app…');
           reloadWhenReady();
           return;
         }
@@ -77,7 +77,7 @@
           switch (message.type) {
             case 'reload':
               log('🎯 Hot reload triggered! Refreshing in 3... 2... 1...');
-              showProgressBar();
+              showStatus('Reloading…');
               window.location.reload();
               break;
 
@@ -114,7 +114,7 @@
         if (!hasDisconnected) {
           log('📡 Connection closed (code: ' + event.code
             + ') - standing by until the app is back...');
-          showProgressBar();
+          showStatus('Server restarting…');
         }
         hasDisconnected = true;
         stopHeartbeat();
@@ -122,8 +122,6 @@
       };
 
       ws.onerror = function () {
-        log('⚠️ WebSocket hiccup detected: ' + error);
-        console.error('[webforJ DevTools] WebSocket error details:', error);
         stopHeartbeat();
       };
 
@@ -141,6 +139,7 @@
     if (Date.now() - disconnectedAt >= reconnectMaxWaitMs) {
       log('😔 The app has not come back in ' + Math.round(reconnectMaxWaitMs / 1000)
         + 's, giving up. Reload the page to reconnect.');
+      hideStatus();
       return;
     }
 
@@ -178,6 +177,7 @@
         if (body.indexOf('webapp/webapp.min.js') !== -1
           || body.indexOf('webapp/webapp.js') !== -1) {
           log('✅ App is ready, reloading.');
+          showStatus('Reloading…');
           window.location.reload();
         } else {
           scheduleProbe();
@@ -226,68 +226,63 @@
     return path ? path.split('\\').join('/') : '';
   }
 
-  function showProgressBar() {
-    // Remove any existing progress bar
-    const existing = document.getElementById('webforj-devtools-progressbar');
-    if (existing) {
-      existing.remove();
+  function showStatus(text) {
+    const host = document.getElementById('webforj-devtools-status') || buildStatus();
+    const label = host.querySelector('[data-webforj-status]');
+    if (label) {
+      label.textContent = text;
+    }
+  }
+
+  function buildStatus() {
+    if (!document.getElementById('webforj-devtools-status-style')) {
+      const style = document.createElement('style');
+      style.id = 'webforj-devtools-status-style';
+      style.textContent = [
+        '@keyframes webforjDevToolsSpin{to{transform:rotate(360deg)}}',
+        '@keyframes webforjDevToolsIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}',
+        '#webforj-devtools-veil{position:fixed;inset:0;z-index:2147483646;cursor:progress;'
+          + 'background:var(--dwc-overlay-background,rgba(17,20,30,0.16))}',
+        '#webforj-devtools-status{position:fixed;bottom:18px;right:18px;z-index:2147483647;'
+          + 'display:flex;align-items:center;gap:9px;padding:9px 16px;'
+          + 'border-radius:var(--dwc-border-radius-pill,999px);background:var(--dwc-surface-3,#fff);'
+          + 'color:var(--dwc-color-default-text,#222);'
+          + 'font:500 13px/1 var(--dwc-font-family,system-ui,sans-serif);'
+          + 'box-shadow:var(--dwc-shadow-l,0 8px 24px rgba(0,0,0,0.2));'
+          + 'animation:webforjDevToolsIn 0.22s ease both}',
+        '#webforj-devtools-status .webforj-devtools-spin{width:14px;height:14px;border-radius:50%;'
+          + 'border:2px solid rgba(128,128,128,0.3);'
+          + 'border-top-color:var(--dwc-color-primary,#6c7bff);'
+          + 'animation:webforjDevToolsSpin 0.7s linear infinite}'
+      ].join('');
+      document.head.appendChild(style);
     }
 
-    // Remove any existing style
-    const existingStyle = document.getElementById('webforj-devtools-progress-style');
-    if (existingStyle) {
-      existingStyle.remove();
+    if (!document.getElementById('webforj-devtools-veil')) {
+      const veil = document.createElement('div');
+      veil.id = 'webforj-devtools-veil';
+      document.body.appendChild(veil);
     }
 
-    // Create progress bar container
-    const progressBar = document.createElement('div');
-    progressBar.id = 'webforj-devtools-progressbar';
+    const host = document.createElement('div');
+    host.id = 'webforj-devtools-status';
 
-    // Create the pulse bar
-    const pulseBar = document.createElement('div');
+    const spinner = document.createElement('span');
+    spinner.className = 'webforj-devtools-spin';
 
-    // Apply styles
-    Object.assign(progressBar.style, {
-      width: '100%',
-      position: 'fixed',
-      top: '0',
-      left: '0',
-      zIndex: '10000',
-      height: '3px',
-      backgroundColor: 'var(--dwc-color-primary, #4c47ff)',
-      overflow: 'hidden'
-    });
+    const label = document.createElement('span');
+    label.setAttribute('data-webforj-status', '');
 
-    Object.assign(pulseBar.style, {
-      width: '100%',
-      height: '100%',
-      backgroundColor: 'rgba(255, 255, 255, 0.7)',
-      animation: 'webforjDevToolsPulse 1.5s infinite'
-    });
+    host.appendChild(spinner);
+    host.appendChild(label);
+    document.body.appendChild(host);
 
-    // Add animation keyframes
-    const style = document.createElement('style');
-    style.id = 'webforj-devtools-progress-style';
-    style.textContent = `
-      @keyframes webforjDevToolsPulse {
-        0% {
-          transform: translateX(-100%);
-          opacity: 0;
-        }
-        50% {
-          opacity: 1;
-        }
-        100% {
-          transform: translateX(100%);
-          opacity: 0;
-        }
-      }
-    `;
-    document.head.appendChild(style);
+    return host;
+  }
 
-    // Assemble and add to page
-    progressBar.appendChild(pulseBar);
-    document.body.appendChild(progressBar);
+  function hideStatus() {
+    document.getElementById('webforj-devtools-status')?.remove();
+    document.getElementById('webforj-devtools-veil')?.remove();
   }
 
   function handleResourceUpdate(message) {
@@ -304,13 +299,13 @@
       case 'js':
         // For JavaScript changes, trigger full reload
         log('⚡ JavaScript updated: ' + resourcePath + ' - full refresh incoming!');
-        showProgressBar();
+        showStatus('Reloading…');
         window.location.reload();
         break;
       case 'other':
         // For other file types, trigger full reload
         log('📝 File modified: ' + resourcePath + ' - refreshing to apply changes!');
-        showProgressBar();
+        showStatus('Reloading…');
         window.location.reload();
         break;
       default:
@@ -377,6 +372,7 @@
     if (reconnectTimer) {
       clearTimeout(reconnectTimer);
     }
+
     if (ws) {
       ws.close();
     }
