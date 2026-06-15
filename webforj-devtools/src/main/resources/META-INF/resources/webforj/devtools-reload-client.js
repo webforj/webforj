@@ -4,7 +4,7 @@
  * @author Hyyan Abo Fakher
  * @since 25.02
  */
-(function() {
+(function () {
   'use strict';
 
   if (!window.webforjDevToolsConfig || !window.webforjDevToolsConfig.enabled) {
@@ -14,14 +14,21 @@
   const config = window.webforjDevToolsConfig;
   const wsUrl = config.websocketUrl;
   const heartbeatInterval = config.heartbeatInterval || 30000;
-  const reconnectDelay = config.reconnectDelay || 1000;
-  const maxReconnectAttempts = config.maxReconnectAttempts || 10;
+  // A dev redeploy is back in a few seconds on localhost, so poll tight at a fixed interval
+  // instead of backing off, and give up by elapsed time.
+  const reconnectInterval = config.reconnectInterval || 400;
+  const reconnectMaxWaitMs = config.reconnectMaxWaitMs || 120000;
+  const probeInterval = config.probeInterval || 400;
+  const probeMaxWaitMs = config.probeMaxWaitMs || 120000;
 
   let ws;
   let heartbeatTimer;
   let reconnectTimer;
   let reconnectAttempts = 0;
   let hasDisconnected = false;
+  let pendingReload = false;
+  let disconnectedAt = 0;
+  let probeStartedAt = 0;
 
   function log(message) {
     console.log(
@@ -36,31 +43,34 @@
       return;
     }
 
-    log('🚀 Initiating DevTools connection to: ' + wsUrl);
+    if (!hasDisconnected) {
+      log('🚀 Initiating DevTools connection to: ' + wsUrl);
+    }
 
     try {
       ws = new WebSocket(wsUrl);
 
-      ws.onopen = function() {
+      ws.onopen = function () {
         log('✅ DevTools connection established! Ready to rock 🎸');
 
-        // If we're reconnecting after a disconnection, reload the page
+        // The reload socket coming back does not mean the application can serve yet. The socket
+        // binds early in a redeploy, before the app is initialized and the bundle is in place, so
+        // wait until the page actually answers with its bootstrap before reloading.
         if (hasDisconnected && reconnectAttempts > 0) {
-          log('🔄 Server is back online! Refreshing your experience...');
+          log('🔌 Server socket is back. Waiting until the app can serve before reloading...');
           showProgressBar();
-          setTimeout(function() {
-            window.location.reload();
-          }, 100);
+          reloadWhenReady();
           return;
         }
 
         reconnectAttempts = 0;
+        disconnectedAt = 0;
         startHeartbeat();
         // Send initial ping to confirm connection
         ws.send('ping');
       };
 
-      ws.onmessage = function(event) {
+      ws.onmessage = function (event) {
         try {
           const message = JSON.parse(event.data);
 
@@ -100,14 +110,18 @@
         }
       };
 
-      ws.onclose = function(event) {
-        log('📡 Connection closed (code: ' + event.code + ') - standing by...');
+      ws.onclose = function (event) {
+        if (!hasDisconnected) {
+          log('📡 Connection closed (code: ' + event.code
+            + ') - standing by until the app is back...');
+          showProgressBar();
+        }
         hasDisconnected = true;
         stopHeartbeat();
         scheduleReconnect();
       };
 
-      ws.onerror = function(error) {
+      ws.onerror = function () {
         log('⚠️ WebSocket hiccup detected: ' + error);
         console.error('[webforJ DevTools] WebSocket error details:', error);
         stopHeartbeat();
@@ -120,8 +134,13 @@
   }
 
   function scheduleReconnect() {
-    if (reconnectAttempts >= maxReconnectAttempts) {
-      log('😔 Max reconnection attempts reached - taking a break');
+    if (disconnectedAt === 0) {
+      disconnectedAt = Date.now();
+    }
+
+    if (Date.now() - disconnectedAt >= reconnectMaxWaitMs) {
+      log('😔 The app has not come back in ' + Math.round(reconnectMaxWaitMs / 1000)
+        + 's, giving up. Reload the page to reconnect.');
       return;
     }
 
@@ -129,20 +148,61 @@
       clearTimeout(reconnectTimer);
     }
 
+    // Fixed tight interval so a quick redeploy is caught within a fraction of a second instead of
+    // an exponential backoff that overshoots the few seconds a redeploy actually takes.
     reconnectAttempts++;
-    const delay = Math.min(reconnectDelay * Math.pow(2, reconnectAttempts - 1), 30000);
-
-    log('🕓 Reconnection attempt #' + reconnectAttempts + ' scheduled in ' + delay + 'ms');
-
-    reconnectTimer = setTimeout(function() {
+    reconnectTimer = setTimeout(function () {
       connect();
-    }, delay);
+    }, reconnectInterval);
+  }
+
+  // Reloads only once the application can actually serve.
+  // A 200 alone can be a holding or error page during a redeploy, so the page
+  // body must carry the client bootstrap reference before the reload is allowed through.
+  function reloadWhenReady() {
+    if (pendingReload) {
+      return;
+    }
+
+    pendingReload = true;
+    probeStartedAt = Date.now();
+    probeApp();
+  }
+
+  function probeApp() {
+    fetch(window.location.href, { method: 'GET', cache: 'no-store' })
+      .then(function (response) {
+        return response.ok ? response.text() : Promise.reject(new Error('not ready'));
+      })
+      .then(function (body) {
+        if (body.indexOf('webapp/webapp.min.js') !== -1
+          || body.indexOf('webapp/webapp.js') !== -1) {
+          log('✅ App is ready, reloading.');
+          window.location.reload();
+        } else {
+          scheduleProbe();
+        }
+      })
+      .catch(function () {
+        scheduleProbe();
+      });
+  }
+
+  function scheduleProbe() {
+    if (Date.now() - probeStartedAt >= probeMaxWaitMs) {
+      log('⏳ App did not become ready in time, reloading anyway.');
+      window.location.reload();
+      return;
+    }
+
+    // Fixed tight interval, matched to the reconnect cadence.
+    setTimeout(probeApp, probeInterval);
   }
 
   function startHeartbeat() {
     stopHeartbeat();
 
-    heartbeatTimer = setInterval(function() {
+    heartbeatTimer = setInterval(function () {
       if (ws && ws.readyState === WebSocket.OPEN) {
         ws.send('ping');
       }
@@ -234,7 +294,7 @@
     // The path comes from the server as the resource path (e.g., "css/style.css")
     const resourcePath = normalizePath(message.path);
 
-    switch(message.resourceType) {
+    switch (message.resourceType) {
       case 'css':
         updateStylesheets(resourcePath, message.timestamp);
         break;
@@ -263,7 +323,7 @@
     const links = document.querySelectorAll('link[rel="stylesheet"]');
     let updatedCount = 0;
 
-    links.forEach(function(link) {
+    links.forEach(function (link) {
       // Check if href contains the resource path
       const href = normalizePath(link.href);
       const originalHref = normalizePath(link.getAttribute('href'));
@@ -290,7 +350,7 @@
     const images = document.querySelectorAll('img');
     let updatedCount = 0;
 
-    images.forEach(function(img) {
+    images.forEach(function (img) {
       const src = normalizePath(img.src);
       const originalSrc = normalizePath(img.getAttribute('src'));
 
@@ -312,7 +372,7 @@
   connect();
 
   // Clean up on page unload
-  window.addEventListener('beforeunload', function() {
+  window.addEventListener('beforeunload', function () {
     stopHeartbeat();
     if (reconnectTimer) {
       clearTimeout(reconnectTimer);
