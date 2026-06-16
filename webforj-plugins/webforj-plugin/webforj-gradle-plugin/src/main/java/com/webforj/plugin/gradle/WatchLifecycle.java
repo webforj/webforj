@@ -1,5 +1,6 @@
 package com.webforj.plugin.gradle;
 
+import com.webforj.bundle.bun.WatchSession;
 import com.webforj.plugin.foundation.WatchSocketServer;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,19 +25,19 @@ import org.gradle.api.services.BuildServiceParameters;
 public abstract class WatchLifecycle
     implements BuildService<BuildServiceParameters.None>, AutoCloseable {
 
-  private Process watcher;
+  private WatchSession session;
   private WatchSocketServer socket;
   private Path portFile;
 
   /**
-   * Records the watcher resources to release when the build ends.
+   * Records the watch resources to release when the build ends.
    *
-   * @param watcher the running Bun watcher process
+   * @param session the running watch
    * @param socket the watch socket server
    * @param portFile the discovery file keyed by the project path
    */
-  synchronized void track(Process watcher, WatchSocketServer socket, Path portFile) {
-    this.watcher = watcher;
+  synchronized void track(WatchSession session, WatchSocketServer socket, Path portFile) {
+    this.session = session;
     this.socket = socket;
     this.portFile = portFile;
   }
@@ -46,20 +47,23 @@ public abstract class WatchLifecycle
    */
   @Override
   public synchronized void close() {
-    if (watcher != null) {
-      watcher.destroy();
-      watcher = null;
+    if (session != null) {
+      session.close();
+      session = null;
     }
+
     if (socket != null) {
       socket.close();
       socket = null;
     }
+
     if (portFile != null) {
       try {
         Files.deleteIfExists(portFile);
       } catch (IOException e) {
         // shutting down, ignore
       }
+
       portFile = null;
     }
   }

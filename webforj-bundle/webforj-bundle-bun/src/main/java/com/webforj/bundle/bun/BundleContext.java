@@ -42,6 +42,7 @@ public final class BundleContext {
   private final Map<String, BundleEntryDeclaration> entries = new LinkedHashMap<>();
   private final Map<String, Set<String>> bindings = new LinkedHashMap<>();
   private final Map<String, BunPlugin> plugins = new LinkedHashMap<>();
+  private final Set<Path> watchPaths = new LinkedHashSet<>();
 
   BundleContext() {}
 
@@ -222,6 +223,25 @@ public final class BundleContext {
 
   private void bind(String key, String source) {
     bindings.computeIfAbsent(key, name -> new LinkedHashSet<>()).add(source);
+  }
+
+  /**
+   * Adds a directory the development watch rebuilds on when its contents change.
+   *
+   * <p>
+   * An extension that builds from sources outside the frontend root, such as a stylesheet generated
+   * from the classes a project uses, registers those sources here so editing them regenerates the
+   * bundle during a watch.
+   * </p>
+   *
+   * @param path the directory to watch
+   */
+  public void addWatchPath(Path path) {
+    watchPaths.add(path);
+  }
+
+  Set<Path> getWatchPaths() {
+    return watchPaths;
   }
 
   List<BundlePackageDeclaration> getPackages() {

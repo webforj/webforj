@@ -52,6 +52,14 @@ public class TailwindBundleRegistrar implements BundleExtension {
           .warn("Tailwind found no application sources to scan, no utilities will be generated");
     }
 
+    // The utilities are generated from the classes the sources use, so editing a source changes the
+    // output. The sources sit outside the frontend root the watch already follows, so register them
+    // to rebuild on, which regenerates the utilities when a class is added or removed during a
+    // watch.
+    for (Path source : sources) {
+      context.addWatchPath(source);
+    }
+
     Path entryDir = context.getGeneratedPath().resolve(SUBDIR);
     Files.createDirectories(entryDir);
     Path entryFile = entryDir.resolve(ENTRY_FILE);

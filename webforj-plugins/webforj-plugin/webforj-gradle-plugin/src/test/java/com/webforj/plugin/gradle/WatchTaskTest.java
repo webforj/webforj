@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.webforj.bundle.bun.BundlerExecution;
+import com.webforj.bundle.bun.WatchSession;
 import com.webforj.plugin.foundation.WatchPortFile;
 import java.io.File;
 import java.nio.file.Files;
@@ -70,7 +71,7 @@ class WatchTaskTest {
   @Test
   void shouldOpenTheSocketAndWriteThePortFile(@TempDir Path tmp) throws Exception {
     BundlerExecution execution = mock(BundlerExecution.class);
-    when(execution.watch(any(), any(), any())).thenReturn(mock(Process.class));
+    when(execution.watch(any(), any(), any())).thenReturn(mock(WatchSession.class));
     Project project = ProjectBuilder.builder().withProjectDir(tmp.toFile()).build();
     TestableWatchTask task = task(project, tmp, tmp.toFile());
     task.setExecution(execution);

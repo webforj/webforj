@@ -123,6 +123,7 @@ public final class BundleDriverWriter {
     private boolean splitting = true;
     private List<BunPlugin> plugins = null;
     private String userConfig = null;
+    private List<String> watchPaths = List.of();
 
     /**
      * Sets the entries to build.
@@ -333,6 +334,28 @@ public final class BundleDriverWriter {
       this.userConfig = userConfig;
 
       return this;
+    }
+
+    /**
+     * Sets the extra directories the watch rebuilds on, beyond the bundle source root.
+     *
+     * @param watchPaths the absolute directories to watch
+     * @return the config
+     */
+    public Config setWatchPaths(List<String> watchPaths) {
+      this.watchPaths = watchPaths;
+
+      return this;
+    }
+
+    /**
+     * Gets the extra directories the watch rebuilds on, beyond the bundle source root.
+     *
+     * @return the absolute directories to watch
+     * @see #setWatchPaths(List)
+     */
+    public List<String> getWatchPaths() {
+      return watchPaths;
     }
 
     /**

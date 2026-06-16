@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.webforj.bundle.bun.BundlerExecution;
+import com.webforj.bundle.bun.WatchSession;
 import com.webforj.plugin.foundation.WatchPortFile;
 import java.io.File;
 import java.nio.file.Files;
@@ -34,7 +35,7 @@ class WatchMojoTest {
   @Test
   void shouldOpenTheSocketAndWriteThePortFile(@TempDir Path tmp) throws Exception {
     BundlerExecution execution = mock(BundlerExecution.class);
-    when(execution.watch(any(), any(), any())).thenReturn(mock(Process.class));
+    when(execution.watch(any(), any(), any())).thenReturn(mock(WatchSession.class));
     WatchMojo mojo = newMojo(execution, tmp);
     Path portFile = WatchPortFile.resolve(tmp.toAbsolutePath().toString());
 

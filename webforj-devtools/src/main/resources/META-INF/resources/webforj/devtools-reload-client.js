@@ -30,7 +30,7 @@
   let pendingReload = false;
   let disconnectedAt = 0;
   let probeStartedAt = 0;
-  let progressbarObserver;
+  let leaving = false;
 
   function log(message) {
     console.log(
@@ -113,7 +113,7 @@
       };
 
       ws.onclose = function (event) {
-        if (!hasDisconnected) {
+        if (!leaving && !hasDisconnected) {
           log('📡 Connection closed (code: ' + event.code
             + ') - standing by until the app is back...');
           showStatus('Server restarting…');
@@ -287,28 +287,16 @@
     document.getElementById('webforj-devtools-veil')?.remove();
   }
 
-  // The dwc client raises its own page progress bar the moment it loses the server, ahead of
-  // the reload socket noticing. Treat that as another disconnect signal: take the bar down and
-  // bring up the reload pill so a redeploy always shows the same single indicator.
-  function takeOverServerProgressbar() {
-    const bar = document.getElementById(serverProgressbarId);
-    if (!bar) {
+  // Hide the dwc client's own page progress bar.
+  function hideServerProgressbar() {
+    if (document.getElementById('webforj-devtools-progressbar-style')) {
       return;
     }
 
-    bar.remove();
-    showStatus('Server restarting…');
-  }
-
-  function watchForServerProgressbar() {
-    if (progressbarObserver || typeof MutationObserver === 'undefined' || !document.body) {
-      return;
-    }
-
-    progressbarObserver = new MutationObserver(takeOverServerProgressbar);
-    progressbarObserver.observe(document.body, { childList: true });
-    // It may already be on the page if it appeared before this started watching.
-    takeOverServerProgressbar();
+    const style = document.createElement('style');
+    style.id = 'webforj-devtools-progressbar-style';
+    style.textContent = '#' + serverProgressbarId + '{display:none!important}';
+    (document.head || document.documentElement).appendChild(style);
   }
 
   function handleResourceUpdate(message) {
@@ -391,17 +379,14 @@
 
   // Start connection
   connect();
-  watchForServerProgressbar();
+  hideServerProgressbar();
 
-  // Clean up on page unload
+  // Clean up on page unload.
   window.addEventListener('beforeunload', function () {
+    leaving = true;
     stopHeartbeat();
     if (reconnectTimer) {
       clearTimeout(reconnectTimer);
-    }
-
-    if (progressbarObserver) {
-      progressbarObserver.disconnect();
     }
 
     if (ws) {
