@@ -41,6 +41,8 @@ public final class WatchSocketServer implements AutoCloseable {
   private final Thread acceptThread;
   private final List<String> pending = new ArrayList<>();
   private boolean replayed = false;
+  private volatile Runnable onConnect = () -> {
+  };
 
   /**
    * Opens the server on a free loopback port chosen by the operating system.
@@ -95,6 +97,22 @@ public final class WatchSocketServer implements AutoCloseable {
         pending.clear();
       }
     }
+
+    // A connection means an application started or restarted, the one moment its compiled classes
+    // can carry a new set of bundle entries. The callback runs off the write lock so a slow rescan
+    // never holds up output to the other connections.
+    onConnect.run();
+  }
+
+  /**
+   * Sets the callback invoked whenever an application connects, used to rescan for bundle entry
+   * changes a development restart may have introduced.
+   *
+   * @param onConnect the callback, or {@code null} to clear it
+   */
+  public void setOnConnect(Runnable onConnect) {
+    this.onConnect = onConnect != null ? onConnect : () -> {
+    };
   }
 
   /**

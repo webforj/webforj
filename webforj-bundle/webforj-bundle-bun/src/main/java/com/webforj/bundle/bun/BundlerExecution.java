@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -136,11 +137,11 @@ public final class BundlerExecution {
    *
    * @param request the parameters for this run
    *
-   * @return the running Bun watcher process, or {@code null} when there was nothing to watch
+   * @return the running watch, or {@code null} when there was nothing to watch
    * @throws IOException on any IO failure
    * @throws InterruptedException if the initial build is interrupted
    */
-  public Process watch(Request request) throws IOException, InterruptedException {
+  public WatchSession watch(Request request) throws IOException, InterruptedException {
     return watch(request, null, null);
   }
 
@@ -152,11 +153,11 @@ public final class BundlerExecution {
    * @param rebuildListener notified with the changed served paths after each rebuild, never empty,
    *        may be null
    *
-   * @return the running Bun watcher process, or {@code null} when there was nothing to watch
+   * @return the running watch, or {@code null} when there was nothing to watch
    * @throws IOException on any IO failure
    * @throws InterruptedException if the initial build is interrupted
    */
-  public Process watch(Request request, Consumer<List<String>> rebuildListener)
+  public WatchSession watch(Request request, Consumer<List<String>> rebuildListener)
       throws IOException, InterruptedException {
     return watch(request, rebuildListener, null);
   }
@@ -171,62 +172,63 @@ public final class BundlerExecution {
    * @param logger where the watch output is reported, a watch passes one that forwards to the
    *        running application, may be null
    *
-   * @return the running Bun watcher process, or {@code null} when there was nothing to watch
+   * @return the running watch, or {@code null} when there was nothing to watch
    * @throws IOException on any IO failure
    * @throws InterruptedException if the initial build is interrupted
    */
-  public Process watch(Request request, Consumer<List<String>> rebuildListener, BundleLogger logger)
-      throws IOException, InterruptedException {
+  public WatchSession watch(Request request, Consumer<List<String>> rebuildListener,
+      BundleLogger logger) throws IOException, InterruptedException {
     // During a watch every bundler line is forwarded to the running application, so nothing is
     // written to the build console while the application is up.
     useLogger(logger);
     CompileContext compileContext = createCompileContext(request, false);
     Path servedDir = getServedOutputDir(request);
     Path stagingDir = request.getWorkDir().resolve(WATCH_STAGING_DIR);
-    Prepared prepared = compile(compileContext, stagingDir);
+
+    Prepared prepared = buildWatch(compileContext, servedDir, stagingDir);
     if (prepared == null) {
       return null;
     }
 
-    // The driver rebuilds the whole graph and reemits every output on each change, so it writes to
-    // a private staging directory. Only the files whose content actually changed are copied into
-    // the directory the server serves. An edit that affects only a stylesheet therefore leaves the
-    // scripts untouched, and the dev tools see a stylesheet change rather than a full page reload.
-    Files.createDirectories(servedDir);
-    syncChangedFiles(stagingDir, servedDir);
+    // A development restart can change the set of entries the Bun watcher builds, so the session
+    // rescans on every restart and rebuilds only when the set actually changed. Each rebuild builds
+    // a fresh context so a source extension introduced at watch time, such as the first scss file,
+    // is picked up by the rescan that the fresh context runs.
+    Process watcher =
+        startWatcher(compileContext, servedDir, stagingDir, prepared, rebuildListener, false);
 
-    // The watch runs in the Maven process, so the index is written to the project output once,
-    // where the application reads it from the classpath. It is written under the static folder,
-    // which the development servers exclude from their reload scan, so the application never
-    // redeploys when it appears. Development output names are stable, so a content edit never
-    // changes the index and the watcher leaves it untouched on every later rebuild.
-    writeIndex(request, prepared, true);
-    notifyDidBundle(compileContext, servedDir, false);
+    AtomicReference<Prepared> current = new AtomicReference<>(prepared);
 
-    List<String> watchArgs = new ArrayList<>(prepared.getRunArgs());
-    watchArgs.add("--watch");
-    log.info("starting bun watch, edit sources to rebuild");
+    WatchSession.WatchHost host = new WatchSession.WatchHost() {
+      @Override
+      public BundleEntrySet currentEntrySet() {
+        return scanEntrySet(request);
+      }
 
-    AtomicBoolean baselineEstablished = new AtomicBoolean(false);
-
-    return bun.start(request.getBundleSourceRoot(), watchArgs, line -> {
-      log.info("{}", line);
-
-      if (isRebuildComplete(line)) {
-        List<String> changed = syncQuietly(stagingDir, servedDir);
-        notifyDidBundle(compileContext, servedDir, true);
-        // The watcher emits its own build when it starts. That first build is the baseline: it
-        // realigns the served directory with the watch output and never reloads the browser. Every
-        // later rebuild is driven by a developer edit and reaches the reload listener.
-        if (baselineEstablished.compareAndSet(false, true)) {
-          return;
-        }
-
-        if (rebuildListener != null && !changed.isEmpty()) {
-          rebuildListener.accept(changed);
+      @Override
+      public void syncOutput() throws IOException {
+        Prepared prepared = current.get();
+        if (prepared == null) {
+          clearOutput(request, servedDir);
+        } else {
+          BundlerExecution.this.syncOutput(request, servedDir, stagingDir, prepared);
         }
       }
-    });
+
+      @Override
+      public Process restartWatcher() throws IOException, InterruptedException {
+        CompileContext context = createCompileContext(request, false);
+        Prepared rebuilt = buildWatch(context, servedDir, stagingDir);
+        current.set(rebuilt);
+        if (rebuilt == null) {
+          return null;
+        }
+
+        return startWatcher(context, servedDir, stagingDir, rebuilt, rebuildListener, true);
+      }
+    };
+
+    return new WatchSession(watcher, host, log);
   }
 
   /**
@@ -277,6 +279,11 @@ public final class BundlerExecution {
     return bun.execute(sourceRoot, args, line -> log.info("{}", line));
   }
 
+  private void useLogger(BundleLogger logger) {
+    this.log = logger != null ? logger : BundleLogger.system();
+    bun.setLogger(this.log);
+  }
+
   private CompileContext createCompileContext(Request request, boolean production) {
     List<BundleExtension> extensions = loadExtensions(request);
     Set<String> sourceExtensions = scanSourceExtensions(request.getBundleSourceRoot());
@@ -311,49 +318,43 @@ public final class BundlerExecution {
     return extensions;
   }
 
-  private Path getServedOutputDir(Request request) {
-    return request.getClassesOutputDir().resolve(OUTPUT_RESOURCE_PREFIX);
+  private static Set<String> scanSourceExtensions(Path sourceRoot) {
+    if (sourceRoot == null || !Files.isDirectory(sourceRoot)) {
+      return Set.of();
+    }
+
+    Set<String> extensions = new LinkedHashSet<>();
+    try (Stream<Path> walk = Files.walk(sourceRoot)) {
+      for (Path path : (Iterable<Path>) walk::iterator) {
+        if (!Files.isRegularFile(path) || isInsideNodeModules(sourceRoot, path)) {
+          continue;
+        }
+
+        String name = path.getFileName().toString();
+        int dot = name.lastIndexOf('.');
+        if (dot > 0 && dot < name.length() - 1) {
+          extensions.add(name.substring(dot + 1).toLowerCase(Locale.ROOT));
+        }
+      }
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
+
+    return extensions;
   }
 
-  private void notifyDidBundle(CompileContext compileContext, Path outputDir, boolean rebuild) {
-    BundleContext context = createContext(compileContext, outputDir, rebuild);
-    for (BundleExtension extension : compileContext.getExtensions()) {
-      if (!isExtensionActive(extension, context,
-          compileContext.getRequest().getExtensionOverrides())) {
-        continue;
-      }
-
-      try {
-        extension.onDidBundle(context);
-      } catch (RuntimeException e) {
-        log.warn("extension {} failed: {}", extension.getId(), e.getMessage());
+  private static boolean isInsideNodeModules(Path root, Path path) {
+    for (Path segment : root.relativize(path)) {
+      if (segment.toString().equals("node_modules")) {
+        return true;
       }
     }
+
+    return false;
   }
 
-  private boolean isExtensionActive(BundleExtension extension, BundleContext context,
-      Map<String, Boolean> overrides) {
-    Boolean override = overrides.get(extension.getId());
-
-    return override != null ? override : extension.isEnabledByDefault(context);
-  }
-
-  private BundleContext createContext(CompileContext compileContext, Path outputDir,
-      boolean rebuild) {
-    Request request = compileContext.getRequest();
-    Path sourceRoot = request.getBundleSourceRoot();
-    BundleContext context = new BundleContext();
-    context.setClasspath(getUris(request.getClasspathRoots()));
-    context.setFrontendPath(sourceRoot);
-    context.setSourcePaths(request.getSourceScanRoots());
-    context.setGeneratedPath(sourceRoot.resolve(NPM_ENTRY_DIR));
-    context.setOutputPath(outputDir);
-    context.setSourceExtensions(compileContext.getSourceExtensions());
-    context.setProduction(compileContext.isProduction());
-    context.setRebuild(rebuild);
-    context.setLog(log);
-
-    return context;
+  private static Path getServedOutputDir(Request request) {
+    return request.getClassesOutputDir().resolve(OUTPUT_RESOURCE_PREFIX);
   }
 
   private Prepared compile(CompileContext compileContext, Path outputDir)
@@ -389,7 +390,7 @@ public final class BundlerExecution {
             generatedDir, sourceRoot));
 
     BundleContext context = createContext(compileContext, outputDir, false);
-    runExtensions(compileContext.getExtensions(), context, request.getExtensionOverrides());
+    notifyWillBundle(compileContext.getExtensions(), context, request.getExtensionOverrides());
 
     entries.addAll(context.getEntries());
 
@@ -435,11 +436,24 @@ public final class BundlerExecution {
 
     Path metafile = workDir.resolve(META_FILE);
     BundleDriverWriter.Config config = createDriverConfig(request, driverEntries, outputDir,
-        metafile, plugins, compileContext.isProduction(), !eager);
+        metafile, plugins, compileContext.isProduction(), !eager, context.getWatchPaths());
     List<String> runArgs = writeDriverFiles(workDir, plugins, config);
 
     return new Prepared().setMetafile(metafile).setRunArgs(runArgs).setBindings(bindings)
         .setDebugSources(debugSources).setEager(eager);
+  }
+
+  private static Set<URI> getUris(List<File> roots) {
+    Set<URI> uris = new LinkedHashSet<>();
+    for (File root : roots) {
+      if (root == null || !root.exists()) {
+        continue;
+      }
+
+      uris.add(root.toURI());
+    }
+
+    return uris;
   }
 
   private ClasspathPackageScanner.Result scanClasspath(Set<URI> classpath,
@@ -455,29 +469,7 @@ public final class BundlerExecution {
     return scan;
   }
 
-  private Set<URI> getUris(List<File> roots) {
-    Set<URI> uris = new LinkedHashSet<>();
-    for (File root : roots) {
-      if (root == null || !root.exists()) {
-        continue;
-      }
-
-      uris.add(root.toURI());
-    }
-
-    return uris;
-  }
-
-  private void extractDependencyFrontend(Set<URI> classpath, Path generatedDir) throws IOException {
-    // A dependency can ship its own frontend inside its JAR. Extract it into the generated sources
-    // directory before resolving entries, so the single build compiles it the same as local source.
-    int extracted = new DependencyEntryExtractor().extract(classpath, generatedDir);
-    if (extracted > 0) {
-      log.info("extracted {} frontend file(s) shipped by dependencies", extracted);
-    }
-  }
-
-  private void clearGeneratedDir(Path generatedDir) throws IOException {
+  private static void clearGeneratedDir(Path generatedDir) throws IOException {
     // Remove a previous run's generated sources. This only deletes, it never creates, so a run that
     // generates nothing leaves no directory behind.
     if (Files.isDirectory(generatedDir)) {
@@ -486,12 +478,27 @@ public final class BundlerExecution {
     }
   }
 
-  private void writeGeneratedGitignore(Path generatedDir) throws IOException {
-    // The directory exists only when this run wrote a generated source into it, so keep whatever it
-    // holds out of version control. When nothing needed generating the directory was never created,
-    // and there is nothing to ignore or to clean up.
-    if (Files.isDirectory(generatedDir)) {
-      Files.writeString(generatedDir.resolve(".gitignore"), "*\n");
+  private static void clearDirectory(Path dir) throws IOException {
+    try (Stream<Path> walk = Files.walk(dir)) {
+      walk.sorted((a, b) -> b.getNameCount() - a.getNameCount()).filter(p -> !p.equals(dir))
+          .forEach(p -> {
+            try {
+              Files.deleteIfExists(p);
+            } catch (IOException e) {
+              throw new UncheckedIOException(e);
+            }
+          });
+    } catch (UncheckedIOException e) {
+      throw e.getCause();
+    }
+  }
+
+  private void extractDependencyFrontend(Set<URI> classpath, Path generatedDir) throws IOException {
+    // A dependency can ship its own frontend inside its JAR. Extract it into the generated sources
+    // directory before resolving entries, so the single build compiles it the same as local source.
+    int extracted = new DependencyEntryExtractor().extract(classpath, generatedDir);
+    if (extracted > 0) {
+      log.info("extracted {} frontend file(s) shipped by dependencies", extracted);
     }
   }
 
@@ -509,8 +516,8 @@ public final class BundlerExecution {
     return resolved;
   }
 
-  private List<BundleEntryDeclaration> prepareBaseEntries(List<BundleEntryDeclaration> entries,
-      Path generatedDir, Path sourceRoot) throws IOException {
+  private static List<BundleEntryDeclaration> prepareBaseEntries(
+      List<BundleEntryDeclaration> entries, Path generatedDir, Path sourceRoot) throws IOException {
     for (BundleEntryDeclaration entry : entries) {
       if (entry.isNpm()) {
         String stubPath = getNpmStubPath(entry.getSource());
@@ -549,7 +556,42 @@ public final class BundlerExecution {
     return "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
   }
 
-  private BundleEntryDeclaration writeEagerEntry(Path generatedDir,
+  private BundleContext createContext(CompileContext compileContext, Path outputDir,
+      boolean rebuild) {
+    Request request = compileContext.getRequest();
+    Path sourceRoot = request.getBundleSourceRoot();
+    BundleContext context = new BundleContext();
+    context.setClasspath(getUris(request.getClasspathRoots()));
+    context.setFrontendPath(sourceRoot);
+    context.setSourcePaths(request.getSourceScanRoots());
+    context.setGeneratedPath(sourceRoot.resolve(NPM_ENTRY_DIR));
+    context.setOutputPath(outputDir);
+    context.setSourceExtensions(compileContext.getSourceExtensions());
+    context.setProduction(compileContext.isProduction());
+    context.setRebuild(rebuild);
+    context.setLog(log);
+
+    return context;
+  }
+
+  private void notifyWillBundle(List<BundleExtension> extensions, BundleContext context,
+      Map<String, Boolean> overrides) throws IOException {
+    for (BundleExtension extension : extensions) {
+      if (isExtensionActive(extension, context, overrides)) {
+        log.info("enabled extension '{}'", extension.getId());
+        extension.onWillBundle(context);
+      }
+    }
+  }
+
+  private static boolean isExtensionActive(BundleExtension extension, BundleContext context,
+      Map<String, Boolean> overrides) {
+    Boolean override = overrides.get(extension.getId());
+
+    return override != null ? override : extension.isEnabledByDefault(context);
+  }
+
+  private static BundleEntryDeclaration writeEagerEntry(Path generatedDir,
       List<BundleEntryDeclaration> entries) throws IOException {
     StringBuilder module = new StringBuilder();
     for (BundleEntryDeclaration entry : entries) {
@@ -573,52 +615,13 @@ public final class BundlerExecution {
     }
   }
 
-  private void runExtensions(List<BundleExtension> extensions, BundleContext context,
-      Map<String, Boolean> overrides) throws IOException {
-    for (BundleExtension extension : extensions) {
-      if (isExtensionActive(extension, context, overrides)) {
-        log.info("enabled extension '{}'", extension.getId());
-        extension.onWillBundle(context);
-      } else {
-        log.info("extension '{}' is off, enable it with the plugins configuration",
-            extension.getId());
-      }
+  private static void writeGeneratedGitignore(Path generatedDir) throws IOException {
+    // The directory exists only when this run wrote a generated source into it, so keep whatever it
+    // holds out of version control. When nothing needed generating the directory was never created,
+    // and there is nothing to ignore or to clean up.
+    if (Files.isDirectory(generatedDir)) {
+      Files.writeString(generatedDir.resolve(".gitignore"), "*\n");
     }
-  }
-
-  private Set<String> scanSourceExtensions(Path sourceRoot) {
-    if (sourceRoot == null || !Files.isDirectory(sourceRoot)) {
-      return Set.of();
-    }
-
-    Set<String> extensions = new LinkedHashSet<>();
-    try (Stream<Path> walk = Files.walk(sourceRoot)) {
-      for (Path path : (Iterable<Path>) walk::iterator) {
-        if (!Files.isRegularFile(path) || isInsideNodeModules(sourceRoot, path)) {
-          continue;
-        }
-
-        String name = path.getFileName().toString();
-        int dot = name.lastIndexOf('.');
-        if (dot > 0 && dot < name.length() - 1) {
-          extensions.add(name.substring(dot + 1).toLowerCase(Locale.ROOT));
-        }
-      }
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
-    }
-
-    return extensions;
-  }
-
-  private boolean isInsideNodeModules(Path root, Path path) {
-    for (Path segment : root.relativize(path)) {
-      if (segment.toString().equals("node_modules")) {
-        return true;
-      }
-    }
-
-    return false;
   }
 
   private static List<BundlePackageDeclaration> mergeDeclarations(
@@ -667,7 +670,7 @@ public final class BundlerExecution {
     }
   }
 
-  private void prepareOutputDir(Path outputDir) throws IOException {
+  private static void prepareOutputDir(Path outputDir) throws IOException {
     if (Files.isDirectory(outputDir)) {
       clearDirectory(outputDir);
     }
@@ -675,35 +678,27 @@ public final class BundlerExecution {
     Files.createDirectories(outputDir);
   }
 
-  private static void clearDirectory(Path dir) throws IOException {
-    try (Stream<Path> walk = Files.walk(dir)) {
-      walk.sorted((a, b) -> b.getNameCount() - a.getNameCount()).filter(p -> !p.equals(dir))
-          .forEach(p -> {
-            try {
-              Files.deleteIfExists(p);
-            } catch (IOException e) {
-              throw new UncheckedIOException(e);
-            }
-          });
-    } catch (UncheckedIOException e) {
-      throw e.getCause();
-    }
-  }
-
-  private BundleDriverWriter.Config createDriverConfig(Request request,
+  private static BundleDriverWriter.Config createDriverConfig(Request request,
       List<BundleEntryDeclaration> entries, Path outputDir, Path metafile, List<BunPlugin> plugins,
-      boolean production, boolean splitting) {
+      boolean production, boolean splitting, Set<Path> watchPaths) {
     String entryNaming = production ? "[dir]/[name]-[hash].[ext]" : "[dir]/[name].[ext]";
     Path userConfig = request.getBundleSourceRoot().resolve(USER_CONFIG_NAME);
     String userConfigPath =
         Files.isRegularFile(userConfig) ? userConfig.toAbsolutePath().toString() : null;
+
+    List<String> watchDirs = new ArrayList<>();
+    for (Path path : watchPaths) {
+      if (Files.isDirectory(path)) {
+        watchDirs.add(path.toAbsolutePath().toString());
+      }
+    }
 
     return new BundleDriverWriter.Config().setEntries(entries)
         .setOutdir(outputDir.toAbsolutePath().toString())
         .setRoot(request.getBundleSourceRoot().toAbsolutePath().toString())
         .setMetafile(metafile.toAbsolutePath().toString()).setEntryNaming(entryNaming)
         .setMinify(production).setHashed(production).setSplitting(splitting).setPlugins(plugins)
-        .setUserConfig(userConfigPath);
+        .setUserConfig(userConfigPath).setWatchPaths(watchDirs);
   }
 
   private List<String> writeDriverFiles(Path workDir, List<BunPlugin> plugins,
@@ -715,15 +710,6 @@ public final class BundlerExecution {
     return List.of("run", scriptPath.toAbsolutePath().toString());
   }
 
-  /**
-   * Writes the index to disk and removes the index of the other mode, so a single index file is on
-   * the classpath. A built run writes under {@code META-INF}, the development watch writes under
-   * the static folder, which the development servers exclude from their reload scan.
-   *
-   * @param request the parameters for this run
-   * @param prepared the prepared build
-   * @param development whether to write the development index rather than the built index
-   */
   private void writeIndex(Request request, Prepared prepared, boolean development)
       throws IOException {
     Map<String, List<String>> bindings = buildBindings(prepared,
@@ -737,19 +723,6 @@ public final class BundlerExecution {
     log.info("wrote {}", indexPath);
   }
 
-  /**
-   * Folds the entry outputs into the routed class to output binding the index is written from.
-   *
-   * <p>
-   * Eager mode produced a single output already keyed under the reserved eager marker, so the
-   * mapping is the binding as is. Otherwise the entry key to output mapping is folded into a routed
-   * class to output binding, and the debug only outputs are added under the reserved debug key.
-   * </p>
-   *
-   * @param prepared the prepared build
-   * @param keyToFiles the entry key to output files mapping from the build
-   * @return the routed class to output files binding
-   */
   private Map<String, List<String>> buildBindings(Prepared prepared,
       Map<String, List<String>> keyToFiles) {
     if (prepared.isEager()) {
@@ -763,14 +736,6 @@ public final class BundlerExecution {
     return bindings;
   }
 
-  /**
-   * Adds the output files of the debug only entries under the reserved index key, so the runtime
-   * injects them only in debug mode.
-   *
-   * @param target the routed class to output files binding the index is built from
-   * @param keyToFiles the entry key to output files mapping from the build
-   * @param debugSources the entry sources declared {@code debug = true}
-   */
   static void addDebugFiles(Map<String, List<String>> target, Map<String, List<String>> keyToFiles,
       Set<String> debugSources) {
     if (debugSources.isEmpty()) {
@@ -796,21 +761,113 @@ public final class BundlerExecution {
     }
   }
 
-  private List<String> syncQuietly(Path from, Path to) {
-    try {
-      List<String> changed = syncChangedFiles(from, to);
-      if (!changed.isEmpty()) {
-        log.info("synced {} changed bundle file(s)", changed.size());
+  private void notifyDidBundle(CompileContext compileContext, Path outputDir, boolean rebuild) {
+    BundleContext context = createContext(compileContext, outputDir, rebuild);
+    for (BundleExtension extension : compileContext.getExtensions()) {
+      if (!isExtensionActive(extension, context,
+          compileContext.getRequest().getExtensionOverrides())) {
+        continue;
       }
 
-      return changed;
-    } catch (IOException | RuntimeException e) {
-      // The watch rewrites the staging tree under the sync, so a transient filesystem race must
-      // never kill the watch thread. Report it and let the next rebuild reconcile.
-      log.warn("failed to sync watch output: {}", e.getMessage());
-
-      return List.of();
+      try {
+        extension.onDidBundle(context);
+      } catch (RuntimeException e) {
+        log.warn("extension {} failed: {}", extension.getId(), e.getMessage());
+      }
     }
+  }
+
+  private Prepared buildWatch(CompileContext compileContext, Path servedDir, Path stagingDir)
+      throws IOException, InterruptedException {
+    Prepared prepared = compile(compileContext, stagingDir);
+    if (prepared == null) {
+      // Nothing resolved to build, so clear the served output and the index, so a removed entry
+      // stops being served instead of lingering as stale content from the last build.
+      clearOutput(compileContext.getRequest(), servedDir);
+
+      return null;
+    }
+
+    syncOutput(compileContext.getRequest(), servedDir, stagingDir, prepared);
+    notifyDidBundle(compileContext, servedDir, false);
+
+    return prepared;
+  }
+
+  private Process startWatcher(CompileContext compileContext, Path servedDir, Path stagingDir,
+      Prepared prepared, Consumer<List<String>> rebuildListener, boolean reloadOnBaseline)
+      throws IOException, InterruptedException {
+    List<String> watchArgs = new ArrayList<>(prepared.getRunArgs());
+    watchArgs.add("--watch");
+    log.info("starting bun watch, edit sources to rebuild");
+
+    AtomicBoolean baselineEstablished = new AtomicBoolean(false);
+
+    return bun.start(compileContext.getRequest().getBundleSourceRoot(), watchArgs, line -> {
+      log.info("{}", line);
+
+      if (isRebuildComplete(line)) {
+        // The watcher reemits the whole graph to its staging tree on every rebuild, including when
+        // a
+        // source file is added or removed, so sync the served output from what was built. The watch
+        // thread must survive a transient filesystem race while bun rewrites staging under it, so a
+        // failure here is logged and left for the next rebuild to reconcile.
+        List<String> changed;
+        try {
+          changed = syncOutput(compileContext.getRequest(), servedDir, stagingDir, prepared);
+        } catch (IOException | RuntimeException e) {
+          log.warn("failed to sync watch output after a rebuild: {}", e.getMessage());
+
+          return;
+        }
+
+        if (!changed.isEmpty()) {
+          log.info("synced {} changed bundle file(s)", changed.size());
+          notifyDidBundle(compileContext, servedDir, true);
+        }
+
+        // The watcher emits its own build when it starts. On the initial start that baseline only
+        // syncs the served directory and never reloads the browser. After an entry change the
+        // baseline is the new bundle, so it must reach the reload listener.
+        if (baselineEstablished.compareAndSet(false, true) && !reloadOnBaseline) {
+          return;
+        }
+
+        if (rebuildListener != null && !changed.isEmpty()) {
+          rebuildListener.accept(changed);
+        }
+      }
+    });
+  }
+
+  private static boolean isRebuildComplete(String line) {
+    return line.contains("Bundled ");
+  }
+
+  private BundleEntrySet scanEntrySet(Request request) {
+    ClasspathPackageScanner.Result scan =
+        scanner.scan(getUris(request.getClasspathRoots()), request.getExcludedPackages());
+
+    return BundleEntrySet.from(scan);
+  }
+
+  private List<String> syncOutput(Request request, Path servedDir, Path stagingDir,
+      Prepared prepared) throws IOException {
+    Files.createDirectories(servedDir);
+    List<String> changed = syncChangedFiles(stagingDir, servedDir);
+    writeIndex(request, prepared, true);
+
+    return changed;
+  }
+
+  private void clearOutput(Request request, Path servedDir) throws IOException {
+    if (Files.isDirectory(servedDir)) {
+      clearDirectory(servedDir);
+    }
+
+    Path index = indexWriter.write(request.getClassesOutputDir(), Map.of(),
+        BundleIndexDocument.DEVELOPMENT_RESOURCE);
+    log.info("wrote {}", index);
   }
 
   static List<String> syncChangedFiles(Path from, Path to) throws IOException {
@@ -887,16 +944,6 @@ public final class BundlerExecution {
     return Arrays.equals(Files.readAllBytes(a), Files.readAllBytes(b));
   }
 
-  private static boolean isRebuildComplete(String line) {
-    return line.contains("Bundled ");
-  }
-
-  private void installDependencies(Request request) throws IOException, InterruptedException {
-    ClasspathPackageScanner.Result scan =
-        scanner.scan(getUris(request.getClasspathRoots()), request.getExcludedPackages());
-    installAtRoot(request, scan.getPackages());
-  }
-
   private static boolean hasTestFiles(Path sourceRoot) throws IOException {
     try (Stream<Path> walk = Files.walk(sourceRoot)) {
       return walk.filter(Files::isRegularFile)
@@ -917,12 +964,13 @@ public final class BundlerExecution {
         || stem.endsWith("_spec");
   }
 
-  private void useLogger(BundleLogger logger) {
-    this.log = logger != null ? logger : BundleLogger.system();
-    bun.setLogger(this.log);
+  private void installDependencies(Request request) throws IOException, InterruptedException {
+    ClasspathPackageScanner.Result scan =
+        scanner.scan(getUris(request.getClasspathRoots()), request.getExcludedPackages());
+    installAtRoot(request, scan.getPackages());
   }
 
-  private static final class CompileContext { // NOSONAR
+  private static final class CompileContext {
 
     private final Request request;
     private final List<BundleExtension> extensions;
@@ -962,112 +1010,52 @@ public final class BundlerExecution {
     private Set<String> debugSources = Set.of();
     private boolean eager = false;
 
-    /**
-     * Sets the metafile path.
-     *
-     * @param metafile the metafile path
-     * @return the prepared run
-     */
     private Prepared setMetafile(Path metafile) {
       this.metafile = metafile;
 
       return this;
     }
 
-    /**
-     * Gets the metafile path.
-     *
-     * @return the metafile path
-     * @see #setMetafile(Path)
-     */
     private Path getMetafile() {
       return metafile;
     }
 
-    /**
-     * Sets the run arguments passed to Bun.
-     *
-     * @param runArgs the run arguments
-     * @return the prepared run
-     */
     private Prepared setRunArgs(List<String> runArgs) {
       this.runArgs = runArgs;
 
       return this;
     }
 
-    /**
-     * Gets the run arguments passed to Bun.
-     *
-     * @return the run arguments
-     * @see #setRunArgs(List)
-     */
     private List<String> getRunArgs() {
       return runArgs;
     }
 
-    /**
-     * Sets the routed class to entry key binding the runtime resolves a class by.
-     *
-     * @param bindings the routed class to entry key binding
-     * @return the prepared run
-     */
     private Prepared setBindings(Map<String, Set<String>> bindings) {
       this.bindings = bindings;
 
       return this;
     }
 
-    /**
-     * Gets the routed class to entry key binding the runtime resolves a class by.
-     *
-     * @return the routed class to entry key binding
-     * @see #setBindings(Map)
-     */
     private Map<String, Set<String>> getBindings() {
       return bindings;
     }
 
-    /**
-     * Sets the entry sources declared debug only, injected by the runtime only in debug mode.
-     *
-     * @param debugSources the debug only entry sources
-     * @return the prepared run
-     */
     private Prepared setDebugSources(Set<String> debugSources) {
       this.debugSources = debugSources;
 
       return this;
     }
 
-    /**
-     * Gets the entry sources declared debug only, injected by the runtime only in debug mode.
-     *
-     * @return the debug only entry sources
-     * @see #setDebugSources(Set)
-     */
     private Set<String> getDebugSources() {
       return debugSources;
     }
 
-    /**
-     * Sets whether the run produced a single eager bundle.
-     *
-     * @param eager {@code true} for a single eager bundle
-     * @return the prepared run
-     */
     private Prepared setEager(boolean eager) {
       this.eager = eager;
 
       return this;
     }
 
-    /**
-     * Indicates whether the run produced a single eager bundle.
-     *
-     * @return {@code true} for a single eager bundle
-     * @see #setEager(boolean)
-     */
     private boolean isEager() {
       return eager;
     }

@@ -2,6 +2,7 @@ package com.webforj.plugin.gradle;
 
 import com.webforj.bundle.bun.BundleLogger;
 import com.webforj.bundle.bun.BundlerExecution;
+import com.webforj.bundle.bun.WatchSession;
 import com.webforj.plugin.foundation.WatchPortFile;
 import com.webforj.plugin.foundation.WatchProtocol;
 import com.webforj.plugin.foundation.WatchSocketServer;
@@ -72,14 +73,20 @@ public abstract class WatchTask extends AbstractBundlerTask {
 
     BundlerExecution execution = createExecution();
     try {
-      Process watcher =
+      WatchSession session =
           execution.watch(createRequest(), changed -> socket.send(WatchProtocol.rebuild(changed)),
               (level, line) -> sink.get().log(level, line));
       sink.set((level, line) -> socket
           .send(level == System.Logger.Level.WARNING ? WatchProtocol.warn(line)
               : WatchProtocol.log(line)));
-      installShutdownHook(watcher, socket, portFile);
-      getWatchLifecycle().get().track(watcher, socket, portFile);
+      // The application rescans for new bundle entries every time it connects, which is every
+      // development restart.
+      if (session != null) {
+        socket.setOnConnect(session::rescan);
+      }
+
+      installShutdownHook(session, socket, portFile);
+      getWatchLifecycle().get().track(session, socket, portFile);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       closeSocket(socket, portFile);
@@ -116,10 +123,10 @@ public abstract class WatchTask extends AbstractBundlerTask {
     }
   }
 
-  private void installShutdownHook(Process watcher, WatchSocketServer socket, Path portFile) {
+  private void installShutdownHook(WatchSession session, WatchSocketServer socket, Path portFile) {
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-      if (watcher != null) {
-        watcher.destroy();
+      if (session != null) {
+        session.close();
       }
 
       closeSocket(socket, portFile);

@@ -39,6 +39,29 @@ class BundleIndexStoreTest {
   }
 
   @Test
+  void shouldReadTheDevelopmentIndexFreshOnEveryCall(@TempDir Path tmp) throws IOException {
+    writeIndex(tmp, BundleIndexDocument.DEVELOPMENT_RESOURCE, """
+        {"bindings":{"View":["app.css"]}}
+        """);
+
+    ClassLoader previous = Thread.currentThread().getContextClassLoader();
+    Thread.currentThread().setContextClassLoader(loader(tmp));
+    try {
+      BundleIndexStore.reset();
+      assertEquals(List.of("app.css"), BundleIndexStore.get().getBindings().get("View"));
+
+      writeIndex(tmp, BundleIndexDocument.DEVELOPMENT_RESOURCE, """
+          {"bindings":{"View":["app.css","styles.scss"]}}
+          """);
+
+      assertEquals(List.of("app.css", "styles.scss"),
+          BundleIndexStore.get().getBindings().get("View"));
+    } finally {
+      Thread.currentThread().setContextClassLoader(previous);
+    }
+  }
+
+  @Test
   void shouldPreferTheDevelopmentIndexOverTheBuiltIndex(@TempDir Path tmp) throws IOException {
     writeIndex(tmp, BundleIndexDocument.RESOURCE, """
         {"bindings":{"View":["built.js"]}}

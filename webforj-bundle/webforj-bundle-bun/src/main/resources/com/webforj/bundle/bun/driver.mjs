@@ -4,7 +4,7 @@
  * @author Hyyan Abo Fakher
  */
 
-import { watch, writeFileSync, mkdirSync, readFileSync } from 'node:fs';
+import { watch, writeFileSync, mkdirSync, readFileSync, existsSync, rmSync } from 'node:fs';
 import { relative, dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
@@ -54,9 +54,35 @@ for (const ref of cfg.entries) {
   }
 }
 
+function writeMetafile(outputs) {
+  mkdirSync(dirname(cfg.metafile), { recursive: true });
+  writeFileSync(cfg.metafile, JSON.stringify({ outputs }));
+}
+
 async function runBuild() {
+  // Only build entries whose source file still exists. A file removed at watch time is dropped from
+  // the build instead of failing it, and the output tree is rebuilt from scratch so the output of a
+  // removed entry does not linger as stale served content.
+  const entries = cfg.entries.filter((e) => existsSync(resolve(cfg.root, e.buildPath)));
+  for (const ref of cfg.entries) {
+    if (!entries.includes(ref)) {
+      console.error("dropping @BundleEntry '" + ref.source + "', its source file no longer exists");
+    }
+  }
+
+  rmSync(cfg.outdir, { recursive: true, force: true });
+  mkdirSync(cfg.outdir, { recursive: true });
+
+  const count = entries.length;
+  if (count === 0) {
+    writeMetafile({});
+    console.log('Bundled 0 entries');
+
+    return true;
+  }
+
   const result = await Bun.build({
-    entrypoints: cfg.entries.map((e) => e.buildPath),
+    entrypoints: entries.map((e) => e.buildPath),
     outdir: cfg.outdir,
     root: cfg.root,
     target: 'browser',
@@ -80,10 +106,7 @@ async function runBuild() {
     outputs[rel] = key ? { entryPoint: key } : {};
   }
 
-  mkdirSync(dirname(cfg.metafile), { recursive: true });
-  writeFileSync(cfg.metafile, JSON.stringify({ outputs }));
-
-  const count = cfg.entries.length;
+  writeMetafile(outputs);
   console.log('Bundled ' + count + ' entr' + (count === 1 ? 'y' : 'ies'));
 
   return result.success;
@@ -93,7 +116,7 @@ const watching = process.argv.includes('--watch');
 const ok = await runBuild();
 if (watching) {
   let timer;
-  const watcher = watch(cfg.root, { recursive: true }, (event, file) => {
+  const onChange = (event, file) => {
     if (file?.split(/[\\/]/).includes('node_modules')) {
       return;
     }
@@ -102,13 +125,20 @@ if (watching) {
     timer = setTimeout(() => {
       runBuild().catch((e) => console.error(String(e)));
     }, 60);
-  });
+  };
+
+  // Watch the bundle source root and any extra directories a plugin builds from, such as the
+  // application sources a generated stylesheet scans, so editing them rebuilds during the watch.
+  const watchers = [cfg.root, ...(cfg.watchPaths || [])]
+    .map((dir) => watch(dir, { recursive: true }, onChange));
 
   const stop = () => {
-    try {
-      watcher.close();
-    } catch (e) {
-      // closing on shutdown, ignore
+    for (const watcher of watchers) {
+      try {
+        watcher.close();
+      } catch (e) {
+        // closing on shutdown, ignore
+      }
     }
 
     process.exit(0);
@@ -116,6 +146,17 @@ if (watching) {
 
   process.on('SIGINT', stop);
   process.on('SIGTERM', stop);
+
+  // Poll whether the parent is still there and exit once it is gone, so the watcher never lingers as
+  // an orphan.
+  const parentPid = process.ppid;
+  setInterval(() => {
+    try {
+      process.kill(parentPid, 0);
+    } catch (e) {
+      stop();
+    }
+  }, 1000);
 } else if (!ok) {
   process.exit(1);
 }

@@ -51,11 +51,14 @@ public final class BundleEntryResolver {
 
       if (file != null) {
         entries.add(new BundleEntryDeclaration().setResolvedFile(file).setSource(path));
-      } else if (isBareSpecifier(path)) {
+      } else if (isNpmSpecifier(path)) {
         // Not a local file and not an explicit path, so treat it as an npm specifier Bun resolves
         // from node_modules. This is how a project consumes a package with no frontend source.
         entries.add(new BundleEntryDeclaration().setSource(path).setNpm(true));
       }
+
+      // A local file name that matched nothing is dropped rather than turned into an npm stub, so a
+      // single dangling entry never fails the whole build. It is reported by getUnresolved.
     }
 
     return List.copyOf(entries);
@@ -95,7 +98,7 @@ public final class BundleEntryResolver {
     for (String path : entryPaths) {
       boolean resolved = (root != null && resolveFile(root, path) != null)
           || (extractedRoot != null && resolveFile(extractedRoot, path) != null);
-      if (!resolved && !isBareSpecifier(path)) {
+      if (!resolved && !isNpmSpecifier(path)) {
         missing.add(path);
       }
     }
@@ -103,8 +106,17 @@ public final class BundleEntryResolver {
     return List.copyOf(missing);
   }
 
-  private static boolean isBareSpecifier(String value) {
-    return !value.startsWith("./") && !value.startsWith("../") && !value.startsWith("/");
+  /**
+   * Indicates whether a value is an npm specifier rather than a local file that simply matched no
+   * source. An npm specifier is a scoped package, which always starts with {@code @}, such as
+   * {@code @scope/pkg/dist/Button.js}. Anything else is a local file under the source root, so a
+   * missing one is a dangling entry rather than a package to install.
+   *
+   * @param value the declared entry value
+   * @return {@code true} when the value is an npm specifier
+   */
+  private static boolean isNpmSpecifier(String value) {
+    return value.startsWith("@");
   }
 
   private Path resolveFile(Path root, String path) {

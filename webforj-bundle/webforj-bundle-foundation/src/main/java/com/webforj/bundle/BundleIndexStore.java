@@ -16,7 +16,7 @@ import java.nio.charset.StandardCharsets;
  * {@code META-INF}. A development application reads the index the watch emitted under the static
  * folder, which the development servers exclude from their reload scan so refreshing it never
  * redeploys the application. The development index is read first, so it supersedes a stale built
- * index left next to it. The file is read once through the context classloader and cached.
+ * index left next to it.
  * </p>
  *
  * @author Hyyan Abo Fakher
@@ -32,15 +32,22 @@ public final class BundleIndexStore {
   private BundleIndexStore() {}
 
   /**
-   * Gets the index read from disk once through the context classloader.
+   * Gets the index read from disk.
    *
    * @return the current index, or {@code null} when no index file is on the classpath
    */
   public static BundleIndex get() {
+    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+    BundleIndex development = read(classLoader, BundleIndexDocument.DEVELOPMENT_RESOURCE);
+    if (development != null) {
+      return development;
+    }
+
     if (!diskRead) {
       synchronized (BundleIndexStore.class) {
         if (!diskRead) {
-          onDisk = read(Thread.currentThread().getContextClassLoader());
+          onDisk = read(classLoader, BundleIndexDocument.RESOURCE);
           diskRead = true;
         }
       }
