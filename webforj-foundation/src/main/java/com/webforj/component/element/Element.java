@@ -627,8 +627,11 @@ public final class Element extends DwcContainer<Element>
   protected void onCreate(Window window) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(window);
-      byte[] flags =
-          BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
+      // When a webforJ component is hidden before it's added to the page and it sets display: flex
+      // (or any inline display style), the hide intent gets lost and the element shows up on screen
+      // anyway.
+      byte[] flags = BBjFunctionalityHelper.buildStandardCreationFlags(/* this.isVisible() */ true,
+          this.isEnabled());
       setControl(w.addWebComponent(resolveControlId(w), getNodeName(), flags));
     } catch (Exception e) {
       throw new WebforjRuntimeException("Failed to create the BBjWebComponent Control", e);
