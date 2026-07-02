@@ -156,6 +156,33 @@ class ElementCompositeTest {
           Arguments.of(PropertyDescriptor.attribute("booleanAttribute", "false"), "true", "false"),
           Arguments.of(PropertyDescriptor.attribute("stringAttribute", "World"), null, "World"));
     }
+
+    @ParameterizedTest
+    @MethodSource("simpleAttributeConversionProvider")
+    @DisplayName("should convert simple attribute string values back to their declared type")
+    void shouldConvertSimpleAttributeValues(PropertyDescriptor<?> attribute, Object expectedValue,
+        Class<?> expectedType) {
+      composite.set(attribute);
+
+      Object result = composite.get(attribute);
+
+      assertEquals(expectedValue, result);
+      assertEquals(expectedType, result.getClass());
+    }
+
+    static Stream<Arguments> simpleAttributeConversionProvider() {
+      return Stream.of(
+          Arguments.of(PropertyDescriptor.attribute("stringAttr", "hello"), "hello", String.class),
+          Arguments.of(PropertyDescriptor.attribute("booleanAttr", true), true, Boolean.class),
+          Arguments.of(PropertyDescriptor.attribute("byteAttr", (byte) 5), (byte) 5, Byte.class),
+          Arguments.of(PropertyDescriptor.attribute("shortAttr", (short) 42), (short) 42,
+              Short.class),
+          Arguments.of(PropertyDescriptor.attribute("intAttr", 100), 100, Integer.class),
+          Arguments.of(PropertyDescriptor.attribute("longAttr", 9_000_000_000L), 9_000_000_000L,
+              Long.class),
+          Arguments.of(PropertyDescriptor.attribute("floatAttr", 3.14f), 3.14f, Float.class),
+          Arguments.of(PropertyDescriptor.attribute("doubleAttr", 2.718d), 2.718d, Double.class));
+    }
   }
 
   @Nested

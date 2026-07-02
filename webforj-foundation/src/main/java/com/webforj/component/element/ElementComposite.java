@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 /**
  * The {@code ElementComposite} class serves as an abstract base class for creating composite
@@ -41,6 +42,16 @@ public abstract class ElementComposite extends Composite<Element> {
   private final HashMap<String, Class<?>> eventNameToClassMap = new HashMap<>();
   private final Map<ListenerRegistration<ElementEvent>, EventListener<? extends ComponentEvent<?>>> listenerRegistrations =
       new HashMap<>();
+
+  private static final Map<Class<?>, Function<String, Object>> SIMPLE_CONVERTERS =
+      Map.ofEntries(Map.entry(String.class, s -> s), Map.entry(Boolean.class, Boolean::valueOf),
+          Map.entry(boolean.class, Boolean::valueOf), Map.entry(Byte.class, Byte::valueOf),
+          Map.entry(byte.class, Byte::valueOf), Map.entry(Short.class, Short::valueOf),
+          Map.entry(short.class, Short::valueOf), Map.entry(Integer.class, Integer::valueOf),
+          Map.entry(int.class, Integer::valueOf), Map.entry(Long.class, Long::valueOf),
+          Map.entry(long.class, Long::valueOf), Map.entry(Float.class, Float::valueOf),
+          Map.entry(float.class, Float::valueOf), Map.entry(Double.class, Double::valueOf),
+          Map.entry(double.class, Double::valueOf));
 
   /**
    * Gets the listeners for the given event class.
@@ -148,7 +159,7 @@ public abstract class ElementComposite extends Composite<Element> {
    * Gets a property or an attribute of the element.
    *
    * @param <V> the type of the property
-   * @param the property descriptor
+   * @param property the property descriptor
    * @param fromClient true if the property should be read from the client
    * @param type the type of the property
    *
@@ -363,7 +374,7 @@ public abstract class ElementComposite extends Composite<Element> {
 
     if (value != null) {
       if (isSimpleType(type)) {
-        return (V) value;
+        return convertSimpleAttributeValue(value, type);
       } else {
         Gson gson = new Gson();
         return gson.fromJson(value, type);
@@ -373,6 +384,15 @@ public abstract class ElementComposite extends Composite<Element> {
     }
   }
 
+  @SuppressWarnings("unchecked")
+  private <V> V convertSimpleAttributeValue(String value, Type type) {
+    if (!(type instanceof Class<?> targetType)) {
+      return (V) value;
+    }
+    Function<String, Object> converter = ElementComposite.SIMPLE_CONVERTERS.get(targetType);
+    return (V) (converter != null ? converter.apply(value) : value);
+  }
+
   /**
    * Checks if a given type is a simple type (String, Boolean, or a Number).
    *
@@ -380,8 +400,8 @@ public abstract class ElementComposite extends Composite<Element> {
    * @return true if the type is a simple type, false otherwise
    */
   private boolean isSimpleType(Type type) {
-    return type.equals(String.class) || type.equals(Boolean.class)
-        || Number.class.isAssignableFrom((Class<?>) type);
+    return type instanceof Class<?> targetType
+        && (SIMPLE_CONVERTERS.containsKey(targetType) || Number.class.isAssignableFrom(targetType));
   }
 
   /**
