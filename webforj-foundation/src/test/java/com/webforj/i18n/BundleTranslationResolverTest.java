@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -108,6 +109,35 @@ class BundleTranslationResolverTest {
     @Test
     void shouldUseDefaultLocaleWhenNullLocalePassed() {
       assertEquals("Welcome", resolver.resolve("welcome", null));
+    }
+  }
+
+  @Nested
+  class KeyProbing {
+
+    @Test
+    void shouldFindExistingKey() {
+      assertEquals(Optional.of("Welcome"), resolver.find("welcome", Locale.ENGLISH));
+      assertEquals(Optional.of("Hello Hyyan"), resolver.find("greeting", Locale.ENGLISH, "Hyyan"));
+    }
+
+    @Test
+    void shouldReturnEmptyForMissingKey() {
+      assertEquals(Optional.empty(), resolver.find("nonexistent", Locale.ENGLISH));
+      assertEquals(Optional.empty(), resolver.find(null, Locale.ENGLISH));
+      assertEquals(Optional.empty(), resolver.find("", Locale.ENGLISH));
+    }
+
+    @Test
+    void shouldReturnEmptyWhenBundleMissing() {
+      BundleTranslationResolver missing =
+          new BundleTranslationResolver("nonexistent", Collections.emptyList());
+
+      try (MockedStatic<App> appMock = mockStatic(App.class)) {
+        appMock.when(App::getLocale).thenReturn(Locale.ENGLISH);
+
+        assertEquals(Optional.empty(), missing.find("welcome", Locale.ENGLISH));
+      }
     }
   }
 
