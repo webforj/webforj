@@ -6,6 +6,7 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
@@ -140,6 +141,39 @@ public class BundleTranslationResolver implements TranslationResolver {
     }
 
     return value;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Optional<String> find(String key, Locale locale, Object... args) {
+    if (key == null || key.isEmpty()) {
+      return Optional.empty();
+    }
+
+    Locale resolvedLocale = locale != null ? locale : getDefaultLocale();
+    Object[] resolvedArgs = args != null ? args : new Object[0];
+
+    ResourceBundle bundle = getBundle(resolvedLocale);
+    if (bundle == null || !bundle.containsKey(key)) {
+      return Optional.empty();
+    }
+
+    String value = bundle.getString(key);
+    if (resolvedArgs.length > 0) {
+      try {
+        value = new MessageFormat(value, resolvedLocale).format(resolvedArgs);
+      } catch (IllegalArgumentException e) {
+        if (logger.isLoggable(Level.WARNING)) {
+          logger.log(Level.WARNING,
+              "Failed to format translation value ''{0}'' for key ''{1}'': {2}", value, key,
+              e.getMessage());
+        }
+      }
+    }
+
+    return Optional.of(value);
   }
 
   /**

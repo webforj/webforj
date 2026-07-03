@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
@@ -33,6 +34,32 @@ import java.util.ResourceBundle;
  * @see App#t(String, Object...)
  */
 public interface TranslationResolver extends Serializable {
+
+  /**
+   * Looks up a translation key and returns the localized string value if a translation exists.
+   *
+   * <p>
+   * This is the probing counterpart of {@link #resolve(String, Locale, Object...)}. It never logs
+   * and never falls back to the key. When no translation exists for the given key, an empty
+   * {@link Optional} is returned. Use this method when a missing translation is an expected
+   * outcome, for example when a value may be either a translation key or a literal display string.
+   * </p>
+   *
+   * <p>
+   * The default implementation returns an empty {@link Optional}. Implementations should override
+   * this method to report their translations.
+   * </p>
+   *
+   * @param key the translation key to look up
+   * @param locale the locale to use for translation
+   * @param args optional arguments for placeholder substitution
+   *
+   * @return the resolved text, or an empty {@link Optional} if no translation exists
+   * @since 26.02
+   */
+  default Optional<String> find(String key, Locale locale, Object... args) {
+    return Optional.empty();
+  }
 
   /**
    * Resolves a translation key to its localized string value.
