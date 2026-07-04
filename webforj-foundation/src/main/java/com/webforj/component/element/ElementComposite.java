@@ -428,8 +428,7 @@ public abstract class ElementComposite extends Composite<Element> {
    * @return true if the type is a simple type, false otherwise
    */
   private boolean isSimpleType(Type type) {
-    return type instanceof Class<?> targetType
-        && (SIMPLE_CONVERTERS.containsKey(targetType));
+    return type instanceof Class<?> targetType && (SIMPLE_CONVERTERS.containsKey(targetType));
   }
 
   /**
