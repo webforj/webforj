@@ -20,13 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.atomic.DoubleAccumulator;
-import java.util.concurrent.atomic.DoubleAdder;
-import java.util.concurrent.atomic.LongAccumulator;
-import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Function;
 
 /**
@@ -52,34 +46,11 @@ public abstract class ElementComposite extends Composite<Element> {
       new HashMap<>();
 
   private static final Map<Class<?>, Function<String, Object>> SIMPLE_CONVERTERS =
-      Map.ofEntries(Map.entry(String.class, s -> s), Map.entry(Boolean.class, Boolean::valueOf),
-          Map.entry(boolean.class, Boolean::valueOf), Map.entry(Byte.class, Byte::valueOf),
-          Map.entry(byte.class, Byte::valueOf), Map.entry(Short.class, Short::valueOf),
-          Map.entry(short.class, Short::valueOf), Map.entry(Integer.class, Integer::valueOf),
-          Map.entry(int.class, Integer::valueOf), Map.entry(Long.class, Long::valueOf),
-          Map.entry(long.class, Long::valueOf), Map.entry(Float.class, Float::valueOf),
-          Map.entry(float.class, Float::valueOf), Map.entry(Double.class, Double::valueOf),
-          Map.entry(double.class, Double::valueOf),
-          Map.entry(AtomicInteger.class, s -> new AtomicInteger(Integer.parseInt(s))),
-          Map.entry(AtomicLong.class, s -> new AtomicLong(Long.parseLong(s))),
-          Map.entry(BigDecimal.class, BigDecimal::new),
-          Map.entry(BigInteger.class, BigInteger::new), Map.entry(DoubleAccumulator.class, s -> {
-            DoubleAccumulator accumulator = new DoubleAccumulator((a, b) -> a + b, 0);
-            accumulator.accumulate(Double.parseDouble(s));
-            return accumulator;
-          }), Map.entry(DoubleAdder.class, s -> {
-            DoubleAdder adder = new DoubleAdder();
-            adder.add(Double.parseDouble(s));
-            return adder;
-          }), Map.entry(LongAccumulator.class, s -> {
-            LongAccumulator accumulator = new LongAccumulator((a, b) -> a + b, 0);
-            accumulator.accumulate(Long.parseLong(s));
-            return accumulator;
-          }), Map.entry(LongAdder.class, s -> {
-            LongAdder adder = new LongAdder();
-            adder.add(Long.parseLong(s));
-            return adder;
-          }));
+      Map.ofEntries(Map.entry(String.class, s -> s), Map.entry(Byte.class, Byte::valueOf),
+          Map.entry(Short.class, Short::valueOf), Map.entry(Integer.class, Integer::valueOf),
+          Map.entry(Long.class, Long::valueOf), Map.entry(Float.class, Float::valueOf),
+          Map.entry(Double.class, Double::valueOf), Map.entry(BigDecimal.class, BigDecimal::new),
+          Map.entry(BigInteger.class, BigInteger::new));
 
   /**
    * Gets the listeners for the given event class.
@@ -153,10 +124,18 @@ public abstract class ElementComposite extends Composite<Element> {
       // keep track of the attribute types
       attributeTypes.put(name, value.getClass());
 
+      if (value instanceof Boolean booleanValue) {
+        // Boolean attributes follow the HTML contract: a true value adds the attribute with an
+        // empty string, a false value removes it entirely.
+        writeBooleanAttribute(name, booleanValue);
+
+        return;
+      }
+
       // Attribute values are serialized according to value's current type (regardless of the
       // property's type value):
       //
-      // 1. Strings, Numbers and Booleans No serialization required. The value is converted to a its
+      // 1. Strings and Numbers No serialization required. The value is converted to a its
       // string representation using String.valueOf.
       //
       // 2. Everything else The value is serialized using Gson.
@@ -397,12 +376,16 @@ public abstract class ElementComposite extends Composite<Element> {
    * @return The value of the attribute, or the default value if not set.
    */
   private <V> V getAttributeValue(PropertyDescriptor<V> property, boolean fromClient, Type type) {
+    if (Boolean.class.equals(type)) {
+      return resolveBooleanAttribute(property, fromClient);
+    }
+
     String name = property.getName();
     String value = fromClient ? getElement().getAttribute(name) : attributes.get(name);
 
     if (value != null) {
       if (isSimpleType(type)) {
-        return convertSimpleAttributeValue(value, type);
+        return convertSimpleAttributeValue(property, value, type);
       } else {
         Gson gson = new Gson();
         return gson.fromJson(value, type);
@@ -412,23 +395,102 @@ public abstract class ElementComposite extends Composite<Element> {
     }
   }
 
+  /**
+   * Converts a simple attribute string value to the declared attribute type.
+   *
+   * @param <V> the type of the attribute
+   * @param property the property descriptor
+   * @param value the raw attribute value
+   * @param type the declared type of the attribute
+   *
+   * @return the converted value, or the descriptor default value when the value cannot be parsed as
+   *         the declared type
+   */
   @SuppressWarnings("unchecked")
-  private <V> V convertSimpleAttributeValue(String value, Type type) {
+  private <V> V convertSimpleAttributeValue(PropertyDescriptor<V> property, String value,
+      Type type) {
     if (!(type instanceof Class<?> targetType)) {
       return (V) value;
     }
-    Function<String, Object> converter = ElementComposite.SIMPLE_CONVERTERS.get(targetType);
-    return (V) (converter != null ? converter.apply(value) : value);
+
+    Function<String, Object> converter = SIMPLE_CONVERTERS.get(targetType);
+    if (converter == null) {
+      return (V) value;
+    }
+
+    try {
+      return (V) converter.apply(value);
+    } catch (NumberFormatException e) {
+      return property.getDefaultValue();
+    }
   }
 
   /**
-   * Checks if a given type is a simple type (String, Boolean, or a Number).
+   * Writes a {@link Boolean} attribute following the HTML boolean attribute contract.
+   *
+   * <p>
+   * A {@code true} value adds the attribute with an empty string, while a {@code false} value
+   * removes the attribute entirely.
+   * </p>
+   *
+   * @see <a href="https://developer.mozilla.org/en-US/docs/Glossary/Boolean/HTML">MDN Boolean
+   *      attribute</a>
+   *
+   * @param name the attribute name
+   * @param value the boolean value
+   */
+  private void writeBooleanAttribute(String name, boolean value) {
+    if (value) {
+      getElement().setAttribute(name, "");
+      attributes.put(name, "");
+    } else {
+      getElement().removeAttribute(name);
+      attributes.remove(name);
+    }
+  }
+
+  /**
+   * Resolves a {@link Boolean} attribute.
+   *
+   * <p>
+   * An absent attribute reads as {@code false} and a present attribute reads as {@code true},
+   * following the HTML boolean attribute rule. As the single exception, a present attribute whose
+   * value is the literal string {@code "false"} reads as {@code false}, so a component that
+   * reflects a false value as that string is honored rather than read as present.
+   * </p>
+   *
+   * @see <a href="https://developer.mozilla.org/en-US/docs/Glossary/Boolean/HTML">MDN Boolean
+   *      attribute</a>
+   *
+   * @param <V> the type of the attribute
+   * @param property the property descriptor
+   * @param fromClient true if the attribute should be read from the client
+   *
+   * @return the resolved boolean value
+   */
+  @SuppressWarnings("unchecked")
+  private <V> V resolveBooleanAttribute(PropertyDescriptor<V> property, boolean fromClient) {
+    String name = property.getName();
+    boolean present = fromClient ? getElement().hasAttribute(name) : attributes.containsKey(name);
+
+    if (!present) {
+      return (V) Boolean.FALSE;
+    }
+
+    String value = fromClient ? getElement().getAttribute(name) : attributes.get(name);
+
+    return (V) Boolean.valueOf(!"false".equals(value));
+  }
+
+  /**
+   * Checks if a given type is a simple type. Simple types are String, Byte, Short, Integer, Long,
+   * Float, Double, BigDecimal and BigInteger.
    *
    * @param type the type to check
    * @return true if the type is a simple type, false otherwise
    */
   private boolean isSimpleType(Type type) {
-    return type instanceof Class<?> targetType && (SIMPLE_CONVERTERS.containsKey(targetType));
+    return type instanceof Class<?> targetType && SIMPLE_CONVERTERS.containsKey(targetType);
   }
 
   /**
