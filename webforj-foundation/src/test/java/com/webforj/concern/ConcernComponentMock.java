@@ -87,6 +87,11 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
   }
 
   @Override
+  public boolean hasAttribute(String attribute) {
+    return attributes.containsKey(attribute);
+  }
+
+  @Override
   public ConcernComponentMock removeAttribute(String attribute) {
     attributes.remove(attribute);
     return this;

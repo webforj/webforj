@@ -21,6 +21,12 @@ public interface HasAttribute<T extends Component> {
   /**
    * Retrieves the value of a specified attribute.
    *
+   * <p>
+   * This method may return a value even when the attribute is not present, so a {@code null} check
+   * is not a reliable way to detect a missing attribute. Use {@link #hasAttribute(String)} to test
+   * whether an attribute is present.
+   * </p>
+   *
    * @param attribute the name of the attribute to retrieve
    * @return the value of the attribute
    */
@@ -48,6 +54,24 @@ public interface HasAttribute<T extends Component> {
     if (component instanceof HasAttribute) {
       ((HasAttribute<?>) component).setAttribute(attribute, value);
       return (T) this;
+    }
+
+    throw new UnsupportedOperationException("The component does not support attributes");
+  }
+
+  /**
+   * Checks whether the component has the specified attribute.
+   *
+   * @param attribute the name of the attribute to check
+   * @return {@code true} if the component has the attribute, {@code false} otherwise
+   *
+   * @since 26.02
+   */
+  public default boolean hasAttribute(String attribute) {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasAttribute) {
+      return ((HasAttribute<?>) component).hasAttribute(attribute);
     }
 
     throw new UnsupportedOperationException("The component does not support attributes");
