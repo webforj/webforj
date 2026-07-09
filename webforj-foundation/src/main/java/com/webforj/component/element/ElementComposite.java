@@ -14,11 +14,14 @@ import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRuntimeException;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 /**
  * The {@code ElementComposite} class serves as an abstract base class for creating composite
@@ -41,6 +44,13 @@ public abstract class ElementComposite extends Composite<Element> {
   private final HashMap<String, Class<?>> eventNameToClassMap = new HashMap<>();
   private final Map<ListenerRegistration<ElementEvent>, EventListener<? extends ComponentEvent<?>>> listenerRegistrations =
       new HashMap<>();
+
+  private static final Map<Class<?>, Function<String, Object>> SIMPLE_CONVERTERS =
+      Map.ofEntries(Map.entry(String.class, s -> s), Map.entry(Byte.class, Byte::valueOf),
+          Map.entry(Short.class, Short::valueOf), Map.entry(Integer.class, Integer::valueOf),
+          Map.entry(Long.class, Long::valueOf), Map.entry(Float.class, Float::valueOf),
+          Map.entry(Double.class, Double::valueOf), Map.entry(BigDecimal.class, BigDecimal::new),
+          Map.entry(BigInteger.class, BigInteger::new));
 
   /**
    * Gets the listeners for the given event class.
@@ -114,10 +124,18 @@ public abstract class ElementComposite extends Composite<Element> {
       // keep track of the attribute types
       attributeTypes.put(name, value.getClass());
 
+      if (value instanceof Boolean booleanValue) {
+        // Boolean attributes follow the HTML contract: a true value adds the attribute with an
+        // empty string, a false value removes it entirely.
+        writeBooleanAttribute(name, booleanValue);
+
+        return;
+      }
+
       // Attribute values are serialized according to value's current type (regardless of the
       // property's type value):
       //
-      // 1. Strings, Numbers and Booleans No serialization required. The value is converted to a its
+      // 1. Strings and Numbers No serialization required. The value is converted to a its
       // string representation using String.valueOf.
       //
       // 2. Everything else The value is serialized using Gson.
@@ -148,7 +166,7 @@ public abstract class ElementComposite extends Composite<Element> {
    * Gets a property or an attribute of the element.
    *
    * @param <V> the type of the property
-   * @param the property descriptor
+   * @param property the property descriptor
    * @param fromClient true if the property should be read from the client
    * @param type the type of the property
    *
@@ -358,12 +376,16 @@ public abstract class ElementComposite extends Composite<Element> {
    * @return The value of the attribute, or the default value if not set.
    */
   private <V> V getAttributeValue(PropertyDescriptor<V> property, boolean fromClient, Type type) {
+    if (Boolean.class.equals(type)) {
+      return resolveBooleanAttribute(property, fromClient);
+    }
+
     String name = property.getName();
     String value = fromClient ? getElement().getAttribute(name) : attributes.get(name);
 
     if (value != null) {
       if (isSimpleType(type)) {
-        return (V) value;
+        return convertSimpleAttributeValue(property, value, type);
       } else {
         Gson gson = new Gson();
         return gson.fromJson(value, type);
@@ -374,14 +396,101 @@ public abstract class ElementComposite extends Composite<Element> {
   }
 
   /**
-   * Checks if a given type is a simple type (String, Boolean, or a Number).
+   * Converts a simple attribute string value to the declared attribute type.
+   *
+   * @param <V> the type of the attribute
+   * @param property the property descriptor
+   * @param value the raw attribute value
+   * @param type the declared type of the attribute
+   *
+   * @return the converted value, or the descriptor default value when the value cannot be parsed as
+   *         the declared type
+   */
+  @SuppressWarnings("unchecked")
+  private <V> V convertSimpleAttributeValue(PropertyDescriptor<V> property, String value,
+      Type type) {
+    if (!(type instanceof Class<?> targetType)) {
+      return (V) value;
+    }
+
+    Function<String, Object> converter = SIMPLE_CONVERTERS.get(targetType);
+    if (converter == null) {
+      return (V) value;
+    }
+
+    try {
+      return (V) converter.apply(value);
+    } catch (NumberFormatException e) {
+      return property.getDefaultValue();
+    }
+  }
+
+  /**
+   * Writes a {@link Boolean} attribute following the HTML boolean attribute contract.
+   *
+   * <p>
+   * A {@code true} value adds the attribute with an empty string, while a {@code false} value
+   * removes the attribute entirely.
+   * </p>
+   *
+   * @see <a href="https://developer.mozilla.org/en-US/docs/Glossary/Boolean/HTML">MDN Boolean
+   *      attribute</a>
+   *
+   * @param name the attribute name
+   * @param value the boolean value
+   */
+  private void writeBooleanAttribute(String name, boolean value) {
+    if (value) {
+      getElement().setAttribute(name, "");
+      attributes.put(name, "");
+    } else {
+      getElement().removeAttribute(name);
+      attributes.remove(name);
+    }
+  }
+
+  /**
+   * Resolves a {@link Boolean} attribute.
+   *
+   * <p>
+   * An absent attribute reads as {@code false} and a present attribute reads as {@code true},
+   * following the HTML boolean attribute rule. As the single exception, a present attribute whose
+   * value is the literal string {@code "false"} reads as {@code false}, so a component that
+   * reflects a false value as that string is honored rather than read as present.
+   * </p>
+   *
+   * @see <a href="https://developer.mozilla.org/en-US/docs/Glossary/Boolean/HTML">MDN Boolean
+   *      attribute</a>
+   *
+   * @param <V> the type of the attribute
+   * @param property the property descriptor
+   * @param fromClient true if the attribute should be read from the client
+   *
+   * @return the resolved boolean value
+   */
+  @SuppressWarnings("unchecked")
+  private <V> V resolveBooleanAttribute(PropertyDescriptor<V> property, boolean fromClient) {
+    String name = property.getName();
+    boolean present = fromClient ? getElement().hasAttribute(name) : attributes.containsKey(name);
+
+    if (!present) {
+      return (V) Boolean.FALSE;
+    }
+
+    String value = fromClient ? getElement().getAttribute(name) : attributes.get(name);
+
+    return (V) Boolean.valueOf(!"false".equals(value));
+  }
+
+  /**
+   * Checks if a given type is a simple type. Simple types are String, Byte, Short, Integer, Long,
+   * Float, Double, BigDecimal and BigInteger.
    *
    * @param type the type to check
    * @return true if the type is a simple type, false otherwise
    */
   private boolean isSimpleType(Type type) {
-    return type.equals(String.class) || type.equals(Boolean.class)
-        || Number.class.isAssignableFrom((Class<?>) type);
+    return type instanceof Class<?> targetType && SIMPLE_CONVERTERS.containsKey(targetType);
   }
 
   /**

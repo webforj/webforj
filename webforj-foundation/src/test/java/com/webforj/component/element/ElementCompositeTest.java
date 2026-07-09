@@ -1,8 +1,10 @@
 package com.webforj.component.element;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -23,6 +25,8 @@ import com.webforj.conceiver.DefaultConceiver;
 import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -50,6 +54,7 @@ class ElementCompositeTest {
   class PropertiesApi {
 
     class User {
+
       private String fname;
       private String lname;
 
@@ -156,6 +161,96 @@ class ElementCompositeTest {
           Arguments.of(PropertyDescriptor.attribute("booleanAttribute", "false"), "true", "false"),
           Arguments.of(PropertyDescriptor.attribute("stringAttribute", "World"), null, "World"));
     }
+
+    @ParameterizedTest
+    @MethodSource("simpleAttributeConversionProvider")
+    @DisplayName("should convert simple attribute string values back to their declared type")
+    void shouldConvertSimpleAttributeValues(PropertyDescriptor<?> attribute, Object expectedValue,
+        Class<?> expectedType) {
+      composite.set(attribute);
+
+      Object result = composite.get(attribute);
+
+      assertEquals(expectedValue, result);
+      assertEquals(expectedType, result.getClass());
+    }
+
+    static Stream<Arguments> simpleAttributeConversionProvider() {
+      return Stream.of(
+          Arguments.of(PropertyDescriptor.attribute("stringAttr", "hello"), "hello", String.class),
+          Arguments.of(PropertyDescriptor.attribute("booleanAttr", true), true, Boolean.class),
+          Arguments.of(PropertyDescriptor.attribute("byteAttr", (byte) 5), (byte) 5, Byte.class),
+          Arguments.of(PropertyDescriptor.attribute("shortAttr", (short) 42), (short) 42,
+              Short.class),
+          Arguments.of(PropertyDescriptor.attribute("intAttr", 100), 100, Integer.class),
+          Arguments.of(PropertyDescriptor.attribute("longAttr", 9_000_000_000L), 9_000_000_000L,
+              Long.class),
+          Arguments.of(PropertyDescriptor.attribute("floatAttr", 3.14f), 3.14f, Float.class),
+          Arguments.of(PropertyDescriptor.attribute("doubleAttr", 2.718d), 2.718d, Double.class),
+          Arguments.of(PropertyDescriptor.attribute("bigDecimalAttr", new BigDecimal("123.456")),
+              new BigDecimal("123.456"), BigDecimal.class),
+          Arguments.of(PropertyDescriptor.attribute("bigIntegerAttr", new BigInteger("123456789")),
+              new BigInteger("123456789"), BigInteger.class));
+    }
+
+    @Test
+    @DisplayName("should convert simple attribute values read from the client")
+    void shouldConvertSimpleAttributeValuesFromClient() {
+      PropertyDescriptor<Integer> attr = PropertyDescriptor.attribute("count", 0);
+      composite.set(attr, 42);
+
+      assertEquals(42, composite.get(attr, true));
+    }
+
+    @Test
+    @DisplayName("should read a present boolean attribute as true regardless of its value")
+    void shouldReadPresentBooleanAttributeAsTrue() {
+      PropertyDescriptor<Boolean> attr = PropertyDescriptor.attribute("disabled", false);
+      composite.getElement().setAttribute("disabled", "");
+
+      assertTrue(composite.get(attr, true));
+    }
+
+    @Test
+    @DisplayName("should read an absent boolean attribute as false")
+    void shouldReadAbsentBooleanAttributeAsFalse() {
+      PropertyDescriptor<Boolean> attr = PropertyDescriptor.attribute("disabled", false);
+
+      assertFalse(composite.get(attr, true));
+    }
+
+    @Test
+    @DisplayName("should read a present boolean attribute with a \"false\" value as false")
+    void shouldReadFalseStringBooleanAttributeAsFalse() {
+      PropertyDescriptor<Boolean> attr = PropertyDescriptor.attribute("disabled", false);
+      composite.getElement().setAttribute("disabled", "false");
+
+      assertFalse(composite.get(attr, true));
+    }
+
+    @Test
+    @DisplayName("should add the attribute for a true value and remove it for a false value")
+    void shouldWriteBooleanAttributeByPresence() {
+      PropertyDescriptor<Boolean> attr = PropertyDescriptor.attribute("disabled", false);
+
+      composite.set(attr, true);
+      assertTrue(composite.getElement().hasAttribute("disabled"));
+      assertTrue(composite.get(attr));
+
+      composite.set(attr, false);
+      assertFalse(composite.getElement().hasAttribute("disabled"));
+      assertFalse(composite.get(attr));
+    }
+
+    @Test
+    @DisplayName("should return the default value when the client value cannot be parsed")
+    void shouldFallBackToDefaultWhenClientValueIsNotParseable() {
+      PropertyDescriptor<Integer> attr = PropertyDescriptor.attribute("count", 7);
+      composite.set(attr, 100);
+      composite.getElement().setAttribute("count", "abc");
+
+      assertEquals(7, composite.get(attr, true));
+    }
   }
 
   @Nested
@@ -164,6 +259,7 @@ class ElementCompositeTest {
 
     @EventName("click")
     static class ClickEvent extends ComponentEvent<ElementCompositeMock> {
+
       public ClickEvent(ElementCompositeMock component, Map<String, Object> eventMap) {
         super(component, eventMap);
       }
@@ -174,6 +270,7 @@ class ElementCompositeTest {
     void shouldThrowExceptionIfEventIsMapped() {
       @EventName("click")
       class ClickEvent2 extends ComponentEvent<ElementCompositeMock> {
+
         public ClickEvent2(ElementCompositeMock component, Map<String, Object> eventMap) {
           super(component, eventMap);
         }
@@ -248,6 +345,5 @@ class ElementCompositeTest {
       listenerRegistration.remove();
       verify(elementRegistration, times(1)).remove();
     }
-
   }
 }
