@@ -1,0 +1,53 @@
+{
+  "languages": {
+    "Java": {
+      "tab_size": 2,
+      "hard_tabs": false,
+      "format_on_save": "on",
+      "formatter": "language_server",
+      "remove_trailing_whitespace_on_save": true,
+      "ensure_final_newline_on_save": true
+    }
+  },
+  "lsp": {
+    "jdtls": {
+      "initialization_options": {
+        "settings": {
+          "java": {
+            "completion": {
+              "filteredTypes": [
+                "java.awt.*",
+                "com.sun.*",
+                "sun.*",
+                "jdk.*",
+                "org.graalvm.*",
+                "io.micrometer.shaded.*",
+                "javax.swing.*"
+              ],
+              "favoriteStaticMembers": [
+                "org.junit.Assert.*",
+                "org.junit.Assume.*",
+                "org.junit.jupiter.api.Assertions.*",
+                "org.junit.jupiter.api.Assumptions.*",
+                "org.junit.jupiter.api.DynamicContainer.*",
+                "org.junit.jupiter.api.DynamicTest.*",
+                "org.mockito.Mockito.*",
+                "org.mockito.ArgumentMatchers.*",
+                "org.mockito.Answers.*",
+                "com.webforj.component.optiondialog.OptionDialog.*",
+                "com.webforj.App.console"
+              ]
+            },
+            "format": {
+              "enabled": true,
+              "settings": {
+                "url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
+                "profile": "GoogleStyle"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
