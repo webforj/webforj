@@ -1,6 +1,7 @@
 package com.webforj.component;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -243,6 +244,38 @@ class DwcComponentTest {
         assertThrows(WebforjRestrictedAccessException.class,
             () -> component.setAttribute(restrictedAttribute, "value"));
       }
+    }
+
+    @Test
+    @DisplayName("hasAttribute when control is null")
+    void hasAttributeWhenControlIsNull() throws IllegalAccessException, BBjException {
+      ReflectionUtils.nullifyControl(component);
+
+      assertFalse(component.hasAttribute("key"));
+      component.setAttribute("key", "value");
+      assertTrue(component.hasAttribute("key"));
+
+      verify(control, times(0)).hasAttribute("key");
+    }
+
+    @Test
+    @DisplayName("hasAttribute when control is not null")
+    void hasAttributeWhenControlIsNotNull() throws BBjException {
+      doReturn(true).when(control).hasAttribute("key");
+
+      assertTrue(component.hasAttribute("key"));
+
+      verify(control, times(1)).hasAttribute("key");
+    }
+
+    @Test
+    @DisplayName("""
+        hasAttribute when control throws
+        BBjException a DwcjRuntimeException is thrown
+        """)
+    void hasAttributeWhenControlThrowsBbjException() throws BBjException {
+      doThrow(BBjException.class).when(control).hasAttribute("key");
+      assertThrows(WebforjRuntimeException.class, () -> component.hasAttribute("key"));
     }
 
     @Test

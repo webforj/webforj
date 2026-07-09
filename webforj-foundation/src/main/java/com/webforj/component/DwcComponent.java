@@ -324,6 +324,22 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    * {@inheritDoc}
    */
   @Override
+  public boolean hasAttribute(String attribute) {
+    if (control != null) {
+      try {
+        return control.hasAttribute(attribute);
+      } catch (BBjException e) {
+        throw new WebforjRuntimeException(e);
+      }
+    }
+
+    return attributes.containsKey(attribute);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   public T removeAttribute(String attribute) {
     if (control != null) {
       try {
