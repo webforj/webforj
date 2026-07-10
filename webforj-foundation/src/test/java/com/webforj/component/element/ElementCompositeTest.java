@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
@@ -15,19 +16,30 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.basis.bbj.proxies.event.BBjWebEvent;
+import com.basis.bbj.proxies.event.BBjWebEventOptions;
+import com.basis.bbj.proxies.sysgui.BBjWebComponent;
+import com.basis.startup.type.BBjException;
 import com.google.gson.Gson;
+import com.webforj.component.ReflectionUtils;
 import com.webforj.component.element.annotation.EventName;
+import com.webforj.component.element.annotation.NodeName;
+import com.webforj.component.element.annotation.Synchronize;
 import com.webforj.component.element.event.ElementEvent;
 import com.webforj.component.element.event.ElementEventOptions;
+import com.webforj.component.element.sink.ElementEventSink;
 import com.webforj.component.event.ComponentEvent;
+import com.webforj.component.window.Window;
 import com.webforj.conceiver.ConceiverProvider;
 import com.webforj.conceiver.DefaultConceiver;
 import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
+import com.webforj.exceptions.WebforjRuntimeException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
@@ -38,6 +50,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 
 class ElementCompositeTest {
@@ -344,6 +357,218 @@ class ElementCompositeTest {
 
       listenerRegistration.remove();
       verify(elementRegistration, times(1)).remove();
+    }
+  }
+
+  @Nested
+  @DisplayName("Synchronize API")
+  class SynchronizeApi {
+
+    @NodeName("x-color")
+    static class SynchronizedColorComposite extends ElementComposite {
+      @Synchronize("change")
+      final PropertyDescriptor<String> colorProp = PropertyDescriptor.property("color", "blue");
+
+      @Synchronize("toggle")
+      final PropertyDescriptor<String> badgeAttr = PropertyDescriptor.attribute("badge", "none");
+
+      public String getColor() {
+        return get(colorProp);
+      }
+
+      public String getBadge() {
+        return get(badgeAttr);
+      }
+    }
+
+    @NodeName("x-detail-color")
+    static class SynchronizedDetailColorComposite extends ElementComposite {
+      @Synchronize(value = "change", exp = "event.detail")
+      final PropertyDescriptor<String> colorProp = PropertyDescriptor.property("color", "blue");
+
+      public String getColor() {
+        return get(colorProp);
+      }
+    }
+
+    @NodeName("x-checked")
+    static class SynchronizedCheckedComposite extends ElementComposite {
+      @Synchronize("toggle")
+      final PropertyDescriptor<Boolean> checkedAttr =
+          PropertyDescriptor.attribute("checked", false);
+
+      public boolean isChecked() {
+        return get(checkedAttr);
+      }
+    }
+
+    @NodeName("x-count")
+    static class SynchronizedCountComposite extends ElementComposite {
+      final PropertyDescriptor<Integer> countProp = PropertyDescriptor.property("count", 0);
+
+      public void synchronizeCount() {
+        synchronize(countProp, "input");
+      }
+
+      public int getCount() {
+        return get(countProp);
+      }
+    }
+
+    @NodeName("x-broken")
+    static class BrokenSynchronizedComposite extends ElementComposite {
+      @Synchronize("change")
+      final String colorProp = "color";
+    }
+
+    static class BaseSynchronizedComposite extends ElementComposite {
+      @Synchronize("change")
+      final PropertyDescriptor<String> colorProp = PropertyDescriptor.property("color", "blue");
+
+      public String getColor() {
+        return get(colorProp);
+      }
+    }
+
+    @NodeName("x-inherited-color")
+    static class InheritedSynchronizedComposite extends BaseSynchronizedComposite {
+    }
+
+    BBjWebComponent control;
+    BBjWebEventOptions controlOptions;
+
+    @BeforeEach
+    void setUpControl() throws BBjException {
+      control = mock(BBjWebComponent.class);
+      controlOptions = mock(BBjWebEventOptions.class);
+      when(control.newEventOptions()).thenReturn(controlOptions);
+    }
+
+    ElementEventSink attachAndCaptureSink(ElementComposite composite, String event, int callbackId)
+        throws BBjException, IllegalAccessException {
+      when(control.setCallback(eq(event), any(), anyString(), any(BBjWebEventOptions.class)))
+          .thenReturn(callbackId);
+
+      Element element = composite.getElement();
+      ReflectionUtils.unNullifyControl(element, control);
+      element.attachControlCallbacks();
+
+      ArgumentCaptor<Object> handler = ArgumentCaptor.forClass(Object.class);
+      verify(control).setCallback(eq(event), handler.capture(), anyString(),
+          any(BBjWebEventOptions.class));
+
+      return (ElementEventSink) handler.getValue();
+    }
+
+    BBjWebEvent webEvent(int callbackId, Map<String, Object> eventMap) {
+      BBjWebEvent event = mock(BBjWebEvent.class);
+      when(event.getCallbackID()).thenReturn(callbackId);
+      when(event.getEventMap()).thenReturn(eventMap);
+
+      return event;
+    }
+
+    @Test
+    @DisplayName("should sync annotated property with the client")
+    void shouldSyncAnnotatedProperty() throws BBjException, IllegalAccessException {
+      SynchronizedColorComposite composite = new SynchronizedColorComposite();
+      composite.onCreate(mock(Window.class));
+
+      ElementEventSink sink = attachAndCaptureSink(composite, "change", 1);
+      verify(controlOptions).addItem("color", "component['color']");
+
+      assertEquals("blue", composite.getColor());
+      sink.handleEvent(webEvent(1, Map.of("color", "red")));
+      assertEquals("red", composite.getColor());
+    }
+
+    @Test
+    @DisplayName("should sync annotated attribute with the client")
+    void shouldSyncAnnotatedAttribute() throws BBjException, IllegalAccessException {
+      SynchronizedColorComposite composite = new SynchronizedColorComposite();
+      composite.onCreate(mock(Window.class));
+
+      ElementEventSink sink = attachAndCaptureSink(composite, "toggle", 2);
+      verify(controlOptions).addItem("badge", "component.getAttribute('badge')");
+
+      assertEquals("none", composite.getBadge());
+      sink.handleEvent(webEvent(2, Map.of("badge", "new")));
+      assertEquals("new", composite.getBadge());
+    }
+
+    @Test
+    @DisplayName("should sync boolean attribute presence with the client")
+    void shouldSyncBooleanAttribute() throws BBjException, IllegalAccessException {
+      SynchronizedCheckedComposite composite = new SynchronizedCheckedComposite();
+      composite.onCreate(mock(Window.class));
+
+      ElementEventSink sink = attachAndCaptureSink(composite, "toggle", 3);
+
+      assertFalse(composite.isChecked());
+      sink.handleEvent(webEvent(3, Map.of("checked", "")));
+      assertTrue(composite.isChecked());
+    }
+
+    @Test
+    @DisplayName("should sync from the given expression and write the value back to the element")
+    void shouldSyncFromExpression() throws BBjException, IllegalAccessException {
+      SynchronizedDetailColorComposite composite = new SynchronizedDetailColorComposite();
+      composite.onCreate(mock(Window.class));
+
+      ElementEventSink sink = attachAndCaptureSink(composite, "change", 4);
+      verify(controlOptions).addItem("color", "event.detail");
+      verify(controlOptions).setCode("component['color'] = event.detail;");
+
+      sink.handleEvent(webEvent(4, Map.of("color", "green")));
+      assertEquals("green", composite.getColor());
+    }
+
+    @Test
+    @DisplayName("should sync programmatically and convert the reported value to the property type")
+    void shouldSyncProgrammatically() throws BBjException, IllegalAccessException {
+      SynchronizedCountComposite composite = new SynchronizedCountComposite();
+      composite.synchronizeCount();
+
+      ElementEventSink sink = attachAndCaptureSink(composite, "input", 5);
+      sink.handleEvent(webEvent(5, Map.of("count", 4.0d)));
+
+      assertEquals(4, composite.getCount());
+    }
+
+    @Test
+    @DisplayName("should keep the cached value when the event carries no value")
+    void shouldKeepCachedValueWhenEventCarriesNoValue()
+        throws BBjException, IllegalAccessException {
+      SynchronizedColorComposite composite = new SynchronizedColorComposite();
+      composite.onCreate(mock(Window.class));
+
+      ElementEventSink sink = attachAndCaptureSink(composite, "change", 6);
+      sink.handleEvent(webEvent(6, Map.of()));
+
+      assertEquals("blue", composite.getColor());
+    }
+
+    @Test
+    @DisplayName("should throw when the annotated field is not a PropertyDescriptor")
+    void shouldThrowWhenAnnotatedFieldIsNotDescriptor() {
+      BrokenSynchronizedComposite composite = new BrokenSynchronizedComposite();
+      Window window = mock(Window.class);
+
+      assertThrows(WebforjRuntimeException.class, () -> composite.onCreate(window));
+    }
+
+    @Test
+    @DisplayName("should sync a property annotated on a superclass field")
+    void shouldSyncInheritedAnnotatedProperty() throws BBjException, IllegalAccessException {
+      InheritedSynchronizedComposite composite = new InheritedSynchronizedComposite();
+      composite.onCreate(mock(Window.class));
+
+      ElementEventSink sink = attachAndCaptureSink(composite, "change", 7);
+      verify(controlOptions).addItem("color", "component['color']");
+
+      assertEquals("blue", composite.getColor());
+      sink.handleEvent(webEvent(7, Map.of("color", "red")));
+      assertEquals("red", composite.getColor());
     }
   }
 }
