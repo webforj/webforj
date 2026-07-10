@@ -64,7 +64,7 @@ class WatchSessionTest {
 
     session.close();
 
-    assertTrue(second.isDestroyed(), "closing stops the new watcher");
+    assertTrue(second.awaitDestroyed(2, TimeUnit.SECONDS), "closing stops the new watcher");
   }
 
   @Test

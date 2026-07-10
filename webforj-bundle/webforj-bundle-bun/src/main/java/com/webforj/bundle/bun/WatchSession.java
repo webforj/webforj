@@ -46,6 +46,7 @@ public final class WatchSession implements AutoCloseable {
 
   private final WatchHost host;
   private final BundleLogger log;
+  private final Object lock = new Object();
   private final ExecutorService rescans = Executors.newSingleThreadExecutor(runnable -> {
     Thread thread = new Thread(runnable, "webforj-watch-rescan");
     thread.setDaemon(true);
@@ -97,13 +98,26 @@ public final class WatchSession implements AutoCloseable {
         previous.destroy();
       }
 
-      watcher = host.restartWatcher();
-      // Advance the baseline when the rebuild produced a watcher, or when there are no entries left
-      // to build at all, so a removed entry settles to the empty state and a re-added one rebuilds.
-      // A non empty set that still produced nothing has a source not in place yet, so the baseline
-      // stays for the next restart to retry once the source is back.
-      if (watcher != null || current.isEmpty()) {
-        entrySet = current;
+      Process next = host.restartWatcher();
+      // The swap and close exclude each other, so a close that lands while the rebuild is in
+      // flight still stops the watcher the rebuild produced instead of leaking it.
+      synchronized (lock) {
+        if (closed) {
+          if (next != null) {
+            next.destroy();
+          }
+
+          return;
+        }
+
+        watcher = next;
+        // Advance the baseline when the rebuild produced a watcher, or when there are no entries
+        // left to build at all, so a removed entry settles to the empty state and a re-added one
+        // rebuilds. A non empty set that still produced nothing has a source not in place yet, so
+        // the baseline stays for the next restart to retry once the source is back.
+        if (next != null || current.isEmpty()) {
+          entrySet = current;
+        }
       }
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
@@ -117,12 +131,15 @@ public final class WatchSession implements AutoCloseable {
    */
   @Override
   public void close() {
-    closed = true;
-    rescans.shutdownNow();
-    Process current = watcher;
+    synchronized (lock) {
+      closed = true;
+      Process current = watcher;
 
-    if (current != null) {
-      current.destroy();
+      if (current != null) {
+        current.destroy();
+      }
     }
+
+    rescans.shutdownNow();
   }
 }
