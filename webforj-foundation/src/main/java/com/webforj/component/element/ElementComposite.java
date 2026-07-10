@@ -4,21 +4,26 @@ import com.google.gson.Gson;
 import com.webforj.component.Composite;
 import com.webforj.component.element.annotation.ElementAnnotationProcessor;
 import com.webforj.component.element.annotation.EventName;
+import com.webforj.component.element.annotation.Synchronize;
 import com.webforj.component.element.event.ElementEvent;
 import com.webforj.component.element.event.ElementEventOptions;
 import com.webforj.component.event.ComponentEvent;
+import com.webforj.component.window.Window;
 import com.webforj.conceiver.Conceiver;
 import com.webforj.conceiver.ConceiverProvider;
 import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRuntimeException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
@@ -44,6 +49,7 @@ public abstract class ElementComposite extends Composite<Element> {
   private final HashMap<String, Class<?>> eventNameToClassMap = new HashMap<>();
   private final Map<ListenerRegistration<ElementEvent>, EventListener<? extends ComponentEvent<?>>> listenerRegistrations =
       new HashMap<>();
+  private boolean synchronizeAnnotationsRegistered = false;
 
   private static final Map<Class<?>, Function<String, Object>> SIMPLE_CONVERTERS =
       Map.ofEntries(Map.entry(String.class, s -> s), Map.entry(Byte.class, Byte::valueOf),
@@ -51,6 +57,17 @@ public abstract class ElementComposite extends Composite<Element> {
           Map.entry(Long.class, Long::valueOf), Map.entry(Float.class, Float::valueOf),
           Map.entry(Double.class, Double::valueOf), Map.entry(BigDecimal.class, BigDecimal::new),
           Map.entry(BigInteger.class, BigInteger::new));
+
+  private static final ClassValue<SynchronizeFields> SYNCHRONIZE_FIELDS = new ClassValue<>() {
+    @Override
+    protected SynchronizeFields computeValue(Class<?> type) {
+      try {
+        return new SynchronizeFields(scanSynchronizeFields(type), null);
+      } catch (WebforjRuntimeException e) {
+        return new SynchronizeFields(null, e);
+      }
+    }
+  };
 
   /**
    * Gets the listeners for the given event class.
@@ -132,21 +149,7 @@ public abstract class ElementComposite extends Composite<Element> {
         return;
       }
 
-      // Attribute values are serialized according to value's current type (regardless of the
-      // property's type value):
-      //
-      // 1. Strings and Numbers No serialization required. The value is converted to a its
-      // string representation using String.valueOf.
-      //
-      // 2. Everything else The value is serialized using Gson.
-      String serializedValue;
-      if (isSimpleType(value.getClass())) {
-        serializedValue = String.valueOf(value);
-      } else {
-        Gson gson = new Gson();
-        serializedValue = gson.toJson(value);
-      }
-
+      String serializedValue = serializeAttributeValue(value);
       getElement().setAttribute(name, serializedValue);
       attributes.put(name, serializedValue);
     }
@@ -218,12 +221,118 @@ public abstract class ElementComposite extends Composite<Element> {
   }
 
   /**
+   * Keeps the given property or attribute in sync with the client.
+   *
+   * <p>
+   * When the given client event fires, the current value of the property or attribute is read on
+   * the client and sent to the server with the event payload. The reported value is stored in the
+   * server cache so that {@link #get(PropertyDescriptor)} returns the value the client last
+   * reported instead of the value the server last wrote.
+   * </p>
+   *
+   * <p>
+   * The method is shorthand for adding a listener for the client event and updating the property or
+   * attribute from the reported value in the listener.
+   * </p>
+   *
+   * <p>
+   * Synchronization is not required to read the current client value on demand.
+   * {@link #get(PropertyDescriptor, boolean)} reads the value live from the client when its
+   * {@code fromClient} argument is {@code true}. Synchronization is for components that report a
+   * value change only through an event, where the reported value rides the event payload rather
+   * than a property or attribute the server can read back.
+   * </p>
+   *
+   * @param <V> the type of the property
+   * @param property the property descriptor
+   * @param event the name of the client event which reports the value
+   *
+   * @return a listener registration for removing the synchronization
+   * @throws NullPointerException if the property or the event is null
+   *
+   * @since 26.02
+   * @see Synchronize
+   */
+  protected <V> ListenerRegistration<ElementEvent> synchronize(PropertyDescriptor<V> property,
+      String event) {
+    return synchronize(property, event, "");
+  }
+
+  /**
+   * Keeps the given property or attribute in sync with the client.
+   *
+   * <p>
+   * When the given client event fires, the value is read from the given client expression, for
+   * example {@code event.detail}, sent to the server with the event payload, and written back to
+   * the element. Use this form when the element does not maintain the value itself. The reported
+   * value is stored in the server cache so that {@link #get(PropertyDescriptor)} returns the value
+   * the client last reported instead of the value the server last wrote.
+   * </p>
+   *
+   * <p>
+   * The method is shorthand for adding a listener for the client event and updating the property or
+   * attribute from the reported value in the listener.
+   * </p>
+   *
+   * <p>
+   * Synchronization is not required to read the current client value on demand.
+   * {@link #get(PropertyDescriptor, boolean)} reads the value live from the client when its
+   * {@code fromClient} argument is {@code true}. Synchronization is for components that report a
+   * value change only through an event, where the reported value rides the event payload rather
+   * than a property or attribute the server can read back.
+   * </p>
+   *
+   * @param <V> the type of the property
+   * @param property the property descriptor
+   * @param event the name of the client event which reports the value
+   * @param expression the client expression which produces the value when the event fires
+   *
+   * @return a listener registration for removing the synchronization
+   * @throws NullPointerException if the property or the event is null
+   *
+   * @since 26.02
+   * @see Synchronize
+   */
+  protected <V> ListenerRegistration<ElementEvent> synchronize(PropertyDescriptor<V> property,
+      String event, String expression) {
+    Objects.requireNonNull(property, "The PropertyDescriptor cannot be null");
+    Objects.requireNonNull(event, "The event name cannot be null");
+
+    String name = property.getName();
+    boolean isAttribute = property.isAttribute();
+    String valueExpression = expression == null ? "" : expression.trim();
+    ElementEventOptions options = new ElementEventOptions();
+
+    if (valueExpression.isEmpty()) {
+      options.addData(name,
+          isAttribute ? "component.getAttribute('" + name + "')" : "component['" + name + "']");
+    } else {
+      options.addData(name, valueExpression);
+      options
+          .setCode(isAttribute ? "component.setAttribute('" + name + "', " + valueExpression + ");"
+              : "component['" + name + "'] = " + valueExpression + ";");
+    }
+
+    return getElement().addEventListener(event,
+        elementEvent -> handleSynchronizeEvent(property, elementEvent), options, false);
+  }
+
+  /**
    * Gets the event dispatcher.
    *
    * @return the event dispatcher
    */
   protected EventDispatcher getEventDispatcher() {
     return dispatcher;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void onCreate(Window window) {
+    registerSynchronizeAnnotations();
+    super.onCreate(window);
   }
 
   /**
@@ -483,6 +592,30 @@ public abstract class ElementComposite extends Composite<Element> {
   }
 
   /**
+   * Serializes the given value to the string form stored in the attributes cache and sent to the
+   * client.
+   *
+   * <p>
+   * Attribute values are serialized according to the value's current type. Simple types are
+   * converted to their string representation using {@code String.valueOf}. Everything else is
+   * serialized using Gson.
+   * </p>
+   *
+   * @param value the value to serialize
+   *
+   * @return the serialized value
+   */
+  private String serializeAttributeValue(Object value) {
+    if (isSimpleType(value.getClass())) {
+      return String.valueOf(value);
+    }
+
+    Gson gson = new Gson();
+
+    return gson.toJson(value);
+  }
+
+  /**
    * Checks if a given type is a simple type. Simple types are String, Byte, Short, Integer, Long,
    * Float, Double, BigDecimal and BigInteger.
    *
@@ -492,6 +625,193 @@ public abstract class ElementComposite extends Composite<Element> {
   private boolean isSimpleType(Type type) {
     return type instanceof Class<?> targetType && SIMPLE_CONVERTERS.containsKey(targetType);
   }
+
+  /**
+   * Handles a client event which reports the value of a synchronized property or attribute and
+   * stores the reported value in the server cache.
+   *
+   * @param <V> the type of the property
+   * @param property the property descriptor
+   * @param event the element event carrying the reported value
+   */
+  <V> void handleSynchronizeEvent(PropertyDescriptor<V> property, ElementEvent event) {
+    String name = property.getName();
+    Map<String, Object> eventMap = event.getEventMap();
+    if (!eventMap.containsKey(name)) {
+      return;
+    }
+
+    Object raw = eventMap.get(name);
+    if (property.isAttribute()) {
+      if (raw == null) {
+        attributes.remove(name);
+      } else {
+        attributes.put(name, serializeAttributeValue(raw));
+      }
+    } else {
+      Object value = convertClientValue(raw, property.getType());
+      properties.put(name, value);
+
+      if (value != null) {
+        propertyTypes.put(name, value.getClass());
+      }
+    }
+  }
+
+  /**
+   * Converts a value reported by the client to the given type.
+   *
+   * @param raw the reported value
+   * @param type the target type
+   *
+   * @return the converted value
+   */
+  private Object convertClientValue(Object raw, Type type) {
+    if (raw == null) {
+      return null;
+    }
+
+    if (type instanceof Class<?> targetType && targetType.isInstance(raw)) {
+      return raw;
+    }
+
+    Gson gson = new Gson();
+    if (raw instanceof String json && !String.class.equals(type)) {
+      return gson.fromJson(json, type);
+    }
+
+    return gson.fromJson(gson.toJsonTree(raw), type);
+  }
+
+  /**
+   * Registers the synchronizations declared with the {@link Synchronize} annotation on the
+   * {@code PropertyDescriptor} fields of the class hierarchy.
+   */
+  private void registerSynchronizeAnnotations() {
+    if (synchronizeAnnotationsRegistered) {
+      return;
+    }
+
+    synchronizeAnnotationsRegistered = true;
+
+    for (SynchronizeField synchronizeField : getSynchronizeFields(getClass())) {
+      PropertyDescriptor<?> descriptor = readSynchronizeField(synchronizeField.field());
+      for (String event : synchronizeField.events()) {
+        synchronize(descriptor, event, synchronizeField.exp());
+      }
+    }
+  }
+
+  /**
+   * Returns the {@code @Synchronize} annotated fields of the given class hierarchy.
+   *
+   * <p>
+   * The scan is performed once per class and cached in a {@link ClassValue}, so the reflection cost
+   * is paid once per class rather than once per instance. The cache entry is tied to the class and
+   * collected with it, so it does not leak across a hot redeploy. The reported values are read from
+   * the instance separately, since they are instance state.
+   * </p>
+   *
+   * @param composite the composite class
+   *
+   * @return the annotated fields
+   */
+  private static List<SynchronizeField> getSynchronizeFields(Class<?> composite) {
+    SynchronizeFields entry = SYNCHRONIZE_FIELDS.get(composite);
+    if (entry.error() != null) {
+      throw entry.error();
+    }
+
+    return entry.fields();
+  }
+
+  /**
+   * Scans the given class hierarchy for {@code @Synchronize} annotated {@code PropertyDescriptor}
+   * fields.
+   *
+   * @param composite the composite class
+   *
+   * @return the annotated fields
+   * @throws WebforjRuntimeException if an annotated field is not a PropertyDescriptor or declares
+   *         no events
+   */
+  private static List<SynchronizeField> scanSynchronizeFields(Class<?> composite) {
+    List<SynchronizeField> fields = new ArrayList<>();
+    Class<?> clazz = composite;
+
+    while (clazz != null && !ElementComposite.class.equals(clazz)) {
+      for (Field field : clazz.getDeclaredFields()) {
+        Synchronize synchronize = field.getAnnotation(Synchronize.class);
+        if (synchronize == null) {
+          continue;
+        }
+
+        if (!PropertyDescriptor.class.isAssignableFrom(field.getType())) {
+          throw new WebforjRuntimeException(
+              "The field '" + field.getName() + "' in class '" + clazz.getName()
+                  + "' is annotated with @Synchronize but is not a PropertyDescriptor");
+        }
+
+        String[] events = synchronize.value();
+        if (events.length == 0) {
+          throw new WebforjRuntimeException("The field '" + field.getName() + "' in class '"
+              + clazz.getName() + "' is annotated with @Synchronize but declares no events");
+        }
+
+        field.setAccessible(true); // NOSONAR
+        fields.add(new SynchronizeField(field, List.of(events), synchronize.exp()));
+      }
+
+      clazz = clazz.getSuperclass();
+    }
+
+    return fields;
+  }
+
+  /**
+   * Reads the {@code PropertyDescriptor} value of the given annotated field.
+   *
+   * @param field the annotated field
+   *
+   * @return the property descriptor
+   * @throws WebforjRuntimeException if the field cannot be read or its value is null
+   */
+  private PropertyDescriptor<?> readSynchronizeField(Field field) {
+    try {
+      PropertyDescriptor<?> descriptor = (PropertyDescriptor<?>) field.get(this);
+
+      if (descriptor == null) {
+        throw new WebforjRuntimeException(
+            "The field '" + field.getName() + "' in class '" + field.getDeclaringClass().getName()
+                + "' is annotated with @Synchronize but its value is null");
+      }
+
+      return descriptor;
+    } catch (IllegalAccessException e) {
+      throw new WebforjRuntimeException("Failed to read the @Synchronize field '" + field.getName()
+          + "' in class '" + field.getDeclaringClass().getName() + "'", e);
+    }
+  }
+
+  /**
+   * A {@code @Synchronize} annotated {@code PropertyDescriptor} field with its declared events and
+   * expression.
+   *
+   * @param field the annotated field
+   * @param events the client events which report the value
+   * @param exp the client expression which produces the value
+   */
+  private static final record SynchronizeField(Field field, List<String> events, String exp) {}
+
+  /**
+   * The cached scan result for a composite class, holding either the annotated fields or the error
+   * raised while scanning them.
+   *
+   * @param fields the annotated fields
+   * @param error the error raised while scanning, or null when the scan succeeded
+   */
+  private static final record SynchronizeFields(List<SynchronizeField> fields,
+      WebforjRuntimeException error) {}
 
   /**
    * A custom Element listener registration that will remove the listener from the element and the
