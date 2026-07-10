@@ -263,7 +263,7 @@ public class Splitter extends ElementComposite
    * @return the relative position of the splitter
    */
   public double getPositionRelative() {
-    return get(positionRelativeProp, true, Boolean.class);
+    return get(positionRelativeProp, true, Double.class);
   }
 
   /**
