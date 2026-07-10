@@ -518,6 +518,20 @@ class TabbedPaneTest {
       verify(control, times(times)).setSelectedIndex(0, false);
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldReportNoSelectionWhenPaneIsEmpty(boolean controlDefined)
+        throws IllegalAccessException, BBjException {
+      if (!controlDefined) {
+        ReflectionUtils.nullifyControl(component);
+      } else {
+        doReturn(-1).when(control).getSelectedIndex();
+      }
+
+      assertNull(component.getSelected());
+      assertEquals(-1, component.getSelectedIndex());
+    }
+
     @Test
     void selectedShouldThrowDwcjRuntimeException() throws BBjException {
       component.addTab("Tab1", new DwcComponentMock());

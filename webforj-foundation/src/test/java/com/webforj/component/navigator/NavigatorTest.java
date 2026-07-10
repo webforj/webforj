@@ -112,6 +112,17 @@ class NavigatorTest {
     assertTrue(component.isVisible(Navigator.Part.LAST_BUTTON));
   }
 
+  @Test
+  void shouldReportMainButtonsVisibleByDefault() throws IllegalAccessException {
+    ReflectionUtils.nullifyControl(component);
+
+    assertFalse(component.isHideMainButtons());
+    assertTrue(component.isVisible(Navigator.Part.FIRST_BUTTON));
+    assertTrue(component.isVisible(Navigator.Part.PREVIOUS_BUTTON));
+    assertTrue(component.isVisible(Navigator.Part.NEXT_BUTTON));
+    assertTrue(component.isVisible(Navigator.Part.LAST_BUTTON));
+  }
+
   @ParameterizedTest
   @EnumSource(Navigator.Part.class)
   void shouldSetGetTextPart(Navigator.Part part) throws IllegalAccessException {

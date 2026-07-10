@@ -353,7 +353,12 @@ public sealed class MaskedNumberField extends DwcMaskedField<MaskedNumberField, 
    */
   @Override
   public String getMaskedValue() {
-    return MaskDecorator.forNumber(getValue(), getMask());
+    Double theValue = getValue();
+    if (theValue == null) {
+      return "";
+    }
+
+    return MaskDecorator.forNumber(theValue, getMask());
   }
 
   /**
