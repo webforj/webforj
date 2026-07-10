@@ -99,6 +99,12 @@ class MaskedNumberFieldTest {
     assertEquals("23.5", component.getText());
   }
 
+  @Test
+  void shouldReturnEmptyMaskedValueWhenValueIsAbsent() throws IllegalAccessException {
+    ReflectionUtils.nullifyControl(component);
+    assertEquals("", component.getMaskedValue());
+  }
+
   @Nested
   class SeparatorsApi {
 

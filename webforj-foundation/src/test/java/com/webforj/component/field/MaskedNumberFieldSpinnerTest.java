@@ -5,6 +5,7 @@ import static org.mockito.Mockito.verify;
 
 import com.basis.bbj.proxies.sysgui.BBjInputNSpinner;
 import com.webforj.component.Expanse;
+import com.webforj.component.ReflectionUtils;
 import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.dispatcher.EventListener;
 import org.junit.jupiter.api.Nested;
@@ -89,6 +90,12 @@ class MaskedNumberFieldSpinnerTest {
       component = new MaskedNumberFieldSpinner();
       assertEquals(Expanse.MEDIUM, component.getExpanse());
     }
+  }
+
+  @Test
+  void shouldReturnEmptyMaskedValueWhenValueIsAbsent() throws IllegalAccessException {
+    ReflectionUtils.nullifyControl(component);
+    assertEquals("", component.getMaskedValue());
   }
 
   @Test

@@ -465,7 +465,7 @@ public final class Navigator extends DwcFocusableComponent<Navigator>
     }
 
     if (prop != null) {
-      return !(boolean) getProperty(prop);
+      return !Boolean.TRUE.equals(getProperty(prop));
     }
 
     if (part == Part.PAGE_BUTTON) {

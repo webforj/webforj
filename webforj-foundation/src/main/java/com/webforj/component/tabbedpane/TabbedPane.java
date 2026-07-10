@@ -1054,15 +1054,20 @@ public final class TabbedPane extends DwcFocusableComponent<TabbedPane> implemen
   public Tab getSelected() {
     BBjTabCtrl tabCtrl = inferTabCtrl();
 
+    int index = selectedIndex;
     if (tabCtrl != null) {
       try {
-        return getTab(tabCtrl.getSelectedIndex());
+        index = tabCtrl.getSelectedIndex();
       } catch (BBjException e) {
         throw new WebforjRuntimeException(e);
       }
-    } else {
-      return getTab(selectedIndex);
     }
+
+    if (index < 0 || index >= tabs.size()) {
+      return null;
+    }
+
+    return getTab(index);
   }
 
   /**
