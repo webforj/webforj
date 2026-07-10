@@ -471,104 +471,105 @@ class ElementCompositeTest {
     @Test
     @DisplayName("should sync annotated property with the client")
     void shouldSyncAnnotatedProperty() throws BBjException, IllegalAccessException {
-      SynchronizedColorComposite composite = new SynchronizedColorComposite();
-      composite.onCreate(mock(Window.class));
+      SynchronizedColorComposite colorComposite = new SynchronizedColorComposite();
+      colorComposite.onCreate(mock(Window.class));
 
-      ElementEventSink sink = attachAndCaptureSink(composite, "change", 1);
+      ElementEventSink sink = attachAndCaptureSink(colorComposite, "change", 1);
       verify(controlOptions).addItem("color", "component['color']");
 
-      assertEquals("blue", composite.getColor());
+      assertEquals("blue", colorComposite.getColor());
       sink.handleEvent(webEvent(1, Map.of("color", "red")));
-      assertEquals("red", composite.getColor());
+      assertEquals("red", colorComposite.getColor());
     }
 
     @Test
     @DisplayName("should sync annotated attribute with the client")
     void shouldSyncAnnotatedAttribute() throws BBjException, IllegalAccessException {
-      SynchronizedColorComposite composite = new SynchronizedColorComposite();
-      composite.onCreate(mock(Window.class));
+      SynchronizedColorComposite colorComposite = new SynchronizedColorComposite();
+      colorComposite.onCreate(mock(Window.class));
 
-      ElementEventSink sink = attachAndCaptureSink(composite, "toggle", 2);
+      ElementEventSink sink = attachAndCaptureSink(colorComposite, "toggle", 2);
       verify(controlOptions).addItem("badge", "component.getAttribute('badge')");
 
-      assertEquals("none", composite.getBadge());
+      assertEquals("none", colorComposite.getBadge());
       sink.handleEvent(webEvent(2, Map.of("badge", "new")));
-      assertEquals("new", composite.getBadge());
+      assertEquals("new", colorComposite.getBadge());
     }
 
     @Test
     @DisplayName("should sync boolean attribute presence with the client")
     void shouldSyncBooleanAttribute() throws BBjException, IllegalAccessException {
-      SynchronizedCheckedComposite composite = new SynchronizedCheckedComposite();
-      composite.onCreate(mock(Window.class));
+      SynchronizedCheckedComposite checkedComposite = new SynchronizedCheckedComposite();
+      checkedComposite.onCreate(mock(Window.class));
 
-      ElementEventSink sink = attachAndCaptureSink(composite, "toggle", 3);
+      ElementEventSink sink = attachAndCaptureSink(checkedComposite, "toggle", 3);
 
-      assertFalse(composite.isChecked());
+      assertFalse(checkedComposite.isChecked());
       sink.handleEvent(webEvent(3, Map.of("checked", "")));
-      assertTrue(composite.isChecked());
+      assertTrue(checkedComposite.isChecked());
     }
 
     @Test
     @DisplayName("should sync from the given expression and write the value back to the element")
     void shouldSyncFromExpression() throws BBjException, IllegalAccessException {
-      SynchronizedDetailColorComposite composite = new SynchronizedDetailColorComposite();
-      composite.onCreate(mock(Window.class));
+      SynchronizedDetailColorComposite detailColorComposite =
+          new SynchronizedDetailColorComposite();
+      detailColorComposite.onCreate(mock(Window.class));
 
-      ElementEventSink sink = attachAndCaptureSink(composite, "change", 4);
+      ElementEventSink sink = attachAndCaptureSink(detailColorComposite, "change", 4);
       verify(controlOptions).addItem("color", "event.detail");
       verify(controlOptions).setCode("component['color'] = event.detail;");
 
       sink.handleEvent(webEvent(4, Map.of("color", "green")));
-      assertEquals("green", composite.getColor());
+      assertEquals("green", detailColorComposite.getColor());
     }
 
     @Test
     @DisplayName("should sync programmatically and convert the reported value to the property type")
     void shouldSyncProgrammatically() throws BBjException, IllegalAccessException {
-      SynchronizedCountComposite composite = new SynchronizedCountComposite();
-      composite.synchronizeCount();
+      SynchronizedCountComposite countComposite = new SynchronizedCountComposite();
+      countComposite.synchronizeCount();
 
-      ElementEventSink sink = attachAndCaptureSink(composite, "input", 5);
+      ElementEventSink sink = attachAndCaptureSink(countComposite, "input", 5);
       sink.handleEvent(webEvent(5, Map.of("count", 4.0d)));
 
-      assertEquals(4, composite.getCount());
+      assertEquals(4, countComposite.getCount());
     }
 
     @Test
     @DisplayName("should keep the cached value when the event carries no value")
     void shouldKeepCachedValueWhenEventCarriesNoValue()
         throws BBjException, IllegalAccessException {
-      SynchronizedColorComposite composite = new SynchronizedColorComposite();
-      composite.onCreate(mock(Window.class));
+      SynchronizedColorComposite colorComposite = new SynchronizedColorComposite();
+      colorComposite.onCreate(mock(Window.class));
 
-      ElementEventSink sink = attachAndCaptureSink(composite, "change", 6);
+      ElementEventSink sink = attachAndCaptureSink(colorComposite, "change", 6);
       sink.handleEvent(webEvent(6, Map.of()));
 
-      assertEquals("blue", composite.getColor());
+      assertEquals("blue", colorComposite.getColor());
     }
 
     @Test
     @DisplayName("should throw when the annotated field is not a PropertyDescriptor")
     void shouldThrowWhenAnnotatedFieldIsNotDescriptor() {
-      BrokenSynchronizedComposite composite = new BrokenSynchronizedComposite();
+      BrokenSynchronizedComposite brokenComposite = new BrokenSynchronizedComposite();
       Window window = mock(Window.class);
 
-      assertThrows(WebforjRuntimeException.class, () -> composite.onCreate(window));
+      assertThrows(WebforjRuntimeException.class, () -> brokenComposite.onCreate(window));
     }
 
     @Test
     @DisplayName("should sync a property annotated on a superclass field")
     void shouldSyncInheritedAnnotatedProperty() throws BBjException, IllegalAccessException {
-      InheritedSynchronizedComposite composite = new InheritedSynchronizedComposite();
-      composite.onCreate(mock(Window.class));
+      InheritedSynchronizedComposite inheritedComposite = new InheritedSynchronizedComposite();
+      inheritedComposite.onCreate(mock(Window.class));
 
-      ElementEventSink sink = attachAndCaptureSink(composite, "change", 7);
+      ElementEventSink sink = attachAndCaptureSink(inheritedComposite, "change", 7);
       verify(controlOptions).addItem("color", "component['color']");
 
-      assertEquals("blue", composite.getColor());
+      assertEquals("blue", inheritedComposite.getColor());
       sink.handleEvent(webEvent(7, Map.of("color", "red")));
-      assertEquals("red", composite.getColor());
+      assertEquals("red", inheritedComposite.getColor());
     }
   }
 }
