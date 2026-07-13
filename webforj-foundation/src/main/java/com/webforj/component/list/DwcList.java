@@ -18,6 +18,7 @@ import com.webforj.concern.HasLabel;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRuntimeException;
+import com.webforj.utilities.HtmlText;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.AbstractMap;
@@ -60,6 +61,8 @@ public abstract class DwcList<T extends DwcValidatableComponent<T, V>, V>
   private final ComponentEventSinkRegistry<ListSelectEvent<V>> selectEventSinkListenerRegistry =
       new ComponentEventSinkRegistry<ListSelectEvent<V>>(
           new ListSelectEventSink<V>(this, getEventDispatcher()), ListSelectEvent.class);
+
+  private final Search search = new Search();
 
   private String label = "";
   private String helperText = "";
@@ -658,6 +661,16 @@ public abstract class DwcList<T extends DwcValidatableComponent<T, V>, V>
   }
 
   /**
+   * Returns the configuration object for the list's embedded search field.
+   *
+   * @return the search configuration
+   * @since 26.02
+   */
+  public Search getSearch() {
+    return search;
+  }
+
+  /**
    * Adds a {@link ListSelectEvent} listener for the component.
    *
    * @param listener the event listener to be added
@@ -802,6 +815,119 @@ public abstract class DwcList<T extends DwcValidatableComponent<T, V>, V>
       } catch (BBjException e) {
         throw new WebforjRuntimeException(e);
       }
+    }
+  }
+
+  /**
+   * Configures the list's embedded search field.
+   *
+   * @author Hyyan Abo Fakher
+   * @since 26.02
+   */
+  public final class Search {
+    private boolean fieldVisible = false;
+    private String term = "";
+    private String placeholder = "Search";
+    private String emptyMessage = "No data to display";
+
+    /**
+     * Sets whether the built in search field is shown.
+     *
+     * <p>
+     * When shown, the search field sits at the top of the component's list and filters the items by
+     * their text. Filtering only hides the items which do not match, the item indexes and the
+     * selection are untouched. The list can still be filtered through {@link #setTerm(String)}
+     * while the field is hidden.
+     * </p>
+     *
+     * @param fieldVisible {@code true} to show the search field, {@code false} to hide it
+     * @return the search configuration itself
+     */
+    public Search setFieldVisible(boolean fieldVisible) {
+      this.fieldVisible = fieldVisible;
+      setUnrestrictedProperty("searchInput", fieldVisible);
+
+      return this;
+    }
+
+    /**
+     * Checks whether the built in search field is shown.
+     *
+     * @return {@code true} if the search field is shown, {@code false} otherwise
+     */
+    public boolean isFieldVisible() {
+      return fieldVisible;
+    }
+
+    /**
+     * Sets the current search term.
+     *
+     * <p>
+     * The term seeds the search field and filters the list. Typing in the search field does not
+     * write the term back, {@link #getTerm()} always returns the last term set through this method.
+     * </p>
+     *
+     * @param term the search term
+     * @return the search configuration itself
+     */
+    public Search setTerm(String term) {
+      this.term = term;
+      setUnrestrictedProperty("searchTerm", term);
+
+      return this;
+    }
+
+    /**
+     * Gets the last search term set through {@link #setTerm(String)}.
+     *
+     * @return the search term
+     */
+    public String getTerm() {
+      return term;
+    }
+
+    /**
+     * Sets the placeholder text of the search field.
+     *
+     * @param placeholder the placeholder text
+     * @return the search configuration itself
+     */
+    public Search setPlaceholder(String placeholder) {
+      this.placeholder = placeholder;
+      setUnrestrictedProperty("searchPlaceholder", placeholder);
+
+      return this;
+    }
+
+    /**
+     * Gets the placeholder text of the search field.
+     *
+     * @return the placeholder text
+     */
+    public String getPlaceholder() {
+      return placeholder;
+    }
+
+    /**
+     * Sets the message shown when a search returns no results.
+     *
+     * @param emptyMessage the empty message
+     * @return the search configuration itself
+     */
+    public Search setEmptyMessage(String emptyMessage) {
+      this.emptyMessage = HtmlText.forHtmlSink(emptyMessage);
+      setUnrestrictedProperty("searchNodata", this.emptyMessage);
+
+      return this;
+    }
+
+    /**
+     * Gets the message shown when a search returns no results.
+     *
+     * @return the empty message
+     */
+    public String getEmptyMessage() {
+      return emptyMessage;
     }
   }
 
