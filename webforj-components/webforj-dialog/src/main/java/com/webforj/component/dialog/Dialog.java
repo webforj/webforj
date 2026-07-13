@@ -259,7 +259,7 @@ public class Dialog extends ElementCompositeContainer
   }
 
   /**
-   * Gets whether the UI behind the dialog's backdrop should be blurred.
+   * Gets whether the UI behind the dialog's backdrop is blurred.
    *
    * @return the blurred
    */
