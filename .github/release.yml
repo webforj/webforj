@@ -3,6 +3,7 @@ changelog:
     labels:
       - ignore-for-release
       - dependencies
+      - documentation
   categories:
     - title: Breaking Changes 🛠
       labels:
