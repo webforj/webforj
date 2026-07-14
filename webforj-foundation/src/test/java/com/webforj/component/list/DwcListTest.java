@@ -418,4 +418,57 @@ class DwcListTest {
 
     assertEquals("helper text", component.getProperty("helperText"));
   }
+
+  @Nested
+  @DisplayName("Search API")
+  class SearchApi {
+
+    @Test
+    void shouldSetGetFieldVisible() throws IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+
+      assertFalse(component.getSearch().isFieldVisible());
+
+      component.getSearch().setFieldVisible(true);
+
+      assertTrue(component.getSearch().isFieldVisible());
+      assertEquals(true, component.getProperty("searchInput"));
+    }
+
+    @Test
+    void shouldSetGetTerm() throws IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+
+      assertEquals("", component.getSearch().getTerm());
+
+      component.getSearch().setTerm("app");
+
+      assertEquals("app", component.getSearch().getTerm());
+      assertEquals("app", component.getProperty("searchTerm"));
+    }
+
+    @Test
+    void shouldSetGetPlaceholder() throws IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+
+      assertEquals("Search", component.getSearch().getPlaceholder());
+
+      component.getSearch().setPlaceholder("Filter items");
+
+      assertEquals("Filter items", component.getSearch().getPlaceholder());
+      assertEquals("Filter items", component.getProperty("searchPlaceholder"));
+    }
+
+    @Test
+    void shouldKeepPlainTextEmptyMessage() throws IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+
+      assertEquals("No data to display", component.getSearch().getEmptyMessage());
+
+      component.getSearch().setEmptyMessage("Nothing found");
+
+      assertEquals("Nothing found", component.getSearch().getEmptyMessage());
+      assertEquals("Nothing found", component.getProperty("searchNodata"));
+    }
+  }
 }

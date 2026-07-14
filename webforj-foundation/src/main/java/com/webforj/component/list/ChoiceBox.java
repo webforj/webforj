@@ -131,10 +131,11 @@ public final class ChoiceBox extends DwcSelectDropdown<ChoiceBox>
     properties.addAll(Arrays.asList("autoValidate", "autoValidateOnLoad", "autoWasValidated",
         "buttonHeight", "disabled", "distance", "expanse", "hasFocus", "invalid", "invalidMessage",
         "itemLabel", "itemValue", "items", "label", "maxRowCount", "openHeight", "openWidth",
-        "opened", "placement", "readonly", "renderItemPrefix", "selected", "skidding", "theme",
-        "type", "typeToSelect", "typeToSelectCaseSensitive", "typeToSelectTimeout", "valid",
-        "validationIcon", "validationPopoverDistance", "validationPopoverPlacement",
-        "validationPopoverSkidding", "validationStyle", "validator"));
+        "opened", "placement", "readonly", "renderItemPrefix", "searchInput", "searchNodata",
+        "searchPlaceholder", "searchTerm", "selected", "skidding", "theme", "type", "typeToSelect",
+        "typeToSelectCaseSensitive", "typeToSelectTimeout", "valid", "validationIcon",
+        "validationPopoverDistance", "validationPopoverPlacement", "validationPopoverSkidding",
+        "validationStyle", "validator"));
 
     return properties;
   }

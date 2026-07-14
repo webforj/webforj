@@ -277,9 +277,10 @@ public final class ListBox extends DwcList<ListBox, List<Object>>
     List<String> properties = super.getRestrictedProperties();
     properties.addAll(Arrays.asList("allowDeselection", "autoValidate", "autoValidateOnLoad",
         "autoWasValidated", "disabled", "expanse", "hasFocus", "invalid", "invalidMessage", "items",
-        "label", "multiSelection", "multiSelectionByClick", "readonly", "renderer", "selected",
-        "tabTraversable", "typeToSelect", "typeToSelectCaseSensitive", "typeToSelectTimeout",
-        "valid", "validationIcon", "validationPopoverDistance", "validationPopoverPlacement",
+        "label", "multiSelection", "multiSelectionByClick", "readonly", "renderer", "searchInput",
+        "searchNodata", "searchPlaceholder", "searchTerm", "selected", "tabTraversable",
+        "typeToSelect", "typeToSelectCaseSensitive", "typeToSelectTimeout", "valid",
+        "validationIcon", "validationPopoverDistance", "validationPopoverPlacement",
         "validationPopoverSkidding", "validationStyle", "validator"));
 
     return properties;

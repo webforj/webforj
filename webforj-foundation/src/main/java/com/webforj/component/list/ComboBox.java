@@ -234,9 +234,10 @@ public final class ComboBox extends DwcSelectDropdown<ComboBox>
         "customValue", "disabled", "distance", "expanse", "fieldHeight", "hasFocus",
         "highlightBehaviors", "invalid", "invalidMessage", "itemLabel", "itemValue", "items",
         "label", "maxRowCount", "maxlength", "openHeight", "openWidth", "opened", "placeholder",
-        "placement", "readonly", "renderer", "selected", "skidding", "toggleOnEnter", "type",
-        "valid", "validationIcon", "validationPopoverDistance", "validationPopoverPlacement",
-        "validationPopoverSkidding", "validationStyle", "validator", "value"));
+        "placement", "readonly", "renderer", "searchInput", "searchNodata", "searchPlaceholder",
+        "searchTerm", "selected", "skidding", "toggleOnEnter", "type", "valid", "validationIcon",
+        "validationPopoverDistance", "validationPopoverPlacement", "validationPopoverSkidding",
+        "validationStyle", "validator", "value"));
 
     return properties;
   }
