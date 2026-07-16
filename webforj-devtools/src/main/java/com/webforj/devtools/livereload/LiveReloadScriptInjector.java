@@ -7,6 +7,7 @@ import com.webforj.Environment;
 import com.webforj.Page;
 import com.webforj.Request;
 import com.webforj.annotation.AppListenerPriority;
+import com.webforj.exceptions.WebforjRuntimeException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
@@ -52,6 +53,13 @@ public class LiveReloadScriptInjector implements AppLifecycleListener {
       page.addInlineJavaScript(composeScript(url, options.getHeartbeatInterval(), reloadScript),
           true);
       logger.log(System.Logger.Level.DEBUG, "webforJ livereload script injected into page");
+    } catch (WebforjRuntimeException e) {
+      // The request only becomes unreadable when its session is already ending, usually because
+      // a restart began while this page was still starting. The page is about to be replaced, so
+      // the injection is skipped quietly.
+      logger.log(System.Logger.Level.DEBUG,
+          "webforJ livereload script not injected, the session ended while the page was starting",
+          e);
     } catch (Exception e) {
       logger.log(System.Logger.Level.WARNING, "Failed to inject webforJ livereload script", e);
     }

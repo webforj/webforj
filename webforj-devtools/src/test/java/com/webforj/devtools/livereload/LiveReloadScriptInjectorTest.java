@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 
 import com.webforj.Page;
 import com.webforj.Request;
+import com.webforj.exceptions.WebforjRuntimeException;
 import org.junit.jupiter.api.Test;
 
 class LiveReloadScriptInjectorTest {
@@ -70,6 +71,18 @@ class LiveReloadScriptInjectorTest {
 
     verify(page).addInlineJavaScript(contains("ws://localhost:40000/webforj-devtools-ws"),
         eq(true));
+  }
+
+  @Test
+  void shouldSkipInjectionQuietlyWhenTheSessionEndsDuringStartup() {
+    Page page = mock(Page.class);
+    Request request = mock(Request.class);
+    when(request.getProtocol()).thenThrow(new WebforjRuntimeException("Failed to get the URL."));
+
+    new LiveReloadScriptInjector()
+        .inject(new LiveReloadOptions().setEnabled(true).setWebsocketPort(40000), page, request);
+
+    verify(page, never()).addInlineJavaScript(anyString(), eq(true));
   }
 
   @Test
