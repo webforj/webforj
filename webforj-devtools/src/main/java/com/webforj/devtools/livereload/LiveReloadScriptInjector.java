@@ -22,7 +22,7 @@ public class LiveReloadScriptInjector implements AppLifecycleListener {
   private static final System.Logger logger =
       System.getLogger(LiveReloadScriptInjector.class.getName());
   private static final String SCRIPT_RESOURCE =
-      "/META-INF/resources/webforj/devtools-reload-client.js";
+      "/META-INF/resources/webforj/devtools-reload-client.min.js";
 
   private String cachedScript;
 

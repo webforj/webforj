@@ -17,6 +17,7 @@ import com.google.gson.Gson;
 import com.webforj.devtools.livereload.message.ConnectedMessage;
 import com.webforj.devtools.livereload.message.HeartbeatAckMessage;
 import com.webforj.devtools.livereload.message.ReloadMessage;
+import com.webforj.devtools.livereload.message.RestartingMessage;
 import java.io.IOException;
 import java.net.ServerSocket;
 import org.java_websocket.WebSocket;
@@ -105,6 +106,18 @@ class LiveReloadServerTest {
     String expectedReload = gson.toJson(new ReloadMessage());
     verify(conn1).send(expectedReload);
     verify(conn2).send(expectedReload);
+  }
+
+  @Test
+  void shouldBroadcastRestartingToEveryConnection() {
+    WebSocket conn1 = openConnection();
+    WebSocket conn2 = openConnection();
+
+    server.sendRestartingMessage();
+
+    String expectedRestarting = gson.toJson(new RestartingMessage());
+    verify(conn1).send(expectedRestarting);
+    verify(conn2).send(expectedRestarting);
   }
 
   @Test

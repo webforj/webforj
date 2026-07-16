@@ -11,6 +11,7 @@ import com.webforj.devtools.livereload.LiveReloadOptions;
 import com.webforj.spring.SpringConfigurationProperties;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 
 class LiveReloadSocketConfigurationTest {
@@ -35,6 +36,23 @@ class LiveReloadSocketConfigurationTest {
     assertTrue(captor.getValue().isEnabled());
     assertEquals(40000, captor.getValue().getWebsocketPort());
     assertEquals(false, captor.getValue().isStaticResourcesEnabled());
+  }
+
+  @Test
+  void shouldBuildARestartListenerBoundToTheLifecycle() {
+    LiveReloadLifecycle lifecycle = mock(LiveReloadLifecycle.class);
+
+    new LiveReloadSocketConfiguration().liveReloadRestartListener(lifecycle)
+        .onApplicationEvent(mock(ContextClosedEvent.class));
+
+    verify(lifecycle).notifyRestarting();
+  }
+
+  @Test
+  void shouldBuildAResourceChangeListenerBoundToTheLifecycle() {
+    LiveReloadLifecycle lifecycle = mock(LiveReloadLifecycle.class);
+
+    assertNotNull(new LiveReloadSocketConfiguration().liveReloadResourceChangeListener(lifecycle));
   }
 
   @Test

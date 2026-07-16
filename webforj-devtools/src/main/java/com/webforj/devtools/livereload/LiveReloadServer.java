@@ -5,6 +5,7 @@ import com.webforj.devtools.livereload.message.ConnectedMessage;
 import com.webforj.devtools.livereload.message.HeartbeatAckMessage;
 import com.webforj.devtools.livereload.message.ReloadMessage;
 import com.webforj.devtools.livereload.message.ResourceUpdateMessage;
+import com.webforj.devtools.livereload.message.RestartingMessage;
 import java.net.InetSocketAddress;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -165,6 +166,33 @@ public class LiveReloadServer extends WebSocketServer {
 
     logger.log(System.Logger.Level.INFO,
         "Successfully sent reload message to " + successCount + " clients");
+  }
+
+  /**
+   * Broadcasts a restart notice to every connected browser.
+   *
+   * <p>
+   * The browsers keep their page as it is while the server goes down and reload it once the server
+   * answers again.
+   * </p>
+   */
+  public void sendRestartingMessage() {
+    cleanupConnections();
+
+    logger.log(System.Logger.Level.INFO,
+        "Notifying " + connections.size() + " connected sessions about the server restart");
+
+    for (WebSocket conn : connections) {
+      if (conn.isOpen()) {
+        try {
+          conn.send(gson.toJson(new RestartingMessage()));
+          logger.log(System.Logger.Level.DEBUG, "Sent restarting message to client");
+        } catch (Exception e) {
+          logger.log(System.Logger.Level.ERROR, "Error sending restarting message", e);
+          connections.remove(conn);
+        }
+      }
+    }
   }
 
   /**

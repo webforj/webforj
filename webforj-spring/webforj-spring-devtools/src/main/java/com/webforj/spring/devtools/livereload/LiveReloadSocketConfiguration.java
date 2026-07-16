@@ -43,6 +43,31 @@ public class LiveReloadSocketConfiguration {
     return new LiveReloadListener(lifecycle, readOptions(properties.getDevtools().getLivereload()));
   }
 
+  /**
+   * Creates the listener that notifies the connected browsers before a context close.
+   *
+   * @param lifecycle the live reload lifecycle owned by the context
+   * @return the context close to browser notice listener
+   */
+  @Bean
+  LiveReloadRestartListener liveReloadRestartListener(LiveReloadLifecycle lifecycle) {
+    return new LiveReloadRestartListener(lifecycle);
+  }
+
+  /**
+   * Creates the listener that turns a static resource change into a resource update for the
+   * connected browsers.
+   *
+   * @param lifecycle the live reload lifecycle owned by the context
+   * @return the static resource change to resource update listener
+   */
+  @Bean
+  @ConditionalOnProperty(prefix = "webforj.devtools.livereload", name = "static-resources-enabled",
+      havingValue = "true", matchIfMissing = true)
+  LiveReloadResourceChangeListener liveReloadResourceChangeListener(LiveReloadLifecycle lifecycle) {
+    return new LiveReloadResourceChangeListener(lifecycle);
+  }
+
   private static LiveReloadOptions readOptions(
       SpringConfigurationProperties.LiveReload livereload) {
     LiveReloadOptions options = new LiveReloadOptions().setEnabled(true);

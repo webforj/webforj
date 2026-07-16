@@ -22,7 +22,25 @@ import jakarta.servlet.ServletContextListener;
  */
 public class WatchContextListener implements ServletContextListener {
 
-  private final LiveReloadLifecycle lifecycle = new LiveReloadLifecycle();
+  private final LiveReloadLifecycle lifecycle;
+
+  /**
+   * Creates the listener with its own lifecycle.
+   */
+  public WatchContextListener() {
+    this(new LiveReloadLifecycle());
+  }
+
+  /**
+   * Creates the listener bound to the given lifecycle.
+   *
+   * @param lifecycle the live reload lifecycle owned by the deployment
+   *
+   * @since 26.02
+   */
+  public WatchContextListener(LiveReloadLifecycle lifecycle) {
+    this.lifecycle = lifecycle;
+  }
 
   /**
    * {@inheritDoc}
@@ -37,6 +55,7 @@ public class WatchContextListener implements ServletContextListener {
    */
   @Override
   public void contextDestroyed(ServletContextEvent event) {
+    lifecycle.notifyRestarting();
     lifecycle.stop();
   }
 

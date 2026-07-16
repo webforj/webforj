@@ -116,25 +116,21 @@ public class SpringAutoConfiguration {
   }
 
   /**
-   * Destroys the {@link WebforjServlet} when the application context closes.
+   * Creates the listener that destroys the {@link WebforjServlet} when the application context
+   * closes.
    *
    * <p>
-   * The servlet cleanup releases licensing and terminates the runtime threads. Closing the context
-   * is the only signal that fires on every shutdown, including restarts triggered by Spring
-   * devtools, so the servlet is destroyed here explicitly instead of relying on the embedded
-   * container.
+   * The listener runs at the lowest precedence, so listeners that must observe the closing context
+   * with the sessions still alive always run first.
    * </p>
    *
    * @param registration the webforJ servlet registration
    * @return the {@link ApplicationListener} for {@link ContextClosedEvent}
    */
   @Bean
-  ApplicationListener<ContextClosedEvent> webforjServletShutdown(
+  WebforjServletShutdownListener webforjServletShutdown(
       ServletRegistrationBean<WebforjServlet> registration) {
-    return event -> {
-      logger.log(Logger.Level.DEBUG, "Destroying WebforjServlet on context close");
-      registration.getServlet().destroy();
-    };
+    return new WebforjServletShutdownListener(registration);
   }
 
   /**

@@ -19,7 +19,6 @@ import java.lang.System.Logger.Level;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
@@ -47,7 +46,7 @@ public final class Environment {
   static final String RUN_LATER_EVENT = "webforj-runLater-event";
   private static final Logger logger = System.getLogger(Environment.class.getName());
   private static final String RESOURCE_PREFIX = "!!";
-  private static final HashMap<Object, Environment> instanceMap = new HashMap<>();
+  private static final Map<Object, Environment> instanceMap = new ConcurrentHashMap<>();
   private static final AtomicInteger runLaterCounter = new AtomicInteger(0);
   private static final InheritableThreadLocal<Environment> inheritableEnvironment =
       new InheritableThreadLocal<>();
