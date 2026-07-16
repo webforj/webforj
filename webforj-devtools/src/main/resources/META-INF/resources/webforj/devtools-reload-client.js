@@ -562,6 +562,266 @@
   }
 
   /**
+   * Keeps scroll positions across a reload.
+   *
+   * The window scroll and the scroll of every scrolled element are captured right before the
+   * reload and stored in the session. Components render their scrolling containers inside their
+   * own roots, so the capture walks into every component root and records each element as a chain
+   * of selectors, one per root, that finds it again in the rebuilt page. After the reload each
+   * position goes back the moment its target is back and tall enough to hold it, bounded by
+   * {@code restoreMaxWaitMs}. A snapshot older than {@code snapshotMaxAgeMs} is discarded, so a
+   * later visit does not inherit the scroll of an unrelated reload.
+   */
+  class ScrollPositionKeeper {
+    constructor() {
+      /** @type {string} session storage key holding the captured positions */
+      this.storageKey = 'webforj-devtools-scroll';
+
+      /** @type {number} milliseconds a captured snapshot stays valid */
+      this.snapshotMaxAgeMs = 30000;
+
+      /** @type {number} milliseconds between restore polls */
+      this.restorePollInterval = 50;
+
+      /** @type {number} milliseconds before the restore applies whatever has resolved */
+      this.restoreMaxWaitMs = 10000;
+    }
+
+    /**
+     * Captures the window scroll and every scrolled element into the session.
+     */
+    capture() {
+      const entries = [];
+      if (window.scrollX !== 0 || window.scrollY !== 0) {
+        entries.push({ window: true, top: window.scrollY, left: window.scrollX });
+      }
+
+      this.collect(document, [], entries);
+
+      if (entries.length === 0) {
+        return;
+      }
+
+      try {
+        sessionStorage.setItem(this.storageKey,
+          JSON.stringify({ capturedAt: Date.now(), entries: entries }));
+      } catch (e) {
+        // Session storage may be unavailable, the reload then simply starts at the top.
+      }
+    }
+
+    /**
+     * Collects the scrolled elements under one root and descends into every component root
+     * below it.
+     *
+     * @param {Document|ShadowRoot} root the root to scan
+     * @param {Array<string>} rootPath the selector chain leading to this root
+     * @param {Array<Object>} entries receives one entry per scrolled element
+     */
+    collect(root, rootPath, entries) {
+      const elements = root.querySelectorAll('*');
+      for (let i = 0; i < elements.length; i++) {
+        const element = elements[i];
+        if (element.scrollTop > 0 || element.scrollLeft > 0) {
+          const selector = this.selectorWithin(element);
+          if (selector) {
+            entries.push({
+              path: rootPath.concat([selector]),
+              top: element.scrollTop,
+              left: element.scrollLeft
+            });
+          }
+        }
+
+        if (element.shadowRoot) {
+          const hostSelector = this.selectorWithin(element);
+          if (hostSelector) {
+            this.collect(element.shadowRoot, rootPath.concat([hostSelector]), entries);
+          }
+        }
+      }
+    }
+
+    /**
+     * Restores the captured positions into the rebuilt page, then forgets them.
+     */
+    restore() {
+      let snapshot = null;
+      try {
+        const raw = sessionStorage.getItem(this.storageKey);
+        if (!raw) {
+          return;
+        }
+
+        sessionStorage.removeItem(this.storageKey);
+        snapshot = JSON.parse(raw);
+      } catch (e) {
+        return;
+      }
+
+      if (!snapshot || !snapshot.entries
+          || Date.now() - snapshot.capturedAt > this.snapshotMaxAgeMs) {
+        return;
+      }
+
+      const keeper = this;
+      let pending = snapshot.entries;
+      const deadline = Date.now() + this.restoreMaxWaitMs;
+
+      // The rebuilt page grows into its scroll targets, an element can be back long before its
+      // content makes it tall enough to hold the captured position, and a component may reset its
+      // own scroll while it finishes rendering. Every entry therefore applies as soon as its
+      // target can take the position and keeps reapplying until a later look finds the position
+      // in place. Whatever never settles is applied one last time when the wait runs out.
+      const poll = function () {
+        const expired = Date.now() >= deadline;
+        pending = pending.filter(function (entry) {
+          if (keeper.hasSettled(entry)) {
+            return false;
+          }
+
+          if (expired || keeper.canApply(entry)) {
+            keeper.apply(entry);
+          }
+
+          return !expired;
+        });
+
+        if (pending.length > 0) {
+          setTimeout(poll, keeper.restorePollInterval);
+        }
+      };
+
+      setTimeout(poll, this.restorePollInterval);
+    }
+
+    /**
+     * Reports whether one captured entry already sits at its position.
+     *
+     * @param {Object} entry the captured entry
+     * @returns {boolean} whether the target holds the captured position
+     */
+    hasSettled(entry) {
+      if (entry.window) {
+        return Math.abs(window.scrollY - entry.top) <= 1;
+      }
+
+      const element = this.resolve(entry.path);
+
+      return !!element && Math.abs(element.scrollTop - entry.top) <= 1;
+    }
+
+    /**
+     * Resolves one captured selector chain in the current page. Every selector but the last
+     * names a component host whose root the chain descends into.
+     *
+     * @param {Array<string>} path the selector chain
+     * @returns {Element|null} the element, null while any step is still missing
+     */
+    resolve(path) {
+      let scope = document;
+      let element = null;
+      for (let i = 0; i < path.length; i++) {
+        element = scope.querySelector(path[i]);
+        if (!element) {
+          return null;
+        }
+
+        if (i < path.length - 1) {
+          scope = element.shadowRoot;
+          if (!scope) {
+            return null;
+          }
+        }
+      }
+
+      return element;
+    }
+
+    /**
+     * Reports whether one captured entry can take its position, meaning the target is back and
+     * tall enough to hold it.
+     *
+     * @param {Object} entry the captured entry
+     * @returns {boolean} whether the position would stick when applied now
+     */
+    canApply(entry) {
+      if (entry.window) {
+        return document.documentElement.scrollHeight >= entry.top + window.innerHeight;
+      }
+
+      const element = this.resolve(entry.path);
+
+      return !!element && element.scrollHeight >= entry.top + element.clientHeight;
+    }
+
+    /**
+     * Applies one captured position to the window or to its element. The position lands in one
+     * step, overriding any smooth scrolling the target declares, so the settled check reads the
+     * final position instead of an animation frame on the way there.
+     *
+     * @param {Object} entry the captured entry
+     */
+    apply(entry) {
+      if (entry.window) {
+        window.scrollTo({ top: entry.top, left: entry.left, behavior: 'instant' });
+
+        return;
+      }
+
+      const element = this.resolve(entry.path);
+      if (element) {
+        element.scrollTo({ top: entry.top, left: entry.left, behavior: 'instant' });
+      }
+    }
+
+    /**
+     * Builds a selector that finds the element again within its own root. The selector climbs
+     * from the element toward the top of its root and stops early at the first ancestor carrying
+     * an id, so a stable structure resolves to the same element after the rebuild.
+     *
+     * @param {Element} element the element to describe
+     * @returns {string} the selector, empty when none could be built
+     */
+    selectorWithin(element) {
+      const steps = [];
+      for (let current = element; current !== null; current = current.parentElement) {
+        if (current === document.body || current === document.documentElement) {
+          break;
+        }
+
+        if (current.id) {
+          steps.push('#' + CSS.escape(current.id));
+          break;
+        }
+
+        steps.push(this.stepFor(current));
+      }
+
+      return steps.reverse().join(' > ');
+    }
+
+    /**
+     * Describes one element by its tag and its position among the same tags before it, which is
+     * how the rebuilt page is asked for it again.
+     *
+     * @param {Element} element the element to describe
+     * @returns {string} the selector step for this element
+     */
+    stepFor(element) {
+      let position = 1;
+      for (let peer = element.previousElementSibling; peer !== null;
+          peer = peer.previousElementSibling) {
+        if (peer.localName === element.localName) {
+          position++;
+        }
+      }
+
+      return element.localName + ':nth-of-type(' + position + ')';
+    }
+  }
+
+  /**
    * Coordinates the whole client.
    *
    * The page must never be torn down by a restart. The moment a restart announces itself, either
@@ -620,6 +880,9 @@
       /** @type {ResourceUpdater} */
       this.resources = new ResourceUpdater(this.logger, this.reload.bind(this));
 
+      /** @type {ScrollPositionKeeper} */
+      this.scroll = new ScrollPositionKeeper();
+
       /** @type {ReloadSocket} */
       this.socket = new ReloadSocket(config.websocketUrl, config.heartbeatInterval || 30000,
         this.logger, {
@@ -655,12 +918,13 @@
     }
 
     /**
-     * Installs the gate, hides the server progress bar, connects the socket, and registers the
-     * unload cleanup.
+     * Installs the gate, hides the server progress bar, restores the scroll of the page a reload
+     * replaced, connects the socket, and registers the unload cleanup.
      */
     start() {
       this.gate.install();
       this.hideServerProgressbar();
+      this.scroll.restore();
       this.logger.log('🚀 Initiating DevTools connection to: ' + this.socket.url);
       this.socket.connect();
 
@@ -874,7 +1138,8 @@
     }
 
     /**
-     * Reloads the page once, logging the reason.
+     * Reloads the page once, logging the reason. The scroll positions are captured right before
+     * the reload, so the rebuilt page comes back where the old one was.
      *
      * @param {string} reason the log line explaining the reload
      */
@@ -887,6 +1152,7 @@
       this.stopRecovery();
       this.logger.log(reason);
       this.status.show('Reloading…');
+      this.scroll.capture();
       window.location.reload();
     }
 
