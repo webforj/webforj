@@ -3,6 +3,7 @@ package com.webforj.plugin.maven;
 import com.webforj.bundle.bun.BundleLogger;
 import com.webforj.bundle.bun.BundlerExecution;
 import com.webforj.bundle.bun.WatchSession;
+import com.webforj.plugin.foundation.WatchConfigGuard;
 import com.webforj.plugin.foundation.WatchPortFile;
 import com.webforj.plugin.foundation.WatchProtocol;
 import com.webforj.plugin.foundation.WatchSocketServer;
@@ -57,6 +58,11 @@ public class WatchMojo extends AbstractBundlerMojo {
     // log with the rest of the watch output once the application connects.
     socket.send(WatchProtocol.log("webforj watch listening on port " + socket.getPort()));
 
+    // The application reads the generated webforJ configuration from the build output directory on
+    // every restart, and an IDE build can remove it there between restarts. The guard lives in this
+    // process, which survives every restart, and writes the file back the moment it disappears.
+    WatchConfigGuard configGuard = startConfigGuard(socket);
+
     // The initial blocking build reports to the build console, since no application is connected
     // yet and a failure there must land where the developer is looking. Once the watcher is up the
     // sink flips to the socket, so every later line reaches the running application log.
@@ -76,14 +82,33 @@ public class WatchMojo extends AbstractBundlerMojo {
         socket.setOnConnect(session::rescan);
       }
 
-      installShutdownHook(session, socket, portFile);
+      installShutdownHook(session, socket, portFile, configGuard);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
+      closeGuard(configGuard);
       closeSocket(socket, portFile);
       throw new MojoExecutionException("the initial watch build was interrupted", e);
     } catch (Exception e) {
+      closeGuard(configGuard);
       closeSocket(socket, portFile);
       throw new MojoExecutionException("the watch failed to start: " + e.getMessage(), e);
+    }
+  }
+
+  private WatchConfigGuard startConfigGuard(WatchSocketServer socket) {
+    Path configFile = Path.of(project.getBuild().getOutputDirectory()).resolve("webforj.conf");
+    try {
+      return WatchConfigGuard.start(configFile, line -> socket.send(WatchProtocol.log(line)));
+    } catch (IOException e) {
+      getLog().warn("could not guard " + configFile + ": " + e.getMessage());
+
+      return null;
+    }
+  }
+
+  private static void closeGuard(WatchConfigGuard configGuard) {
+    if (configGuard != null) {
+      configGuard.close();
     }
   }
 
@@ -107,18 +132,26 @@ public class WatchMojo extends AbstractBundlerMojo {
   private void closeSocket(WatchSocketServer socket, Path portFile) {
     socket.close();
     try {
-      Files.deleteIfExists(portFile);
+      // Another watch on the same project may have started since and rewritten the discovery
+      // file with its own port. Removing it then would break the discovery for the live watch,
+      // so the file only goes when it still names this watch.
+      if (Files.isRegularFile(portFile) && String.valueOf(socket.getPort())
+          .equals(Files.readString(portFile, StandardCharsets.UTF_8).trim())) {
+        Files.delete(portFile);
+      }
     } catch (IOException e) {
       getLog().debug("could not remove the watch discovery file " + portFile);
     }
   }
 
-  private void installShutdownHook(WatchSession session, WatchSocketServer socket, Path portFile) {
+  private void installShutdownHook(WatchSession session, WatchSocketServer socket, Path portFile,
+      WatchConfigGuard configGuard) {
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
       if (session != null) {
         session.close();
       }
 
+      closeGuard(configGuard);
       closeSocket(socket, portFile);
     }, "webforj-watch-shutdown"));
   }

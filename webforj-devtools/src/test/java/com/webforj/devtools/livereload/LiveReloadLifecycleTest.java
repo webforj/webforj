@@ -59,6 +59,55 @@ class LiveReloadLifecycleTest {
     assertFalse(lifecycle.isRunning());
   }
 
+  @Test
+  void shouldNotifyRestartingHarmlesslyWhenNotStarted() {
+    LiveReloadLifecycle lifecycle = new LiveReloadLifecycle();
+
+    lifecycle.notifyRestarting();
+
+    assertFalse(lifecycle.isRunning());
+  }
+
+  @Test
+  void shouldSendResourceUpdateHarmlesslyWhenNotStarted() {
+    LiveReloadLifecycle lifecycle = new LiveReloadLifecycle();
+
+    lifecycle.sendResourceUpdate("css", "app.css");
+
+    assertFalse(lifecycle.isRunning());
+  }
+
+  @Test
+  @Timeout(10)
+  void shouldNotifyRestartingWhileRunning() throws IOException {
+    LiveReloadLifecycle lifecycle = new LiveReloadLifecycle();
+    try {
+      lifecycle.start(new LiveReloadOptions().setEnabled(true).setWebsocketPort(freePort()));
+
+      lifecycle.notifyRestarting();
+
+      assertTrue(lifecycle.isRunning());
+    } finally {
+      lifecycle.stop();
+    }
+  }
+
+  @Test
+  @Timeout(10)
+  void shouldNotifyRestartingOnlyOncePerStart() throws IOException {
+    LiveReloadLifecycle lifecycle = new LiveReloadLifecycle();
+    try {
+      lifecycle.start(new LiveReloadOptions().setEnabled(true).setWebsocketPort(freePort()));
+
+      lifecycle.notifyRestarting();
+      lifecycle.notifyRestarting();
+
+      assertTrue(lifecycle.isRunning());
+    } finally {
+      lifecycle.stop();
+    }
+  }
+
   private static int freePort() throws IOException {
     try (ServerSocket socket = new ServerSocket(0)) {
       return socket.getLocalPort();

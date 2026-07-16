@@ -19,25 +19,32 @@ const BANNER = `/*!
  */
 `;
 
-const FOUNDATION_RESOURCES = path.join(
-  __dirname,
-  '../webforj-foundation/src/main/resources'
-);
-
 const files = [
   {
+    module: 'webforj-foundation',
     input: 'META-INF/resources/webforj/view-transitions.css',
     output: 'META-INF/resources/webforj/view-transitions.min.css'
   },
   {
+    module: 'webforj-foundation',
     input: 'META-INF/resources/webforj/view-transitions.js',
     output: 'META-INF/resources/webforj/view-transitions.min.js'
   },
   {
+    module: 'webforj-foundation',
     input: 'static/webforj/icon-badge/icon-badge.js',
     output: 'static/webforj/icon-badge/icon-badge.min.js'
+  },
+  {
+    module: 'webforj-devtools',
+    input: 'META-INF/resources/webforj/devtools-reload-client.js',
+    output: 'META-INF/resources/webforj/devtools-reload-client.min.js'
   }
 ];
+
+function moduleResources(module) {
+  return path.join(__dirname, '..', module, 'src/main/resources');
+}
 
 function checkEsbuild() {
   try {
@@ -48,9 +55,10 @@ function checkEsbuild() {
   }
 }
 
-function minify(inputFile, outputFile) {
-  const inputPath = path.join(FOUNDATION_RESOURCES, inputFile);
-  const outputPath = path.join(FOUNDATION_RESOURCES, outputFile);
+function minify(module, inputFile, outputFile) {
+  const resources = moduleResources(module);
+  const inputPath = path.join(resources, inputFile);
+  const outputPath = path.join(resources, outputFile);
 
   if (!fs.existsSync(inputPath)) {
     console.error(`Error: Input file not found: ${inputPath}`);
@@ -85,7 +93,7 @@ function run() {
   }
 
   for (const file of files) {
-    minify(file.input, file.output);
+    minify(file.module, file.input, file.output);
   }
 
   console.log('\nDone!');
