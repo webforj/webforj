@@ -45,6 +45,26 @@ class LiveReloadResourceChangeListenerTest {
   }
 
   @Test
+  void shouldIgnoreTheBundlerOutput() {
+    LiveReloadLifecycle lifecycle = mock(LiveReloadLifecycle.class);
+
+    new LiveReloadResourceChangeListener(lifecycle)
+        .onApplicationEvent(event("static/frontend/app.css", ChangedFile.Type.MODIFY));
+
+    verifyNoInteractions(lifecycle);
+  }
+
+  @Test
+  void shouldIgnoreTheBundleIndex() {
+    LiveReloadLifecycle lifecycle = mock(LiveReloadLifecycle.class);
+
+    new LiveReloadResourceChangeListener(lifecycle)
+        .onApplicationEvent(event("static/webforj/frontend-entries.json", ChangedFile.Type.MODIFY));
+
+    verifyNoInteractions(lifecycle);
+  }
+
+  @Test
   void shouldIgnoreFilesOutsideTheStaticDirectory() {
     LiveReloadLifecycle lifecycle = mock(LiveReloadLifecycle.class);
 

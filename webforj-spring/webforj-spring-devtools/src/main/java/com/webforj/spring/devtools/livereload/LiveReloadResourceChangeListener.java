@@ -24,6 +24,9 @@ import org.springframework.context.ApplicationListener;
 public class LiveReloadResourceChangeListener
     implements ApplicationListener<ClassPathChangedEvent> {
 
+  private static final String STATIC_DIR = "static";
+  private static final Set<String> BUNDLE_OUTPUT_DIRS =
+      Set.of(STATIC_DIR + "/frontend/", STATIC_DIR + "/webforj/");
   private static final Set<String> CSS_EXTENSIONS = Set.of(".css");
   private static final Set<String> JS_EXTENSIONS = Set.of(".js");
   private static final Set<String> IMAGE_EXTENSIONS =
@@ -55,7 +58,12 @@ public class LiveReloadResourceChangeListener
   }
 
   private static boolean isStaticResource(ChangedFile file) {
-    return file.getFile().getPath().contains("static");
+    String path = file.getFile().getPath().replace('\\', '/');
+
+    // The bundler owns these folders and reports its own writes through the watch, so a change
+    // there would otherwise reach the browser twice.
+
+    return path.contains(STATIC_DIR) && BUNDLE_OUTPUT_DIRS.stream().noneMatch(path::contains);
   }
 
   private static String getResourceType(ChangedFile file) {
@@ -85,9 +93,9 @@ public class LiveReloadResourceChangeListener
   private static String getResourcePath(ChangedFile file) {
     String fullPath = file.getFile().getPath();
 
-    int index = fullPath.lastIndexOf("static");
+    int index = fullPath.lastIndexOf(STATIC_DIR);
     if (index >= 0) {
-      int startIndex = index + "static".length();
+      int startIndex = index + STATIC_DIR.length();
       if (startIndex < fullPath.length()
           && (fullPath.charAt(startIndex) == '/' || fullPath.charAt(startIndex) == '\\')) {
         startIndex++;
