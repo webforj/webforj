@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -19,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.mock.env.MockEnvironment;
 
 @ExtendWith(MockitoExtension.class)
 class ComponentRegistrarTest {
@@ -135,6 +137,41 @@ class ComponentRegistrarTest {
     }
   }
 
+  @Nested
+  class LiveReloadRescanning {
+
+    private static final String SCANNED_PACKAGE = "com.webforj.spring.routescan";
+    private static final String LIVE_RELOAD_KEY = "webforj.devtools.livereload.enabled";
+
+    @Test
+    void shouldScanAPackageOnlyOnceWhenLiveReloadIsDisabled() {
+      registrar.setEnvironment(new MockEnvironment().withProperty(LIVE_RELOAD_KEY, "false"));
+
+      registrar.ensurePackagesRegistered(registry, new String[] {SCANNED_PACKAGE});
+      registrar.ensurePackagesRegistered(registry, new String[] {SCANNED_PACKAGE});
+
+      verify(registry).registerBeanDefinition(anyString(), any(BeanDefinition.class));
+    }
+
+    @Test
+    void shouldScanAPackageAgainWhenLiveReloadIsEnabled() {
+      registrar.setEnvironment(new MockEnvironment().withProperty(LIVE_RELOAD_KEY, "true"));
+
+      registrar.ensurePackagesRegistered(registry, new String[] {SCANNED_PACKAGE});
+      registrar.ensurePackagesRegistered(registry, new String[] {SCANNED_PACKAGE});
+
+      verify(registry, times(2)).registerBeanDefinition(anyString(), any(BeanDefinition.class));
+    }
+
+    @Test
+    void shouldScanAPackageOnlyOnceWhenNoEnvironmentIsAvailable() {
+      registrar.ensurePackagesRegistered(registry, new String[] {SCANNED_PACKAGE});
+      registrar.ensurePackagesRegistered(registry, new String[] {SCANNED_PACKAGE});
+
+      verify(registry).registerBeanDefinition(anyString(), any(BeanDefinition.class));
+    }
+  }
+
   // Test classes for various scenarios
   @SpringBootApplication
   static class TestAppWithoutRoutify {
@@ -145,4 +182,3 @@ class ComponentRegistrarTest {
   static class TestAppWithRoutify {
   }
 }
-
