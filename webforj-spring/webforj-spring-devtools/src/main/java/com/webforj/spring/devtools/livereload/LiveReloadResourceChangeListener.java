@@ -24,6 +24,8 @@ import org.springframework.context.ApplicationListener;
 public class LiveReloadResourceChangeListener
     implements ApplicationListener<ClassPathChangedEvent> {
 
+  private static final Set<String> BUNDLE_OUTPUT_DIRS =
+      Set.of("static/frontend/", "static/webforj/");
   private static final Set<String> CSS_EXTENSIONS = Set.of(".css");
   private static final Set<String> JS_EXTENSIONS = Set.of(".js");
   private static final Set<String> IMAGE_EXTENSIONS =
@@ -55,7 +57,12 @@ public class LiveReloadResourceChangeListener
   }
 
   private static boolean isStaticResource(ChangedFile file) {
-    return file.getFile().getPath().contains("static");
+    String path = file.getFile().getPath().replace('\\', '/');
+
+    // The bundler owns these folders and reports its own writes through the watch, so a change
+    // there would otherwise reach the browser twice.
+
+    return path.contains("static") && BUNDLE_OUTPUT_DIRS.stream().noneMatch(path::contains);
   }
 
   private static String getResourceType(ChangedFile file) {
