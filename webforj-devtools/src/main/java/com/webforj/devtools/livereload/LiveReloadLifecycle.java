@@ -19,6 +19,7 @@ public final class LiveReloadLifecycle {
 
   private LiveReloadServer server;
   private WatchReceiver receiver;
+  private JRebelReceiver jRebelReceiver;
   private boolean notifiedRestarting;
 
   /**
@@ -44,11 +45,25 @@ public final class LiveReloadLifecycle {
         new WatchReceiver(reloadServer, options.isStaticResourcesEnabled());
     watchReceiver.start();
 
+    JRebelReceiver jRebelWatchReceiver = new JRebelReceiver(reloadServer);
+    jRebelWatchReceiver.start();
+
     this.server = reloadServer;
     this.receiver = watchReceiver;
+    this.jRebelReceiver = jRebelWatchReceiver;
     this.notifiedRestarting = false;
     logger.log(System.Logger.Level.INFO,
         "webforJ live reload ready on port " + options.getWebsocketPort());
+  }
+
+  /**
+   * Gets the receiver that listens for hotswap class reload events, so a test can assert that the
+   * lifecycle owns it.
+   *
+   * @return the receiver while the lifecycle is running, {@code null} otherwise
+   */
+  JRebelReceiver getJRebelReceiver() {
+    return jRebelReceiver;
   }
 
   /**
@@ -58,6 +73,11 @@ public final class LiveReloadLifecycle {
     if (receiver != null) {
       receiver.stop();
       receiver = null;
+    }
+
+    if (jRebelReceiver != null) {
+      jRebelReceiver.stop();
+      jRebelReceiver = null;
     }
 
     if (server != null) {

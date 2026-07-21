@@ -1,7 +1,11 @@
 package com.webforj.devtools.livereload;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -9,6 +13,21 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
 class LiveReloadLifecycleTest {
+
+  @Test
+  @Timeout(10)
+  void shouldStartAndStopTheJRebelReceiverWithTheLifecycle() throws IOException {
+    LiveReloadLifecycle lifecycle = new LiveReloadLifecycle();
+    try {
+      lifecycle.start(new LiveReloadOptions().setEnabled(true).setWebsocketPort(freePort()));
+
+      assertNotNull(lifecycle.getJRebelReceiver());
+    } finally {
+      lifecycle.stop();
+    }
+
+    assertNull(lifecycle.getJRebelReceiver());
+  }
 
   @Test
   void shouldNotStartWhenDisabled() {
