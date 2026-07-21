@@ -16,10 +16,12 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.AnnotationBeanNameGenerator;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.env.Environment;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.stereotype.Component;
 
@@ -56,10 +58,22 @@ import org.springframework.stereotype.Component;
  * @since 25.02
  */
 @Component
-public class ComponentRegistrar implements BeanDefinitionRegistryPostProcessor {
+public class ComponentRegistrar implements BeanDefinitionRegistryPostProcessor, EnvironmentAware {
+  private static final String LIVE_RELOAD_ENABLED_KEY = "webforj.devtools.livereload.enabled";
+
   private final Logger logger = System.getLogger(ComponentRegistrar.class.getName());
   private static final BeanNameGenerator beanNameGenerator = AnnotationBeanNameGenerator.INSTANCE;
   private final Set<String> registeredPackages = ConcurrentHashMap.newKeySet();
+
+  private Environment environment;
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
 
   /**
    * Ensures the specified packages are scanned for {@code @Route} components and registered as
@@ -74,8 +88,10 @@ public class ComponentRegistrar implements BeanDefinitionRegistryPostProcessor {
    * </p>
    *
    * <p>
-   * The method is thread-safe. Packages already scanned will be skipped. All registered route
-   * components receive PROTOTYPE scope and LAZY initialization.
+   * The method is thread-safe. Packages already scanned will be skipped, unless live reload is
+   * enabled, in which case every package is scanned again so classes written while the application
+   * runs are picked up. All registered route components receive PROTOTYPE scope and LAZY
+   * initialization.
    * </p>
    *
    * @param registry the bean definition registry to register components in
@@ -87,9 +103,10 @@ public class ComponentRegistrar implements BeanDefinitionRegistryPostProcessor {
       return;
     }
 
+    boolean rescanEveryPackage = isLiveReloadEnabled();
     Set<String> packagesToScan = new HashSet<>();
     for (String pkg : packages) {
-      if (!registeredPackages.contains(pkg)) {
+      if (rescanEveryPackage || !registeredPackages.contains(pkg)) {
         packagesToScan.add(pkg);
       }
     }
@@ -350,5 +367,23 @@ public class ComponentRegistrar implements BeanDefinitionRegistryPostProcessor {
    */
   int getRegisteredPackageCount() {
     return registeredPackages.size();
+  }
+
+  /**
+   * Indicates whether a class can appear in a package after that package has been scanned.
+   *
+   * <p>
+   * When live reload is off the result of a scan stays complete for the life of the application,
+   * because the classes on the classpath cannot change, so an already scanned package is skipped.
+   * When live reload is on the developer is editing the running application, a class compiled after
+   * the scan would never reach the registry, so the skip is dropped and the package is scanned
+   * again.
+   * </p>
+   *
+   * @return {@code true} when live reload is enabled
+   */
+  private boolean isLiveReloadEnabled() {
+    return environment != null
+        && Boolean.parseBoolean(environment.getProperty(LIVE_RELOAD_ENABLED_KEY, "false"));
   }
 }
