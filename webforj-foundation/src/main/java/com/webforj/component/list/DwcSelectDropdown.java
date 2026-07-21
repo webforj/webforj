@@ -441,10 +441,11 @@ public abstract class DwcSelectDropdown<T extends DwcList<T, Object>> extends Dw
    */
   @Override
   public <B> void onBind(BindingContext<B> context, Class<B> beanClass, String propertyName) {
-    if (!context.getBinding(propertyName).getTransformer().isPresent()) {
-      @SuppressWarnings("unchecked")
-      Binding<T, Object, B, String> binding =
-          (Binding<T, Object, B, String>) context.getBinding(getSelf());
+    @SuppressWarnings("unchecked")
+    Binding<T, Object, B, String> binding =
+        (Binding<T, Object, B, String>) context.getBinding(propertyName);
+
+    if (!binding.getTransformer().isPresent()) {
       binding.setTransformer(new TypeTransformer<>());
     }
   }

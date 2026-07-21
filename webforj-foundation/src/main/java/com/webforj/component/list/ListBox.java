@@ -388,9 +388,10 @@ public final class ListBox extends DwcList<ListBox, List<Object>>
    */
   @Override
   public <B> void onBind(BindingContext<B> context, Class<B> beanClass, String propertyName) {
-    if (!context.getBinding(propertyName).getTransformer().isPresent()) {
-      Binding<ListBox, List<Object>, B, List<String>> binding =
-          (Binding<ListBox, List<Object>, B, List<String>>) context.getBinding(this);
+    Binding<ListBox, List<Object>, B, List<String>> binding =
+        (Binding<ListBox, List<Object>, B, List<String>>) context.getBinding(propertyName);
+
+    if (!binding.getTransformer().isPresent()) {
       binding.setTransformer(new TypeTransformer<>());
     }
   }

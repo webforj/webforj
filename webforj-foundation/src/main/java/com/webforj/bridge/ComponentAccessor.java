@@ -29,6 +29,7 @@ public abstract class ComponentAccessor {
    * necessary by loading the Window class to trigger the static initializer that sets the accessor.
    *
    * @return The singleton instance of the ComponentAccessor.
+   * @throws WebforjRuntimeException if the accessor cannot be initialized.
    */
   public static ComponentAccessor getDefault() {
     ComponentAccessor a = accessor;
@@ -42,7 +43,13 @@ public abstract class ComponentAccessor {
       throw new WebforjRuntimeException("Unable to load Window class.", e);
     }
 
-    return accessor;
+    a = accessor;
+    if (a == null) {
+      throw new WebforjRuntimeException(
+          "ComponentAccessor is not initialized. Loading the Window class did not set an accessor.");
+    }
+
+    return a;
   }
 
   /**
