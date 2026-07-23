@@ -1,3 +1,11 @@
+"module: bom":
+- changed-files:
+  - any-glob-to-any-file: 'webforj-bom/**'
+
+"module: bundle":
+- changed-files:
+  - any-glob-to-any-file: 'webforj-bundle/**'
+
 "module: components":
 - changed-files:
   - any-glob-to-any-file: 'webforj-components/**'
@@ -5,6 +13,10 @@
 "module: data":
 - changed-files:
   - any-glob-to-any-file: 'webforj-data/**'
+
+"module: devtools":
+- changed-files:
+  - any-glob-to-any-file: 'webforj-devtools/**'
 
 "module: dispatcher":
 - changed-files:
