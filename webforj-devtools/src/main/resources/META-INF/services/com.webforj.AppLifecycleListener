@@ -1,1 +1,2 @@
 com.webforj.devtools.livereload.LiveReloadScriptInjector
+com.webforj.devtools.craftforj.CraftforjLifecycleListener

@@ -150,6 +150,47 @@
   }
 
   /**
+   * Publishes the restart lifecycle to the DevTools panel.
+   *
+   * The panel runs in a realm of its own, an iframe on this page, a window popped out of it, or a
+   * browser extension, and it cannot see this client's state. The states published here let it
+   * stop offering actions the restarting server cannot answer, so the coordinator announces every
+   * transition it already reflects in the status toast.
+   */
+  class StateBroadcaster {
+    /**
+     * @param {string} channelName the broadcast channel the DevTools realms share
+     */
+    constructor(channelName) {
+      /** @type {BroadcastChannel|null} */
+      this.channel = null;
+
+      try {
+        this.channel = new BroadcastChannel(channelName);
+      } catch (e) {
+        // No BroadcastChannel here, the panel falls back to its own connection probing.
+      }
+    }
+
+    /**
+     * Publishes one state.
+     *
+     * @param {string} state one of live, restarting, awaiting-app, reloading
+     */
+    publish(state) {
+      if (!this.channel) {
+        return;
+      }
+
+      try {
+        this.channel.postMessage({ event: 'server-state', payload: { state: state } });
+      } catch (e) {
+        // A closed channel means the page is going away, the state no longer matters.
+      }
+    }
+  }
+
+  /**
    * Gates the page's calls to its server channel.
    *
    * While the server restarts, the channel answers the page with teardown instructions, error
@@ -871,6 +912,9 @@
       /** @type {StatusIndicator} */
       this.status = new StatusIndicator();
 
+      /** @type {StateBroadcaster} */
+      this.state = new StateBroadcaster('webforj-devtools-bus');
+
       /** @type {ServerCallGate} */
       this.gate = new ServerCallGate('/webapprmi');
 
@@ -948,6 +992,7 @@
     handleReopen() {
       this.logger.log('🔌 Server socket is back. Waiting until the app can serve before reloading...');
       this.status.show('Waiting for the app…');
+      this.state.publish('awaiting-app');
       this.socketDownSince = 0;
     }
 
@@ -979,6 +1024,7 @@
           this.logger.log('♻️ Server is restarting - holding the page until it is back...');
           this.gate.hold();
           this.status.show('Server restarting…');
+          this.state.publish('restarting');
           this.armHoldReleaseFallback();
           break;
 
@@ -1008,6 +1054,7 @@
 
       this.gate.hold();
       this.status.show('Server restarting…');
+      this.state.publish('restarting');
       this.disarmHoldReleaseFallback();
 
       if (this.socketDownSince === 0) {
@@ -1129,6 +1176,7 @@
             + 's but the app still serves, resuming against it.');
           self.gate.release();
           self.status.hide();
+          self.state.publish('live');
           return;
         }
 
@@ -1152,6 +1200,7 @@
       this.stopRecovery();
       this.logger.log(reason);
       this.status.show('Reloading…');
+      this.state.publish('reloading');
       this.scroll.capture();
       window.location.reload();
     }
@@ -1170,6 +1219,7 @@
           self.logger.log('🤷 Restart notice was not followed by a restart, resuming.');
           self.gate.release();
           self.status.hide();
+          self.state.publish('live');
         }
       }, this.holdReleaseFallbackMs);
     }

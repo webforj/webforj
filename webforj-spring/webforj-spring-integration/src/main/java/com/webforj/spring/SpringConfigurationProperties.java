@@ -994,9 +994,32 @@ public class SpringConfigurationProperties {
   public static class DevTools {
 
     /**
+     * craftforJ configuration.
+     */
+    private Craftforj craftforj = new Craftforj();
+
+    /**
      * Live reload configuration.
      */
     private LiveReload livereload = new LiveReload();
+
+    /**
+     * Gets the craftforJ configuration.
+     *
+     * @return the craftforJ configuration
+     */
+    public Craftforj getCraftforj() {
+      return craftforj;
+    }
+
+    /**
+     * Sets the craftforJ configuration.
+     *
+     * @param craftforj the craftforJ configuration
+     */
+    public void setCraftforj(Craftforj craftforj) {
+      this.craftforj = craftforj;
+    }
 
     /**
      * Gets the live reload configuration.
@@ -1014,6 +1037,210 @@ public class SpringConfigurationProperties {
      */
     public void setLivereload(LiveReload livereload) {
       this.livereload = livereload;
+    }
+  }
+
+  /**
+   * craftforJ configuration properties.
+   *
+   * @since 26.02
+   */
+  public static class Craftforj {
+
+    /**
+     * Whether craftforJ may attach to the running application. Defaults to off, and debug mode has
+     * to be on as well.
+     */
+    private Boolean enabled;
+
+    /**
+     * The client addresses allowed to reach craftforJ beyond loopback. An entry may end in
+     * {@code *} to cover a prefix, and a single {@code *} entry allows every client.
+     */
+    private List<String> hostsAllowed = new ArrayList<>();
+
+    /**
+     * The project root directory on disk. Overrides the derivation from the application class
+     * location, which is needed when the application runs from a jar away from its sources.
+     */
+    private String projectRoot;
+
+    /**
+     * Whether craftforJ may write Java sources. Defaults to on.
+     */
+    private Boolean sourceChanges;
+
+    /**
+     * Whether craftforJ may write the application stylesheet. Defaults to on.
+     */
+    private Boolean stylesheetChanges;
+
+    /**
+     * AI assistant configuration.
+     */
+    private Ai ai = new Ai();
+
+    /**
+     * Gets whether craftforJ may attach.
+     *
+     * @return whether craftforJ may attach
+     */
+    public Boolean getEnabled() {
+      return enabled;
+    }
+
+    /**
+     * Sets whether craftforJ may attach.
+     *
+     * @param enabled whether craftforJ may attach
+     */
+    public void setEnabled(Boolean enabled) {
+      this.enabled = enabled;
+    }
+
+    /**
+     * Gets the client addresses allowed beyond loopback.
+     *
+     * @return the allow list
+     */
+    public List<String> getHostsAllowed() {
+      return hostsAllowed;
+    }
+
+    /**
+     * Sets the client addresses allowed beyond loopback.
+     *
+     * @param hostsAllowed the allow list
+     */
+    public void setHostsAllowed(List<String> hostsAllowed) {
+      this.hostsAllowed = hostsAllowed;
+    }
+
+    /**
+     * Gets the project root directory.
+     *
+     * @return the project root directory
+     */
+    public String getProjectRoot() {
+      return projectRoot;
+    }
+
+    /**
+     * Sets the project root directory.
+     *
+     * @param projectRoot the project root directory
+     */
+    public void setProjectRoot(String projectRoot) {
+      this.projectRoot = projectRoot;
+    }
+
+    /**
+     * Gets whether craftforJ may write Java sources.
+     *
+     * @return whether Java sources may be written
+     */
+    public Boolean getSourceChanges() {
+      return sourceChanges;
+    }
+
+    /**
+     * Sets whether craftforJ may write Java sources.
+     *
+     * @param sourceChanges whether Java sources may be written
+     */
+    public void setSourceChanges(Boolean sourceChanges) {
+      this.sourceChanges = sourceChanges;
+    }
+
+    /**
+     * Gets whether craftforJ may write the application stylesheet.
+     *
+     * @return whether the stylesheet may be written
+     */
+    public Boolean getStylesheetChanges() {
+      return stylesheetChanges;
+    }
+
+    /**
+     * Sets whether craftforJ may write the application stylesheet.
+     *
+     * @param stylesheetChanges whether the stylesheet may be written
+     */
+    public void setStylesheetChanges(Boolean stylesheetChanges) {
+      this.stylesheetChanges = stylesheetChanges;
+    }
+
+    /**
+     * Gets the AI assistant configuration.
+     *
+     * @return the AI assistant configuration
+     */
+    public Ai getAi() {
+      return ai;
+    }
+
+    /**
+     * Sets the AI assistant configuration.
+     *
+     * @param ai the AI assistant configuration
+     */
+    public void setAi(Ai ai) {
+      this.ai = ai;
+    }
+  }
+
+  /**
+   * AI assistant configuration properties.
+   *
+   * @since 26.02
+   */
+  public static class Ai {
+
+    /**
+     * Whether the AI assistant is available at all. Defaults to on.
+     */
+    private Boolean enabled;
+
+    /**
+     * Whether the AI assistant may write free form Java sources behind the compile gate. Defaults
+     * to on.
+     */
+    private Boolean freeformChanges;
+
+    /**
+     * Gets whether the AI assistant is available.
+     *
+     * @return whether the assistant is available
+     */
+    public Boolean getEnabled() {
+      return enabled;
+    }
+
+    /**
+     * Sets whether the AI assistant is available.
+     *
+     * @param enabled whether the assistant is available
+     */
+    public void setEnabled(Boolean enabled) {
+      this.enabled = enabled;
+    }
+
+    /**
+     * Gets whether the AI assistant may write free form Java sources.
+     *
+     * @return whether free form sources may be written
+     */
+    public Boolean getFreeformChanges() {
+      return freeformChanges;
+    }
+
+    /**
+     * Sets whether the AI assistant may write free form Java sources.
+     *
+     * @param freeformChanges whether free form sources may be written
+     */
+    public void setFreeformChanges(Boolean freeformChanges) {
+      this.freeformChanges = freeformChanges;
     }
   }
 

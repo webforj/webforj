@@ -87,7 +87,6 @@ public class LiveReloadOptions {
    */
   public LiveReloadOptions setEnabled(boolean enabled) {
     this.enabled = enabled;
-
     return this;
   }
 
@@ -108,7 +107,6 @@ public class LiveReloadOptions {
    */
   public LiveReloadOptions setWebsocketPort(int websocketPort) {
     this.websocketPort = websocketPort;
-
     return this;
   }
 
@@ -129,7 +127,6 @@ public class LiveReloadOptions {
    */
   public LiveReloadOptions setWebsocketPath(String websocketPath) {
     this.websocketPath = websocketPath;
-
     return this;
   }
 
@@ -150,7 +147,6 @@ public class LiveReloadOptions {
    */
   public LiveReloadOptions setHeartbeatInterval(int heartbeatInterval) {
     this.heartbeatInterval = heartbeatInterval;
-
     return this;
   }
 
@@ -171,7 +167,6 @@ public class LiveReloadOptions {
    */
   public LiveReloadOptions setStaticResourcesEnabled(boolean staticResourcesEnabled) {
     this.staticResourcesEnabled = staticResourcesEnabled;
-
     return this;
   }
 

@@ -1,0 +1,704 @@
+{
+  "com.webforj.component.accordion.Accordion": {
+    "title": "Accordion",
+    "since": "25.12",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-accordion/latest/com/webforj/component/accordion/Accordion.html",
+    "docs": "https://docs.webforj.com/docs/components/accordion",
+    "clientComponent": "dwc-accordion",
+    "content": "Group collapsible panels with the Accordion and AccordionPanel components to toggle visibility and coordinate expand or collapse behavior."
+  },
+  "com.webforj.component.accordion.AccordionPanel": {
+    "title": "AccordionPanel",
+    "since": "25.12",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-accordion/latest/com/webforj/component/accordion/AccordionPanel.html",
+    "clientComponent": "dwc-accordion-panel"
+  },
+  "com.webforj.component.alert.Alert": {
+    "title": "Alert",
+    "since": "25.00",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-alert/latest/com/webforj/component/alert/Alert.html",
+    "docs": "https://docs.webforj.com/docs/components/alert",
+    "clientComponent": "dwc-alert",
+    "content": "Display contextual feedback messages with the Alert component, including themes, expanses, dismissible close events, and rich content."
+  },
+  "com.webforj.component.avatar.Avatar": {
+    "title": "Avatar",
+    "since": "25.11",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-avatar/latest/com/webforj/component/avatar/Avatar.html",
+    "docs": "https://docs.webforj.com/docs/components/avatar",
+    "clientComponent": "dwc-avatar",
+    "content": "Represent users with the Avatar component, showing profile images, auto-computed initials, custom initials, or icons for identification."
+  },
+  "com.webforj.component.badge.Badge": {
+    "title": "Badge",
+    "since": "25.12",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-badge/latest/com/webforj/component/badge/Badge.html",
+    "docs": "https://docs.webforj.com/docs/components/badge",
+    "clientComponent": "dwc-badge",
+    "content": "Surface counts, statuses, or short labels with the Badge component, including themes, slotted icons, and attachment to buttons or tabs."
+  },
+  "com.webforj.component.desktopnotification.DesktopNotification": {
+    "title": "DesktopNotification",
+    "since": "25.00",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-desktop-notification/latest/com/webforj/component/desktopnotification/DesktopNotification.html",
+    "docs": "https://docs.webforj.com/docs/components/desktop-notification",
+    "content": "Send native OS notifications outside the browser window with the DesktopNotification component for real-time messages, alerts, and status changes."
+  },
+  "com.webforj.component.dialog.Dialog": {
+    "title": "Dialog",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-dialog/latest/com/webforj/component/dialog/Dialog.html",
+    "docs": "https://docs.webforj.com/docs/components/dialog",
+    "clientComponent": "dwc-dialog",
+    "content": "Open modal popups with the Dialog component, including header, content, and footer sections, backdrop blur, and configurable close behavior."
+  },
+  "com.webforj.component.drawer.Drawer": {
+    "title": "Drawer",
+    "since": "24.00",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-drawer/latest/com/webforj/component/drawer/Drawer.html",
+    "docs": "https://docs.webforj.com/docs/components/drawer",
+    "clientComponent": "dwc-drawer",
+    "content": "Slide panels in from any screen edge with the Drawer component, ideal for side navigation, filter menus, settings, and stackable popovers."
+  },
+  "com.webforj.component.field.ColorField": {
+    "title": "ColorField",
+    "since": "23.02",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/field/ColorField.html",
+    "docs": "https://docs.webforj.com/docs/components/fields/color-field",
+    "clientComponent": "dwc-color-chooser",
+    "content": "A component that provides a default browser-based color picker, allowing users to select a color from an input field."
+  },
+  "com.webforj.component.field.DateField": {
+    "title": "DateField",
+    "since": "23.02",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/field/DateField.html",
+    "docs": "https://docs.webforj.com/docs/components/fields/date-field",
+    "clientComponent": "dwc-field",
+    "content": "A component that provides a default browser-based date picker for selecting a date through an input field."
+  },
+  "com.webforj.component.field.DateTimeField": {
+    "title": "DateTimeField",
+    "since": "23.02",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/field/DateTimeField.html",
+    "docs": "https://docs.webforj.com/docs/components/fields/date-time-field",
+    "clientComponent": "dwc-field",
+    "content": "A component that provides a default browser-based date and time picker for selecting both date and time through a single input field."
+  },
+  "com.webforj.component.field.MaskedDateField": {
+    "title": "MaskedDateField",
+    "since": "24.10",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/field/MaskedDateField.html",
+    "docs": "https://docs.webforj.com/docs/components/fields/masked/datefield",
+    "clientComponent": "dwc-datefield",
+    "content": "Capture localized date input with the MaskedDateField, applying configurable masks, format indicators, parsing rules, and validation."
+  },
+  "com.webforj.component.field.MaskedNumberField": {
+    "title": "MaskedNumberField",
+    "since": "24.10",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/field/MaskedNumberField.html",
+    "docs": "https://docs.webforj.com/docs/components/fields/masked/numberfield",
+    "clientComponent": "dwc-numberfield",
+    "content": "Format numeric input with the MaskedNumberField using configurable mask characters, grouping, decimal separators, and locale settings."
+  },
+  "com.webforj.component.field.MaskedTextField": {
+    "title": "MaskedTextField",
+    "since": "24.10",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/field/MaskedTextField.html",
+    "docs": "https://docs.webforj.com/docs/components/fields/masked/textfield",
+    "clientComponent": "dwc-textfield",
+    "content": "Enforce formatted text entry with the MaskedTextField, supporting mask characters for digits, letters, and literals for IDs and codes."
+  },
+  "com.webforj.component.field.MaskedTimeField": {
+    "title": "MaskedTimeField",
+    "since": "24.10",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/field/MaskedTimeField.html",
+    "docs": "https://docs.webforj.com/docs/components/fields/masked/timefield",
+    "clientComponent": "dwc-timefield",
+    "content": "Capture time input with the MaskedTimeField, applying 12 or 24-hour masks, format indicators, locale-aware parsing, and validation."
+  },
+  "com.webforj.component.field.NumberField": {
+    "title": "NumberField",
+    "since": "23.02",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/field/NumberField.html",
+    "docs": "https://docs.webforj.com/docs/components/fields/number-field",
+    "clientComponent": "dwc-field",
+    "content": "A component that provides a default browser-based input field for entering numeric values, with built-in controls for incrementing or decrementing the value."
+  },
+  "com.webforj.component.field.PasswordField": {
+    "title": "PasswordField",
+    "since": "23.02",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/field/PasswordField.html",
+    "docs": "https://docs.webforj.com/docs/components/fields/password-field",
+    "clientComponent": "dwc-field",
+    "content": "A single-line input component for securely entering and masking password data."
+  },
+  "com.webforj.component.field.TextArea": {
+    "title": "TextArea",
+    "since": "24.10",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/field/TextArea.html",
+    "docs": "https://docs.webforj.com/docs/components/textarea",
+    "clientComponent": "dwc-textarea",
+    "content": "Capture multi-line input with the TextArea component, including paragraph management, character limits, wrapping, and validation."
+  },
+  "com.webforj.component.field.TextField": {
+    "title": "TextField",
+    "since": "23.02",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/field/TextField.html",
+    "docs": "https://docs.webforj.com/docs/components/fields/text-field",
+    "clientComponent": "dwc-field",
+    "content": "A single-line input component for entering and editing text data."
+  },
+  "com.webforj.component.field.TimeField": {
+    "title": "TimeField",
+    "since": "23.02",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/field/TimeField.html",
+    "docs": "https://docs.webforj.com/docs/components/fields/time-field",
+    "clientComponent": "dwc-field",
+    "content": "A component that provides a default browser-based time picker for selecting a time value through an input field."
+  },
+  "com.webforj.component.googlecharts.GoogleChart": {
+    "title": "Google Charts",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-googlecharts/latest/com/webforj/component/googlecharts/GoogleChart.html",
+    "docs": "https://docs.webforj.com/docs/components/google-charts",
+    "clientComponent": "google-chart",
+    "content": "Render bar, line, pie, geo, and other Google Charts in webforJ using the GoogleChart component with a typed Java options map and data API."
+  },
+  "com.webforj.component.html.elements.Anchor": {
+    "title": "Anchor",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-html-elements/latest/com/webforj/component/html/elements/Anchor.html",
+    "clientComponent": "a"
+  },
+  "com.webforj.component.html.elements.Article": {
+    "title": "Article",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-html-elements/latest/com/webforj/component/html/elements/Article.html",
+    "clientComponent": "article"
+  },
+  "com.webforj.component.html.elements.Aside": {
+    "title": "Aside",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-html-elements/latest/com/webforj/component/html/elements/Aside.html",
+    "clientComponent": "aside"
+  },
+  "com.webforj.component.html.elements.Break": {
+    "title": "Break",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-html-elements/latest/com/webforj/component/html/elements/Break.html",
+    "clientComponent": "hr"
+  },
+  "com.webforj.component.html.elements.Div": {
+    "title": "Div",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-html-elements/latest/com/webforj/component/html/elements/Div.html",
+    "clientComponent": "div"
+  },
+  "com.webforj.component.html.elements.Emphasis": {
+    "title": "Emphasis",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-html-elements/latest/com/webforj/component/html/elements/Emphasis.html",
+    "clientComponent": "em"
+  },
+  "com.webforj.component.html.elements.Fieldset": {
+    "title": "Fieldset",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-html-elements/latest/com/webforj/component/html/elements/Fieldset.html",
+    "clientComponent": "fieldset"
+  },
+  "com.webforj.component.html.elements.Footer": {
+    "title": "Footer",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-html-elements/latest/com/webforj/component/html/elements/Footer.html",
+    "clientComponent": "footer"
+  },
+  "com.webforj.component.html.elements.FormattedText": {
+    "title": "FormattedText",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-html-elements/latest/com/webforj/component/html/elements/FormattedText.html",
+    "clientComponent": "pre"
+  },
+  "com.webforj.component.html.elements.H1": {
+    "title": "H1",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-html-elements/latest/com/webforj/component/html/elements/H1.html",
+    "clientComponent": "h1"
+  },
+  "com.webforj.component.html.elements.H2": {
+    "title": "H2",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-html-elements/latest/com/webforj/component/html/elements/H2.html",
+    "clientComponent": "h2"
+  },
+  "com.webforj.component.html.elements.H3": {
+    "title": "H3",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-html-elements/latest/com/webforj/component/html/elements/H3.html",
+    "clientComponent": "h3"
+  },
+  "com.webforj.component.html.elements.H4": {
+    "title": "H4",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-html-elements/latest/com/webforj/component/html/elements/H4.html",
+    "clientComponent": "h4"
+  },
+  "com.webforj.component.html.elements.H5": {
+    "title": "H5",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-html-elements/latest/com/webforj/component/html/elements/H5.html",
+    "clientComponent": "h5"
+  },
+  "com.webforj.component.html.elements.H6": {
+    "title": "H6",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-html-elements/latest/com/webforj/component/html/elements/H6.html",
+    "clientComponent": "h6"
+  },
+  "com.webforj.component.html.elements.Header": {
+    "title": "Header",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-html-elements/latest/com/webforj/component/html/elements/Header.html",
+    "clientComponent": "header"
+  },
+  "com.webforj.component.html.elements.Iframe": {
+    "title": "Iframe",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-html-elements/latest/com/webforj/component/html/elements/Iframe.html",
+    "clientComponent": "iframe"
+  },
+  "com.webforj.component.html.elements.Img": {
+    "title": "Img",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-html-elements/latest/com/webforj/component/html/elements/Img.html",
+    "clientComponent": "img"
+  },
+  "com.webforj.component.html.elements.Legend": {
+    "title": "Legend",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-html-elements/latest/com/webforj/component/html/elements/Legend.html",
+    "clientComponent": "legend"
+  },
+  "com.webforj.component.html.elements.ListEntry": {
+    "title": "ListEntry",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-html-elements/latest/com/webforj/component/html/elements/ListEntry.html",
+    "clientComponent": "li"
+  },
+  "com.webforj.component.html.elements.Main": {
+    "title": "Main",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-html-elements/latest/com/webforj/component/html/elements/Main.html",
+    "clientComponent": "main"
+  },
+  "com.webforj.component.html.elements.NativeButton": {
+    "title": "NativeButton",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-html-elements/latest/com/webforj/component/html/elements/NativeButton.html",
+    "clientComponent": "button"
+  },
+  "com.webforj.component.html.elements.Nav": {
+    "title": "Nav",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-html-elements/latest/com/webforj/component/html/elements/Nav.html",
+    "clientComponent": "nav"
+  },
+  "com.webforj.component.html.elements.OrderedList": {
+    "title": "OrderedList",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-html-elements/latest/com/webforj/component/html/elements/OrderedList.html",
+    "clientComponent": "ol"
+  },
+  "com.webforj.component.html.elements.Paragraph": {
+    "title": "Paragraph",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-html-elements/latest/com/webforj/component/html/elements/Paragraph.html",
+    "clientComponent": "p"
+  },
+  "com.webforj.component.html.elements.Section": {
+    "title": "Section",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-html-elements/latest/com/webforj/component/html/elements/Section.html",
+    "clientComponent": "section"
+  },
+  "com.webforj.component.html.elements.Span": {
+    "title": "Span",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-html-elements/latest/com/webforj/component/html/elements/Span.html",
+    "clientComponent": "span"
+  },
+  "com.webforj.component.html.elements.Strong": {
+    "title": "Strong",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-html-elements/latest/com/webforj/component/html/elements/Strong.html",
+    "clientComponent": "strong"
+  },
+  "com.webforj.component.html.elements.UnorderedList": {
+    "title": "UnorderedList",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-html-elements/latest/com/webforj/component/html/elements/UnorderedList.html",
+    "clientComponent": "ul"
+  },
+  "com.webforj.component.icons.Icon": {
+    "title": "Icon",
+    "since": "24.11",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-icons/latest/com/webforj/component/icons/Icon.html",
+    "docs": "https://docs.webforj.com/docs/components/icon",
+    "clientComponent": "dwc-icon",
+    "content": "Render scalable SVG icons with the Icon component from Tabler, Feather, Font Awesome, or custom pools loaded on demand from a CDN."
+  },
+  "com.webforj.component.icons.IconButton": {
+    "title": "IconButton",
+    "since": "24.11",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-icons/latest/com/webforj/component/icons/IconButton.html",
+    "clientComponent": "dwc-icon-button"
+  },
+  "com.webforj.component.infinitescroll.InfiniteScroll": {
+    "title": "InfiniteScroll",
+    "since": "25.00",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-infinite-scroll/latest/com/webforj/component/infinitescroll/InfiniteScroll.html",
+    "docs": "https://docs.webforj.com/docs/components/infinitescroll",
+    "clientComponent": "dwc-infinite-scroll",
+    "content": "Load more content as users scroll with the InfiniteScroll component, emitting scroll events and showing a customizable loading spinner."
+  },
+  "com.webforj.component.layout.applayout.AppLayout": {
+    "title": "AppLayout",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-applayout/latest/com/webforj/component/layout/applayout/AppLayout.html",
+    "docs": "https://docs.webforj.com/docs/components/app-layout",
+    "clientComponent": "dwc-app-layout",
+    "content": "Build dashboards and admin shells with the AppLayout component, providing a fixed header, footer, sliding drawer, and scrollable content area."
+  },
+  "com.webforj.component.layout.appnav.AppNav": {
+    "title": "AppNav",
+    "since": "24.12",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-appnav/latest/com/webforj/component/appnav/AppNav.html",
+    "docs": "https://docs.webforj.com/docs/components/appnav",
+    "clientComponent": "dwc-app-nav",
+    "content": "Build hierarchical side navigation menus with AppNav and AppNavItem, linking to routes, registered views, or external URLs."
+  },
+  "com.webforj.component.layout.appnav.AppNavItem": {
+    "title": "AppNavItem",
+    "since": "24.12",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-appnav/latest/com/webforj/component/layout/appnav/AppNavItem.html",
+    "clientComponent": "dwc-app-nav-item"
+  },
+  "com.webforj.component.layout.columnslayout.ColumnsLayout": {
+    "title": "ColumnsLayout",
+    "since": "24.10",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-columnslayout/latest/com/webforj/component/layout/columnslayout/ColumnsLayout.html",
+    "docs": "https://docs.webforj.com/docs/components/columns-layout",
+    "clientComponent": "dwc-columns-layout",
+    "content": "Arrange child components into a responsive multi-column grid with the ColumnsLayout component using configurable breakpoints and alignment."
+  },
+  "com.webforj.component.layout.flexlayout.FlexLayout": {
+    "title": "FlexLayout",
+    "since": "24.00",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-flexlayout/latest/com/webforj/component/layout/flexlayout/FlexLayout.html",
+    "docs": "https://docs.webforj.com/docs/components/flex-layout",
+    "content": "Arrange children in rows or columns with the FlexLayout component, controlling direction, justification, alignment, wrapping, and growth."
+  },
+  "com.webforj.component.layout.splitter.Splitter": {
+    "title": "Splitter",
+    "since": "24.00",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-splitter/latest/com/webforj/component/layout/splitter/Splitter.html",
+    "docs": "https://docs.webforj.com/docs/components/splitter",
+    "clientComponent": "dwc-splitter",
+    "content": "Divide a layout into resizable master and detail panels with the Splitter component, with min and max sizes and orientation control."
+  },
+  "com.webforj.component.layout.toolbar.Toolbar": {
+    "title": "Toolbar",
+    "since": "24.12",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-toolbar/latest/com/webforj/component/layout/toolbar/Toolbar.html",
+    "docs": "https://docs.webforj.com/docs/components/toolbar",
+    "clientComponent": "dwc-toolbar",
+    "content": "Lay out action controls with the Toolbar component, placing components into Start, Title, Content, and End slots with compact mode."
+  },
+  "com.webforj.component.list.ChoiceBox": {
+    "title": "ChoiceBox",
+    "since": "23.05",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/list/ChoiceBox.html",
+    "docs": "https://docs.webforj.com/docs/components/lists/choice-box",
+    "clientComponent": "dwc-choicebox",
+    "content": "Pick a single value from a fixed set with the ChoiceBox dropdown, including dropdown type styling, max row count, and keyboard navigation."
+  },
+  "com.webforj.component.list.ComboBox": {
+    "title": "ComboBox",
+    "since": "23.05",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/list/ComboBox.html",
+    "docs": "https://docs.webforj.com/docs/components/lists/combo-box",
+    "clientComponent": "dwc-combobox",
+    "content": "Combine a dropdown list with a text input in the ComboBox to let users select preset items or type custom values with placeholder support."
+  },
+  "com.webforj.component.list.ListBox": {
+    "title": "ListBox",
+    "since": "23.05",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/list/ListBox.html",
+    "docs": "https://docs.webforj.com/docs/components/lists/list-box",
+    "clientComponent": "dwc-listbox",
+    "content": "Show a scrollable, always-visible list with the ListBox component, supporting single or multiple selection and keyboard navigation."
+  },
+  "com.webforj.component.loading.Loading": {
+    "title": "Loading",
+    "since": "24.10",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-loading/latest/com/webforj/component/loading/Loading.html",
+    "docs": "https://docs.webforj.com/docs/components/loading",
+    "clientComponent": "dwc-loading",
+    "content": "Overlay a parent container with the Loading component to block interaction during async tasks, with backdrop and spinner customization."
+  },
+  "com.webforj.component.login.Login": {
+    "title": "Login",
+    "since": "24.01",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-login/latest/com/webforj/component/login/Login.html",
+    "docs": "https://docs.webforj.com/docs/components/login",
+    "clientComponent": "dwc-login",
+    "content": "Display an authentication dialog with the Login component, handling submission, validation, custom fields, and form action URLs."
+  },
+  "com.webforj.component.markdown.MarkdownViewer": {
+    "title": "MarkdownViewer",
+    "since": "25.11",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-markdown-viewer/latest/com/webforj/component/markdown/MarkdownViewer.html",
+    "docs": "https://docs.webforj.com/docs/components/markdownviewer",
+    "clientComponent": "dwc-markdown-viewer",
+    "content": "Render markdown as HTML with the MarkdownViewer component, supporting append, auto-scroll, and progressive typewriter rendering."
+  },
+  "com.webforj.component.navigator.Navigator": {
+    "title": "Navigator",
+    "since": "24.00",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/navigator/Navigator.html",
+    "docs": "https://docs.webforj.com/docs/components/navigator",
+    "clientComponent": "dwc-navigator",
+    "content": "Add pagination controls with the Navigator component, binding to a Paginator or Repository to drive page size, navigation, and labels."
+  },
+  "com.webforj.component.optiondialog.ConfirmDialog": {
+    "title": "Confirm",
+    "since": "24.02",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/optiondialog/ConfirmDialog.html",
+    "docs": "https://docs.webforj.com/docs/components/option-dialogs/confirm",
+    "content": "Show a blocking ConfirmDialog with up to three options, configurable button sets, message types, and timeout behavior."
+  },
+  "com.webforj.component.optiondialog.FileChooserDialog": {
+    "title": "File Chooser",
+    "since": "24.02",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/optiondialog/FileChooserDialog.html",
+    "docs": "https://docs.webforj.com/docs/components/option-dialogs/file-chooser",
+    "content": "Open a blocking FileChooserDialog to let users pick files or directories from the server, with selection modes and initial paths."
+  },
+  "com.webforj.component.optiondialog.FileSaveDialog": {
+    "title": "File Save",
+    "since": "24.21",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/optiondialog/FileSaveDialog.html",
+    "docs": "https://docs.webforj.com/docs/components/option-dialogs/file-save",
+    "content": "Prompt users for a save location with the FileSaveDialog, configuring initial path, default filename, and overwrite behavior."
+  },
+  "com.webforj.component.optiondialog.FileUploadDialog": {
+    "title": "File Upload",
+    "since": "24.02",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/optiondialog/FileUploadDialog.html",
+    "docs": "https://docs.webforj.com/docs/components/option-dialogs/file-upload",
+    "content": "Capture client uploads with the FileUploadDialog, returning an UploadedFile that you can filter, move, and process server-side."
+  },
+  "com.webforj.component.optiondialog.InputDialog": {
+    "title": "Input Dialog",
+    "since": "24.02",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/optiondialog/InputDialog.html",
+    "docs": "https://docs.webforj.com/docs/components/option-dialogs/input",
+    "content": "Prompt users for text, numbers, dates, colors, or other typed values with the modal InputDialog and message-type styling."
+  },
+  "com.webforj.component.optiondialog.MessageDialog": {
+    "title": "Message",
+    "since": "24.02",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/optiondialog/MessageDialog.html",
+    "docs": "https://docs.webforj.com/docs/components/option-dialogs/message",
+    "content": "Show a blocking MessageDialog with an OK button, configurable message types, alignment, blur, and timeout."
+  },
+  "com.webforj.component.optioninput.CheckBox": {
+    "title": "CheckBox",
+    "since": "23.01",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/optioninput/CheckBox.html",
+    "docs": "https://docs.webforj.com/docs/components/checkbox",
+    "clientComponent": "dwc-checkbox",
+    "content": "Toggle individual settings or pick multiple options with the CheckBox component, supporting text positioning and an indeterminate state."
+  },
+  "com.webforj.component.optioninput.RadioButton": {
+    "title": "RadioButton",
+    "since": "23.01",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/optioninput/RadioButton.html",
+    "docs": "https://docs.webforj.com/docs/components/radio-button",
+    "clientComponent": "dwc-radio",
+    "content": "Add a single-choice RadioButton with text positioning, activation modes, and grouping for mutually exclusive selections."
+  },
+  "com.webforj.component.optioninput.RadioButtonGroup": {
+    "title": "RadioButtonGroup",
+    "since": "23.01",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/optioninput/RadioButtonGroup.html",
+    "docs": "https://docs.webforj.com/docs/components/radio-group",
+    "content": "Coordinate mutually exclusive RadioButton selections with RadioButtonGroup, including nested containers and dynamic membership."
+  },
+  "com.webforj.component.refresher.Refresher": {
+    "title": "Refresher",
+    "since": "25.00",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-refresher/latest/com/webforj/component/refresher/Refresher.html",
+    "docs": "https://docs.webforj.com/docs/components/refresher",
+    "clientComponent": "dwc-refresher",
+    "content": "Enable pull-to-refresh on scrollable areas with the Refresher component, with pull, release, and refreshing states and i18n labels."
+  },
+  "com.webforj.component.slider.Slider": {
+    "title": "Slider",
+    "since": "24.10",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/slider/Slider.html",
+    "docs": "https://docs.webforj.com/docs/components/slider",
+    "clientComponent": "dwc-slider",
+    "content": "Let users pick a numeric value with the Slider component, with configurable range, step, tick marks, labels, and orientation."
+  },
+  "com.webforj.component.spinner.Spinner": {
+    "title": "Spinner",
+    "since": "24.10",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-spinner/latest/com/webforj/component/spinner/Spinner.html",
+    "docs": "https://docs.webforj.com/docs/components/spinner",
+    "clientComponent": "dwc-spinner",
+    "content": "Indicate background activity with the Spinner component, configuring theme, expanse, rotation speed, and pause or resume."
+  },
+  "com.webforj.component.tabbedpane.TabbedPane": {
+    "title": "TabbedPane",
+    "since": "23.06",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/tabbedpane/TabbedPane.html",
+    "docs": "https://docs.webforj.com/docs/components/tabbed-pane",
+    "clientComponent": "dwc-tabbed-pane",
+    "content": "Organize content into switchable Tab sections with the TabbedPane component, supporting icons, keys, and customizable tab properties."
+  },
+  "com.webforj.component.table.Column": {
+    "title": "Columns",
+    "since": "24.00",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-table/latest/com/webforj/component/table/Column.html",
+    "docs": "https://docs.webforj.com/docs/components/table/table_columns",
+    "content": "Define Table columns with labels, value providers, visibility, navigability, sizing, and user-interaction events."
+  },
+  "com.webforj.component.table.Table": {
+    "title": "Table",
+    "since": "24.00",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-table/latest/com/webforj/component/table/Table.html",
+    "docs": "https://docs.webforj.com/docs/components/table/overview",
+    "clientComponent": "dwc-table",
+    "content": "Display tabular data with the Table component, binding entity classes to a Repository to populate columns and render rows."
+  },
+  "com.webforj.component.table.renderer.AnchorRenderer": {
+    "title": "AnchorRenderer",
+    "since": "25.12",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-table/latest/com/webforj/component/table/renderer/AnchorRenderer.html",
+    "clientComponent": "a"
+  },
+  "com.webforj.component.table.renderer.AvatarRenderer": {
+    "title": "AvatarRenderer",
+    "since": "25.12",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-table/latest/com/webforj/component/table/renderer/AvatarRenderer.html",
+    "clientComponent": "dwc-avatar"
+  },
+  "com.webforj.component.table.renderer.BadgeRenderer": {
+    "title": "BadgeRenderer",
+    "since": "25.12",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-table/latest/com/webforj/component/table/renderer/BadgeRenderer.html",
+    "clientComponent": "dwc-badge"
+  },
+  "com.webforj.component.table.renderer.ButtonRenderer": {
+    "title": "Button",
+    "since": "23.02",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/button/Button.html",
+    "docs": "https://docs.webforj.com/docs/components/button",
+    "clientComponent": "dwc-button",
+    "content": "Trigger click actions in webforJ with the Button component, including themes, expanses, prefix and suffix icons, and disabled state."
+  },
+  "com.webforj.component.table.renderer.IconButtonRenderer": {
+    "title": "IconButtonRenderer",
+    "since": "25.12",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-table/latest/com/webforj/component/table/renderer/IconButtonRenderer.html",
+    "clientComponent": "dwc-icon-button"
+  },
+  "com.webforj.component.table.renderer.IconRenderer": {
+    "title": "IconRenderer",
+    "since": "24.00",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-table/latest/com/webforj/component/table/renderer/IconRenderer.html",
+    "clientComponent": "dwc-icon"
+  },
+  "com.webforj.component.table.renderer.ImageRenderer": {
+    "title": "ImageRenderer",
+    "since": "25.12",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-table/latest/com/webforj/component/table/renderer/ImageRenderer.html",
+    "clientComponent": "img"
+  },
+  "com.webforj.component.table.renderer.MaskedDateTimeRenderer": {
+    "title": "MaskedDateTimeRenderer",
+    "since": "25.12",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-table/latest/com/webforj/component/table/renderer/MaskedDateTimeRenderer.html",
+    "clientComponent": "dwc-format-datetime"
+  },
+  "com.webforj.component.table.renderer.MaskedNumberRenderer": {
+    "title": "MaskedNumberRenderer",
+    "since": "25.12",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-table/latest/com/webforj/component/table/renderer/MaskedNumberRenderer.html",
+    "clientComponent": "dwc-format-number"
+  },
+  "com.webforj.component.table.renderer.MaskedTextRenderer": {
+    "title": "MaskedTextRenderer",
+    "since": "25.12",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-table/latest/com/webforj/component/table/renderer/MaskedTextRenderer.html",
+    "clientComponent": "dwc-format-text"
+  },
+  "com.webforj.component.table.renderer.NativeButtonRenderer": {
+    "title": "NativeButtonRenderer",
+    "since": "24.00",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-table/latest/com/webforj/component/table/renderer/NativeButtonRenderer.html",
+    "clientComponent": "button"
+  },
+  "com.webforj.component.table.renderer.ProgressBarRenderer": {
+    "title": "ProgressBar",
+    "since": "24.02",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/progressbar/ProgressBar.html",
+    "docs": "https://docs.webforj.com/docs/components/progressbar",
+    "clientComponent": "dwc-progressbar",
+    "content": "Visualize task completion with the ProgressBar component, supporting determinate and indeterminate modes, orientation, and themes."
+  },
+  "com.webforj.component.table.renderer.Renderer": {
+    "title": "Rendering",
+    "since": "24.00",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-table/latest/com/webforj/component/table/renderer/Renderer.html",
+    "docs": "https://docs.webforj.com/docs/components/table/table_rendering",
+    "content": "Transform Table cells into text, badges, icons, links, or custom HTML with built-in renderers and the setRenderer method."
+  },
+  "com.webforj.component.table.renderer.TextRenderer": {
+    "title": "TextRenderer",
+    "since": "25.12",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-table/latest/com/webforj/component/table/renderer/TextRenderer.html",
+    "clientComponent": "span"
+  },
+  "com.webforj.component.terminal.Terminal": {
+    "title": "Terminal",
+    "since": "24.10",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-terminal/latest/com/webforj/component/terminal/Terminal.html",
+    "docs": "https://docs.webforj.com/docs/components/terminal",
+    "clientComponent": "dwc-terminal",
+    "content": "Embed an interactive terminal emulator with the Terminal component for shells, dashboards, debug consoles, and remote access tools."
+  },
+  "com.webforj.component.toast.Toast": {
+    "title": "Toast",
+    "since": "24.10",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-toast/latest/com/webforj/component/toast/Toast.html",
+    "docs": "https://docs.webforj.com/docs/components/toast",
+    "clientComponent": "dwc-toast",
+    "content": "Show transient notifications with the Toast component, configuring duration, theme, and placement via Toast.show or open."
+  },
+  "com.webforj.component.tree.Tree": {
+    "title": "Tree",
+    "since": "25.01",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/tree/Tree.html",
+    "docs": "https://docs.webforj.com/docs/components/tree",
+    "clientComponent": "dwc-tree",
+    "content": "Display hierarchical data with the Tree component, using TreeNode parent-child links, expand or collapse, icons, and selection."
+  },
+  "com.webforj.component.upload.Upload": {
+    "title": "Upload",
+    "since": "26.01",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/upload/Upload.html",
+    "docs": "https://docs.webforj.com/docs/components/upload",
+    "clientComponent": "dwc-upload",
+    "content": "Select and upload one or more files from the local machine with the Upload component using drag-and-drop, filters, and per-file or batch event tracking."
+  }
+}

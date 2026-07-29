@@ -577,4 +577,71 @@ class WebforjConfigBuilderTest {
       assertEquals(100, config.getInt("webforj.security.maxInitPerMinute"));
     }
   }
+
+  @Nested
+  class CraftforjFeatures {
+
+    @Test
+    void shouldLeaveFeatureKeysAbsentWhenUnset() {
+      Config config = WebforjConfigBuilder.buildConfig(properties);
+
+      assertFalse(config.hasPath("webforj.devtools.craftforj.project-root"));
+      assertFalse(config.hasPath("webforj.devtools.craftforj.source-changes"));
+      assertFalse(config.hasPath("webforj.devtools.craftforj.stylesheet-changes"));
+      assertFalse(config.hasPath("webforj.devtools.craftforj.ai.enabled"));
+      assertFalse(config.hasPath("webforj.devtools.craftforj.ai.freeform-changes"));
+    }
+
+    @Test
+    void shouldMergeAiEnabled() {
+      properties.getDevtools().getCraftforj().getAi().setEnabled(false);
+      Config config = WebforjConfigBuilder.buildConfig(properties);
+
+      assertFalse(config.getBoolean("webforj.devtools.craftforj.ai.enabled"));
+      assertFalse(config.hasPath("webforj.devtools.craftforj.ai.freeform-changes"));
+    }
+
+    @Test
+    void shouldMergeProjectRoot() {
+      properties.getDevtools().getCraftforj().setProjectRoot("/work/my-app");
+      Config config = WebforjConfigBuilder.buildConfig(properties);
+
+      assertEquals("/work/my-app", config.getString("webforj.devtools.craftforj.project-root"));
+    }
+
+    @Test
+    void shouldMergeSourceChanges() {
+      properties.getDevtools().getCraftforj().setSourceChanges(false);
+      Config config = WebforjConfigBuilder.buildConfig(properties);
+
+      assertFalse(config.getBoolean("webforj.devtools.craftforj.source-changes"));
+    }
+
+    @Test
+    void shouldMergeStylesheetChanges() {
+      properties.getDevtools().getCraftforj().setStylesheetChanges(false);
+      Config config = WebforjConfigBuilder.buildConfig(properties);
+
+      assertFalse(config.getBoolean("webforj.devtools.craftforj.stylesheet-changes"));
+    }
+
+    @Test
+    void shouldMergeAiFreeformChanges() {
+      properties.getDevtools().getCraftforj().getAi().setFreeformChanges(false);
+      Config config = WebforjConfigBuilder.buildConfig(properties);
+
+      assertFalse(config.getBoolean("webforj.devtools.craftforj.ai.freeform-changes"));
+    }
+
+    @Test
+    void shouldKeepLiveReloadKeysIntact() {
+      properties.getDevtools().getCraftforj().setSourceChanges(false);
+      properties.getDevtools().getLivereload().setEnabled(true);
+      properties.getDevtools().getLivereload().setWebsocketPort(35730);
+      Config config = WebforjConfigBuilder.buildConfig(properties);
+
+      assertTrue(config.getBoolean("webforj.devtools.livereload.enabled"));
+      assertEquals(35730, config.getInt("webforj.devtools.livereload.websocket-port"));
+    }
+  }
 }
