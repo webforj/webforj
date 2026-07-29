@@ -36,6 +36,9 @@ public class WriteStylesheetAction implements CraftforjActionHandler<StylesheetR
   public static final String ACTION = "styles.write";
 
   private static final Gson GSON = new Gson();
+  private static final String PARAM_DRY_RUN = "dryRun";
+  private static final String PARAM_BASE_VERSION = "baseVersion";
+  private static final String PARAM_CHANGES = "changes";
   private final StylesheetResolver resolver;
   private final StylesheetModifier modifier;
 
@@ -70,11 +73,12 @@ public class WriteStylesheetAction implements CraftforjActionHandler<StylesheetR
     String configured =
         params.has("file") && !params.get("file").isJsonNull() ? params.get("file").getAsString()
             : null;
-    boolean dryRun = params.has("dryRun") && !params.get("dryRun").isJsonNull()
-        && params.get("dryRun").getAsBoolean();
-    String baseVersion = params.has("baseVersion") && !params.get("baseVersion").isJsonNull()
-        ? params.get("baseVersion").getAsString()
-        : null;
+    boolean dryRun = params.has(PARAM_DRY_RUN) && !params.get(PARAM_DRY_RUN).isJsonNull()
+        && params.get(PARAM_DRY_RUN).getAsBoolean();
+    String baseVersion =
+        params.has(PARAM_BASE_VERSION) && !params.get(PARAM_BASE_VERSION).isJsonNull()
+            ? params.get(PARAM_BASE_VERSION).getAsString()
+            : null;
 
     List<StylesheetChange> changes = parseChanges(params);
     if (hasReplace(changes) && (baseVersion == null || baseVersion.isBlank())) {
@@ -97,11 +101,11 @@ public class WriteStylesheetAction implements CraftforjActionHandler<StylesheetR
   }
 
   private List<StylesheetChange> parseChanges(JsonObject params) {
-    if (!params.has("changes") || params.get("changes").isJsonNull()) {
+    if (!params.has(PARAM_CHANGES) || params.get(PARAM_CHANGES).isJsonNull()) {
       return List.of();
     }
 
-    StylesheetChange[] changes = GSON.fromJson(params.get("changes"), StylesheetChange[].class);
+    StylesheetChange[] changes = GSON.fromJson(params.get(PARAM_CHANGES), StylesheetChange[].class);
 
     return Arrays.asList(changes);
   }

@@ -165,7 +165,7 @@ public class ComponentMapBuilder {
 
     String compositeComponentType = component.getClass().getName();
     if (isComposite) {
-      Component bound = ComponentUtil.getBoundComponent((Composite<?>) component);
+      Component bound = ComponentUtil.getBoundComponent(component);
       if (bound != null) {
         compositeComponentType = bound.getClass().getName();
       }
@@ -191,7 +191,7 @@ public class ComponentMapBuilder {
       return null;
     }
 
-    SourcePathRegistry.record(file);
+    SourcePathRegistry.addPath(file);
 
     int line = sourcePoint.lineNumber();
     String declaringClass = sourcePoint.className();
@@ -229,7 +229,7 @@ public class ComponentMapBuilder {
         continue;
       }
 
-      SourcePathRegistry.record(file);
+      SourcePathRegistry.addPath(file);
 
       return new SourceLocation(file, point.lineNumber(), point.className(), null, null);
     }

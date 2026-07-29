@@ -21,11 +21,10 @@ public class HasHorizontalAlignmentContribution
   /**
    * Creates the HasHorizontalAlignment contribution.
    */
-  @SuppressWarnings("rawtypes")
   public HasHorizontalAlignmentContribution() {
     super(HasHorizontalAlignment.class, "HorizontalAlignment", FeatureCategory.LAYOUT);
     setGetter(HasHorizontalAlignment::getHorizontalAlignment);
-    setSetter((c, v) -> ((HasHorizontalAlignment) c).setHorizontalAlignment((Alignment) v));
+    setSetter((c, v) -> c.setHorizontalAlignment((Alignment) v));
   }
 
   @Override

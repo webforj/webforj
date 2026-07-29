@@ -37,6 +37,7 @@ public class GetTranslationsAction
   private static final String CORE_BUNDLE =
       "com.webforj.devtools.craftforj.inspector.i18n.craftforj-inspector";
   private static final String DEFAULT_LOCALE = "en";
+  private static final String PARAM_LOCALE = "locale";
   private static final Logger LOGGER = System.getLogger(GetTranslationsAction.class.getName());
 
   private final FeatureHandlerRegistry registry;
@@ -105,8 +106,8 @@ public class GetTranslationsAction
    * @return the requested BCP47 locale tag
    */
   private String extractLocale(JsonObject params) {
-    if (params != null && params.has("locale") && !params.get("locale").isJsonNull()) {
-      String value = params.get("locale").getAsString();
+    if (params != null && params.has(PARAM_LOCALE) && !params.get(PARAM_LOCALE).isJsonNull()) {
+      String value = params.get(PARAM_LOCALE).getAsString();
       if (value != null && !value.isBlank()) {
         return value;
       }

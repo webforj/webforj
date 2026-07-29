@@ -45,7 +45,7 @@ public class ApplyStagedSourceAction
   public Response handle(JsonObject params) {
     try {
       List<String> applied = stagingArea.apply();
-      applied.forEach(SourcePathRegistry::record);
+      applied.forEach(SourcePathRegistry::addPath);
 
       return Response.applied(applied);
     } catch (StagingException e) {

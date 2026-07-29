@@ -25,6 +25,7 @@ public class SetKeyAction implements CraftforjActionHandler<SetKeyAction.Respons
    */
   public static final String ACTION = "keys.set";
 
+  private static final String PARAM_VALUE = "value";
   private final CraftforjKeyStore store;
   private final KeyTransport transport;
 
@@ -65,14 +66,14 @@ public class SetKeyAction implements CraftforjActionHandler<SetKeyAction.Respons
   }
 
   private String resolveValue(JsonObject params) {
-    if (params == null || !params.has("value") || params.get("value").isJsonNull()) {
+    if (params == null || !params.has(PARAM_VALUE) || params.get(PARAM_VALUE).isJsonNull()) {
       return null;
     }
 
     String clientPublicKey = KeysParams.requireString(params, "publicKey");
     String iv = KeysParams.requireString(params, "iv");
     try {
-      return transport.decrypt(clientPublicKey, iv, params.get("value").getAsString());
+      return transport.decrypt(clientPublicKey, iv, params.get(PARAM_VALUE).getAsString());
     } catch (IllegalStateException e) {
       throw new CraftforjActionException("Failed to unseal key value", e);
     }

@@ -98,7 +98,7 @@ public class ModuleStore {
     for (Map.Entry<String, String> entry : catalog.entrySet()) {
       try {
         ModuleSource module = read(entry.getKey());
-        if (manifest.length() > 0) {
+        if (!manifest.isEmpty()) {
           manifest.append(',');
         }
         manifest.append(entry.getKey()).append(':').append(module.getSha256());

@@ -29,7 +29,7 @@ public final class SourcePathRegistry {
    *
    * @param path the absolute source file path, ignored when {@code null}
    */
-  public static void record(String path) {
+  public static void addPath(String path) {
     if (path == null) {
       return;
     }

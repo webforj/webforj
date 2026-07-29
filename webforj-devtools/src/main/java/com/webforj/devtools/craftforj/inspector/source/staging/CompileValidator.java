@@ -61,7 +61,7 @@ public class CompileValidator {
   private static final Pattern PACKAGE_PATTERN =
       Pattern.compile("^\\s*package\\s+([\\w.]+)\\s*;", Pattern.MULTILINE);
   private static final Pattern MISSING_SYMBOL_PATTERN =
-      Pattern.compile("symbol\\s*:?\\s+class\\s+(\\w+)");
+      Pattern.compile("symbol[\\s:]*class\\s+(\\w+)");
   private static final int MAX_HINTS = 5;
 
   private final JavaCompiler compiler;

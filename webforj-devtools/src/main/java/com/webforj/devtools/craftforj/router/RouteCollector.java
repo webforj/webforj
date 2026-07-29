@@ -160,7 +160,7 @@ public class RouteCollector {
     info.setHasActivate(ActivateObserver.class.isAssignableFrom(componentClass));
     String sourceFile =
         SourceFileResolver.resolve(componentClass.getName(), SourceFileResolver.ALL_EXTENSIONS);
-    SourcePathRegistry.record(sourceFile);
+    SourcePathRegistry.addPath(sourceFile);
     info.setSourceFile(sourceFile);
     info.setActive(isActive(info.getId()));
 
@@ -225,7 +225,6 @@ public class RouteCollector {
     return Collections.unmodifiableList(result);
   }
 
-  @SuppressWarnings({"unchecked", "rawtypes"})
   private SecurityAccess extractSecurityAccess(Class<? extends Component> componentClass) {
     if (componentClass.isAnnotationPresent(PermitAll.class)) {
       return SecurityAccess.PERMIT_ALL;

@@ -29,6 +29,7 @@ public class SetFeaturePropertyAction implements CraftforjActionHandler<Void> {
    */
   public static final String ACTION = "inspector.setFeatureProperty";
 
+  private static final String PARAM_PARENT_ID = "parentId";
   private final FeatureHandlerRegistry registry = new FeatureHandlerRegistry();
 
   /**
@@ -67,8 +68,8 @@ public class SetFeaturePropertyAction implements CraftforjActionHandler<Void> {
     // Parent-scoped features (layout item properties) apply through the parent's API; the parent
     // is resolved by the client, which owns the component tree
     Component parent = null;
-    if (params.has("parentId") && !params.get("parentId").isJsonNull()) {
-      String parentId = params.get("parentId").getAsString();
+    if (params.has(PARAM_PARENT_ID) && !params.get(PARAM_PARENT_ID).isJsonNull()) {
+      String parentId = params.get(PARAM_PARENT_ID).getAsString();
       if (parentId != null && !parentId.isEmpty()) {
         parent = ComponentLocator.findById(parentId).orElse(null);
       }

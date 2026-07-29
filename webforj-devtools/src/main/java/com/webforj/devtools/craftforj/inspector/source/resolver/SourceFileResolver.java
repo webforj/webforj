@@ -5,6 +5,7 @@ import com.webforj.Environment;
 import com.webforj.devtools.craftforj.ProjectRootResolver;
 import java.io.File;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,12 +25,12 @@ public final class SourceFileResolver {
   /**
    * Java and Kotlin extensions.
    */
-  public static final String[] ALL_EXTENSIONS = {".java", ".kt"};
+  public static final List<String> ALL_EXTENSIONS = List.of(".java", ".kt");
 
   /**
    * Java-only extension.
    */
-  public static final String[] JAVA_ONLY = {".java"};
+  public static final List<String> JAVA_ONLY = List.of(".java");
 
   private static final String[] SOURCE_DIRS =
       {"src/main/java", "src/main/kotlin", "src", "source", "sources"};
@@ -72,7 +73,7 @@ public final class SourceFileResolver {
    * @param extensions the file extensions to search (use ALL_EXTENSIONS or JAVA_ONLY)
    * @return the absolute path to the source file, or null if not found
    */
-  public static String resolve(String className, String[] extensions) {
+  public static String resolve(String className, List<String> extensions) {
     try {
       Class<?> type = Class.forName(className);
       return SOURCE_FILES.get(type).computeIfAbsent(String.join(",", extensions),
@@ -83,7 +84,7 @@ public final class SourceFileResolver {
     }
   }
 
-  private static String search(Class<?> type, String className, String[] extensions) {
+  private static String search(Class<?> type, String className, List<String> extensions) {
     try {
       File projectRoot = ProjectRootResolver.resolve(readConfig(), type).toFile();
       String classPath = className.replace('.', File.separatorChar);

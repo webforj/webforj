@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
  */
 public final class ImportWriter {
 
+  private static final String IMPORT_KEYWORD = "import ";
+
   private ImportWriter() {}
 
   /**
@@ -34,11 +36,11 @@ public final class ImportWriter {
     List<String> lines = new ArrayList<>(Arrays.asList(source.split("\n", -1)));
 
     Set<String> unusedImports = candidates.stream().filter(name -> !used.contains(name))
-        .map(name -> "import " + name + ";").collect(Collectors.toSet());
+        .map(name -> IMPORT_KEYWORD + name + ";").collect(Collectors.toSet());
     lines.removeIf(line -> unusedImports.contains(line.trim()));
 
     for (String name : used) {
-      String importLine = "import " + name + ";";
+      String importLine = IMPORT_KEYWORD + name + ";";
       if (lines.stream().noneMatch(line -> line.trim().equals(importLine))) {
         insert(lines, importLine);
       }
@@ -53,7 +55,7 @@ public final class ImportWriter {
     int sortedPosition = -1;
     for (int i = 0; i < lines.size(); i++) {
       String trimmed = lines.get(i).trim();
-      if (trimmed.startsWith("import ")) {
+      if (trimmed.startsWith(IMPORT_KEYWORD)) {
         lastImport = i;
         if (sortedPosition < 0 && trimmed.compareTo(importLine) > 0) {
           sortedPosition = i;

@@ -29,6 +29,7 @@ public class GetComponentFeaturesAction
    */
   public static final String ACTION = "inspector.getComponentFeatures";
 
+  private static final String PARAM_PARENT = "parent";
   private final FeatureHandlerRegistry registry = new FeatureHandlerRegistry();
 
   /**
@@ -58,8 +59,8 @@ public class GetComponentFeaturesAction
     // Extract parent type if provided
     // For composites, use compositeComponentType (the bound component type)
     String parentType = null;
-    if (params.has("parent") && params.get("parent").isJsonObject()) {
-      JsonObject parent = params.getAsJsonObject("parent");
+    if (params.has(PARAM_PARENT) && params.get(PARAM_PARENT).isJsonObject()) {
+      JsonObject parent = params.getAsJsonObject(PARAM_PARENT);
       if (parent.has("compositeComponentType")) {
         parentType = parent.get("compositeComponentType").getAsString();
       } else if (parent.has("componentType")) {

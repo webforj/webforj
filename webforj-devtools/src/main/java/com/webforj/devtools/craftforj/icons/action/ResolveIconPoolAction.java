@@ -30,6 +30,7 @@ public class ResolveIconPoolAction implements CraftforjActionHandler<PendingResu
   public static final String ACTION = "icons.resolve";
 
   private static final Gson GSON = new Gson();
+  private static final String PARAM_NAMES = "names";
 
   /**
    * {@inheritDoc}
@@ -64,8 +65,8 @@ public class ResolveIconPoolAction implements CraftforjActionHandler<PendingResu
 
   private static List<String> readNames(JsonObject params) {
     List<String> names = new ArrayList<>();
-    if (params != null && params.has("names") && params.get("names").isJsonArray()) {
-      JsonArray array = params.getAsJsonArray("names");
+    if (params != null && params.has(PARAM_NAMES) && params.get(PARAM_NAMES).isJsonArray()) {
+      JsonArray array = params.getAsJsonArray(PARAM_NAMES);
       array.forEach(element -> names.add(element.getAsString()));
     }
 

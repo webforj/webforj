@@ -56,7 +56,7 @@ class ApplyStagedSourceActionTest {
 
     assertEquals(1, response.getApplied().size());
     assertEquals("class Created {}", Files.readString(created, StandardCharsets.UTF_8));
-    registryMock.verify(() -> SourcePathRegistry.record(created.toString()));
+    registryMock.verify(() -> SourcePathRegistry.addPath(created.toString()));
     assertTrue(stagingArea.list().isEmpty());
   }
 

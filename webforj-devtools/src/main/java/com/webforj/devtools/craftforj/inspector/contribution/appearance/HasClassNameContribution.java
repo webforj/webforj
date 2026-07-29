@@ -38,7 +38,7 @@ public class HasClassNameContribution extends ListConcernContribution<HasClassNa
   }
 
   /**
-   * TODO: Remove reflection when the concern provide a getter method.
+   * Reads the class names reflectively, which stands in until the concern exposes a getter.
    */
   @SuppressWarnings("java:S3011")
   private List<String> getClassNames(HasClassName<?> component) {

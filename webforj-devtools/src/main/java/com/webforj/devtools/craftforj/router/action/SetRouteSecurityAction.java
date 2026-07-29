@@ -31,6 +31,7 @@ public class SetRouteSecurityAction implements CraftforjActionHandler<Void> {
   /** The action name. */
   public static final String ACTION = "router.setSecurity";
 
+  private static final String PARAM_ROLES = "roles";
   private final RouteSecurityModifier modifier;
 
   /** Creates the action with a default modifier. */
@@ -99,12 +100,12 @@ public class SetRouteSecurityAction implements CraftforjActionHandler<Void> {
   }
 
   private List<String> parseRoles(JsonObject params) {
-    if (!params.has("roles") || !params.get("roles").isJsonArray()) {
+    if (!params.has(PARAM_ROLES) || !params.get(PARAM_ROLES).isJsonArray()) {
       return List.of();
     }
 
     List<String> roles = new ArrayList<>();
-    JsonArray array = params.getAsJsonArray("roles");
+    JsonArray array = params.getAsJsonArray(PARAM_ROLES);
     for (JsonElement element : array) {
       String role = element.getAsString();
       if (role.isEmpty()) {

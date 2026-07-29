@@ -20,11 +20,10 @@ public class HasTextPositionContribution extends EnumConcernContribution<HasText
   /**
    * Creates the HasTextPosition contribution.
    */
-  @SuppressWarnings("rawtypes")
   public HasTextPositionContribution() {
     super(HasTextPosition.class, "TextPosition", FeatureCategory.LAYOUT);
     setGetter(HasTextPosition::getTextPosition);
-    setSetter((c, v) -> ((HasTextPosition) c).setTextPosition((Position) v));
+    setSetter((c, v) -> c.setTextPosition((Position) v));
   }
 
   @Override

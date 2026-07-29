@@ -169,7 +169,7 @@ class TargetResolver {
    */
   String resolveSourceFile(String className) {
     String file = SourceFileResolver.resolve(className, SourceFileResolver.JAVA_ONLY);
-    SourcePathRegistry.record(file);
+    SourcePathRegistry.addPath(file);
 
     return file;
   }

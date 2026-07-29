@@ -79,7 +79,7 @@ class ComponentMapBuilderTest {
       registryMock.when(() -> ComponentSourceRegistry.getSourcePoint(element)).thenReturn(creation);
       registryMock.when(() -> ComponentSourceRegistry.getSourceChain(element))
           .thenReturn(List.of(creation));
-      resolverMock.when(() -> SourceFileResolver.resolve(anyString(), any(String[].class)))
+      resolverMock.when(() -> SourceFileResolver.resolve(anyString(), any()))
           .thenReturn(CREATION_FILE);
       when(parserService.extractVariableName(any(), anyInt(), anySet())).thenReturn("view");
 
