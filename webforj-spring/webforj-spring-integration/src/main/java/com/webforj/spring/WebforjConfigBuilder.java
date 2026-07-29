@@ -91,6 +91,17 @@ class WebforjConfigBuilder {
 
     // Development tools configuration
     builder.addNested(properties::getDevtools, devtools -> {
+      builder.addNested(devtools::getCraftforj, craftforj -> {
+        builder.add("webforj.devtools.craftforj.enabled", craftforj::getEnabled)
+            .addList("webforj.devtools.craftforj.hosts-allowed", craftforj::getHostsAllowed)
+            .add("webforj.devtools.craftforj.project-root", craftforj::getProjectRoot)
+            .add("webforj.devtools.craftforj.source-changes", craftforj::getSourceChanges)
+            .add("webforj.devtools.craftforj.stylesheet-changes", craftforj::getStylesheetChanges);
+        builder.addNested(craftforj::getAi, ai -> {
+          builder.add("webforj.devtools.craftforj.ai.enabled", ai::getEnabled)
+              .add("webforj.devtools.craftforj.ai.freeform-changes", ai::getFreeformChanges);
+        });
+      });
       builder.addNested(devtools::getLivereload, livereload -> {
         builder.add("webforj.devtools.livereload.enabled", livereload::getEnabled, false)
             .add("webforj.devtools.livereload.websocket-port", livereload::getWebsocketPort)

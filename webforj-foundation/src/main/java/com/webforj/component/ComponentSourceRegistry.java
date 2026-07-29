@@ -1,7 +1,9 @@
 package com.webforj.component;
 
 import com.webforj.environment.ObjectTable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,6 +15,11 @@ import java.util.Map;
 public final class ComponentSourceRegistry {
 
   private static final String STORAGE_KEY = ComponentSourceRegistry.class.getName();
+
+  /**
+   * The maximum number of frames returned by {@link #getSourceChain(Object)}.
+   */
+  private static final int MAX_CHAIN_SIZE = 10;
 
   /**
    * Represents where a component was instantiated.
@@ -44,13 +51,40 @@ public final class ComponentSourceRegistry {
    * @return the source point, or null if not registered
    */
   public static SourcePoint getSourcePoint(Object component) {
-    Map<Integer, Throwable> storage = getStorage();
-    Throwable t = storage.get(System.identityHashCode(component));
-    if (t == null) {
+    List<SourcePoint> chain = getSourceChain(component);
+    if (chain.isEmpty()) {
+
       return null;
     }
 
+    return chain.get(0);
+  }
+
+  /**
+   * Finds the full chain of source points leading to where a component was instantiated.
+   *
+   * <p>
+   * The first entry is the creation site (the frame closest to where the component was constructed)
+   * and subsequent entries are the callers up the stack, in stack order. Frames belonging to
+   * framework packages are filtered out.
+   * </p>
+   *
+   * @param component the component
+   * @return the list of source points, or an empty list if the component is not registered
+   */
+  public static List<SourcePoint> getSourceChain(Object component) {
+    Map<Integer, Throwable> storage = getStorage();
+    Throwable t = storage.get(System.identityHashCode(component));
+    if (t == null) {
+      return List.of();
+    }
+
+    List<SourcePoint> chain = new ArrayList<>();
     for (StackTraceElement frame : t.getStackTrace()) {
+      if (chain.size() >= MAX_CHAIN_SIZE) {
+        break;
+      }
+
       String className = frame.getClassName();
       if (className.startsWith("com.webforj.component.") || className.startsWith("com.basis.")
           || className.startsWith("java.") || className.startsWith("jdk.")
@@ -58,10 +92,10 @@ public final class ComponentSourceRegistry {
         continue;
       }
 
-      return new SourcePoint(className, frame.getFileName(), frame.getLineNumber());
+      chain.add(new SourcePoint(className, frame.getFileName(), frame.getLineNumber()));
     }
 
-    return null;
+    return chain;
   }
 
   @SuppressWarnings("unchecked")

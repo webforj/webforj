@@ -44,7 +44,6 @@ public class LiveReloadScriptInjector implements AppLifecycleListener {
       String reloadScript = getReloadScript();
       if (reloadScript == null) {
         logger.log(System.Logger.Level.ERROR, "Failed to load webforJ livereload script resource");
-
         return;
       }
 
@@ -121,7 +120,6 @@ public class LiveReloadScriptInjector implements AppLifecycleListener {
 
   private static Config getConfig() {
     Environment env = Environment.getCurrent();
-
     return env != null ? env.getConfig() : null;
   }
 }

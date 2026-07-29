@@ -19,7 +19,7 @@ public final class LiveReloadLifecycle {
 
   private LiveReloadServer server;
   private WatchReceiver receiver;
-  private JRebelReceiver jRebelReceiver;
+  private JrebelReceiver jrebelReceiver;
   private boolean notifiedRestarting;
 
   /**
@@ -30,7 +30,6 @@ public final class LiveReloadLifecycle {
   public synchronized void start(LiveReloadOptions options) {
     if (!options.isEnabled()) {
       logger.log(System.Logger.Level.INFO, "webforJ live reload is disabled and will not start");
-
       return;
     }
 
@@ -45,12 +44,12 @@ public final class LiveReloadLifecycle {
         new WatchReceiver(reloadServer, options.isStaticResourcesEnabled());
     watchReceiver.start();
 
-    JRebelReceiver jRebelWatchReceiver = new JRebelReceiver(reloadServer);
-    jRebelWatchReceiver.start();
+    JrebelReceiver jrebelWatchReceiver = new JrebelReceiver(reloadServer);
+    jrebelWatchReceiver.start();
 
     this.server = reloadServer;
     this.receiver = watchReceiver;
-    this.jRebelReceiver = jRebelWatchReceiver;
+    this.jrebelReceiver = jrebelWatchReceiver;
     this.notifiedRestarting = false;
     logger.log(System.Logger.Level.INFO,
         "webforJ live reload ready on port " + options.getWebsocketPort());
@@ -62,8 +61,8 @@ public final class LiveReloadLifecycle {
    *
    * @return the receiver while the lifecycle is running, {@code null} otherwise
    */
-  JRebelReceiver getJRebelReceiver() {
-    return jRebelReceiver;
+  JrebelReceiver getJrebelReceiver() {
+    return jrebelReceiver;
   }
 
   /**
@@ -75,9 +74,9 @@ public final class LiveReloadLifecycle {
       receiver = null;
     }
 
-    if (jRebelReceiver != null) {
-      jRebelReceiver.stop();
-      jRebelReceiver = null;
+    if (jrebelReceiver != null) {
+      jrebelReceiver.stop();
+      jrebelReceiver = null;
     }
 
     if (server != null) {

@@ -172,7 +172,6 @@ public class WatchReceiver {
     boolean anyUnswappable = changedPaths.stream().anyMatch(path -> !isSwappable(path));
     if (!staticResourcesEnabled || anyUnswappable) {
       server.sendReloadMessage();
-
       return;
     }
 
@@ -183,7 +182,6 @@ public class WatchReceiver {
 
   private static boolean isSwappable(String path) {
     String lower = path.toLowerCase(Locale.ROOT);
-
     return lower.endsWith(CSS_EXTENSION) || IMAGE_EXTENSIONS.stream().anyMatch(lower::endsWith);
   }
 
