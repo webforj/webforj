@@ -1,10 +1,10 @@
 package com.webforj.component.card;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import com.webforj.component.Component;
 import com.webforj.component.Expanse;
@@ -60,11 +60,7 @@ class CardTest {
 
     @Test
     void shouldSetGetProperties() {
-      try {
-        PropertyDescriptorTester.run(Card.class, component);
-      } catch (Exception e) {
-        fail("PropertyDescriptor test failed: " + e.getMessage());
-      }
+      assertDoesNotThrow(() -> PropertyDescriptorTester.run(Card.class, component));
     }
   }
 
