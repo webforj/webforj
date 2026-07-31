@@ -37,6 +37,12 @@
     "clientComponent": "dwc-badge",
     "content": "Surface counts, statuses, or short labels with the Badge component, including themes, slotted icons, and attachment to buttons or tabs."
   },
+  "com.webforj.component.card.Card": {
+    "title": "Card",
+    "since": "26.02",
+    "javadoc": "https://javadoc.io/doc/com.webforj/webforj-card/latest/com/webforj/component/card/Card.html",
+    "clientComponent": "dwc-card"
+  },
   "com.webforj.component.desktopnotification.DesktopNotification": {
     "title": "DesktopNotification",
     "since": "25.00",

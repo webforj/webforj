@@ -65,6 +65,10 @@
     </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
+      <artifactId>webforj-card</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.webforj</groupId>
       <artifactId>webforj-columnslayout</artifactId>
     </dependency>
     <dependency>
