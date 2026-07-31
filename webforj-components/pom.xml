@@ -21,6 +21,7 @@
     <module>webforj-appnav</module>
     <module>webforj-avatar</module>
     <module>webforj-badge</module>
+    <module>webforj-card</module>
     <module>webforj-columnslayout</module>
     <module>webforj-desktop-notification</module>
     <module>webforj-dialog</module>
