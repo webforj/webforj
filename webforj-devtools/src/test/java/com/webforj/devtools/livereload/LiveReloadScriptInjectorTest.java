@@ -15,6 +15,8 @@ import static org.mockito.Mockito.when;
 import com.webforj.Page;
 import com.webforj.Request;
 import com.webforj.exceptions.WebforjRuntimeException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
 
 class LiveReloadScriptInjectorTest {
@@ -45,6 +47,21 @@ class LiveReloadScriptInjectorTest {
     assertTrue(script.contains("websocketUrl: 'ws://localhost:35730/ws'"));
     assertTrue(script.contains("heartbeatInterval: 5000"));
     assertTrue(script.endsWith("console.log('reload');"));
+  }
+
+  @Test
+  void shouldStampThePageWithTheServerClock() {
+    long before = System.currentTimeMillis();
+    String script = LiveReloadScriptInjector.composeScript("ws://localhost:35730/ws", 5000,
+        "console.log('reload');");
+    long after = System.currentTimeMillis();
+
+    Matcher stamp = Pattern.compile("pageServedAt: (\\d+)").matcher(script);
+    assertTrue(stamp.find(), "the page carries its served stamp");
+
+    long served = Long.parseLong(stamp.group(1));
+    assertTrue(served >= before && served <= after,
+        "the stamp comes from the server clock at compose time");
   }
 
   @Test

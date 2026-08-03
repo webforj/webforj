@@ -368,6 +368,12 @@
           self.instanceOpened = true;
           self.everOpened = true;
           self.startHeartbeat();
+          // The served stamp lets the server spot a page that predates the last reload command,
+          // so a reload that found nobody connected still reaches this page now.
+          self.socket.send(JSON.stringify({
+            type: 'hello',
+            pageServedAt: (window.webforjDevToolsConfig || {}).pageServedAt || 0
+          }));
           self.socket.send('ping');
 
           if (self.everDown) {
@@ -1031,6 +1037,12 @@
         case 'resource-update':
           this.logger.log('📦 Incoming update: ' + message.resourceType + ' → ' + message.path);
           this.resources.apply(message);
+          // The applied update advances the served stamp, so a later reconnect never mistakes
+          // this page for one that missed the update.
+          if (message.timestamp && window.webforjDevToolsConfig
+              && message.timestamp > (window.webforjDevToolsConfig.pageServedAt || 0)) {
+            window.webforjDevToolsConfig.pageServedAt = message.timestamp;
+          }
           break;
 
         default:

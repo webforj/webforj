@@ -132,6 +132,105 @@ class LiveReloadServerTest {
   }
 
   @Test
+  void shouldReloadTheConnectingPageServedBeforeTheLastReloadCommand() {
+    // The command fires while nobody is connected, exactly the moment a browser is between pages.
+    server.sendReloadMessage();
+
+    WebSocket conn = openConnection();
+    server.onMessage(conn, helloMessage(System.currentTimeMillis() - 60_000));
+
+    verify(conn).send(gson.toJson(new ReloadMessage()));
+  }
+
+  @Test
+  void shouldNotReloadTheConnectingPageServedAfterTheLastReloadCommand() {
+    server.sendReloadMessage();
+
+    WebSocket conn = openConnection();
+    server.onMessage(conn, helloMessage(System.currentTimeMillis() + 60_000));
+
+    verify(conn, never()).send(gson.toJson(new ReloadMessage()));
+  }
+
+  @Test
+  void shouldNotReloadTheConnectingPageWhenNoReloadCommandEverFired() {
+    WebSocket conn = openConnection();
+    server.onMessage(conn, helloMessage(System.currentTimeMillis() - 60_000));
+
+    verify(conn, never()).send(gson.toJson(new ReloadMessage()));
+  }
+
+  @Test
+  void shouldIgnoreTheHelloWithoutTheServedStamp() {
+    // A page without a stamp must never be reloaded on connect, or every reconnect would loop.
+    server.sendReloadMessage();
+
+    WebSocket conn = openConnection();
+    server.onMessage(conn, "{\"type\":\"hello\",\"pageServedAt\":0}");
+
+    verify(conn, never()).send(gson.toJson(new ReloadMessage()));
+  }
+
+  @Test
+  void shouldReplayTheResourceUpdateTheConnectingPageMissed() {
+    // The update goes out while nobody is connected, exactly the moment a browser is between
+    // pages. The page must receive it in place on connect, never as a page reload.
+    server.sendResourceUpdateMessage("css", "styles/app.css", null);
+
+    WebSocket conn = openConnection();
+    server.onMessage(conn, helloMessage(System.currentTimeMillis() - 60_000));
+
+    verify(conn).send(contains("styles/app.css"));
+    verify(conn, never()).send(gson.toJson(new ReloadMessage()));
+  }
+
+  @Test
+  void shouldNotReplayToThePageServedAfterTheUpdate() {
+    server.sendResourceUpdateMessage("css", "styles/app.css", null);
+
+    WebSocket conn = openConnection();
+    server.onMessage(conn, helloMessage(System.currentTimeMillis() + 60_000));
+
+    verify(conn, never()).send(contains("styles/app.css"));
+  }
+
+  @Test
+  void shouldReplayOnlyTheLatestUpdatePerPath() {
+    server.sendResourceUpdateMessage("css", "styles/app.css", null);
+    server.sendResourceUpdateMessage("css", "styles/app.css", null);
+    server.sendResourceUpdateMessage("image", "logo.png", null);
+
+    WebSocket conn = openConnection();
+    server.onMessage(conn, helloMessage(System.currentTimeMillis() - 60_000));
+
+    verify(conn, times(1)).send(contains("styles/app.css"));
+    verify(conn, times(1)).send(contains("logo.png"));
+  }
+
+  @Test
+  void shouldPreferTheReloadWhenThePageMissedBoth() {
+    // The reloaded page fetches every resource fresh, so replaying on top would be noise.
+    server.sendReloadMessage();
+    server.sendResourceUpdateMessage("css", "styles/app.css", null);
+
+    WebSocket conn = openConnection();
+    server.onMessage(conn, helloMessage(System.currentTimeMillis() - 60_000));
+
+    verify(conn).send(gson.toJson(new ReloadMessage()));
+    verify(conn, never()).send(contains("styles/app.css"));
+  }
+
+  @Test
+  void shouldSurviveAnUnreadableClientMessage() {
+    WebSocket conn = openConnection();
+
+    server.onMessage(conn, "{broken json");
+    server.onMessage(conn, "{\"type\":\"other\"}");
+
+    verify(conn, times(1)).send(any(String.class));
+  }
+
+  @Test
   void shouldRemoveConnectionOnError() {
     server.onOpen(mockConnection, mockHandshake);
     assertEquals(1, server.getConnectionCount());
@@ -180,6 +279,10 @@ class LiveReloadServerTest {
     verify(conn1).send(contains("reload"));
     verify(conn3).send(contains("reload"));
     verify(conn2, never()).send(contains("reload"));
+  }
+
+  private static String helloMessage(long pageServedAt) {
+    return "{\"type\":\"hello\",\"pageServedAt\":" + pageServedAt + "}";
   }
 
   private WebSocket openConnection() {

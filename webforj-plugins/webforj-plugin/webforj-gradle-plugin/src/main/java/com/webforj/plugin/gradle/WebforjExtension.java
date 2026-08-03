@@ -1,10 +1,13 @@
 package com.webforj.plugin.gradle;
 
+import com.webforj.plugin.gradle.hotswap.HotswapConfiguration;
+import org.gradle.api.Action;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Nested;
 
 /**
  * Configures the webforJ bundler for a Gradle build.
@@ -125,4 +128,26 @@ public abstract class WebforjExtension {
    * @return the test arguments property
    */
   public abstract ListProperty<String> getTestArgs();
+
+  /**
+   * The hotswap integration values.
+   *
+   * @return the hotswap configuration
+   */
+  @Nested
+  public abstract HotswapConfiguration getHotswap();
+
+  /**
+   * Configures the hotswap integration, naming the tool to attach.
+   *
+   * <p>
+   * When a tool is named, the plugin places its agent arguments into the application run task, so
+   * the agent enters only the application virtual machine.
+   * </p>
+   *
+   * @param action the configuration action
+   */
+  public void hotswap(Action<? super HotswapConfiguration> action) {
+    action.execute(getHotswap());
+  }
 }
