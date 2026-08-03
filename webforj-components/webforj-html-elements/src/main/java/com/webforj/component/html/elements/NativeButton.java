@@ -3,6 +3,7 @@ package com.webforj.component.html.elements;
 import com.webforj.component.Component;
 import com.webforj.component.element.annotation.NodeName;
 import com.webforj.component.html.HtmlComponentContainer;
+import com.webforj.concern.HasDisableOnClick;
 
 /**
  * Component representing a {@code button} element.
@@ -18,7 +19,8 @@ import com.webforj.component.html.HtmlComponentContainer;
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
 @NodeName("button")
-public class NativeButton extends HtmlComponentContainer<NativeButton> {
+public class NativeButton extends HtmlComponentContainer<NativeButton>
+    implements HasDisableOnClick<NativeButton> {
 
   /**
    * Creates a new empty button.

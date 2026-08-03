@@ -5,6 +5,7 @@ import com.webforj.component.element.PropertyDescriptor;
 import com.webforj.component.element.annotation.NodeName;
 import com.webforj.component.event.BlurEvent;
 import com.webforj.component.event.FocusEvent;
+import com.webforj.concern.HasDisableOnClick;
 import com.webforj.concern.HasEnablement;
 import com.webforj.concern.HasFocus;
 import com.webforj.dispatcher.EventListener;
@@ -29,7 +30,8 @@ import com.webforj.dispatcher.ListenerRegistration;
  * @see TablerIcon
  */
 @NodeName("dwc-icon-button")
-public class IconButton extends Icon implements HasEnablement<Icon>, HasFocus<IconButton> {
+public class IconButton extends Icon
+    implements HasEnablement<Icon>, HasFocus<IconButton>, HasDisableOnClick<IconButton> {
 
   // Properties
   private final PropertyDescriptor<Boolean> disabledProp =

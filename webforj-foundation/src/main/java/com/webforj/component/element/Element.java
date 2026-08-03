@@ -30,6 +30,7 @@ import com.webforj.component.event.FocusEvent;
 import com.webforj.component.event.sink.ExecuteAsyncScriptEventSink;
 import com.webforj.component.optioninput.RadioButtonGroup;
 import com.webforj.component.window.Window;
+import com.webforj.concern.HasDisableOnClick;
 import com.webforj.concern.HasEnablement;
 import com.webforj.concern.HasFocus;
 import com.webforj.concern.HasJsExecution;
@@ -57,8 +58,8 @@ import java.util.Optional;
  * @author Hyyan Abo Fakher
  * @since 23.06
  */
-public final class Element extends DwcContainer<Element>
-    implements HasFocus<Element>, HasEnablement<Element>, HasJsExecution {
+public final class Element extends DwcContainer<Element> implements HasFocus<Element>,
+    HasEnablement<Element>, HasJsExecution, HasDisableOnClick<Element> {
 
   private final String nodeName;
   private final Map<String, ComponentEventSinkRegistry<ElementEvent>> registries = new HashMap<>();
@@ -74,6 +75,7 @@ public final class Element extends DwcContainer<Element>
           ExecuteAsyncScriptEvent.class);
   private final List<PendingResult<Element>> whenDefinedResults = new ArrayList<>();
   private boolean isDefined = false;
+  private boolean disableOnClick = false;
   private String html;
 
   /**
@@ -184,6 +186,47 @@ public final class Element extends DwcContainer<Element>
     }
 
     return html;
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 26.02
+   */
+  @Override
+  public Element setDisableOnClick(boolean disableOnClick) {
+    BBjWebComponent control = inferControl();
+
+    if (control != null) {
+      try {
+        control.setDisableOnClick(disableOnClick);
+      } catch (BBjException e) {
+        throw new WebforjRuntimeException(e);
+      }
+    }
+
+    this.disableOnClick = disableOnClick;
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 26.02
+   */
+  @Override
+  public boolean isDisableOnClick() {
+    BBjWebComponent control = inferControl();
+
+    if (control != null) {
+      try {
+        return control.getDisableOnClick();
+      } catch (BBjException e) {
+        throw new WebforjRuntimeException(e);
+      }
+    }
+
+    return disableOnClick;
   }
 
   /**
@@ -663,6 +706,10 @@ public final class Element extends DwcContainer<Element>
 
     super.onAttach();
     focusableMixin.onAttach();
+
+    if (disableOnClick) {
+      setDisableOnClick(disableOnClick);
+    }
 
     if (!properties.isEmpty()) {
       for (Map.Entry<String, Object> entry : properties.entrySet()) {

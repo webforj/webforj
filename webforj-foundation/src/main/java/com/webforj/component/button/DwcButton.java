@@ -10,6 +10,7 @@ import com.webforj.component.Expanse;
 import com.webforj.component.button.event.ButtonClickEvent;
 import com.webforj.component.button.sink.ButtonClickEventSink;
 import com.webforj.component.event.ComponentEventSinkRegistry;
+import com.webforj.concern.HasDisableOnClick;
 import com.webforj.concern.HasExpanse;
 import com.webforj.concern.HasFocusStatus;
 import com.webforj.concern.HasHorizontalAlignment;
@@ -35,13 +36,14 @@ import java.util.List;
  * @see HasExpanse
  * @see HasTheme
  * @see HasHorizontalAlignment
+ * @see HasDisableOnClick
  *
  * @author Hyyan Abo Fakher
  * @since 23.05
  */
 public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcFocusableComponent<T>
     implements HasExpanse<T, Expanse>, HasTheme<T, ButtonTheme>, HasHorizontalAlignment<T>,
-    HasFocusStatus, HasPrefixAndSuffix<T> {
+    HasFocusStatus, HasPrefixAndSuffix<T>, HasDisableOnClick<T> {
   private static final String BADGE_SLOT = "badge";
   private boolean disableOnClick = false;
 
@@ -121,12 +123,9 @@ public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcF
   }
 
   /**
-   * Sets whether the button should be immediately disabled when the user clicks it.
-   *
-   * @param disableOnClick {@code true} to disable the button when the user clicks it
-   *
-   * @return the component itself
+   * {@inheritDoc}
    */
+  @Override
   public T setDisableOnClick(boolean disableOnClick) {
     BBjButton control = inferControl();
 
@@ -143,16 +142,15 @@ public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcF
   }
 
   /**
-   * Returns whether the button is disabled when the user clicks it.
-   *
-   * @return {@code true} if the button is disabled when the user clicks it
+   * {@inheritDoc}
    */
+  @Override
   public boolean isDisableOnClick() {
     BBjButton control = inferControl();
 
     if (control != null) {
       try {
-        control.getDisableOnClick();
+        return control.getDisableOnClick();
       } catch (BBjException e) {
         throw new WebforjRuntimeException(e);
       }
