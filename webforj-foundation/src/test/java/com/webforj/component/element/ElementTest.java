@@ -182,6 +182,57 @@ class ElementTest {
   }
 
   @Nested
+  @DisplayName("DisableOnClick API")
+  class DisableOnClickApi {
+
+    @Test
+    @DisplayName("Setting/getting disableOnClick when control is null")
+    void settingGettingDisableOnClickWhenControlIsNull()
+        throws IllegalAccessException, BBjException {
+      ReflectionUtils.nullifyControl(component);
+      component.setDisableOnClick(true);
+      assertTrue(component.isDisableOnClick());
+
+      verify(control, times(0)).setDisableOnClick(true);
+      verify(control, times(0)).getDisableOnClick();
+    }
+
+    @Test
+    @DisplayName("Setting/getting disableOnClick when control is not null")
+    void settingGettingDisableOnClickWhenControlIsNotNull() throws BBjException {
+      when(control.getDisableOnClick()).thenReturn(true);
+      component.setDisableOnClick(true);
+
+      assertTrue(component.isDisableOnClick());
+
+      verify(control, times(1)).setDisableOnClick(true);
+      verify(control, times(1)).getDisableOnClick();
+    }
+
+    @Test
+    @DisplayName("When control throws BBjException a DwcjRuntimeException is thrown")
+    void shouldThrowDwcjRuntimeException() throws BBjException {
+      doThrow(BBjException.class).when(control).setDisableOnClick(true);
+      assertThrows(WebforjRuntimeException.class, () -> component.setDisableOnClick(true));
+
+      doThrow(BBjException.class).when(control).getDisableOnClick();
+      assertThrows(WebforjRuntimeException.class, () -> component.isDisableOnClick());
+    }
+
+    @Test
+    @DisplayName("onAttach will re-apply disableOnClick changes")
+    void onAttachWillReapplyDisableOnClickChanges() throws BBjException, IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+      component.setDisableOnClick(true);
+
+      ReflectionUtils.unNullifyControl(component, control);
+      component.onAttach();
+
+      verify(control, times(1)).setDisableOnClick(true);
+    }
+  }
+
+  @Nested
   @DisplayName("Events API")
   class EventsApi {
 

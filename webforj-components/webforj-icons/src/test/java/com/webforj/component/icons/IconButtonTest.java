@@ -69,6 +69,18 @@ class IconButtonTest {
     }
 
     @Test
+    void shouldSetGetDisableOnClick() {
+      assertTrue(!component.isDisableOnClick());
+
+      assertEquals(component, component.setDisableOnClick(true));
+      assertTrue(component.isDisableOnClick());
+      assertTrue(component.getOriginalElement().isDisableOnClick());
+
+      component.setDisableOnClick(false);
+      assertTrue(!component.isDisableOnClick());
+    }
+
+    @Test
     void shouldFocus() {
       IconButton spy = spy(component);
       Element element = spy(spy.getOriginalElement());

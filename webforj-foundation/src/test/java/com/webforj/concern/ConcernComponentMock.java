@@ -29,7 +29,7 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
     HasRestoreValue<ConcernComponentMock, Double>, HasLocale<ConcernComponentMock>,
     HasStep<ConcernComponentMock, Double>, HasPredictedText<ConcernComponentMock>,
     HasSize<ConcernComponentMock>, HasPrefixAndSuffix<ConcernComponentMock>,
-    HasAutoFocus<ConcernComponentMock> {
+    HasAutoFocus<ConcernComponentMock>, HasDisableOnClick<ConcernComponentMock> {
 
   private Map<String, String> attributes = new HashMap<>();
   private Map<String, Object> properties = new HashMap<>();
@@ -74,6 +74,7 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
   private Component prefixComponent;
   private Component suffixComponent;
   private boolean autofocus = false;
+  private boolean disableOnClick = false;
 
   @Override
   public String getAttribute(String attribute) {
@@ -623,6 +624,17 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
   @Override
   public boolean isAutoFocus() {
     return this.autofocus;
+  }
+
+  @Override
+  public ConcernComponentMock setDisableOnClick(boolean disableOnClick) {
+    this.disableOnClick = disableOnClick;
+    return this;
+  }
+
+  @Override
+  public boolean isDisableOnClick() {
+    return this.disableOnClick;
   }
 
   @Override
