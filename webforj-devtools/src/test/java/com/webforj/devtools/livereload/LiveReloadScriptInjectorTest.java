@@ -72,7 +72,7 @@ class LiveReloadScriptInjectorTest {
     String second = injector.getReloadScript();
 
     assertNotNull(first);
-    assertTrue(first.contains("webforjDevToolsConfig"));
+    assertTrue(first.contains("webforjLivereloadConfig"));
     assertSame(first, second);
   }
 

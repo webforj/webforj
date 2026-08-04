@@ -23,7 +23,7 @@ public class LiveReloadScriptInjector implements AppLifecycleListener {
   private static final System.Logger logger =
       System.getLogger(LiveReloadScriptInjector.class.getName());
   private static final String SCRIPT_RESOURCE =
-      "/META-INF/resources/webforj/devtools-reload-client.min.js";
+      "/META-INF/resources/webforj/livereload-client.min.js";
 
   private String cachedScript;
 
@@ -95,7 +95,7 @@ public class LiveReloadScriptInjector implements AppLifecycleListener {
     // The served stamp comes from the server clock, the same clock behind the reload commands, so
     // the reload server can compare the two without any browser clock entering the picture.
     String config = String.format("""
-        window.webforjDevToolsConfig = {
+        window.webforjLivereloadConfig = {
           enabled: true,
           websocketUrl: '%s',
           heartbeatInterval: %d,

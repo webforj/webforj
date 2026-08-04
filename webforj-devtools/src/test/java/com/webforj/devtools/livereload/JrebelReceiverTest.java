@@ -14,8 +14,10 @@ import static org.mockito.Mockito.when;
 
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -64,9 +66,9 @@ class JrebelReceiverTest {
 
   @Test
   @Timeout(10)
-  void shouldCollapseABurstOfSwapsIntoOneReload() {
+  void shouldCollapseTheBurstOfSwapsIntoOneClassUpdate() {
     LiveReloadServer server = runningServer();
-    CountDownLatch secondReload = reloadLatch(server, 2);
+    CountDownLatch secondUpdate = classUpdateLatch(server, 2, null);
 
     JrebelReceiver receiver = receiver(server);
     receiver.start();
@@ -76,38 +78,101 @@ class JrebelReceiverTest {
       listener.onClassEvent(CLASS_SWAPPED, JrebelReceiverTest.class);
     }
 
-    assertFalse(await(secondReload, 500));
-    assertEquals(1, secondReload.getCount());
+    assertFalse(await(secondUpdate, 500));
+    assertEquals(1, secondUpdate.getCount());
+    verify(server, never()).sendReloadMessage();
 
     receiver.stop();
   }
 
   @Test
   @Timeout(10)
-  void shouldReloadForASwapButNotForAPlainLoad() {
+  void shouldUpdateForTheSwapButNotForThePlainLoad() {
     LiveReloadServer server = runningServer();
     JrebelReceiver receiver = receiver(server);
     receiver.start();
     ReloadListener listener = registeredListener();
 
-    CountDownLatch load = reloadLatch(server, 1);
+    CountDownLatch load = classUpdateLatch(server, 1, null);
     listener.onClassEvent(CLASS_LOADED, JrebelReceiverTest.class);
     assertFalse(await(load, 400));
+    verify(server, never()).sendClassUpdateMessage(any());
     verify(server, never()).sendReloadMessage();
 
-    CountDownLatch swap = reloadLatch(server, 1);
+    CountDownLatch swap = classUpdateLatch(server, 1, null);
     listener.onClassEvent(CLASS_SWAPPED, JrebelReceiverTest.class);
     assertTrue(await(swap, 2000));
+    verify(server, never()).sendReloadMessage();
 
     receiver.stop();
   }
 
   @Test
   @Timeout(10)
-  void shouldNotReloadThroughAServerThatIsNotRunning() {
+  void shouldBatchTheDistinctClassNamesIntoOneUpdate() {
+    LiveReloadServer server = runningServer();
+    AtomicReference<Set<String>> classes = new AtomicReference<>();
+    CountDownLatch update = classUpdateLatch(server, 1, classes);
+
+    JrebelReceiver receiver = receiver(server);
+    receiver.start();
+    ReloadListener listener = registeredListener();
+
+    listener.onClassEvent(CLASS_SWAPPED, JrebelReceiverTest.class);
+    listener.onClassEvent(CLASS_SWAPPED, ReloaderHolder.class);
+
+    assertTrue(await(update, 2000));
+    assertEquals(Set.of(JrebelReceiverTest.class.getName(), ReloaderHolder.class.getName()),
+        classes.get());
+    verify(server, never()).sendReloadMessage();
+
+    receiver.stop();
+  }
+
+  @Test
+  @Timeout(10)
+  void shouldFallBackToTheFullReloadWhenTheClassIsNotNamed() {
+    LiveReloadServer server = runningServer();
+    CountDownLatch reload = reloadLatch(server, 1);
+
+    JrebelReceiver receiver = receiver(server);
+    receiver.start();
+    ReloadListener listener = registeredListener();
+
+    listener.onClassEvent(CLASS_SWAPPED, null);
+
+    assertTrue(await(reload, 2000));
+    verify(server, never()).sendClassUpdateMessage(any());
+
+    receiver.stop();
+  }
+
+  @Test
+  @Timeout(10)
+  void shouldSendNothingForTheFireWhoseBatchWasAlreadyDrained() {
+    LiveReloadServer server = runningServer();
+    CountDownLatch update = classUpdateLatch(server, 1, null);
+
+    JrebelReceiver receiver = receiver(server);
+    receiver.start();
+    registeredListener().onClassEvent(CLASS_SWAPPED, JrebelReceiverTest.class);
+    assertTrue(await(update, 2000));
+
+    // A swap racing the drain can leave one scheduled fire behind with nothing left to send.
+    receiver.sendReload();
+
+    verify(server).sendClassUpdateMessage(any());
+    verify(server, never()).sendReloadMessage();
+
+    receiver.stop();
+  }
+
+  @Test
+  @Timeout(10)
+  void shouldNotReloadThroughTheServerThatIsNotRunning() {
     LiveReloadServer server = mock(LiveReloadServer.class);
     when(server.isRunning()).thenReturn(false);
-    CountDownLatch latch = reloadLatch(server, 1);
+    CountDownLatch latch = classUpdateLatch(server, 1, null);
 
     JrebelReceiver receiver = receiver(server);
     receiver.start();
@@ -115,6 +180,7 @@ class JrebelReceiverTest {
 
     assertFalse(await(latch, 400));
     verify(server, never()).sendReloadMessage();
+    verify(server, never()).sendClassUpdateMessage(any());
 
     receiver.stop();
   }
@@ -123,7 +189,7 @@ class JrebelReceiverTest {
   @Timeout(10)
   void shouldIgnoreEventsArrivingAfterStop() {
     LiveReloadServer server = runningServer();
-    CountDownLatch latch = reloadLatch(server, 1);
+    CountDownLatch latch = classUpdateLatch(server, 1, null);
 
     JrebelReceiver receiver = receiver(server);
     receiver.start();
@@ -240,6 +306,21 @@ class JrebelReceiverTest {
       latch.countDown();
       return null;
     }).when(server).sendReloadMessage();
+
+    return latch;
+  }
+
+  private static CountDownLatch classUpdateLatch(LiveReloadServer server, int count,
+      AtomicReference<Set<String>> lastClasses) {
+    CountDownLatch latch = new CountDownLatch(count);
+    doAnswer(invocation -> {
+      if (lastClasses != null) {
+        lastClasses.set(invocation.getArgument(0));
+      }
+
+      latch.countDown();
+      return null;
+    }).when(server).sendClassUpdateMessage(any());
 
     return latch;
   }

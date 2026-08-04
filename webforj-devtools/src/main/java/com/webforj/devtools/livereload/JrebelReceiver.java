@@ -2,6 +2,9 @@ package com.webforj.devtools.livereload;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -10,8 +13,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Registers a class reload listener with the JRebel agent and pushes a full page reload through the
- * {@link LiveReloadServer} it is given.
+ * Registers a class reload listener with the JRebel agent and pushes the redefined class names
+ * through the {@link LiveReloadServer} it is given, falling back to a full page reload when the
+ * agent does not name the class.
  *
  * <p>
  * The JRebel agent hot swaps Java bytecode in place and never restarts the server, so none of the
@@ -45,6 +49,8 @@ public class JrebelReceiver {
   private final String classEventListenerClassName;
   private final AtomicBoolean running = new AtomicBoolean(false);
   private final AtomicReference<ScheduledFuture<?>> pendingReload = new AtomicReference<>();
+  private final Set<String> pendingClasses = ConcurrentHashMap.newKeySet();
+  private final AtomicBoolean sawUnnamedChange = new AtomicBoolean(false);
 
   private ScheduledExecutorService executor;
   private Object reloader;
@@ -131,6 +137,9 @@ public class JrebelReceiver {
       scheduled.cancel(false);
     }
 
+    pendingClasses.clear();
+    sawUnnamedChange.set(false);
+
     if (reloader != null && listener != null) {
       try {
         Method removeListener = findRemoveListenerMethod(reloader, listener);
@@ -161,11 +170,43 @@ public class JrebelReceiver {
     return running.get();
   }
 
+  void sendReload() {
+    pendingReload.set(null);
+
+    // The batch is drained before the server check, so a batch that cannot be delivered never
+    // leaks into a later one.
+    Set<String> changedClasses = new TreeSet<>(pendingClasses);
+    pendingClasses.clear();
+    boolean unnamed = sawUnnamedChange.getAndSet(false);
+
+    // Every schedule follows a recorded change, so an empty batch without the unnamed flag only
+    // means an earlier drain already delivered these classes and nothing is left to send.
+    if (changedClasses.isEmpty() && !unnamed) {
+      return;
+    }
+
+    if (server == null || !server.isRunning()) {
+      return;
+    }
+
+    // The reload server logs the one line per broadcast, so this stays quiet at the info level.
+    if (unnamed) {
+      logger.log(System.Logger.Level.DEBUG, "Triggering browser reload for a JRebel class reload");
+      server.sendReloadMessage();
+      return;
+    }
+
+    logger.log(System.Logger.Level.DEBUG,
+        "Sending a class update for a JRebel class reload: " + String.join(", ", changedClasses));
+    server.sendClassUpdateMessage(changedClasses);
+  }
+
   private Object handleInvocation(Object proxy, Method method, Object[] args) {
     String name = method.getName();
 
     if ("onClassEvent".equals(name)) {
       if (isHotSwap(args)) {
+        recordChangedClass(args);
         scheduleReloadSafely();
       }
 
@@ -222,15 +263,14 @@ public class JrebelReceiver {
     }
   }
 
-  private void sendReload() {
-    pendingReload.set(null);
-
-    if (server == null || !server.isRunning()) {
-      return;
+  private void recordChangedClass(Object[] args) {
+    if (args != null && args.length > 1 && args[1] instanceof Class<?> changedClass) {
+      pendingClasses.add(changedClass.getName());
+    } else {
+      // Without the class name the change cannot be accounted for, so this batch falls back to
+      // the full page reload.
+      sawUnnamedChange.set(true);
     }
-
-    logger.log(System.Logger.Level.INFO, "Triggering browser reload for a JRebel class reload");
-    server.sendReloadMessage();
   }
 
   private static Method findRemoveListenerMethod(Object reloader, Object listener) {

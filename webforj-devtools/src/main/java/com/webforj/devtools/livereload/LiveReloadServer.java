@@ -2,6 +2,7 @@ package com.webforj.devtools.livereload;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.webforj.devtools.livereload.message.ClassUpdateMessage;
 import com.webforj.devtools.livereload.message.ConnectedMessage;
 import com.webforj.devtools.livereload.message.HeartbeatAckMessage;
 import com.webforj.devtools.livereload.message.HelloMessage;
@@ -9,8 +10,10 @@ import com.webforj.devtools.livereload.message.ReloadMessage;
 import com.webforj.devtools.livereload.message.ResourceUpdateMessage;
 import com.webforj.devtools.livereload.message.RestartingMessage;
 import java.net.InetSocketAddress;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -33,6 +36,7 @@ public class LiveReloadServer extends WebSocketServer {
 
   private final Set<WebSocket> connections = ConcurrentHashMap.newKeySet();
   private final Map<String, ResourceUpdateMessage> lastResourceUpdates = new ConcurrentHashMap<>();
+  private final Map<String, Long> lastClassUpdates = new ConcurrentHashMap<>();
   private final Gson gson = new Gson();
   private volatile boolean running = false;
   private volatile boolean started = false;
@@ -248,6 +252,50 @@ public class LiveReloadServer extends WebSocketServer {
   }
 
   /**
+   * Broadcasts a class update to every connected browser.
+   *
+   * <p>
+   * The message names the redefined Java classes, so each page can ask its application instance to
+   * rebuild exactly the part of the interface those classes drive instead of reloading the whole
+   * page.
+   * </p>
+   *
+   * @param classNames the binary names of the redefined classes
+   *
+   * @since 26.02
+   */
+  public void sendClassUpdateMessage(Set<String> classNames) {
+    if (classNames == null || classNames.isEmpty()) {
+      return;
+    }
+
+    ClassUpdateMessage message = new ClassUpdateMessage(List.copyOf(classNames));
+    String json = gson.toJson(message);
+
+    // The latest update per class is kept, so a page that was between pages when this broadcast
+    // went out still receives the classes it missed on its next connection.
+    for (String className : classNames) {
+      lastClassUpdates.put(className, message.getTimestamp());
+    }
+
+    cleanupConnections();
+
+    logger.log(System.Logger.Level.INFO, "Sending class update (" + String.join(", ", classNames)
+        + ") to " + connections.size() + " connected sessions");
+
+    for (WebSocket conn : connections) {
+      if (conn.isOpen()) {
+        try {
+          conn.send(json);
+        } catch (Exception e) {
+          logger.log(System.Logger.Level.ERROR, "Error sending class update", e);
+          connections.remove(conn);
+        }
+      }
+    }
+  }
+
+  /**
    * Catches a connecting page up on everything it missed while its browser was between pages.
    *
    * <p>
@@ -293,6 +341,19 @@ public class LiveReloadServer extends WebSocketServer {
             + update.getResourceType() + ": " + update.getPath() + ") to a connecting page");
         conn.send(gson.toJson(update));
       }
+    }
+
+    Set<String> missedClasses = new TreeSet<>();
+    for (Map.Entry<String, Long> update : lastClassUpdates.entrySet()) {
+      if (update.getValue() > hello.getPageServedAt()) {
+        missedClasses.add(update.getKey());
+      }
+    }
+
+    if (!missedClasses.isEmpty()) {
+      logger.log(System.Logger.Level.INFO, "Replaying a missed class update ("
+          + String.join(", ", missedClasses) + ") to a connecting page");
+      conn.send(gson.toJson(new ClassUpdateMessage(List.copyOf(missedClasses))));
     }
   }
 

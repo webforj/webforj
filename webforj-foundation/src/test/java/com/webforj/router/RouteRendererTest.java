@@ -3,6 +3,8 @@ package com.webforj.router;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -525,6 +527,149 @@ class RouteRendererTest {
       assertEquals(HomeView.class, currentPath.getChildren().get(0).getData());
     }
 
+  }
+
+  @Nested
+  class Recreate {
+
+    @Test
+    void shouldRebuildTheViewAndKeepTheParentAlive() {
+      routeRegistry.register("/home", HomeView.class);
+      routeRegistry.register("/helloworld", HelloWorldView.class, HomeView.class);
+      routeRenderer.render(HelloWorldView.class);
+
+      Component oldParent = routeRenderer.getRenderedComponent(HomeView.class).get();
+      Component oldLeaf = routeRenderer.getRenderedComponent(HelloWorldView.class).get();
+
+      routeRenderer.render(HelloWorldView.class, recreateContext(HelloWorldView.class), result -> {
+        assertTrue(result.isPresent());
+        assertNotSame(oldLeaf, result.get());
+      });
+
+      assertTrue(oldLeaf.isDestroyed());
+      assertFalse(oldParent.isDestroyed());
+      assertSame(oldParent, routeRenderer.getRenderedComponent(HomeView.class).get());
+    }
+
+    @Test
+    void shouldRebuildTheLayoutAndEverythingBelowIt() {
+      routeRegistry.register("/home", HomeView.class);
+      routeRegistry.register("/helloworld", HelloWorldView.class, HomeView.class);
+      routeRenderer.render(HelloWorldView.class);
+
+      Component oldParent = routeRenderer.getRenderedComponent(HomeView.class).get();
+      Component oldLeaf = routeRenderer.getRenderedComponent(HelloWorldView.class).get();
+
+      routeRenderer.render(HelloWorldView.class, recreateContext(HomeView.class), result -> {
+        assertTrue(result.isPresent());
+        assertNotSame(oldLeaf, result.get());
+      });
+
+      assertTrue(oldParent.isDestroyed());
+      assertTrue(oldLeaf.isDestroyed());
+      assertNotSame(oldParent, routeRenderer.getRenderedComponent(HomeView.class).get());
+    }
+
+    @Test
+    void shouldNavigateAsUsualForTheClassWithoutTheRenderedInstance() {
+      routeRegistry.register("/home", HomeView.class);
+      routeRegistry.register("/helloworld", HelloWorldView.class, HomeView.class);
+      routeRegistry.register("/about", AboutView.class);
+      routeRenderer.render(HelloWorldView.class);
+
+      Component leaf = routeRenderer.getRenderedComponent(HelloWorldView.class).get();
+
+      routeRenderer.render(HelloWorldView.class, recreateContext(AboutView.class), result -> {
+        assertTrue(result.isPresent());
+        assertSame(leaf, result.get());
+      });
+
+      assertFalse(leaf.isDestroyed());
+    }
+
+    @Test
+    void shouldNavigateAsUsualWhenNothingWasRenderedYet() {
+      routeRegistry.register("/home", HomeView.class);
+
+      routeRenderer.render(HomeView.class, recreateContext(HomeView.class), result -> {
+        assertTrue(result.isPresent());
+      });
+    }
+
+    @Test
+    void shouldFailTheNavigationWhenTheDestructionIsVetoed() {
+      routeRegistry.register("/home", HomeView.class);
+      routeRegistry.register("/helloworld", HelloWorldView.class, HomeView.class);
+      routeRenderer.render(HelloWorldView.class);
+
+      routeRenderer.addObserver((component, event, context, cb) -> {
+        if (component instanceof HelloWorldView
+            && event == RouteRendererObserver.LifecycleEvent.BEFORE_DESTROY) {
+          cb.accept(false);
+        } else {
+          cb.accept(true);
+        }
+      });
+
+      Component leaf = routeRenderer.getRenderedComponent(HelloWorldView.class).get();
+
+      routeRenderer.render(HelloWorldView.class, recreateContext(HelloWorldView.class), result -> {
+        assertFalse(result.isPresent());
+      });
+
+      assertFalse(leaf.isDestroyed());
+    }
+
+    @Test
+    void shouldRunTheCreationLifecycleAgainForTheRebuiltPart() {
+      routeRegistry.register("/home", HomeView.class);
+      routeRegistry.register("/helloworld", HelloWorldView.class, HomeView.class);
+
+      List<Component> created = new ArrayList<>();
+      routeRenderer.addObserver((component, event, context, cb) -> {
+        if (component instanceof HelloWorldView
+            && event == RouteRendererObserver.LifecycleEvent.BEFORE_CREATE) {
+          created.add(component);
+        }
+
+        cb.accept(true);
+      });
+
+      routeRenderer.render(HelloWorldView.class);
+      routeRenderer.render(HelloWorldView.class, recreateContext(HelloWorldView.class));
+
+      assertEquals(2, created.size());
+      assertNotSame(created.get(0), created.get(1));
+    }
+
+    @Test
+    void shouldLetTheCreationVetoBlockTheRebuiltView() {
+      // The security observer vetoes the creation when access is denied, so the rebuilt view
+      // must pass the same evaluation as a first navigation.
+      routeRegistry.register("/home", HomeView.class);
+      routeRegistry.register("/helloworld", HelloWorldView.class, HomeView.class);
+      routeRenderer.render(HelloWorldView.class);
+
+      routeRenderer.addObserver((component, event, context, cb) -> {
+        if (component instanceof HelloWorldView
+            && event == RouteRendererObserver.LifecycleEvent.BEFORE_CREATE) {
+          cb.accept(false);
+        } else {
+          cb.accept(true);
+        }
+      });
+
+      routeRenderer.render(HelloWorldView.class, recreateContext(HelloWorldView.class), result -> {
+        assertFalse(result.isPresent());
+      });
+    }
+
+    private NavigationContext recreateContext(Class<? extends Component> from) {
+      NavigationContext context = new NavigationContext();
+      context.setOptions(new NavigationOptions().setRecreateFrom(from));
+
+      return context;
+    }
   }
 
   @NodeName("test-component")

@@ -1,9 +1,9 @@
 /**
- * webforJ DevTools Reload Client
+ * webforJ LiveReload Client
  *
  * Keeps the open page alive while the development server restarts and reloads it exactly once
  * when the application can serve again. The client is built from small collaborators, each owning
- * one concern, wired together by {@link DevToolsClient}
+ * one concern, wired together by {@link LiveReloadClient}
  *
  * @author Hyyan Abo Fakher
  * @since 25.02
@@ -11,22 +11,22 @@
 (function () {
   'use strict';
 
-  if (!window.webforjDevToolsConfig || !window.webforjDevToolsConfig.enabled) {
+  if (!window.webforjLivereloadConfig || !window.webforjLivereloadConfig.enabled) {
     return;
   }
 
   /**
-   * Writes console messages with the webforJ DevTools badge.
+   * Writes console messages with the webforJ LiveReload badge.
    */
-  class DevToolsLogger {
+  class LiveReloadLogger {
     /**
-     * Logs one message under the DevTools badge.
+     * Logs one message under the LiveReload badge.
      *
      * @param {string} message the message to log
      */
     log(message) {
       console.log(
-        '%cwebforJ DevTools%c ' + message,
+        '%cwebforJ LiveReload%c ' + message,
         'background: #4c47ff; color: white; padding: 2px 6px; border-radius: 3px; font-weight: bold;',
         'color: inherit;'
       );
@@ -40,13 +40,13 @@
   class StatusIndicator {
     constructor() {
       /** @type {string} id of the toast element */
-      this.statusId = 'webforj-devtools-status';
+      this.statusId = 'webforj-livereload-status';
 
       /** @type {string} id of the veil element */
-      this.veilId = 'webforj-devtools-veil';
+      this.veilId = 'webforj-livereload-veil';
 
       /** @type {string} id of the injected style element */
-      this.styleId = 'webforj-devtools-status-style';
+      this.styleId = 'webforj-livereload-status-style';
     }
 
     /**
@@ -80,16 +80,16 @@
         const style = document.createElement('style');
         style.id = this.styleId;
         style.textContent = /* css */`
-          @keyframes webforjDevToolsSpin {
+          @keyframes webforjLivereloadSpin {
             to { transform: rotate(360deg); }
           }
 
-          @keyframes webforjDevToolsIn {
+          @keyframes webforjLivereloadIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: none; }
           }
 
-          #webforj-devtools-veil {
+          #webforj-livereload-veil {
             position: fixed;
             inset: 0;
             z-index: 2147483646;
@@ -97,7 +97,7 @@
             background: var(--dwc-overlay-background, rgba(17, 20, 30, 0.16));
           }
 
-          #webforj-devtools-status {
+          #webforj-livereload-status {
             position: fixed;
             bottom: 18px;
             right: 18px;
@@ -111,16 +111,16 @@
             color: var(--dwc-color-default-text, #222);
             font: 500 13px/1 var(--dwc-font-family, system-ui, sans-serif);
             box-shadow: var(--dwc-shadow-l, 0 8px 24px rgba(0, 0, 0, 0.2));
-            animation: webforjDevToolsIn 0.22s ease both;
+            animation: webforjLivereloadIn 0.22s ease both;
           }
 
-          #webforj-devtools-status .webforj-devtools-spin {
+          #webforj-livereload-status .webforj-livereload-spin {
             width: 14px;
             height: 14px;
             border-radius: 50%;
             border: 2px solid rgba(128, 128, 128, 0.3);
             border-top-color: var(--dwc-color-primary, #6c7bff);
-            animation: webforjDevToolsSpin 0.7s linear infinite;
+            animation: webforjLivereloadSpin 0.7s linear infinite;
           }
         `;
         document.head.appendChild(style);
@@ -136,7 +136,7 @@
       host.id = this.statusId;
 
       const spinner = document.createElement('span');
-      spinner.className = 'webforj-devtools-spin';
+      spinner.className = 'webforj-livereload-spin';
 
       const label = document.createElement('span');
       label.setAttribute('data-webforj-status', '');
@@ -306,7 +306,7 @@
     /**
      * @param {string} url the reload server websocket url
      * @param {number} heartbeatInterval milliseconds between heartbeat pings
-     * @param {DevToolsLogger} logger the client logger
+     * @param {LiveReloadLogger} logger the client logger
      * @param {{onFirstOpen: function(): void, onReopen: function(): void,
      *          onMessage: function(Object): void,
      *          onDown: function(boolean, boolean, number): void}} callbacks
@@ -321,7 +321,7 @@
       /** @type {number} */
       this.heartbeatInterval = heartbeatInterval;
 
-      /** @type {DevToolsLogger} */
+      /** @type {LiveReloadLogger} */
       this.logger = logger;
 
       /** @type {{onFirstOpen: function(): void, onReopen: function(): void,
@@ -364,7 +364,7 @@
         this.socket = new WebSocket(this.url);
 
         this.socket.onopen = function () {
-          self.logger.log('✅ DevTools connection established! Ready to rock 🎸');
+          self.logger.log('✅ LiveReload connection established! Ready to rock 🎸');
           self.instanceOpened = true;
           self.everOpened = true;
           self.startHeartbeat();
@@ -372,7 +372,7 @@
           // so a reload that found nobody connected still reaches this page now.
           self.socket.send(JSON.stringify({
             type: 'hello',
-            pageServedAt: (window.webforjDevToolsConfig || {}).pageServedAt || 0
+            pageServedAt: (window.webforjLivereloadConfig || {}).pageServedAt || 0
           }));
           self.socket.send('ping');
 
@@ -500,12 +500,12 @@
    */
   class ResourceUpdater {
     /**
-     * @param {DevToolsLogger} logger the client logger
+     * @param {LiveReloadLogger} logger the client logger
      * @param {function(string): void} reload asks the coordinator for a full reload with the
      *        given reason
      */
     constructor(logger, reload) {
-      /** @type {DevToolsLogger} */
+      /** @type {LiveReloadLogger} */
       this.logger = logger;
 
       /** @type {function(string): void} */
@@ -622,7 +622,7 @@
   class ScrollPositionKeeper {
     constructor() {
       /** @type {string} session storage key holding the captured positions */
-      this.storageKey = 'webforj-devtools-scroll';
+      this.storageKey = 'webforj-livereload-scroll';
 
       /** @type {number} milliseconds a captured snapshot stays valid */
       this.snapshotMaxAgeMs = 30000;
@@ -891,7 +891,7 @@
    * continues against the live server. A dead application means the page would only pretend to
    * work, so the reload goes through and the browser reports the server state.
    */
-  class DevToolsClient {
+  class LiveReloadClient {
     /**
      * @param {Object} config the injected client configuration
      */
@@ -912,8 +912,8 @@
       /** @type {number} milliseconds before a restarting notice with no restart releases */
       this.holdReleaseFallbackMs = config.holdReleaseFallbackMs || 15000;
 
-      /** @type {DevToolsLogger} */
-      this.logger = new DevToolsLogger();
+      /** @type {LiveReloadLogger} */
+      this.logger = new LiveReloadLogger();
 
       /** @type {StatusIndicator} */
       this.status = new StatusIndicator();
@@ -975,7 +975,7 @@
       this.gate.install();
       this.hideServerProgressbar();
       this.scroll.restore();
-      this.logger.log('🚀 Initiating DevTools connection to: ' + this.socket.url);
+      this.logger.log('🚀 Initiating LiveReload connection to: ' + this.socket.url);
       this.socket.connect();
 
       const self = this;
@@ -1023,7 +1023,7 @@
           break;
 
         case 'connected':
-          this.logger.log('🤝 Handshake complete - DevTools is listening for changes!');
+          this.logger.log('🤝 Handshake complete - LiveReload is listening for changes!');
           break;
 
         case 'restarting':
@@ -1039,9 +1039,22 @@
           this.resources.apply(message);
           // The applied update advances the served stamp, so a later reconnect never mistakes
           // this page for one that missed the update.
-          if (message.timestamp && window.webforjDevToolsConfig
-              && message.timestamp > (window.webforjDevToolsConfig.pageServedAt || 0)) {
-            window.webforjDevToolsConfig.pageServedAt = message.timestamp;
+          if (message.timestamp && window.webforjLivereloadConfig
+              && message.timestamp > (window.webforjLivereloadConfig.pageServedAt || 0)) {
+            window.webforjLivereloadConfig.pageServedAt = message.timestamp;
+          }
+          break;
+
+        case 'class-update':
+          this.logger.log('♻️ Incoming class update: ' + (message.classes || []).join(', '));
+          // The page hands the change to its own application instance, which rebuilds the
+          // affected part of the interface or reloads the page when it cannot.
+          window.dispatchEvent(new CustomEvent('webforj-devtools-class-update', {
+            detail: { classes: message.classes || [] }
+          }));
+          if (message.timestamp && window.webforjLivereloadConfig
+              && message.timestamp > (window.webforjLivereloadConfig.pageServedAt || 0)) {
+            window.webforjLivereloadConfig.pageServedAt = message.timestamp;
           }
           break;
 
@@ -1251,16 +1264,16 @@
      * restart indicator.
      */
     hideServerProgressbar() {
-      if (document.getElementById('webforj-devtools-progressbar-style')) {
+      if (document.getElementById('webforj-livereload-progressbar-style')) {
         return;
       }
 
       const style = document.createElement('style');
-      style.id = 'webforj-devtools-progressbar-style';
+      style.id = 'webforj-livereload-progressbar-style';
       style.textContent = '#' + this.serverProgressbarId + '{display:none!important}';
       (document.head || document.documentElement).appendChild(style);
     }
   }
 
-  new DevToolsClient(window.webforjDevToolsConfig).start();
+  new LiveReloadClient(window.webforjLivereloadConfig).start();
 })();

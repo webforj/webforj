@@ -145,38 +145,25 @@ public class RouteRenderer {
     // Set the path being rendered BEFORE creating components
     this.currentlyRenderingPath = currentPath.get();
 
-    RouteRelationDiff<Class<? extends Component>> diff =
-        new RouteRelationDiff<>(basePathForDiff, currentPath.get());
-    Set<Class<? extends Component>> toAdd = new LinkedHashSet<>(diff.getToAdd());
-    Set<Class<? extends Component>> toRemove = diff.getToRemove();
+    Class<? extends Component> recreateFrom =
+        context.getOptions().map(NavigationOptions::getRecreateFrom).orElse(null);
+    Set<Class<? extends Component>> componentsToRecreate =
+        collectSubtree(basePathForDiff, recreateFrom);
 
-    // Add cached components that need activation
-    for (RouteRelation<Class<? extends Component>> node : currentPath.get()) {
-      Class<? extends Component> pathComponent = node.getData();
-      if (!toRemove.contains(pathComponent) && componentsCache.containsKey(pathComponent)) {
-        toAdd.add(pathComponent);
-      }
+    if (componentsToRecreate.isEmpty()) {
+      renderPath(component, currentPath.get(), basePathForDiff, onComplete);
+      return;
     }
 
-    processRemovals(toRemove, removalSuccess -> {
+    // The recreated part goes down through the regular removal lifecycle first and leaves the
+    // diff base, so the render that follows builds it from fresh instances instead of reusing
+    // the rendered ones.
+    processRemovals(componentsToRecreate, removalSuccess -> {
       if (Boolean.TRUE.equals(removalSuccess)) {
-        processAdditions(toAdd, additionSuccess -> {
-          if (Boolean.TRUE.equals(additionSuccess)) {
-            lastPath = currentPath.get();
-          }
-          // Clear the currently rendering path after completion
-          this.currentlyRenderingPath = null;
-
-          if (onComplete != null) {
-            Component componentCache = componentsCache.get(component);
-            T componentInstance = componentCache != null ? component.cast(componentCache) : null;
-            onComplete.accept(
-                Boolean.TRUE.equals(additionSuccess) ? Optional.ofNullable(componentInstance)
-                    : Optional.empty());
-          }
-        });
+        destroyKeptInstances(componentsToRecreate);
+        renderPath(component, currentPath.get(), pruneSubtree(basePathForDiff, recreateFrom),
+            onComplete);
       } else {
-        // Clear on failure too
         this.currentlyRenderingPath = null;
         if (onComplete != null) {
           onComplete.accept(Optional.empty());
@@ -587,6 +574,101 @@ public class RouteRenderer {
         onComplete.accept(true);
       }
     });
+  }
+
+  private <T extends Component> void renderPath(Class<T> component,
+      RouteRelation<Class<? extends Component>> currentPath,
+      RouteRelation<Class<? extends Component>> basePathForDiff, Consumer<Optional<T>> onComplete) {
+    RouteRelationDiff<Class<? extends Component>> diff =
+        new RouteRelationDiff<>(basePathForDiff, currentPath);
+    Set<Class<? extends Component>> toAdd = new LinkedHashSet<>(diff.getToAdd());
+    Set<Class<? extends Component>> toRemove = diff.getToRemove();
+
+    // Add cached components that need activation
+    for (RouteRelation<Class<? extends Component>> node : currentPath) {
+      Class<? extends Component> pathComponent = node.getData();
+      if (!toRemove.contains(pathComponent) && componentsCache.containsKey(pathComponent)) {
+        toAdd.add(pathComponent);
+      }
+    }
+
+    processRemovals(toRemove, removalSuccess -> {
+      if (Boolean.TRUE.equals(removalSuccess)) {
+        processAdditions(toAdd, additionSuccess -> {
+          if (Boolean.TRUE.equals(additionSuccess)) {
+            lastPath = currentPath;
+          }
+          // Clear the currently rendering path after completion
+          this.currentlyRenderingPath = null;
+
+          if (onComplete != null) {
+            Component componentCache = componentsCache.get(component);
+            T componentInstance = componentCache != null ? component.cast(componentCache) : null;
+            onComplete.accept(
+                Boolean.TRUE.equals(additionSuccess) ? Optional.ofNullable(componentInstance)
+                    : Optional.empty());
+          }
+        });
+      } else {
+        // Clear on failure too
+        this.currentlyRenderingPath = null;
+        if (onComplete != null) {
+          onComplete.accept(Optional.empty());
+        }
+      }
+    });
+  }
+
+  private Set<Class<? extends Component>> collectSubtree(
+      RouteRelation<Class<? extends Component>> basePath, Class<? extends Component> from) {
+    if (basePath == null || from == null) {
+      return Collections.emptySet();
+    }
+
+    for (RouteRelation<Class<? extends Component>> node : basePath) {
+      if (from.equals(node.getData())) {
+        Set<Class<? extends Component>> subtree = new LinkedHashSet<>();
+        for (RouteRelation<Class<? extends Component>> member : node) {
+          subtree.add(member.getData());
+        }
+
+        return subtree;
+      }
+    }
+
+    return Collections.emptySet();
+  }
+
+  private RouteRelation<Class<? extends Component>> pruneSubtree(
+      RouteRelation<Class<? extends Component>> node, Class<? extends Component> from) {
+    if (node == null || from.equals(node.getData())) {
+      return null;
+    }
+
+    RouteRelation<Class<? extends Component>> copy = new RouteRelation<>(node.getData());
+    for (RouteRelation<Class<? extends Component>> child : node.getChildren()) {
+      RouteRelation<Class<? extends Component>> prunedChild = pruneSubtree(child, from);
+      if (prunedChild != null) {
+        copy.addChild(prunedChild);
+      }
+    }
+
+    return copy;
+  }
+
+  private void destroyKeptInstances(Set<Class<? extends Component>> components) {
+    // The container destroys removed instances on the default path, so this only fires for an
+    // outlet that kept its instance alive through the removal. A recreation always demands fresh
+    // instances, so the kept ones go down here, leaf first.
+    List<Class<? extends Component>> componentList = new ArrayList<>(components);
+    Collections.reverse(componentList);
+
+    for (Class<? extends Component> componentClass : componentList) {
+      Component instance = componentsCache.get(componentClass);
+      if (instance != null && !instance.isDestroyed()) {
+        instance.destroy();
+      }
+    }
   }
 
   private void addComponentToParent(Component componentInstance, Component outletInstance) {
