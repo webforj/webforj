@@ -50,7 +50,8 @@ class HotswapLauncherTest {
     List<String> arguments = HotswapLauncher.arguments(extension.getHotswap(), null, false,
         buildDirectory(), null, project.getLogger());
 
-    assertEquals(List.of("-agentpath:" + library.toAbsolutePath()), arguments);
+    assertEquals(List.of("-agentpath:" + library.toAbsolutePath(), "-Dwebforj.hotswap.tool=jrebel",
+        "-Dwebforj.hotswap.level=full"), arguments);
   }
 
   @Test
@@ -64,7 +65,8 @@ class HotswapLauncherTest {
     List<String> arguments = HotswapLauncher.arguments(extension.getHotswap(), null, false,
         buildDirectory(), null, project.getLogger());
 
-    assertEquals(List.of("-agentpath:" + library.toAbsolutePath()), arguments);
+    assertEquals(List.of("-agentpath:" + library.toAbsolutePath(), "-Dwebforj.hotswap.tool=jrebel",
+        "-Dwebforj.hotswap.level=full"), arguments);
   }
 
   @Test
