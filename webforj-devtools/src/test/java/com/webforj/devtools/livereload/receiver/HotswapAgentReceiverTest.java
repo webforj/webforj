@@ -63,7 +63,7 @@ class HotswapAgentReceiverTest {
   void shouldCollapseTheBurstOfRedefinitionsIntoOneClassUpdate() {
     LiveReloadServer server = runningServer();
     AtomicReference<Set<String>> classes = new AtomicReference<>();
-    CountDownLatch update = classUpdateLatch(server, 1, classes);
+    final CountDownLatch update = classUpdateLatch(server, 1, classes);
 
     receiver = HotswapAgentReceiverFixture.withAgentDetected(server);
     receiver.start();
@@ -82,7 +82,7 @@ class HotswapAgentReceiverTest {
   void shouldBatchTheDistinctClassNamesIntoOneUpdate() {
     LiveReloadServer server = runningServer();
     AtomicReference<Set<String>> classes = new AtomicReference<>();
-    CountDownLatch update = classUpdateLatch(server, 1, classes);
+    final CountDownLatch update = classUpdateLatch(server, 1, classes);
 
     receiver = HotswapAgentReceiverFixture.withAgentDetected(server);
     receiver.start();
@@ -100,7 +100,7 @@ class HotswapAgentReceiverTest {
   void shouldTranslateTheInternalNameIntoTheBinaryName() {
     LiveReloadServer server = runningServer();
     AtomicReference<Set<String>> classes = new AtomicReference<>();
-    CountDownLatch update = classUpdateLatch(server, 1, classes);
+    final CountDownLatch update = classUpdateLatch(server, 1, classes);
 
     receiver = HotswapAgentReceiverFixture.withAgentDetected(server);
     receiver.start();
@@ -116,7 +116,7 @@ class HotswapAgentReceiverTest {
   @Timeout(10)
   void shouldSkipTheRedefinitionThatCarriesUnchangedBytes() {
     LiveReloadServer server = runningServer();
-    CountDownLatch first = classUpdateLatch(server, 1, null);
+    final CountDownLatch first = classUpdateLatch(server, 1, null);
 
     receiver = HotswapAgentReceiverFixture.withAgentDetected(server);
     receiver.start();
@@ -137,7 +137,7 @@ class HotswapAgentReceiverTest {
   @Timeout(10)
   void shouldFallBackToTheFullReloadWhenTheClassIsNotNamed() {
     LiveReloadServer server = runningServer();
-    CountDownLatch reload = reloadLatch(server, 1);
+    final CountDownLatch reload = reloadLatch(server, 1);
 
     receiver = HotswapAgentReceiverFixture.withAgentDetected(server);
     receiver.start();
@@ -152,7 +152,7 @@ class HotswapAgentReceiverTest {
   @Timeout(10)
   void shouldSendNothingForTheFireWhoseBatchWasAlreadyDrained() {
     LiveReloadServer server = runningServer();
-    CountDownLatch update = classUpdateLatch(server, 1, null);
+    final CountDownLatch update = classUpdateLatch(server, 1, null);
 
     receiver = HotswapAgentReceiverFixture.withAgentDetected(server);
     receiver.start();
@@ -171,7 +171,7 @@ class HotswapAgentReceiverTest {
   void shouldNotUpdateThroughTheServerThatIsNotRunning() {
     LiveReloadServer server = mock(LiveReloadServer.class);
     when(server.isRunning()).thenReturn(false);
-    CountDownLatch update = classUpdateLatch(server, 1, null);
+    final CountDownLatch update = classUpdateLatch(server, 1, null);
 
     receiver = HotswapAgentReceiverFixture.withAgentDetected(server);
     receiver.start();
@@ -186,7 +186,7 @@ class HotswapAgentReceiverTest {
   @Timeout(10)
   void shouldIgnoreEventsArrivingAfterStop() {
     LiveReloadServer server = runningServer();
-    CountDownLatch update = classUpdateLatch(server, 1, null);
+    final CountDownLatch update = classUpdateLatch(server, 1, null);
 
     receiver = HotswapAgentReceiverFixture.withAgentDetected(server);
     receiver.start();

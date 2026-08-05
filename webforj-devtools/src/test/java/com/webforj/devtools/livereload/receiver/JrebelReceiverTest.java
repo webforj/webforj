@@ -113,7 +113,7 @@ class JrebelReceiverTest {
   void shouldBatchTheDistinctClassNamesIntoOneUpdate() {
     LiveReloadServer server = runningServer();
     AtomicReference<Set<String>> classes = new AtomicReference<>();
-    CountDownLatch update = classUpdateLatch(server, 1, classes);
+    final CountDownLatch update = classUpdateLatch(server, 1, classes);
 
     JrebelReceiver receiver = receiver(server);
     receiver.start();
@@ -190,7 +190,7 @@ class JrebelReceiverTest {
   @Timeout(10)
   void shouldIgnoreEventsArrivingAfterStop() {
     LiveReloadServer server = runningServer();
-    CountDownLatch latch = classUpdateLatch(server, 1, null);
+    final CountDownLatch latch = classUpdateLatch(server, 1, null);
 
     JrebelReceiver receiver = receiver(server);
     receiver.start();

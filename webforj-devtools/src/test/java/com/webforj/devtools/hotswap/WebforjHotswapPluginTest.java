@@ -7,9 +7,9 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.webforj.devtools.livereload.LiveReloadServer;
 import com.webforj.devtools.livereload.receiver.HotswapAgentReceiver;
 import com.webforj.devtools.livereload.receiver.HotswapAgentReceiverFixture;
-import com.webforj.devtools.livereload.LiveReloadServer;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.concurrent.CountDownLatch;

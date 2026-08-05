@@ -63,7 +63,7 @@ final class ClassUpdateDelivery {
    * Cancels a pending update, drops the batched changes, and stops the debounce thread.
    */
   void stop() {
-    ScheduledExecutorService current = executor;
+    final ScheduledExecutorService current = executor;
     executor = null;
 
     ScheduledFuture<?> scheduled = pendingReload.getAndSet(null);

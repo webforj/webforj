@@ -91,7 +91,7 @@ class ClassUpdateListenerTest {
   void shouldRebuildTheRenderedViewInPlace() {
     router.navigate(new Location("/layout/dashboard"));
     Component firstView = renderedComponent(DashboardView.class);
-    Component layout = renderedComponent(MainLayoutView.class);
+    final Component layout = renderedComponent(MainLayoutView.class);
 
     listener.apply(Set.of(DashboardView.class.getName()), router, page);
 
@@ -158,7 +158,7 @@ class ClassUpdateListenerTest {
   @Test
   void shouldReloadWhenTheRebuildIsVetoed() {
     router.navigate(new Location("/layout/dashboard"));
-    Component firstView = renderedComponent(DashboardView.class);
+    final Component firstView = renderedComponent(DashboardView.class);
 
     router.getRenderer().addObserver((component, event, context, cb) -> {
       if (component instanceof DashboardView
