@@ -1,15 +1,22 @@
 package com.webforj.plugin.maven.hotswap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.webforj.plugin.maven.hotswap.hotswapagent.HotswapAgentOptions;
 import com.webforj.plugin.maven.hotswap.jrebel.JrebelOptions;
+import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -18,6 +25,7 @@ import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -122,6 +130,48 @@ class HotswapInjectionTest {
   }
 
   @Test
+  void shouldHandTheHotswapAgentToTheSpringBootFork(@TempDir Path tmp) throws Exception {
+    MavenProject project = newProject(tmp, SPRING);
+    HotswapInjection.create().setProject(project).setUserProperties(new Properties())
+        .setOptions(hotswapAgentOptions(tmp)).setAgentCacheRoot(tmp.resolve("cache"))
+        .setJavaExecutable(fakeJava(tmp, 0)).setLog(mock(Log.class)).build().apply();
+
+    String arguments = project.getProperties().getProperty(HotswapInjection.SPRING_JVM_ARGUMENTS);
+    assertTrue(arguments.contains("-javaagent:"), "the agent flag reaches the fork arguments");
+    assertTrue(arguments.contains("-XX:+AllowEnhancedClassRedefinition"));
+    assertTrue(arguments.contains(HotswapInjection.SPRING_RESTART_OFF),
+        "the development restart cannot race the redefinition");
+  }
+
+  @Test
+  void shouldWarnAndAttachLimitedOnTheVirtualMachineWithoutRedefinitionSupport(@TempDir Path tmp)
+      throws Exception {
+    MavenProject project = newProject(tmp, SPRING);
+    Log log = mock(Log.class);
+    HotswapInjection.create().setProject(project).setUserProperties(new Properties())
+        .setOptions(hotswapAgentOptions(tmp)).setAgentCacheRoot(tmp.resolve("cache"))
+        .setJavaExecutable(fakeJava(tmp, 1)).setLog(log).build().apply();
+
+    String arguments = project.getProperties().getProperty(HotswapInjection.SPRING_JVM_ARGUMENTS);
+    assertTrue(arguments.contains("-javaagent:"),
+        "the agent still attaches for the method body changes");
+    assertFalse(arguments.contains("-XX:+AllowEnhancedClassRedefinition"),
+        "the unsupported flag never reaches the virtual machine");
+    verify(log).warn(contains("method body changes"));
+  }
+
+  @Test
+  void shouldFailWhenTheBuildNamesBothTools(@TempDir Path tmp) throws Exception {
+    MavenProject project = newProject(tmp, SPRING);
+    HotswapOptions options = jrebelOptions(tmp).setHotswapAgent(new HotswapAgentOptions());
+
+    MojoExecutionException failure = assertThrows(MojoExecutionException.class,
+        () -> newInjection(project, new Properties(), options, null).apply());
+
+    assertTrue(failure.getMessage().contains("hotswapAgent and jrebel"));
+  }
+
+  @Test
   void shouldWarnWhenTheBuildHasNoSupportedRunner(@TempDir Path tmp) throws Exception {
     MavenProject project = newProject(tmp);
 
@@ -135,6 +185,26 @@ class HotswapInjectionTest {
       HotswapOptions options, String commandLineValue) {
     return HotswapInjection.create().setProject(project).setUserProperties(userProperties)
         .setOptions(options).setCommandLineValue(commandLineValue).setLog(mock(Log.class)).build();
+  }
+
+  private static HotswapOptions hotswapAgentOptions(Path tmp) throws Exception {
+    Path jar = tmp.resolve("hotswap-agent.jar");
+    if (!Files.exists(jar)) {
+      Files.createFile(jar);
+    }
+
+    return new HotswapOptions().setHotswapAgent(new HotswapAgentOptions().setPath(jar.toFile()));
+  }
+
+  private static Path fakeJava(Path dir, int exitCode) throws IOException {
+    Assumptions.assumeTrue(FileSystems.getDefault().supportedFileAttributeViews().contains("posix"),
+        "the capability check stand in needs a posix file system");
+
+    Path script = dir.resolve("java-" + exitCode);
+    Files.writeString(script, "#!/bin/sh\nexit " + exitCode + "\n");
+    Files.setPosixFilePermissions(script, PosixFilePermissions.fromString("rwxr-xr-x"));
+
+    return script;
   }
 
   private static HotswapOptions jrebelOptions(Path tmp) throws Exception {

@@ -20,11 +20,13 @@ class LiveReloadLifecycleTest {
       lifecycle.start(new LiveReloadOptions().setEnabled(true).setWebsocketPort(freePort()));
 
       assertNotNull(lifecycle.getJrebelReceiver());
+      assertNotNull(lifecycle.getHotswapAgentReceiver());
     } finally {
       lifecycle.stop();
     }
 
     assertNull(lifecycle.getJrebelReceiver());
+    assertNull(lifecycle.getHotswapAgentReceiver());
   }
 
   @Test

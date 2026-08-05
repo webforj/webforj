@@ -1,5 +1,6 @@
 package com.webforj.plugin.gradle.hotswap;
 
+import com.webforj.plugin.gradle.hotswap.hotswapagent.HotswapAgentConfiguration;
 import com.webforj.plugin.gradle.hotswap.jrebel.JrebelConfiguration;
 import org.gradle.api.Action;
 import org.gradle.api.tasks.Nested;
@@ -17,7 +18,37 @@ import org.gradle.api.tasks.Nested;
  */
 public abstract class HotswapConfiguration {
 
+  private boolean hotswapAgentConfigured;
   private boolean jrebelConfigured;
+
+  /**
+   * The HotswapAgent configuration values.
+   *
+   * @return the HotswapAgent configuration
+   */
+  @Nested
+  public abstract HotswapAgentConfiguration getHotswapAgent();
+
+  /**
+   * Attaches HotswapAgent and configures it.
+   *
+   * @param action the configuration action
+   */
+  public void hotswapAgent(Action<? super HotswapAgentConfiguration> action) {
+    hotswapAgentConfigured = true;
+    action.execute(getHotswapAgent());
+  }
+
+  /**
+   * Whether the build configured HotswapAgent, through the configuration block or by setting a
+   * value on it directly.
+   *
+   * @return true when HotswapAgent was configured
+   */
+  public boolean isHotswapAgentConfigured() {
+    return hotswapAgentConfigured || getHotswapAgent().getVersion().isPresent()
+        || getHotswapAgent().getPath().isPresent();
+  }
 
   /**
    * The JRebel configuration values.

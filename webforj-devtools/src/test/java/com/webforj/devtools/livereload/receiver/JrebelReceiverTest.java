@@ -1,4 +1,4 @@
-package com.webforj.devtools.livereload;
+package com.webforj.devtools.livereload.receiver;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -12,6 +12,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.webforj.devtools.livereload.LiveReloadServer;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Set;

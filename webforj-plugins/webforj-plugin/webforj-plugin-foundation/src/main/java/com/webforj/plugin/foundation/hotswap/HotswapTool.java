@@ -13,6 +13,9 @@ import java.util.stream.Stream;
  */
 public enum HotswapTool {
 
+  /** The HotswapAgent java agent, downloaded by the build or pointed at by the configuration. */
+  HOTSWAP_AGENT("hotswapAgent"),
+
   /** The JRebel agent, pointed at by the application configuration. */
   JREBEL("jrebel");
 

@@ -36,6 +36,21 @@ class HotswapToolTest {
   }
 
   @Test
+  void shouldLetTheCommandLineEnableTheHotswapAgent() {
+    Optional<HotswapTool> selected = HotswapTool.select(Set.of(), "hotswapAgent");
+
+    assertEquals(Optional.of(HotswapTool.HOTSWAP_AGENT), selected);
+  }
+
+  @Test
+  void shouldFailWhenTheBuildNamesBothTools() {
+    IllegalArgumentException failure = assertThrows(IllegalArgumentException.class,
+        () -> HotswapTool.select(EnumSet.of(HotswapTool.HOTSWAP_AGENT, HotswapTool.JREBEL), null));
+
+    assertTrue(failure.getMessage().contains("hotswapAgent and jrebel"));
+  }
+
+  @Test
   void shouldRejectAnUnknownCommandLineValue() {
     IllegalArgumentException failure =
         assertThrows(IllegalArgumentException.class, () -> HotswapTool.select(Set.of(), "dcevm"));

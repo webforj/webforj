@@ -3,6 +3,7 @@ package com.webforj.plugin.gradle;
 import com.webforj.plugin.gradle.hotswap.HotswapLauncher;
 import java.io.File;
 import java.lang.reflect.Method;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -93,20 +94,23 @@ public class WebforjPlugin implements Plugin<Project> {
     // that is only asked when the task actually runs.
     project.getPlugins().withId("org.springframework.boot",
         applied -> project.getTasks().withType(JavaExec.class)
-            .matching(task -> "bootRun".equals(task.getName())).configureEach(task -> task
-                .getJvmArgumentProviders().add(() -> hotswapArguments(project, extension, true))));
+            .matching(task -> "bootRun".equals(task.getName()))
+            .configureEach(task -> task.getJvmArgumentProviders()
+                .add(() -> hotswapArguments(project, extension, true, launcherExecutable(task)))));
 
     // Gretty reads its jvmArgs when the run task starts, so the arguments are appended right
     // before that in a first action of the same task. Every launch task of the runner is covered,
     // whichever one the developer uses to start the application.
     Set<String> grettyLaunchTasks = Set.of("appRun", "appRunDebug", "appStart", "appStartDebug");
-    project.getPlugins().withId("org.gretty", applied -> project.getTasks()
-        .matching(task -> grettyLaunchTasks.contains(task.getName()))
-        .configureEach(task -> task.doFirst("webforj hotswap",
-            started -> appendGrettyJvmArgs(project, hotswapArguments(project, extension, false)))));
+    project.getPlugins().withId("org.gretty",
+        applied -> project.getTasks().matching(task -> grettyLaunchTasks.contains(task.getName()))
+            .configureEach(
+                task -> task.doFirst("webforj hotswap", started -> appendGrettyJvmArgs(project,
+                    hotswapArguments(project, extension, false, null)))));
 
     project.afterEvaluate(evaluated -> {
-      boolean configured = extension.getHotswap().isJrebelConfigured();
+      boolean configured = extension.getHotswap().isJrebelConfigured()
+          || extension.getHotswap().isHotswapAgentConfigured();
       boolean runner = project.getPluginManager().hasPlugin("org.springframework.boot")
           || project.getPluginManager().hasPlugin("org.gretty");
 
@@ -118,11 +122,21 @@ public class WebforjPlugin implements Plugin<Project> {
   }
 
   private List<String> hotswapArguments(Project project, WebforjExtension extension,
-      boolean springBootRunner) {
+      boolean springBootRunner, Path javaExecutable) {
     Object selection = project.findProperty(HotswapLauncher.SELECTION_PROPERTY);
 
     return HotswapLauncher.arguments(extension.getHotswap(),
-        selection == null ? null : selection.toString(), springBootRunner, project.getLogger());
+        selection == null ? null : selection.toString(), springBootRunner,
+        project.getLayout().getBuildDirectory().get().getAsFile().toPath(), javaExecutable,
+        project.getLogger());
+  }
+
+  private static Path launcherExecutable(JavaExec task) {
+    // The toolchain resolved this launcher for the fork, so the capability check runs against the
+    // very virtual machine the application starts in.
+    return task.getJavaLauncher().isPresent()
+        ? task.getJavaLauncher().get().getExecutablePath().getAsFile().toPath()
+        : null;
   }
 
   private void appendGrettyJvmArgs(Project project, List<String> arguments) {

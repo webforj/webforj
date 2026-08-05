@@ -2,9 +2,12 @@ package com.webforj.plugin.maven.hotswap;
 
 import com.webforj.plugin.foundation.hotswap.HotswapAttachment;
 import com.webforj.plugin.foundation.hotswap.HotswapTool;
+import com.webforj.plugin.foundation.hotswap.hotswapagent.HotswapAgentAttachment;
 import com.webforj.plugin.foundation.hotswap.jrebel.JrebelAttachment;
+import com.webforj.plugin.maven.hotswap.hotswapagent.HotswapAgentOptions;
 import com.webforj.plugin.maven.hotswap.jrebel.JrebelOptions;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +52,8 @@ public final class HotswapInjection {
   private final HotswapOptions options;
   private final String commandLineValue;
   private final Log log;
+  private final Path agentCacheRoot;
+  private final Path javaExecutable;
 
   private HotswapInjection(Builder builder) {
     this.project = builder.project;
@@ -56,6 +61,9 @@ public final class HotswapInjection {
     this.options = builder.options;
     this.commandLineValue = builder.commandLineValue;
     this.log = builder.log;
+    this.agentCacheRoot = builder.agentCacheRoot != null ? builder.agentCacheRoot
+        : Path.of(System.getProperty("user.home"), ".webforj", "hotswap-agent");
+    this.javaExecutable = builder.javaExecutable;
   }
 
   /**
@@ -93,6 +101,10 @@ public final class HotswapInjection {
 
   private Set<HotswapTool> configuredTools() {
     Set<HotswapTool> configured = EnumSet.noneOf(HotswapTool.class);
+    if (options != null && options.getHotswapAgent() != null) {
+      configured.add(HotswapTool.HOTSWAP_AGENT);
+    }
+
     if (options != null && options.getJrebel() != null) {
       configured.add(HotswapTool.JREBEL);
     }
@@ -110,8 +122,20 @@ public final class HotswapInjection {
 
   private HotswapAttachment createAttachment(HotswapTool tool) throws MojoExecutionException {
     return switch (tool) {
+      case HOTSWAP_AGENT -> createHotswapAgentAttachment();
       case JREBEL -> createJrebelAttachment();
     };
+  }
+
+  private HotswapAttachment createHotswapAgentAttachment() {
+    HotswapAgentOptions agentOptions = options == null ? null : options.getHotswapAgent();
+
+    return HotswapAgentAttachment.create().setCacheRoot(agentCacheRoot)
+        .setVersion(agentOptions == null ? null : agentOptions.getVersion())
+        .setOverridePath(agentOptions == null || agentOptions.getPath() == null ? null
+            : agentOptions.getPath().toPath())
+        .setConfigurationDirectory(Path.of(project.getBuild().getDirectory()).resolve("hotswap"))
+        .setJavaExecutable(javaExecutable).setLog(log::info).setWarn(log::warn).build();
   }
 
   private HotswapAttachment createJrebelAttachment() throws MojoExecutionException {
@@ -204,6 +228,8 @@ public final class HotswapInjection {
     private HotswapOptions options;
     private String commandLineValue;
     private Log log;
+    private Path agentCacheRoot;
+    private Path javaExecutable;
 
     private Builder() {}
 
@@ -248,6 +274,34 @@ public final class HotswapInjection {
      */
     public Builder setCommandLineValue(String commandLineValue) {
       this.commandLineValue = commandLineValue;
+      return this;
+    }
+
+    /**
+     * Sets the cache root the downloaded agent jars live under, or null for the default under the
+     * user home.
+     *
+     * @param agentCacheRoot the cache root
+     * @return this builder
+     */
+    Builder setAgentCacheRoot(Path agentCacheRoot) {
+      this.agentCacheRoot = agentCacheRoot;
+      return this;
+    }
+
+    /**
+     * Sets the java executable the agent capability check runs, as named by the Maven toolchain.
+     *
+     * <p>
+     * With null the check asks the running virtual machine directly, which is the virtual machine
+     * the run goal forks when no toolchain is configured.
+     * </p>
+     *
+     * @param javaExecutable the java executable, or null to ask the running virtual machine
+     * @return this builder
+     */
+    public Builder setJavaExecutable(Path javaExecutable) {
+      this.javaExecutable = javaExecutable;
       return this;
     }
 

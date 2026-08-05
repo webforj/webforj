@@ -1,16 +1,9 @@
-package com.webforj.devtools.livereload;
+package com.webforj.devtools.livereload.receiver;
 
+import com.webforj.devtools.livereload.LiveReloadServer;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Registers a class reload listener with the JRebel agent and pushes the redefined class names
@@ -30,13 +23,12 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author Hyyan Abo Fakher
  * @since 26.02
  */
-public class JrebelReceiver {
+public class JrebelReceiver implements LiveReloadReceiver {
 
   private static final System.Logger logger = System.getLogger(JrebelReceiver.class.getName());
   static final String RELOADER_FACTORY_CLASS_NAME = "org.zeroturnaround.javarebel.ReloaderFactory";
   static final String CLASS_EVENT_LISTENER_CLASS_NAME =
       "org.zeroturnaround.javarebel.ClassEventListener";
-  private static final long DEBOUNCE_DELAY_MILLIS = 150;
 
   /**
    * The agent event type reporting that a class was loaded for the first time, which is not a hot
@@ -44,15 +36,11 @@ public class JrebelReceiver {
    */
   private static final int EVENT_LOADED = 0;
 
-  private final LiveReloadServer server;
   private final String reloaderFactoryClassName;
   private final String classEventListenerClassName;
+  private final ClassUpdateDelivery delivery;
   private final AtomicBoolean running = new AtomicBoolean(false);
-  private final AtomicReference<ScheduledFuture<?>> pendingReload = new AtomicReference<>();
-  private final Set<String> pendingClasses = ConcurrentHashMap.newKeySet();
-  private final AtomicBoolean sawUnnamedChange = new AtomicBoolean(false);
 
-  private ScheduledExecutorService executor;
   private Object reloader;
   private Object listener;
 
@@ -75,9 +63,10 @@ public class JrebelReceiver {
    */
   JrebelReceiver(LiveReloadServer server, String reloaderFactoryClassName,
       String classEventListenerClassName) {
-    this.server = server;
     this.reloaderFactoryClassName = reloaderFactoryClassName;
     this.classEventListenerClassName = classEventListenerClassName;
+    this.delivery =
+        new ClassUpdateDelivery(server, "a JRebel class reload", "webforj-jrebel-receiver");
   }
 
   /**
@@ -90,7 +79,6 @@ public class JrebelReceiver {
     }
 
     ClassLoader classLoader = resolveClassLoader();
-    ScheduledExecutorService newExecutor = null;
 
     try {
       Class<?> reloaderFactoryClass = Class.forName(reloaderFactoryClassName, false, classLoader);
@@ -103,20 +91,17 @@ public class JrebelReceiver {
 
       // everything that can fail runs before the registration, so a registration that succeeds is
       // always followed by the assignments that let stop undo it
-      newExecutor = Executors.newSingleThreadScheduledExecutor(JrebelReceiver::newDaemonThread);
+      delivery.start();
 
       reloaderInstance.getClass().getMethod("addClassReloadListener", classEventListenerClass)
           .invoke(reloaderInstance, listenerProxy);
 
-      this.executor = newExecutor;
       this.reloader = reloaderInstance;
       this.listener = listenerProxy;
 
       logger.log(System.Logger.Level.INFO, "JRebel detected, registered for class reload events");
     } catch (ReflectiveOperationException | RuntimeException e) {
-      if (newExecutor != null) {
-        newExecutor.shutdownNow();
-      }
+      delivery.stop();
 
       logger.log(System.Logger.Level.DEBUG,
           "JRebel not detected, class reload events will not trigger a browser reload", e);
@@ -132,14 +117,6 @@ public class JrebelReceiver {
       return;
     }
 
-    ScheduledFuture<?> scheduled = pendingReload.getAndSet(null);
-    if (scheduled != null) {
-      scheduled.cancel(false);
-    }
-
-    pendingClasses.clear();
-    sawUnnamedChange.set(false);
-
     if (reloader != null && listener != null) {
       try {
         Method removeListener = findRemoveListenerMethod(reloader, listener);
@@ -152,10 +129,7 @@ public class JrebelReceiver {
       }
     }
 
-    if (executor != null) {
-      executor.shutdownNow();
-      executor = null;
-    }
+    delivery.stop();
 
     reloader = null;
     listener = null;
@@ -171,34 +145,7 @@ public class JrebelReceiver {
   }
 
   void sendReload() {
-    pendingReload.set(null);
-
-    // The batch is drained before the server check, so a batch that cannot be delivered never
-    // leaks into a later one.
-    Set<String> changedClasses = new TreeSet<>(pendingClasses);
-    pendingClasses.clear();
-    boolean unnamed = sawUnnamedChange.getAndSet(false);
-
-    // Every schedule follows a recorded change, so an empty batch without the unnamed flag only
-    // means an earlier drain already delivered these classes and nothing is left to send.
-    if (changedClasses.isEmpty() && !unnamed) {
-      return;
-    }
-
-    if (server == null || !server.isRunning()) {
-      return;
-    }
-
-    // The reload server logs the one line per broadcast, so this stays quiet at the info level.
-    if (unnamed) {
-      logger.log(System.Logger.Level.DEBUG, "Triggering browser reload for a JRebel class reload");
-      server.sendReloadMessage();
-      return;
-    }
-
-    logger.log(System.Logger.Level.DEBUG,
-        "Sending a class update for a JRebel class reload: " + String.join(", ", changedClasses));
-    server.sendClassUpdateMessage(changedClasses);
+    delivery.deliver();
   }
 
   private Object handleInvocation(Object proxy, Method method, Object[] args) {
@@ -207,7 +154,6 @@ public class JrebelReceiver {
     if ("onClassEvent".equals(name)) {
       if (isHotSwap(args)) {
         recordChangedClass(args);
-        scheduleReloadSafely();
       }
 
       return null;
@@ -240,36 +186,13 @@ public class JrebelReceiver {
     return eventType != EVENT_LOADED;
   }
 
-  private void scheduleReloadSafely() {
-    try {
-      scheduleReload();
-    } catch (RuntimeException e) {
-      logger.log(System.Logger.Level.DEBUG,
-          "Could not schedule a browser reload for a JRebel class reload", e);
-    }
-  }
-
-  private void scheduleReload() {
-    ScheduledExecutorService currentExecutor = executor;
-    if (currentExecutor == null) {
-      return;
-    }
-
-    ScheduledFuture<?> previous = pendingReload.getAndSet(
-        currentExecutor.schedule(this::sendReload, DEBOUNCE_DELAY_MILLIS, TimeUnit.MILLISECONDS));
-
-    if (previous != null) {
-      previous.cancel(false);
-    }
-  }
-
   private void recordChangedClass(Object[] args) {
     if (args != null && args.length > 1 && args[1] instanceof Class<?> changedClass) {
-      pendingClasses.add(changedClass.getName());
+      delivery.classChanged(changedClass.getName());
     } else {
       // Without the class name the change cannot be accounted for, so this batch falls back to
       // the full page reload.
-      sawUnnamedChange.set(true);
+      delivery.unnamedChange();
     }
   }
 
@@ -282,13 +205,6 @@ public class JrebelReceiver {
     }
 
     return null;
-  }
-
-  private static Thread newDaemonThread(Runnable task) {
-    Thread thread = new Thread(task, "webforj-jrebel-receiver");
-    thread.setDaemon(true);
-
-    return thread;
   }
 
   private static ClassLoader resolveClassLoader() {

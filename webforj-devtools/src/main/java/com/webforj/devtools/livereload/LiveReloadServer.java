@@ -85,7 +85,7 @@ public class LiveReloadServer extends WebSocketServer {
   @Override
   public void onOpen(WebSocket conn, ClientHandshake handshake) {
     connections.add(conn);
-    logger.log(System.Logger.Level.INFO,
+    logger.log(System.Logger.Level.DEBUG,
         "webforJ livereload client connected. Total connections: " + connections.size());
 
     conn.send(gson.toJson(new ConnectedMessage()));
@@ -97,8 +97,8 @@ public class LiveReloadServer extends WebSocketServer {
   @Override
   public void onClose(WebSocket conn, int code, String reason, boolean remote) {
     connections.remove(conn);
-    logger.log(System.Logger.Level.INFO, "webforJ livereload client disconnected. Reason: " + reason
-        + ", Total connections: " + connections.size());
+    logger.log(System.Logger.Level.DEBUG, "webforJ livereload client disconnected. Reason: "
+        + reason + ", Total connections: " + connections.size());
   }
 
   /**

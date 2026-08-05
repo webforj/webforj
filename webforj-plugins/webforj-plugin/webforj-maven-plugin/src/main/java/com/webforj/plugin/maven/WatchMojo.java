@@ -17,9 +17,12 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.toolchain.Toolchain;
+import org.apache.maven.toolchain.ToolchainManager;
 
 /**
  * Goal that runs the development bundle watch in the stable Maven process and forwards its output
@@ -72,6 +75,10 @@ public class WatchMojo extends AbstractBundlerMojo {
   /** The current Maven session, the source of the command line properties. */
   @Parameter(defaultValue = "${session}", readonly = true, required = true)
   protected MavenSession session;
+
+  /** The toolchain manager that names the virtual machine the application run goal forks. */
+  @Component
+  protected ToolchainManager toolchainManager;
 
   @Override
   public void execute() throws MojoExecutionException {
@@ -132,7 +139,24 @@ public class WatchMojo extends AbstractBundlerMojo {
   private void attachHotswap() throws MojoExecutionException {
     Properties userProperties = session == null ? new Properties() : session.getUserProperties();
     HotswapInjection.create().setProject(project).setUserProperties(userProperties)
-        .setOptions(hotswap).setCommandLineValue(hotswapSelection).setLog(getLog()).build().apply();
+        .setOptions(hotswap).setCommandLineValue(hotswapSelection)
+        .setJavaExecutable(toolchainJavaExecutable()).setLog(getLog()).build().apply();
+  }
+
+  private Path toolchainJavaExecutable() {
+    if (toolchainManager == null || session == null) {
+      return null;
+    }
+
+    // The application run goal forks the toolchain from the build context when one is configured,
+    // otherwise this very virtual machine, so the capability check follows the same selection.
+    Toolchain toolchain = toolchainManager.getToolchainFromBuildContext("jdk", session);
+    if (toolchain == null) {
+      return null;
+    }
+
+    String java = toolchain.findTool("java");
+    return java == null || java.isBlank() ? null : Path.of(java);
   }
 
   private WatchConfigGuard startConfigGuard(WatchSocketServer socket) {

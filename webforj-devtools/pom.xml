@@ -193,6 +193,16 @@
       <version>1.6.0</version>
     </dependency>
 
+    <!-- Supplies the annotations the HotswapAgent forwarder is discovered through. The agent loads
+        the forwarder in its own class space and refuses to run with its classes on the
+        application classpath, so this must never ship from this jar. -->
+    <dependency>
+      <groupId>org.hotswapagent</groupId>
+      <artifactId>hotswap-agent-core</artifactId>
+      <version>2.0.3</version>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- Re-logs the forwarded bundler output through the application log. Supplied by the running
         application, so it stays provided and never ships from this jar. -->
     <dependency>
