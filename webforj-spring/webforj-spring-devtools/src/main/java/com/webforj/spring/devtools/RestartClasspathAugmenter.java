@@ -149,8 +149,8 @@ public final class RestartClasspathAugmenter implements SpringApplicationRunList
       Class<?> initializer =
           Class.forName("org.springframework.boot.devtools.restart.RestartInitializer");
       restarter.getMethod("initialize", String[].class, boolean.class, initializer, boolean.class)
-          .invoke(null,
-              new Object[] {args, false, new AdditionalUrlsRestartInitializer(additions), true});
+          .invoke(null, (Object) args, false, new AdditionalUrlsRestartInitializer(additions),
+              true);
     } catch (ReflectiveOperationException e) {
       logger.log(System.Logger.Level.WARNING,
           "Could not seed the restart classloader through the Spring DevTools restart API", e);

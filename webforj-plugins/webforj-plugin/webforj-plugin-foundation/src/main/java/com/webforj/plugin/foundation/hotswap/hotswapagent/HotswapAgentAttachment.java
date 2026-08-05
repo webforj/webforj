@@ -48,7 +48,8 @@ public final class HotswapAgentAttachment implements HotswapAttachment {
   static final String REDEFINITION_FLAG = "-XX:+" + REDEFINITION_OPTION;
 
   static final String DEFAULT_REPOSITORY_HOST = "https://repo1.maven.org/maven2";
-  static final String REPOSITORY_PATH = "/org/hotswapagent/hotswap-agent/";
+  static final String GROUP_ID = "org.hotswapagent";
+  static final String ARTIFACT_ID = "hotswap-agent";
 
   /**
    * The HotswapAgent version used when the build pins none. This is the single source of the
@@ -133,11 +134,12 @@ public final class HotswapAgentAttachment implements HotswapAttachment {
   }
 
   String getJarUrl() {
-    return repositoryHost + REPOSITORY_PATH + version + "/" + getJarFileName();
+    return repositoryHost + "/" + GROUP_ID.replace('.', '/') + "/" + ARTIFACT_ID + "/" + version
+        + "/" + getJarFileName();
   }
 
   String getJarFileName() {
-    return "hotswap-agent-" + version + ".jar";
+    return ARTIFACT_ID + "-" + version + ".jar";
   }
 
   private boolean supportsEnhancedRedefinition() {

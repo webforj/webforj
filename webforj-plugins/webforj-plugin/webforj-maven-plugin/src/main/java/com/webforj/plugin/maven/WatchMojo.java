@@ -123,7 +123,7 @@ public class WatchMojo extends AbstractBundlerMojo {
 
     BundlerExecution execution = createExecution();
     try {
-      WatchSession session =
+      WatchSession watchSession =
           execution.watch(createRequest(), changed -> socket.send(WatchProtocol.rebuild(changed)),
               (level, line) -> sink.get().log(level, line));
       sink.set((level, line) -> socket
@@ -131,11 +131,11 @@ public class WatchMojo extends AbstractBundlerMojo {
               : WatchProtocol.log(line)));
       // The application rescans for new bundle entries every time it connects, which is every
       // development restart.
-      if (session != null) {
-        socket.setOnConnect(session::rescan);
+      if (watchSession != null) {
+        socket.setOnConnect(watchSession::rescan);
       }
 
-      installShutdownHook(session, socket, portFile, configGuard);
+      installShutdownHook(watchSession, socket, portFile, configGuard);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       closeGuard(configGuard);

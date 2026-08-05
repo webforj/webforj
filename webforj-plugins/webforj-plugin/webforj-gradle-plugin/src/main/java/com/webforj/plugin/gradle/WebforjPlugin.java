@@ -36,6 +36,7 @@ public class WebforjPlugin implements Plugin<Project> {
   private static final String TEST_TASK = "webforjTest";
   private static final String WATCH_TASK = "webforjWatch";
   private static final String CLEAN_TASK = "webforjCleanFrontend";
+  private static final String SPRING_BOOT_PLUGIN_ID = "org.springframework.boot";
 
   /**
    * {@inheritDoc}
@@ -95,7 +96,7 @@ public class WebforjPlugin implements Plugin<Project> {
     // The devtools resolve against the application runtime classpath, so the lookup is wrapped in
     // a callable that the run task asks only when it actually starts. The packaging tasks never
     // read that classpath, so a packaged application can never contain the devtools.
-    project.getPlugins().withId("org.springframework.boot",
+    project.getPlugins().withId(SPRING_BOOT_PLUGIN_ID,
         applied -> project.getTasks().withType(JavaExec.class)
             .matching(task -> "bootRun".equals(task.getName())).configureEach(
                 task -> task.classpath(project.files(SpringDevtoolsClasspath.callable(project)))));
@@ -104,7 +105,7 @@ public class WebforjPlugin implements Plugin<Project> {
   private void configureHotswap(Project project, WebforjExtension extension) {
     // The Spring Boot run task is a JavaExec, so the arguments join the fork through a provider
     // that is only asked when the task actually runs.
-    project.getPlugins().withId("org.springframework.boot",
+    project.getPlugins().withId(SPRING_BOOT_PLUGIN_ID,
         applied -> project.getTasks().withType(JavaExec.class)
             .matching(task -> "bootRun".equals(task.getName()))
             .configureEach(task -> task.getJvmArgumentProviders()
@@ -123,7 +124,7 @@ public class WebforjPlugin implements Plugin<Project> {
     project.afterEvaluate(evaluated -> {
       boolean configured = extension.getHotswap().isJrebelConfigured()
           || extension.getHotswap().isHotswapAgentConfigured();
-      boolean runner = project.getPluginManager().hasPlugin("org.springframework.boot")
+      boolean runner = project.getPluginManager().hasPlugin(SPRING_BOOT_PLUGIN_ID)
           || project.getPluginManager().hasPlugin("org.gretty");
 
       if (configured && !runner) {

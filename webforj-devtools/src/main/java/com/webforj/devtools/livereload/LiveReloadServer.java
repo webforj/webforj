@@ -33,6 +33,7 @@ import org.java_websocket.server.WebSocketServer;
  */
 public class LiveReloadServer extends WebSocketServer {
   private static final System.Logger logger = System.getLogger(LiveReloadServer.class.getName());
+  private static final String CONNECTED_SESSIONS = " connected sessions";
 
   private final Set<WebSocket> connections = ConcurrentHashMap.newKeySet();
   private final Map<String, ResourceUpdateMessage> lastResourceUpdates = new ConcurrentHashMap<>();
@@ -163,7 +164,7 @@ public class LiveReloadServer extends WebSocketServer {
     lastReloadCommandAt = System.currentTimeMillis();
 
     logger.log(System.Logger.Level.INFO,
-        "Triggering browser reload for " + connections.size() + " connected sessions");
+        "Triggering browser reload for " + connections.size() + CONNECTED_SESSIONS);
 
     int successCount = 0;
     for (WebSocket conn : connections) {
@@ -195,7 +196,7 @@ public class LiveReloadServer extends WebSocketServer {
     cleanupConnections();
 
     logger.log(System.Logger.Level.INFO,
-        "Notifying " + connections.size() + " connected sessions about the server restart");
+        "Notifying " + connections.size() + CONNECTED_SESSIONS + " about the server restart");
 
     for (WebSocket conn : connections) {
       if (conn.isOpen()) {
@@ -232,7 +233,7 @@ public class LiveReloadServer extends WebSocketServer {
     cleanupConnections();
 
     logger.log(System.Logger.Level.INFO, "Sending resource update (" + resourceType + ": " + path
-        + ") to " + connections.size() + " connected sessions");
+        + ") to " + connections.size() + CONNECTED_SESSIONS);
 
     int successCount = 0;
     for (WebSocket conn : connections) {
@@ -281,7 +282,7 @@ public class LiveReloadServer extends WebSocketServer {
     cleanupConnections();
 
     logger.log(System.Logger.Level.INFO, "Sending class update (" + String.join(", ", classNames)
-        + ") to " + connections.size() + " connected sessions");
+        + ") to " + connections.size() + CONNECTED_SESSIONS);
 
     for (WebSocket conn : connections) {
       if (conn.isOpen()) {

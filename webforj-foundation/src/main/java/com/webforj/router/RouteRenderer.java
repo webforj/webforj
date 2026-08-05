@@ -660,8 +660,7 @@ public class RouteRenderer {
     // The container destroys removed instances on the default path, so this only fires for an
     // outlet that kept its instance alive through the removal. A recreation always demands fresh
     // instances, so the kept ones go down here, leaf first.
-    List<Class<? extends Component>> componentList = new ArrayList<>(components);
-    Collections.reverse(componentList);
+    List<Class<? extends Component>> componentList = new ArrayList<>(components).reversed();
 
     for (Class<? extends Component> componentClass : componentList) {
       Component instance = componentsCache.get(componentClass);
