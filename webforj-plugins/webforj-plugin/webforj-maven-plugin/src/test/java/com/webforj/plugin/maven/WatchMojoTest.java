@@ -27,6 +27,7 @@ class WatchMojoTest {
   @Test
   void shouldSkipWhenThereIsNoSourceRoot() {
     WatchMojo mojo = new WatchMojo();
+    mojo.project = mock(MavenProject.class);
     mojo.sourceRoot = new File("target/no-such-frontend-directory");
 
     assertDoesNotThrow(mojo::execute);

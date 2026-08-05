@@ -1,6 +1,7 @@
 package com.webforj.spring.devtools.livereload;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -11,6 +12,8 @@ import com.webforj.devtools.livereload.LiveReloadOptions;
 import com.webforj.spring.SpringConfigurationProperties;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.boot.test.context.FilteredClassLoader;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 
@@ -53,6 +56,42 @@ class LiveReloadSocketConfigurationTest {
     LiveReloadLifecycle lifecycle = mock(LiveReloadLifecycle.class);
 
     assertNotNull(new LiveReloadSocketConfiguration().liveReloadResourceChangeListener(lifecycle));
+  }
+
+  @Test
+  void shouldRegisterTheLifecycleWithoutSpringDevtoolsOnTheClasspath() {
+    SpringConfigurationProperties properties = new SpringConfigurationProperties();
+    properties.getDevtools().getLivereload().setWebsocketPort(46101);
+
+    new ApplicationContextRunner()
+        .withClassLoader(new FilteredClassLoader("org.springframework.boot.devtools"))
+        .withPropertyValues("webforj.devtools.livereload.enabled=true")
+        .withBean(SpringConfigurationProperties.class, () -> properties)
+        .withUserConfiguration(LiveReloadSocketConfiguration.class).run(context -> {
+          assertNotNull(context.getBean(LiveReloadLifecycle.class));
+          assertNotNull(context.getBean(LiveReloadListener.class));
+          assertNotNull(context.getBean(LiveReloadRestartListener.class));
+          assertFalse(context.containsBean("liveReloadResourceChangeListener"));
+        });
+  }
+
+  @Test
+  void shouldRegisterTheResourceChangeListenerWithSpringDevtoolsOnTheClasspath() {
+    SpringConfigurationProperties properties = new SpringConfigurationProperties();
+    properties.getDevtools().getLivereload().setWebsocketPort(46102);
+
+    new ApplicationContextRunner().withPropertyValues("webforj.devtools.livereload.enabled=true")
+        .withBean(SpringConfigurationProperties.class, () -> properties)
+        .withUserConfiguration(LiveReloadSocketConfiguration.class)
+        .run(context -> assertNotNull(context.getBean(LiveReloadResourceChangeListener.class)));
+  }
+
+  @Test
+  void shouldRegisterNothingWhenLiveReloadIsOff() {
+    new ApplicationContextRunner()
+        .withBean(SpringConfigurationProperties.class, SpringConfigurationProperties::new)
+        .withUserConfiguration(LiveReloadSocketConfiguration.class)
+        .run(context -> assertFalse(context.containsBean("liveReloadLifecycle")));
   }
 
   @Test

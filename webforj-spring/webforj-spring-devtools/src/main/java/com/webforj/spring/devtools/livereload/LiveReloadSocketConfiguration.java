@@ -9,13 +9,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Registers the Spring DevTools restart to browser reload bridge.
+ * Registers the live reload lifecycle and its Spring listeners.
+ *
+ * <p>
+ * The lifecycle and the listeners that start it run on the live reload property alone, so the
+ * reload server and its receivers come up whether or not Spring DevTools is on the classpath. The
+ * listener that turns Spring DevTools classpath events into resource updates registers only when
+ * Spring DevTools is present, since those events come from its classpath watcher.
+ * </p>
  *
  * @author Hyyan Abo Fakher
  * @since 25.02
  */
 @Configuration
-@ConditionalOnClass(name = "org.springframework.boot.devtools.restart.Restarter")
 @ConditionalOnProperty(prefix = "webforj.devtools.livereload", name = "enabled",
     havingValue = "true", matchIfMissing = false)
 public class LiveReloadSocketConfiguration {
@@ -62,6 +68,7 @@ public class LiveReloadSocketConfiguration {
    * @return the static resource change to resource update listener
    */
   @Bean
+  @ConditionalOnClass(name = "org.springframework.boot.devtools.classpath.ClassPathChangedEvent")
   @ConditionalOnProperty(prefix = "webforj.devtools.livereload", name = "static-resources-enabled",
       havingValue = "true", matchIfMissing = true)
   LiveReloadResourceChangeListener liveReloadResourceChangeListener(LiveReloadLifecycle lifecycle) {

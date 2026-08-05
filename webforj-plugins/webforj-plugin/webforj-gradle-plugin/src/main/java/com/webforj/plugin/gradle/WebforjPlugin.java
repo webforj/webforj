@@ -1,5 +1,6 @@
 package com.webforj.plugin.gradle;
 
+import com.webforj.plugin.gradle.devtools.SpringDevtoolsClasspath;
 import com.webforj.plugin.gradle.hotswap.HotswapLauncher;
 import java.io.File;
 import java.lang.reflect.Method;
@@ -87,6 +88,17 @@ public class WebforjPlugin implements Plugin<Project> {
         .configure(task -> task.dependsOn(cleanFrontend)));
 
     configureHotswap(project, extension);
+    configureDevtools(project);
+  }
+
+  private void configureDevtools(Project project) {
+    // The devtools resolve against the application runtime classpath, so the lookup is wrapped in
+    // a callable that the run task asks only when it actually starts. The packaging tasks never
+    // read that classpath, so a packaged application can never contain the devtools.
+    project.getPlugins().withId("org.springframework.boot",
+        applied -> project.getTasks().withType(JavaExec.class)
+            .matching(task -> "bootRun".equals(task.getName())).configureEach(
+                task -> task.classpath(project.files(SpringDevtoolsClasspath.callable(project)))));
   }
 
   private void configureHotswap(Project project, WebforjExtension extension) {

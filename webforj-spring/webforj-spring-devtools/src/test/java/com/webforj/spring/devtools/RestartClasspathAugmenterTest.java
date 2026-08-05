@@ -1,6 +1,7 @@
 package com.webforj.spring.devtools;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -9,14 +10,54 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.springframework.boot.devtools.restart.Restarter;
 
 class RestartClasspathAugmenterTest {
 
+  private static final String APPLIED_PROPERTY = "webforj.devtools.restart.classpath-augmented";
+
   private final RestartClasspathAugmenter augmenter = new RestartClasspathAugmenter();
+
+  @BeforeEach
+  void clearAppliedMarker() {
+    System.clearProperty(APPLIED_PROPERTY);
+  }
+
+  @AfterEach
+  void restoreAppliedMarker() {
+    System.clearProperty(APPLIED_PROPERTY);
+  }
+
+  @Test
+  void shouldSkipAugmentationWhenSpringDevtoolsIsAbsent() {
+    new RestartClasspathAugmenter(() -> false).starting(null);
+
+    assertTrue(System.getProperty(APPLIED_PROPERTY) != null);
+    assertThrows(IllegalStateException.class, Restarter::getInstance);
+  }
+
+  @Test
+  void shouldConsultThePresenceOnlyOnTheFirstStart() {
+    AtomicInteger consultations = new AtomicInteger();
+
+    new RestartClasspathAugmenter(() -> {
+      consultations.incrementAndGet();
+      return false;
+    }).starting(null);
+    new RestartClasspathAugmenter(() -> {
+      consultations.incrementAndGet();
+      return false;
+    }).starting(null);
+
+    assertEquals(1, consultations.get());
+  }
 
   @Test
   void shouldDetectJarThatDeclaresWebforjDependency(@TempDir Path dir) throws Exception {

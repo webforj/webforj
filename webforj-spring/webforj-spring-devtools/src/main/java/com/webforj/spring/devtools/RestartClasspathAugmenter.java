@@ -12,15 +12,14 @@ import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationRunListener;
 import org.springframework.boot.bootstrap.ConfigurableBootstrapContext;
-import org.springframework.boot.devtools.restart.AgentReloader;
 import org.springframework.boot.devtools.restart.DefaultRestartInitializer;
-import org.springframework.boot.devtools.restart.Restarter;
 import org.springframework.core.Ordered;
 
 /**
@@ -51,6 +50,7 @@ public final class RestartClasspathAugmenter implements SpringApplicationRunList
       Pattern.compile("<groupId>\\s*com\\.webforj(\\.[\\w.-]+)?\\s*</groupId>");
 
   private final String[] args;
+  private final BooleanSupplier devtoolsPresence;
 
   /**
    * Creates the run listener. This constructor is used by Spring Boot.
@@ -60,10 +60,16 @@ public final class RestartClasspathAugmenter implements SpringApplicationRunList
    */
   public RestartClasspathAugmenter(SpringApplication application, String[] args) {
     this.args = args.clone();
+    this.devtoolsPresence = RestartClasspathAugmenter::isDevtoolsPresent;
   }
 
   RestartClasspathAugmenter() {
+    this(() -> true);
+  }
+
+  RestartClasspathAugmenter(BooleanSupplier devtoolsPresence) {
     this.args = new String[0];
+    this.devtoolsPresence = devtoolsPresence;
   }
 
   /**
@@ -87,6 +93,13 @@ public final class RestartClasspathAugmenter implements SpringApplicationRunList
 
     markAsApplied();
 
+    // Without Spring DevTools there is no restart classloader, so there is nothing to augment.
+    if (!devtoolsPresence.getAsBoolean()) {
+      logger.log(System.Logger.Level.DEBUG,
+          "Spring DevTools is not on the classpath, restart classpath augmentation is skipped");
+      return;
+    }
+
     // When restart is disabled there is no classloader split, so a webforJ dependency is already on
     // the same classloader as webforJ and needs nothing.
     if (!isRestartEnabled()) {
@@ -107,7 +120,7 @@ public final class RestartClasspathAugmenter implements SpringApplicationRunList
 
     logger.log(System.Logger.Level.INFO,
         "Seeding {0} webforJ dependent JAR(s) into the restart classloader", additions.size());
-    Restarter.initialize(args, false, new AdditionalUrlsRestartInitializer(additions), true);
+    initializeRestarter(additions);
   }
 
   private boolean isApplied() {
@@ -124,7 +137,46 @@ public final class RestartClasspathAugmenter implements SpringApplicationRunList
       return Boolean.parseBoolean(property);
     }
 
-    return !AgentReloader.isActive();
+    return !isAgentReloaderActive();
+  }
+
+  // The restart API is reached through reflection, so no Spring DevTools type enters this class
+  // file and the class links in an application that runs without Spring DevTools.
+
+  private void initializeRestarter(List<URL> additions) {
+    try {
+      Class<?> restarter = Class.forName("org.springframework.boot.devtools.restart.Restarter");
+      Class<?> initializer =
+          Class.forName("org.springframework.boot.devtools.restart.RestartInitializer");
+      restarter.getMethod("initialize", String[].class, boolean.class, initializer, boolean.class)
+          .invoke(null,
+              new Object[] {args, false, new AdditionalUrlsRestartInitializer(additions), true});
+    } catch (ReflectiveOperationException e) {
+      logger.log(System.Logger.Level.WARNING,
+          "Could not seed the restart classloader through the Spring DevTools restart API", e);
+    }
+  }
+
+  private static boolean isAgentReloaderActive() {
+    try {
+      Class<?> agentReloader =
+          Class.forName("org.springframework.boot.devtools.restart.AgentReloader");
+
+      return (boolean) agentReloader.getMethod("isActive").invoke(null);
+    } catch (ReflectiveOperationException e) {
+      return false;
+    }
+  }
+
+  private static boolean isDevtoolsPresent() {
+    try {
+      Class.forName("org.springframework.boot.devtools.restart.Restarter", false,
+          RestartClasspathAugmenter.class.getClassLoader());
+
+      return true;
+    } catch (ClassNotFoundException e) {
+      return false;
+    }
   }
 
   private Set<File> resolveClasspathEntries() {

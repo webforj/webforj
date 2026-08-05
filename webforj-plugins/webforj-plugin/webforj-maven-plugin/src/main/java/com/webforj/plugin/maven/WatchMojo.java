@@ -7,6 +7,7 @@ import com.webforj.plugin.foundation.WatchConfigGuard;
 import com.webforj.plugin.foundation.WatchPortFile;
 import com.webforj.plugin.foundation.WatchProtocol;
 import com.webforj.plugin.foundation.WatchSocketServer;
+import com.webforj.plugin.maven.devtools.SpringDevtoolsInjection;
 import com.webforj.plugin.maven.hotswap.HotswapInjection;
 import com.webforj.plugin.maven.hotswap.HotswapOptions;
 import java.io.IOException;
@@ -23,6 +24,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.toolchain.Toolchain;
 import org.apache.maven.toolchain.ToolchainManager;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
 
 /**
  * Goal that runs the development bundle watch in the stable Maven process and forwards its output
@@ -80,11 +83,20 @@ public class WatchMojo extends AbstractBundlerMojo {
   @Component
   protected ToolchainManager toolchainManager;
 
+  /** The repository system the devtools dependency tree is resolved through. */
+  @Component
+  protected RepositorySystem repositorySystem;
+
+  /** The repository session of the build. */
+  @Parameter(defaultValue = "${repositorySystemSession}", readonly = true, required = true)
+  protected RepositorySystemSession repositorySession;
+
   @Override
   public void execute() throws MojoExecutionException {
-    // The agent attachment does not depend on the frontend, so it happens before the watch decides
-    // whether there is anything to bundle.
+    // The agent attachment and the devtools delivery do not depend on the frontend, so they happen
+    // before the watch decides whether there is anything to bundle.
     attachHotswap();
+    deliverDevtools();
 
     if (!sourceRoot.isDirectory()) {
       getLog().info("no bundle source root at " + sourceRoot + ", skipping the watch");
@@ -141,6 +153,14 @@ public class WatchMojo extends AbstractBundlerMojo {
     HotswapInjection.create().setProject(project).setUserProperties(userProperties)
         .setOptions(hotswap).setCommandLineValue(hotswapSelection)
         .setJavaExecutable(toolchainJavaExecutable()).setLog(getLog()).build().apply();
+  }
+
+  private void deliverDevtools() throws MojoExecutionException {
+    Properties userProperties = session == null ? new Properties() : session.getUserProperties();
+    SpringDevtoolsInjection.create().setProject(project).setUserProperties(userProperties)
+        .setResolver(SpringDevtoolsInjection.resolver(repositorySystem, repositorySession,
+            project.getRemoteProjectRepositories()))
+        .setLog(getLog()).build().apply();
   }
 
   private Path toolchainJavaExecutable() {
