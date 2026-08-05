@@ -2,6 +2,7 @@ package com.webforj.devtools.craftforj.capabilities;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -161,5 +162,34 @@ class CapabilitiesProviderTest {
   void shouldReturnUnmodifiableList() {
     CapabilitiesProvider provider = provider("26.02", true);
     assertThrows(UnsupportedOperationException.class, () -> provider.getCapabilities().add("test"));
+  }
+
+  @Nested
+  @DisplayName("hotswap")
+  class Hotswap {
+
+    @Test
+    @DisplayName("Should report the state the build plugin declared for the run")
+    void shouldReportTheDeclaredState() {
+      System.setProperty(CapabilitiesProvider.HOTSWAP_TOOL_PROPERTY, "hotswapAgent");
+      System.setProperty(CapabilitiesProvider.HOTSWAP_LEVEL_PROPERTY, "limited");
+
+      try {
+        CapabilitiesProvider provider = provider("26.02", true);
+        assertEquals("hotswapAgent", provider.getHotswapTool());
+        assertEquals("limited", provider.getHotswapLevel());
+      } finally {
+        System.clearProperty(CapabilitiesProvider.HOTSWAP_TOOL_PROPERTY);
+        System.clearProperty(CapabilitiesProvider.HOTSWAP_LEVEL_PROPERTY);
+      }
+    }
+
+    @Test
+    @DisplayName("Should report nothing when no tool is attached")
+    void shouldReportNothingWithoutTheDeclaration() {
+      CapabilitiesProvider provider = provider("26.02", true);
+      assertNull(provider.getHotswapTool());
+      assertNull(provider.getHotswapLevel());
+    }
   }
 }

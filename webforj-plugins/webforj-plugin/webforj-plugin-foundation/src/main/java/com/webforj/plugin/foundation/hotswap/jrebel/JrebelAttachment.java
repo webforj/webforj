@@ -22,6 +22,9 @@ import java.util.function.Consumer;
  */
 public final class JrebelAttachment implements HotswapAttachment {
 
+  static final String TOOL_ARGUMENT = "-Dwebforj.hotswap.tool=jrebel";
+  static final String LEVEL_ARGUMENT = "-Dwebforj.hotswap.level=full";
+
   private final Path path;
   private final Consumer<String> log;
 
@@ -50,9 +53,11 @@ public final class JrebelAttachment implements HotswapAttachment {
 
     String name = path.getFileName().toString().toLowerCase(Locale.ROOT);
     String flag = name.endsWith(".jar") ? "-javaagent:" : "-agentpath:";
-    log.accept("hotswap: JRebel attached to the application virtual machine from " + path);
+    log.accept("webforJ hotswap: JRebel attached to the application virtual machine from " + path);
 
-    return List.of(flag + path.toAbsolutePath());
+    // The properties tell the application which tool this attachment installed. JRebel carries
+    // its own redefinition support on every virtual machine.
+    return List.of(flag + path.toAbsolutePath(), TOOL_ARGUMENT, LEVEL_ARGUMENT);
   }
 
   /**

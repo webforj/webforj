@@ -46,6 +46,8 @@ public final class HotswapAgentAttachment implements HotswapAttachment {
   static final String PROPERTIES_FILE_NAME = "hotswap-agent.properties";
   static final String REDEFINITION_OPTION = "AllowEnhancedClassRedefinition";
   static final String REDEFINITION_FLAG = "-XX:+" + REDEFINITION_OPTION;
+  static final String TOOL_ARGUMENT = "-Dwebforj.hotswap.tool=hotswapAgent";
+  static final String LEVEL_ARGUMENT_PREFIX = "-Dwebforj.hotswap.level=";
 
   static final String DEFAULT_REPOSITORY_HOST = "https://repo1.maven.org/maven2";
   static final String GROUP_ID = "org.hotswapagent";
@@ -109,7 +111,8 @@ public final class HotswapAgentAttachment implements HotswapAttachment {
 
     Path jar = resolve();
     Path propertiesFile = writeProperties();
-    log.accept("hotswap: HotswapAgent " + version + " attached to the application virtual machine");
+    log.accept("webforJ hotswap: HotswapAgent " + version
+        + " attached to the application virtual machine");
 
     // autoHotswap must travel as an agent argument. The agent reads it only from this line, a
     // value in the properties file never turns the automatic mode on.
@@ -129,6 +132,11 @@ public final class HotswapAgentAttachment implements HotswapAttachment {
     arguments.addAll(List.of("--add-opens=java.base/java.lang=ALL-UNNAMED",
         "--add-opens=java.base/java.io=ALL-UNNAMED",
         "--add-opens=java.desktop/java.beans=ALL-UNNAMED"));
+
+    // The properties tell the application which tool this attachment installed and how deep its
+    // updates go on this machine, so the running application can tell the developer.
+    arguments.add(TOOL_ARGUMENT);
+    arguments.add(LEVEL_ARGUMENT_PREFIX + (enhanced ? "full" : "limited"));
 
     return List.copyOf(arguments);
   }
@@ -196,9 +204,18 @@ public final class HotswapAgentAttachment implements HotswapAttachment {
   }
 
   private void warnLimitedCapability(String reason) {
-    warn.accept("hotswap: " + reason + ". Only method body changes will apply in place. Class "
-        + "structure changes need the JetBrains Runtime or another virtual machine accepting "
-        + REDEFINITION_FLAG);
+    // The block mirrors the banner JRebel prints at start, one framed paragraph the eye cannot
+    // scroll past, because a single line drowns between the other build output.
+    String frame = "#".repeat(76);
+    List<String> lines = List.of(frame, "", reason + ".", "",
+        "Only method body changes will apply in place. Class structure changes,",
+        "a new field or a new method for example, will not reach the running",
+        "application at all until it is restarted.", "",
+        "Full depth hotswap needs the JetBrains Runtime or another virtual",
+        "machine accepting " + REDEFINITION_FLAG, "", frame);
+    for (String line : lines) {
+      warn.accept(("webforJ hotswap: " + line).stripTrailing());
+    }
   }
 
   private Path resolve() throws IOException {
@@ -218,7 +235,7 @@ public final class HotswapAgentAttachment implements HotswapAttachment {
 
     Files.createDirectories(versionDir);
     String jarUrl = getJarUrl();
-    log.accept("downloading HotswapAgent " + version + " from " + jarUrl);
+    log.accept("webforJ hotswap: downloading HotswapAgent " + version + " from " + jarUrl);
 
     // Every download stages to its own file, so two builds racing on a cold cache can never write
     // into one another. The rename is the commit point, so a jar found in the cache later is

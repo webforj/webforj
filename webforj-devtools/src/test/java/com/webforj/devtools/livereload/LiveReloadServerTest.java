@@ -72,6 +72,21 @@ class LiveReloadServerTest {
   }
 
   @Test
+  void shouldHandTheDeclaredHotswapStateToTheConnectingClient() {
+    System.setProperty(LiveReloadServer.HOTSWAP_TOOL_PROPERTY, "hotswapAgent");
+    System.setProperty(LiveReloadServer.HOTSWAP_LEVEL_PROPERTY, "limited");
+
+    try {
+      server.onOpen(mockConnection, mockHandshake);
+
+      verify(mockConnection).send(gson.toJson(new ConnectedMessage("hotswapAgent", "limited")));
+    } finally {
+      System.clearProperty(LiveReloadServer.HOTSWAP_TOOL_PROPERTY);
+      System.clearProperty(LiveReloadServer.HOTSWAP_LEVEL_PROPERTY);
+    }
+  }
+
+  @Test
   void shouldRemoveConnectionWhenClientDisconnects() {
     server.onOpen(mockConnection, mockHandshake);
     assertEquals(1, server.getConnectionCount());

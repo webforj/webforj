@@ -185,7 +185,8 @@ public class CraftforjLifecycleListener implements AppLifecycleListener {
     // Capabilities action (always registered for communication)
     actionRegistry.register(new GetCapabilitiesAction(capabilitiesProvider.getVersion(),
         capabilitiesProvider.isLicensed(), capabilitiesProvider.getCapabilities(),
-        capabilitiesProvider.getCompileGate()));
+        capabilitiesProvider.getCompileGate(), capabilitiesProvider.getHotswapTool(),
+        capabilitiesProvider.getHotswapLevel()));
   }
 
   /**

@@ -62,6 +62,16 @@ public class CapabilitiesProvider {
    */
   public static final String COMPILE_GATE_PARSE_ONLY = "parse-only";
 
+  /**
+   * The system property the build plugin sets to name the attached hotswap tool.
+   */
+  public static final String HOTSWAP_TOOL_PROPERTY = "webforj.hotswap.tool";
+
+  /**
+   * The system property the build plugin sets to name the depth of the class updates.
+   */
+  public static final String HOTSWAP_LEVEL_PROPERTY = "webforj.hotswap.level";
+
   private final VersionDetector versionDetector;
   private final FrameworkVersionDetector frameworkVersion;
   private final FeatureFlags features;
@@ -153,6 +163,28 @@ public class CapabilitiesProvider {
   public String getCompileGate() {
     return ToolProvider.getSystemJavaCompiler() != null ? COMPILE_GATE_FULL
         : COMPILE_GATE_PARSE_ONLY;
+  }
+
+  /**
+   * Gets the hotswap tool the build plugin attached to this run.
+   *
+   * @return {@code hotswapAgent} or {@code jrebel}, or {@code null} when no tool is attached
+   *
+   * @since 26.02
+   */
+  public String getHotswapTool() {
+    return System.getProperty(HOTSWAP_TOOL_PROPERTY);
+  }
+
+  /**
+   * Gets the depth of the class updates the attached tool applies on this virtual machine.
+   *
+   * @return {@code full} or {@code limited}, or {@code null} when no tool is attached
+   *
+   * @since 26.02
+   */
+  public String getHotswapLevel() {
+    return System.getProperty(HOTSWAP_LEVEL_PROPERTY);
   }
 
   /**

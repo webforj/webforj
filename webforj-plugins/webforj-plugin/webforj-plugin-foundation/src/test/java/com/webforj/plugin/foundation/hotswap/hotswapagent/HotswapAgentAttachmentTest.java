@@ -143,9 +143,13 @@ class HotswapAgentAttachmentTest {
         "the agent still attaches for the method body changes");
     assertTrue(arguments.stream().noneMatch("-XX:+AllowEnhancedClassRedefinition"::equals),
         "the unsupported flag never reaches the virtual machine");
-    assertEquals(1, warnings.size());
-    assertTrue(warnings.get(0).contains("method body changes"));
-    assertTrue(warnings.get(0).contains("-XX:+AllowEnhancedClassRedefinition"),
+    assertTrue(arguments.contains(HotswapAgentAttachment.TOOL_ARGUMENT));
+    assertTrue(arguments.contains(HotswapAgentAttachment.LEVEL_ARGUMENT_PREFIX + "limited"),
+        "the application learns the limited depth of this run");
+    String warning = String.join("\n", warnings);
+    assertTrue(warning.contains("####"), "the warning frames itself so it cannot be missed");
+    assertTrue(warning.contains("method body changes"));
+    assertTrue(warning.contains("-XX:+AllowEnhancedClassRedefinition"),
         "the requirement is named for the user");
   }
 
@@ -163,8 +167,7 @@ class HotswapAgentAttachmentTest {
 
     assertTrue(arguments.stream().anyMatch(argument -> argument.startsWith("-javaagent:")));
     assertTrue(arguments.stream().noneMatch("-XX:+AllowEnhancedClassRedefinition"::equals));
-    assertEquals(1, warnings.size());
-    assertTrue(warnings.get(0).contains("java executable"));
+    assertTrue(String.join("\n", warnings).contains("java executable"));
   }
 
   @Test
@@ -182,6 +185,9 @@ class HotswapAgentAttachmentTest {
 
     assertTrue(arguments.contains("-XX:+AllowEnhancedClassRedefinition"),
         "the running virtual machine answered the capability itself");
+    assertTrue(arguments.contains(HotswapAgentAttachment.TOOL_ARGUMENT));
+    assertTrue(arguments.contains(HotswapAgentAttachment.LEVEL_ARGUMENT_PREFIX + "full"),
+        "the application learns the full depth of this run");
     assertTrue(warnings.isEmpty());
   }
 
@@ -200,8 +206,7 @@ class HotswapAgentAttachmentTest {
     assertTrue(arguments.stream().anyMatch(argument -> argument.startsWith("-javaagent:")),
         "the agent still attaches for the method body changes");
     assertTrue(arguments.stream().noneMatch("-XX:+AllowEnhancedClassRedefinition"::equals));
-    assertEquals(1, warnings.size());
-    assertTrue(warnings.get(0).contains("method body changes"));
+    assertTrue(String.join("\n", warnings).contains("method body changes"));
   }
 
   @Test

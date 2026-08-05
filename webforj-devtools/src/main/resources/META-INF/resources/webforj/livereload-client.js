@@ -150,6 +150,288 @@
   }
 
   /**
+   * Tells the developer when the attached hotswap tool runs with limited depth on this machine.
+   *
+   * The state arrives with the connected handshake. On a virtual machine with full class
+   * redefinition nothing ever shows, the run simply works. The card appears only for the limited
+   * state, once, and stays away after the developer acknowledges it until the state changes
+   * again, a different tool or a different virtual machine.
+   */
+  class HotswapNotice {
+    constructor() {
+      /** @type {string} localStorage key holding the acknowledged state */
+      this.storageKey = 'webforj-devtools:hotswap-state';
+
+      /** @type {string} id of the notice element */
+      this.noticeId = 'webforj-livereload-hotswap-notice';
+
+      /** @type {string} id of the injected style element */
+      this.styleId = 'webforj-livereload-hotswap-style';
+    }
+
+    /**
+     * Handles the state carried by one connected message.
+     *
+     * @param {{hotswapTool: string, hotswapLevel: string}} message the connected message
+     */
+    handle(message) {
+      const tool = message.hotswapTool;
+      if (!tool || message.hotswapLevel !== 'limited') {
+        // A full depth run needs no explanation, it simply works. Only the limitation is worth
+        // interrupting the developer for.
+        return;
+      }
+
+      const state = tool + '/' + message.hotswapLevel;
+      if (this.acknowledgedState() === state || document.getElementById(this.noticeId)) {
+        return;
+      }
+
+      this.show({
+        title: 'webforJ LiveReload',
+        texts: [
+          'Edits inside a method body reach the running application instantly. Changes to the '
+            + 'structure of a class, a new field or a new method for example, do not reach it at '
+            + 'all until you restart the application yourself.',
+          'Run the application on the JetBrains Runtime and every class change applies '
+            + 'instantly with the application state kept.'
+        ],
+        linkText: 'Or explore the other reload methods webforJ supports',
+        linkUrl: 'https://docs.webforj.com/docs/configuration/deploy-reload/overview',
+        actionText: 'Get the JetBrains Runtime',
+        actionUrl: 'https://github.com/JetBrains/JetBrainsRuntime/releases'
+      }, state);
+    }
+
+    /**
+     * Reads the acknowledged state.
+     *
+     * @returns {string|null} the acknowledged state, null when none is stored
+     */
+    acknowledgedState() {
+      try {
+        return localStorage.getItem(this.storageKey);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    /**
+     * Remembers one state as acknowledged.
+     *
+     * @param {string} state the state to remember
+     */
+    acknowledge(state) {
+      try {
+        localStorage.setItem(this.storageKey, state);
+      } catch (e) {
+        // Without storage the card simply returns on the next connection.
+      }
+    }
+
+    /**
+     * Shows the card for one state.
+     *
+     * The card wears the same self contained look as the craftforJ intro card, which renders in
+     * the app page the same way and defines these values for exactly that reason.
+     *
+     * @param {{title: string, texts: string[], linkText: string, linkUrl: string,
+     *     actionText: string, actionUrl: string}} content the card content
+     * @param {string} state the state the card describes
+     */
+    show(content, state) {
+      if (!document.getElementById(this.styleId)) {
+        const style = document.createElement('style');
+        style.id = this.styleId;
+        style.textContent = /* css */`
+          #webforj-livereload-hotswap-notice {
+            position: fixed;
+            left: 14px;
+            bottom: 72px;
+            z-index: 2147483644;
+            display: flex;
+            flex-direction: column;
+            width: 360px;
+            max-width: calc(100vw - 28px);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 16px;
+            background: linear-gradient(160deg, #26262e 0%, #131317 55%, #08080a 100%);
+            box-shadow: 0 18px 50px rgba(10, 6, 24, 0.5), 0 0 0 1px rgba(0, 0, 0, 0.12),
+              0 0 0 1px rgba(255, 255, 255, 0.08), 0 8px 22px rgba(0, 0, 0, 0.55);
+            color: #f4f4f6;
+            font: 400 13px/1.55 system-ui, sans-serif;
+            opacity: 0;
+            transform: translateY(14px) scale(0.96);
+            transition: opacity 240ms cubic-bezier(0.34, 1.4, 0.64, 1),
+              transform 240ms cubic-bezier(0.34, 1.4, 0.64, 1);
+          }
+
+          #webforj-livereload-hotswap-notice.is-in {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+
+          #webforj-livereload-hotswap-notice .wdt-hotswap__body {
+            padding: 14px 16px 4px;
+          }
+
+          #webforj-livereload-hotswap-notice .wdt-hotswap__eyebrow {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #86a8ff;
+          }
+
+          #webforj-livereload-hotswap-notice .wdt-hotswap__title {
+            margin: 4px 0 6px;
+            font-size: 17px;
+            font-weight: 650;
+            color: #fff;
+          }
+
+          #webforj-livereload-hotswap-notice .wdt-hotswap__text {
+            margin: 0;
+            color: #b5b5be;
+          }
+
+          #webforj-livereload-hotswap-notice .wdt-hotswap__text + .wdt-hotswap__text {
+            margin-top: 9px;
+          }
+
+          #webforj-livereload-hotswap-notice .wdt-hotswap__link {
+            display: inline-block;
+            margin-top: 9px;
+            color: #86a8ff;
+            text-decoration: none;
+          }
+
+          #webforj-livereload-hotswap-notice .wdt-hotswap__link:hover {
+            text-decoration: underline;
+          }
+
+          #webforj-livereload-hotswap-notice .wdt-hotswap__footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            padding: 12px 16px 14px;
+          }
+
+          #webforj-livereload-hotswap-notice .wdt-hotswap__btn {
+            all: unset;
+            padding: 7px 13px;
+            border-radius: 9px;
+            font: 500 12.5px/1 system-ui, sans-serif;
+            cursor: pointer;
+            transition: background 140ms ease, transform 140ms ease;
+          }
+
+          #webforj-livereload-hotswap-notice .wdt-hotswap__btn:active {
+            transform: scale(0.96);
+          }
+
+          #webforj-livereload-hotswap-notice .wdt-hotswap__btn--quiet {
+            color: #b5b5be;
+          }
+
+          #webforj-livereload-hotswap-notice .wdt-hotswap__btn--quiet:hover {
+            background: rgba(255, 255, 255, 0.07);
+            color: #f4f4f6;
+          }
+
+          #webforj-livereload-hotswap-notice .wdt-hotswap__btn--accent {
+            background: #3b6ef6;
+            color: #fff;
+          }
+
+          #webforj-livereload-hotswap-notice .wdt-hotswap__btn--accent:hover {
+            background: #5b8cff;
+          }
+
+          @media (prefers-reduced-motion: reduce) {
+            #webforj-livereload-hotswap-notice {
+              transition: opacity 220ms ease;
+              transform: none;
+            }
+          }
+        `;
+        document.head.appendChild(style);
+      }
+
+      const host = document.createElement('div');
+      host.id = this.noticeId;
+      host.setAttribute('role', 'dialog');
+      host.setAttribute('aria-label', content.title);
+
+      const body = document.createElement('div');
+      body.className = 'wdt-hotswap__body';
+
+      const eyebrow = document.createElement('span');
+      eyebrow.className = 'wdt-hotswap__eyebrow';
+      eyebrow.textContent = 'hotswap';
+
+      const title = document.createElement('h2');
+      title.className = 'wdt-hotswap__title';
+      title.textContent = content.title;
+
+      body.appendChild(eyebrow);
+      body.appendChild(title);
+      content.texts.forEach(function (line) {
+        const text = document.createElement('p');
+        text.className = 'wdt-hotswap__text';
+        text.textContent = line;
+        body.appendChild(text);
+      });
+
+      const link = document.createElement('a');
+      link.className = 'wdt-hotswap__link';
+      link.textContent = content.linkText;
+      link.href = content.linkUrl;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      body.appendChild(link);
+
+      const footer = document.createElement('div');
+      footer.className = 'wdt-hotswap__footer';
+
+      const notice = this;
+      const dismiss = function () {
+        notice.acknowledge(state);
+        // The exit mirrors the entrance, and the card leaves the tree once it has played.
+        host.classList.remove('is-in');
+        setTimeout(function () {
+          host.remove();
+        }, 240);
+      };
+
+      const gotIt = document.createElement('button');
+      gotIt.type = 'button';
+      gotIt.className = 'wdt-hotswap__btn wdt-hotswap__btn--quiet';
+      gotIt.textContent = 'Got it';
+      gotIt.addEventListener('click', dismiss);
+
+      const action = document.createElement('button');
+      action.type = 'button';
+      action.className = 'wdt-hotswap__btn wdt-hotswap__btn--accent';
+      action.textContent = content.actionText;
+      action.addEventListener('click', function () {
+        window.open(content.actionUrl, '_blank', 'noopener');
+        dismiss();
+      });
+
+      footer.appendChild(gotIt);
+      footer.appendChild(action);
+      host.appendChild(body);
+      host.appendChild(footer);
+      document.body.appendChild(host);
+
+      requestAnimationFrame(function () {
+        host.classList.add('is-in');
+      });
+    }
+  }
+
+  /**
    * Publishes the restart lifecycle to the DevTools panel.
    *
    * The panel runs in a realm of its own, an iframe on this page, a window popped out of it, or a
@@ -918,6 +1200,9 @@
       /** @type {StatusIndicator} */
       this.status = new StatusIndicator();
 
+      /** @type {HotswapNotice} */
+      this.hotswapNotice = new HotswapNotice();
+
       /** @type {StateBroadcaster} */
       this.state = new StateBroadcaster('webforj-devtools-bus');
 
@@ -1024,6 +1309,7 @@
 
         case 'connected':
           this.logger.log('🤝 Handshake complete - LiveReload is listening for changes!');
+          this.hotswapNotice.handle(message);
           break;
 
         case 'restarting':

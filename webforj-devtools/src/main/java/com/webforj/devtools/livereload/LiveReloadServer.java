@@ -35,6 +35,12 @@ public class LiveReloadServer extends WebSocketServer {
   private static final System.Logger logger = System.getLogger(LiveReloadServer.class.getName());
   private static final String CONNECTED_SESSIONS = " connected sessions";
 
+  /** The system property the build plugin sets to name the attached hotswap tool. */
+  static final String HOTSWAP_TOOL_PROPERTY = "webforj.hotswap.tool";
+
+  /** The system property the build plugin sets to name the depth of the class updates. */
+  static final String HOTSWAP_LEVEL_PROPERTY = "webforj.hotswap.level";
+
   private final Set<WebSocket> connections = ConcurrentHashMap.newKeySet();
   private final Map<String, ResourceUpdateMessage> lastResourceUpdates = new ConcurrentHashMap<>();
   private final Map<String, Long> lastClassUpdates = new ConcurrentHashMap<>();
@@ -89,7 +95,10 @@ public class LiveReloadServer extends WebSocketServer {
     logger.log(System.Logger.Level.DEBUG,
         "webforJ livereload client connected. Total connections: " + connections.size());
 
-    conn.send(gson.toJson(new ConnectedMessage()));
+    // The build plugin attachment declares the hotswap state of this run as system properties,
+    // and the handshake hands it to the page, so the developer learns what this run applies.
+    conn.send(gson.toJson(new ConnectedMessage(System.getProperty(HOTSWAP_TOOL_PROPERTY),
+        System.getProperty(HOTSWAP_LEVEL_PROPERTY))));
   }
 
   /**

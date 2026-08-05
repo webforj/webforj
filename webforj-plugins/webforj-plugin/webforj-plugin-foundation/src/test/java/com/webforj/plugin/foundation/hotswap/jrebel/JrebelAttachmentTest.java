@@ -16,7 +16,9 @@ class JrebelAttachmentTest {
   void shouldAttachTheNativeLibraryThroughAgentpath(@TempDir Path tmp) throws Exception {
     Path library = Files.createFile(tmp.resolve("libjrebel64.dylib"));
 
-    assertEquals(List.of("-agentpath:" + library.toAbsolutePath()),
+    assertEquals(
+        List.of("-agentpath:" + library.toAbsolutePath(), JrebelAttachment.TOOL_ARGUMENT,
+            JrebelAttachment.LEVEL_ARGUMENT),
         JrebelAttachment.create().setPath(library).build().arguments());
   }
 
@@ -24,7 +26,9 @@ class JrebelAttachmentTest {
   void shouldAttachTheJarThroughJavaagent(@TempDir Path tmp) throws Exception {
     Path jar = Files.createFile(tmp.resolve("jrebel.jar"));
 
-    assertEquals(List.of("-javaagent:" + jar.toAbsolutePath()),
+    assertEquals(
+        List.of("-javaagent:" + jar.toAbsolutePath(), JrebelAttachment.TOOL_ARGUMENT,
+            JrebelAttachment.LEVEL_ARGUMENT),
         JrebelAttachment.create().setPath(jar).build().arguments());
   }
 
