@@ -1,6 +1,15 @@
 package com.webforj.plugin.gradle;
 
+import com.webforj.plugin.foundation.hotswap.HotswapLaunch;
+import com.webforj.plugin.gradle.devtools.SpringDevtoolsInjection;
+import com.webforj.plugin.gradle.hotswap.HotswapInjection;
 import java.io.File;
+import java.lang.reflect.Method;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.file.Directory;
@@ -8,6 +17,7 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.provider.Provider;
+import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.jvm.tasks.Jar;
@@ -27,6 +37,7 @@ public class WebforjPlugin implements Plugin<Project> {
   private static final String TEST_TASK = "webforjTest";
   private static final String WATCH_TASK = "webforjWatch";
   private static final String CLEAN_TASK = "webforjCleanFrontend";
+  private static final String SPRING_BOOT_PLUGIN_ID = "org.springframework.boot";
 
   /**
    * {@inheritDoc}
@@ -77,6 +88,101 @@ public class WebforjPlugin implements Plugin<Project> {
 
     project.getPlugins().withId("base", plugin -> project.getTasks().named("clean")
         .configure(task -> task.dependsOn(cleanFrontend)));
+
+    configureHotswap(project, extension);
+    configureDevtools(project);
+  }
+
+  private void configureDevtools(Project project) {
+    // The devtools resolve against the application runtime classpath, so the lookup is wrapped in
+    // a callable that the run task asks only when it actually starts. The packaging tasks never
+    // read that classpath, so a packaged application can never contain the devtools.
+    project.getPlugins().withId(SPRING_BOOT_PLUGIN_ID, applied -> project.getTasks()
+        .withType(JavaExec.class).matching(task -> "bootRun".equals(task.getName())).configureEach(
+            task -> task.classpath(project.files(SpringDevtoolsInjection.getCallable(project)))));
+  }
+
+  private void configureHotswap(Project project, WebforjExtension extension) {
+    // The Spring Boot run task is a JavaExec, so the arguments join the fork through a provider
+    // that is only asked when the task actually runs.
+    project.getPlugins().withId(SPRING_BOOT_PLUGIN_ID,
+        applied -> project.getTasks().withType(JavaExec.class)
+            .matching(task -> "bootRun".equals(task.getName()))
+            .configureEach(task -> task.getJvmArgumentProviders()
+                .add(() -> hotswapArguments(project, extension, true, launcherExecutable(task)))));
+
+    // Gretty reads its jvmArgs when the run task starts, so the arguments are appended right
+    // before that in a first action of the same task. Every launch task of the runner is covered,
+    // whichever one the developer uses to start the application.
+    Set<String> grettyLaunchTasks = Set.of("appRun", "appRunDebug", "appStart", "appStartDebug");
+    project.getPlugins().withId("org.gretty",
+        applied -> project.getTasks().matching(task -> grettyLaunchTasks.contains(task.getName()))
+            .configureEach(
+                task -> task.doFirst("webforj hotswap", started -> appendGrettyJvmArgs(project,
+                    hotswapArguments(project, extension, false, null)))));
+
+    project.afterEvaluate(evaluated -> {
+      boolean configured = extension.getHotswap().isJrebelConfigured()
+          || extension.getHotswap().isHotswapAgentConfigured();
+      boolean runner = project.getPluginManager().hasPlugin(SPRING_BOOT_PLUGIN_ID)
+          || project.getPluginManager().hasPlugin("org.gretty");
+
+      if (configured && !runner) {
+        project.getLogger().warn(
+            HotswapLaunch.getMissingRunnerWarning("the Spring Boot plugin or the Gretty plugin"));
+      }
+    });
+  }
+
+  private List<String> hotswapArguments(Project project, WebforjExtension extension,
+      boolean springBootRunner, Path javaExecutable) {
+    Object selection = project.findProperty(HotswapLaunch.SELECTION_PROPERTY);
+
+    return HotswapInjection.create().setProject(project).setOptions(extension.getHotswap())
+        .setCommandLineValue(selection == null ? null : selection.toString())
+        .setSpringBootRunner(springBootRunner)
+        .setBuildDirectory(project.getLayout().getBuildDirectory().get().getAsFile().toPath())
+        .setJavaExecutable(javaExecutable).setLog(project.getLogger()).build().getArguments();
+  }
+
+  private static Path launcherExecutable(JavaExec task) {
+    // The toolchain resolved this launcher for the fork, so the capability check runs against the
+    // very virtual machine the application starts in.
+    return task.getJavaLauncher().isPresent()
+        ? task.getJavaLauncher().get().getExecutablePath().getAsFile().toPath()
+        : null;
+  }
+
+  private void appendGrettyJvmArgs(Project project, List<String> arguments) {
+    if (arguments.isEmpty()) {
+      return;
+    }
+
+    Object gretty = project.getExtensions().findByName("gretty");
+    if (gretty == null) {
+      return;
+    }
+
+    // The Gretty types are not on the plugin classpath, they come from the build that applies
+    // Gretty, so its extension is reached through its property accessors.
+    try {
+      Method getter = gretty.getClass().getMethod("getJvmArgs");
+      List<Object> merged = new ArrayList<>();
+      if (getter.invoke(gretty) instanceof List<?> current) {
+        merged.addAll(current);
+      }
+      // A build that invokes more than one launch task runs this action once per task, and the
+      // agent must enter the virtual machine exactly once.
+      for (String argument : arguments) {
+        if (!merged.contains(argument)) {
+          merged.add(argument);
+        }
+      }
+      gretty.getClass().getMethod("setJvmArgs", List.class).invoke(gretty, merged);
+    } catch (ReflectiveOperationException e) {
+      throw new GradleException(
+          "could not hand the hotswap agent to the Gretty runner: " + e.getMessage(), e);
+    }
   }
 
   private void applyConventions(Project project, WebforjExtension extension) {

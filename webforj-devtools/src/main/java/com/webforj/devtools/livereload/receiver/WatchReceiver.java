@@ -1,5 +1,6 @@
-package com.webforj.devtools.livereload;
+package com.webforj.devtools.livereload.receiver;
 
+import com.webforj.devtools.livereload.LiveReloadServer;
 import com.webforj.plugin.foundation.WatchPortFile;
 import com.webforj.plugin.foundation.WatchProtocol;
 import java.io.BufferedReader;
@@ -38,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author Hyyan Abo Fakher
  * @since 26.01
  */
-public class WatchReceiver {
+public class WatchReceiver implements LiveReloadReceiver {
 
   // Uses the bundler's own slf4j logger name so the re-logged watch output lands in the application
   // log under the same namespace and configuration as the bundler itself. A System.Logger would

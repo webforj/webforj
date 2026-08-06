@@ -7,14 +7,28 @@ import com.webforj.plugin.foundation.WatchConfigGuard;
 import com.webforj.plugin.foundation.WatchPortFile;
 import com.webforj.plugin.foundation.WatchProtocol;
 import com.webforj.plugin.foundation.WatchSocketServer;
+import com.webforj.plugin.foundation.hotswap.HotswapLaunch;
+import com.webforj.plugin.foundation.resolve.ArtifactResolver;
+import com.webforj.plugin.maven.devtools.SpringDevtoolsInjection;
+import com.webforj.plugin.maven.hotswap.HotswapInjection;
+import com.webforj.plugin.maven.hotswap.HotswapOptions;
+import com.webforj.plugin.maven.resolve.MavenArtifacts;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.toolchain.Toolchain;
+import org.apache.maven.toolchain.ToolchainManager;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
 
 /**
  * Goal that runs the development bundle watch in the stable Maven process and forwards its output
@@ -43,8 +57,50 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
     threadSafe = true)
 public class WatchMojo extends AbstractBundlerMojo {
 
+  /**
+   * The hotswap integration, naming the tool to attach.
+   *
+   * <p>
+   * When a tool is named, this goal places its agent arguments into the properties the application
+   * run goal reads for its fork, so the agent enters only the application virtual machine.
+   * </p>
+   */
+  @Parameter
+  protected HotswapOptions hotswap;
+
+  /**
+   * Command line selection of the hotswap tool, {@code jrebel} or {@code off}.
+   *
+   * <p>
+   * When given, this wins over the project configuration for the run.
+   * </p>
+   */
+  @Parameter(property = HotswapLaunch.SELECTION_PROPERTY)
+  protected String hotswapSelection;
+
+  /** The current Maven session, the source of the command line properties. */
+  @Parameter(defaultValue = "${session}", readonly = true, required = true)
+  protected MavenSession session;
+
+  /** The toolchain manager that names the virtual machine the application run goal forks. */
+  @Component
+  protected ToolchainManager toolchainManager;
+
+  /** The repository system the devtools dependency tree is resolved through. */
+  @Component
+  protected RepositorySystem repositorySystem;
+
+  /** The repository session of the build. */
+  @Parameter(defaultValue = "${repositorySystemSession}", readonly = true, required = true)
+  protected RepositorySystemSession repositorySession;
+
   @Override
   public void execute() throws MojoExecutionException {
+    // The agent attachment and the devtools delivery do not depend on the frontend, so they happen
+    // before the watch decides whether there is anything to bundle.
+    attachHotswap();
+    deliverDevtools();
+
     if (!sourceRoot.isDirectory()) {
       getLog().info("no bundle source root at " + sourceRoot + ", skipping the watch");
 
@@ -70,7 +126,7 @@ public class WatchMojo extends AbstractBundlerMojo {
 
     BundlerExecution execution = createExecution();
     try {
-      WatchSession session =
+      WatchSession watchSession =
           execution.watch(createRequest(), changed -> socket.send(WatchProtocol.rebuild(changed)),
               (level, line) -> sink.get().log(level, line));
       sink.set((level, line) -> socket
@@ -78,11 +134,11 @@ public class WatchMojo extends AbstractBundlerMojo {
               : WatchProtocol.log(line)));
       // The application rescans for new bundle entries every time it connects, which is every
       // development restart.
-      if (session != null) {
-        socket.setOnConnect(session::rescan);
+      if (watchSession != null) {
+        socket.setOnConnect(watchSession::rescan);
       }
 
-      installShutdownHook(session, socket, portFile, configGuard);
+      installShutdownHook(watchSession, socket, portFile, configGuard);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       closeGuard(configGuard);
@@ -93,6 +149,41 @@ public class WatchMojo extends AbstractBundlerMojo {
       closeSocket(socket, portFile);
       throw new MojoExecutionException("the watch failed to start: " + e.getMessage(), e);
     }
+  }
+
+  private void attachHotswap() throws MojoExecutionException {
+    Properties userProperties = session == null ? new Properties() : session.getUserProperties();
+    HotswapInjection.create().setProject(project).setUserProperties(userProperties)
+        .setOptions(hotswap).setCommandLineValue(hotswapSelection)
+        .setResolver(getArtifactResolver()).setJavaExecutable(toolchainJavaExecutable())
+        .setLog(getLog()).build().apply();
+  }
+
+  private void deliverDevtools() throws MojoExecutionException {
+    Properties userProperties = session == null ? new Properties() : session.getUserProperties();
+    SpringDevtoolsInjection.create().setProject(project).setUserProperties(userProperties)
+        .setResolver(getArtifactResolver()).setLog(getLog()).build().apply();
+  }
+
+  private ArtifactResolver getArtifactResolver() {
+    return MavenArtifacts.getResolver(repositorySystem, repositorySession,
+        project.getRemoteProjectRepositories());
+  }
+
+  private Path toolchainJavaExecutable() {
+    if (toolchainManager == null || session == null) {
+      return null;
+    }
+
+    // The application run goal forks the toolchain from the build context when one is configured,
+    // otherwise this very virtual machine, so the capability check follows the same selection.
+    Toolchain toolchain = toolchainManager.getToolchainFromBuildContext("jdk", session);
+    if (toolchain == null) {
+      return null;
+    }
+
+    String java = toolchain.findTool("java");
+    return java == null || java.isBlank() ? null : Path.of(java);
   }
 
   private WatchConfigGuard startConfigGuard(WatchSocketServer socket) {

@@ -2,6 +2,8 @@ package com.webforj.router;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -10,7 +12,6 @@ import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -552,6 +553,72 @@ class RouterTest {
     void shouldReturnEmptyOptionalWhenNoResolvedLocation() {
       Optional<Location> resolvedLocation = router.getResolvedLocation();
       assertFalse(resolvedLocation.isPresent());
+    }
+  }
+
+  @Nested
+  class Recreate {
+
+    @Test
+    void shouldRebuildTheActiveViewInPlace() {
+      router.navigate(new Location("/main"));
+      Component first = router.getRenderer().getRenderedComponent(MainView.class).orElseThrow();
+
+      NavigationOptions options =
+          new NavigationOptions().setUpdateHistory(false).setRecreateFrom(MainView.class);
+      AtomicBoolean rendered = new AtomicBoolean(false);
+      router.navigate(new Location("/main"), options, result -> rendered.set(result.isPresent()));
+
+      assertTrue(rendered.get());
+      assertTrue(first.isDestroyed());
+
+      Component fresh = router.getRenderer().getRenderedComponent(MainView.class).orElseThrow();
+      assertNotSame(first, fresh);
+    }
+
+    @Test
+    void shouldRebuildTheWholeHierarchy() {
+      router.navigate(new Location("/main/5"));
+      Component firstLayout =
+          router.getRenderer().getRenderedComponent(MainView.class).orElseThrow();
+      Component firstView = router.getRenderer().getRenderedComponent(PageView.class).orElseThrow();
+
+      NavigationOptions options =
+          new NavigationOptions().setUpdateHistory(false).setRecreateFrom(MainView.class);
+      router.navigate(new Location("/main/5"), options);
+
+      assertTrue(firstLayout.isDestroyed());
+      assertTrue(firstView.isDestroyed());
+      assertNotSame(firstLayout,
+          router.getRenderer().getRenderedComponent(MainView.class).orElseThrow());
+      assertNotSame(firstView,
+          router.getRenderer().getRenderedComponent(PageView.class).orElseThrow());
+    }
+
+    @Test
+    void shouldKeepTheResolvedLocationAndHistoryUntouched() {
+      router.navigate(new Location("/about"));
+      router.navigate(new Location("/main"));
+
+      NavigationOptions options =
+          new NavigationOptions().setUpdateHistory(false).setRecreateFrom(MainView.class);
+      router.navigate(new Location("/main"), options);
+
+      assertEquals("/main", router.getResolvedLocation().orElseThrow().getFullURI());
+      assertEquals("/main", history.getLocation().orElseThrow().getFullURI());
+    }
+
+    @Test
+    void shouldNavigateAsUsualForTheClassWithoutTheRenderedInstance() {
+      router.navigate(new Location("/main"));
+      Component first = router.getRenderer().getRenderedComponent(MainView.class).orElseThrow();
+
+      NavigationOptions options =
+          new NavigationOptions().setUpdateHistory(false).setRecreateFrom(AboutView.class);
+      router.navigate(new Location("/main"), options);
+
+      assertFalse(first.isDestroyed());
+      assertSame(first, router.getRenderer().getRenderedComponent(MainView.class).orElseThrow());
     }
   }
 

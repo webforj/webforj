@@ -1,13 +1,20 @@
 package com.webforj.devtools.livereload;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.webforj.devtools.livereload.message.ClassUpdateErrorMessage;
+import com.webforj.devtools.livereload.message.ClassUpdateMessage;
 import com.webforj.devtools.livereload.message.ConnectedMessage;
 import com.webforj.devtools.livereload.message.HeartbeatAckMessage;
+import com.webforj.devtools.livereload.message.HelloMessage;
 import com.webforj.devtools.livereload.message.ReloadMessage;
 import com.webforj.devtools.livereload.message.ResourceUpdateMessage;
 import com.webforj.devtools.livereload.message.RestartingMessage;
 import java.net.InetSocketAddress;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -27,11 +34,21 @@ import org.java_websocket.server.WebSocketServer;
  */
 public class LiveReloadServer extends WebSocketServer {
   private static final System.Logger logger = System.getLogger(LiveReloadServer.class.getName());
+  private static final String CONNECTED_SESSIONS = " connected sessions";
+
+  /** The system property the build plugin sets to name the attached hotswap tool. */
+  static final String HOTSWAP_TOOL_PROPERTY = "webforj.hotswap.tool";
+
+  /** The system property the build plugin sets to name the depth of the class updates. */
+  static final String HOTSWAP_LEVEL_PROPERTY = "webforj.hotswap.level";
 
   private final Set<WebSocket> connections = ConcurrentHashMap.newKeySet();
+  private final Map<String, ResourceUpdateMessage> lastResourceUpdates = new ConcurrentHashMap<>();
+  private final Map<String, Long> lastClassUpdates = new ConcurrentHashMap<>();
   private final Gson gson = new Gson();
   private volatile boolean running = false;
   private volatile boolean started = false;
+  private volatile long lastReloadCommandAt = 0;
 
   /**
    * Creates a reload server on the given port.
@@ -76,10 +93,13 @@ public class LiveReloadServer extends WebSocketServer {
   @Override
   public void onOpen(WebSocket conn, ClientHandshake handshake) {
     connections.add(conn);
-    logger.log(System.Logger.Level.INFO,
+    logger.log(System.Logger.Level.DEBUG,
         "webforJ livereload client connected. Total connections: " + connections.size());
 
-    conn.send(gson.toJson(new ConnectedMessage()));
+    // The build plugin attachment declares the hotswap state of this run as system properties,
+    // and the handshake hands it to the page, so the developer learns what this run applies.
+    conn.send(gson.toJson(new ConnectedMessage(System.getProperty(HOTSWAP_TOOL_PROPERTY),
+        System.getProperty(HOTSWAP_LEVEL_PROPERTY))));
   }
 
   /**
@@ -88,8 +108,8 @@ public class LiveReloadServer extends WebSocketServer {
   @Override
   public void onClose(WebSocket conn, int code, String reason, boolean remote) {
     connections.remove(conn);
-    logger.log(System.Logger.Level.INFO, "webforJ livereload client disconnected. Reason: " + reason
-        + ", Total connections: " + connections.size());
+    logger.log(System.Logger.Level.DEBUG, "webforJ livereload client disconnected. Reason: "
+        + reason + ", Total connections: " + connections.size());
   }
 
   /**
@@ -101,7 +121,10 @@ public class LiveReloadServer extends WebSocketServer {
     if ("ping".equals(message)) {
       conn.send(gson.toJson(new HeartbeatAckMessage()));
       logger.log(System.Logger.Level.DEBUG, "Sent heartbeat-ack");
+      return;
     }
+
+    handleHello(conn, message);
   }
 
   /**
@@ -146,9 +169,12 @@ public class LiveReloadServer extends WebSocketServer {
    */
   public void sendReloadMessage() {
     cleanupConnections();
+    // The stamp survives the broadcast, so a browser that is between pages right now still learns
+    // about this command when its next page connects and reports an older served time.
+    lastReloadCommandAt = System.currentTimeMillis();
 
     logger.log(System.Logger.Level.INFO,
-        "Triggering browser reload for " + connections.size() + " connected sessions");
+        "Triggering browser reload for " + connections.size() + CONNECTED_SESSIONS);
 
     int successCount = 0;
     for (WebSocket conn : connections) {
@@ -180,7 +206,7 @@ public class LiveReloadServer extends WebSocketServer {
     cleanupConnections();
 
     logger.log(System.Logger.Level.INFO,
-        "Notifying " + connections.size() + " connected sessions about the server restart");
+        "Notifying " + connections.size() + CONNECTED_SESSIONS + " about the server restart");
 
     for (WebSocket conn : connections) {
       if (conn.isOpen()) {
@@ -210,10 +236,14 @@ public class LiveReloadServer extends WebSocketServer {
     ResourceUpdateMessage message = new ResourceUpdateMessage(resourceType, path, content);
     String json = gson.toJson(message);
 
+    // The latest update per path is kept, so a page that was between pages when this broadcast
+    // went out still receives it on its next connection and applies it in place.
+    lastResourceUpdates.put(path, message);
+
     cleanupConnections();
 
     logger.log(System.Logger.Level.INFO, "Sending resource update (" + resourceType + ": " + path
-        + ") to " + connections.size() + " connected sessions");
+        + ") to " + connections.size() + CONNECTED_SESSIONS);
 
     int successCount = 0;
     for (WebSocket conn : connections) {
@@ -230,6 +260,148 @@ public class LiveReloadServer extends WebSocketServer {
 
     logger.log(System.Logger.Level.INFO,
         "Successfully sent resource update to " + successCount + " clients");
+  }
+
+  /**
+   * Broadcasts a class update to every connected browser.
+   *
+   * <p>
+   * The message names the redefined Java classes, so each page can ask its application instance to
+   * rebuild exactly the part of the interface those classes drive instead of reloading the whole
+   * page.
+   * </p>
+   *
+   * @param classNames the binary names of the redefined classes
+   *
+   * @since 26.02
+   */
+  public void sendClassUpdateMessage(Set<String> classNames) {
+    if (classNames == null || classNames.isEmpty()) {
+      return;
+    }
+
+    ClassUpdateMessage message = new ClassUpdateMessage(List.copyOf(classNames));
+    String json = gson.toJson(message);
+
+    // The latest update per class is kept, so a page that was between pages when this broadcast
+    // went out still receives the classes it missed on its next connection.
+    for (String className : classNames) {
+      lastClassUpdates.put(className, message.getTimestamp());
+    }
+
+    cleanupConnections();
+
+    logger.log(System.Logger.Level.INFO, "Sending class update (" + String.join(", ", classNames)
+        + ") to " + connections.size() + CONNECTED_SESSIONS);
+
+    for (WebSocket conn : connections) {
+      if (conn.isOpen()) {
+        try {
+          conn.send(json);
+        } catch (Exception e) {
+          logger.log(System.Logger.Level.ERROR, "Error sending class update", e);
+          connections.remove(conn);
+        }
+      }
+    }
+  }
+
+  /**
+   * Broadcasts a class update rejection to every connected browser.
+   *
+   * <p>
+   * The virtual machine refused the redefinition, so the change never reached the application. Each
+   * page shows the rejection instead of refreshing into the unchanged code, which would silently
+   * present the old behavior as the new one.
+   * </p>
+   *
+   * @param classNames the binary names of the classes whose redefinition was in flight
+   * @param reason the rejection reason the virtual machine reported
+   *
+   * @since 26.02
+   */
+  public void sendClassUpdateErrorMessage(Set<String> classNames, String reason) {
+    ClassUpdateErrorMessage message = new ClassUpdateErrorMessage(
+        List.copyOf(classNames == null ? Set.of() : classNames), reason);
+    String json = gson.toJson(message);
+
+    cleanupConnections();
+
+    logger.log(System.Logger.Level.INFO, "Class update rejected by the virtual machine (" + reason
+        + "), notifying " + connections.size() + CONNECTED_SESSIONS);
+
+    for (WebSocket conn : connections) {
+      if (conn.isOpen()) {
+        try {
+          conn.send(json);
+        } catch (Exception e) {
+          logger.log(System.Logger.Level.ERROR, "Error sending class update rejection", e);
+          connections.remove(conn);
+        }
+      }
+    }
+  }
+
+  /**
+   * Catches a connecting page up on everything it missed while its browser was between pages.
+   *
+   * <p>
+   * A broadcast that fires while a browser is between pages reaches nobody and would otherwise be
+   * lost, leaving that browser on stale content. The client reports the server clock time its page
+   * was served with, and a page that already applied a resource update in place advances that
+   * stamp, so the comparison always names exactly what the page missed. A missed reload command
+   * gets the one reload it missed. A missed resource update is replayed to the page and applies in
+   * place, the same way the live broadcast would have, so a stylesheet change never turns into a
+   * page reload. A page with a newer stamp is never sent anything, so the catch up always ends.
+   * </p>
+   */
+  private void handleHello(WebSocket conn, String message) {
+    if (message == null || !message.startsWith("{")) {
+      return;
+    }
+
+    HelloMessage hello;
+    try {
+      hello = gson.fromJson(message, HelloMessage.class);
+    } catch (JsonSyntaxException e) {
+      logger.log(System.Logger.Level.DEBUG, "Ignoring an unreadable client message", e);
+      return;
+    }
+
+    if (hello == null || !HelloMessage.TYPE.equals(hello.getType())
+        || hello.getPageServedAt() <= 0) {
+      return;
+    }
+
+    if (lastReloadCommandAt > hello.getPageServedAt()) {
+      logger.log(System.Logger.Level.INFO,
+          "A page served before the last reload command connected, reloading it");
+      conn.send(gson.toJson(new ReloadMessage()));
+
+      // The reloaded page fetches every resource fresh, so nothing else needs replaying.
+      return;
+    }
+
+    for (ResourceUpdateMessage update : lastResourceUpdates.values()) {
+      if (update.getTimestamp() > hello.getPageServedAt()) {
+        logger.log(System.Logger.Level.INFO, "Replaying a missed resource update ("
+            + update.getResourceType() + ": " + update.getPath() + ") to a connecting page");
+        conn.send(gson.toJson(update));
+      }
+    }
+
+    Set<String> missedClasses = new TreeSet<>();
+    for (Map.Entry<String, Long> update : lastClassUpdates.entrySet()) {
+      if (update.getValue() > hello.getPageServedAt()) {
+        missedClasses.add(update.getKey());
+      }
+    }
+
+    if (!missedClasses.isEmpty()) {
+      logger.log(System.Logger.Level.INFO, "Replaying a missed class update ("
+          + String.join(", ", missedClasses) + ") to a connecting page");
+      conn.send(gson.toJson(new ClassUpdateMessage(List.copyOf(missedClasses))));
+    }
   }
 
   private void cleanupConnections() {

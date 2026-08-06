@@ -1,5 +1,6 @@
 package com.webforj.router;
 
+import com.webforj.component.Component;
 import com.webforj.router.history.History;
 import com.webforj.router.history.Location;
 
@@ -30,6 +31,7 @@ public class NavigationOptions {
   private boolean invokeObservers = true;
   private boolean updateHistory = true;
   private Object state = null;
+  private Class<? extends Component> recreateFrom = null;
 
   /**
    * Sets the navigation type.
@@ -162,5 +164,39 @@ public class NavigationOptions {
    */
   public Object getState() {
     return state;
+  }
+
+  /**
+   * Sets the route component the navigation recreates from.
+   *
+   * <p>
+   * The default value is {@code null}. When set, the navigation destroys the rendered instances of
+   * the given route component and of every route component below it before rendering, so the
+   * affected part of the hierarchy renders with fresh instances. Rendered instances above the given
+   * component are not touched. A lifecycle observer can veto the destruction, which fails the
+   * navigation. When the given component has no rendered instance the navigation behaves as usual.
+   * </p>
+   *
+   * @param recreateFrom the route component class to recreate from
+   * @return the navigate options
+   *
+   * @since 26.02
+   */
+  public NavigationOptions setRecreateFrom(Class<? extends Component> recreateFrom) {
+    this.recreateFrom = recreateFrom;
+    return this;
+  }
+
+  /**
+   * Gets the route component the navigation recreates from.
+   *
+   * @return the route component class to recreate from, or null when the navigation reuses the
+   *         rendered instances
+   * @see #setRecreateFrom(Class)
+   *
+   * @since 26.02
+   */
+  public Class<? extends Component> getRecreateFrom() {
+    return recreateFrom;
   }
 }

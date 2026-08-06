@@ -1,9 +1,9 @@
 /**
- * webforJ DevTools Reload Client
+ * webforJ LiveReload Client
  *
  * Keeps the open page alive while the development server restarts and reloads it exactly once
  * when the application can serve again. The client is built from small collaborators, each owning
- * one concern, wired together by {@link DevToolsClient}
+ * one concern, wired together by {@link LiveReloadClient}
  *
  * @author Hyyan Abo Fakher
  * @since 25.02
@@ -11,23 +11,36 @@
 (function () {
   'use strict';
 
-  if (!window.webforjDevToolsConfig || !window.webforjDevToolsConfig.enabled) {
+  if (!window.webforjLivereloadConfig || !window.webforjLivereloadConfig.enabled) {
     return;
   }
 
   /**
-   * Writes console messages with the webforJ DevTools badge.
+   * Writes console messages with the webforJ LiveReload badge.
    */
-  class DevToolsLogger {
+  class LiveReloadLogger {
     /**
-     * Logs one message under the DevTools badge.
+     * Logs one message under the LiveReload badge.
      *
      * @param {string} message the message to log
      */
     log(message) {
       console.log(
-        '%cwebforJ DevTools%c ' + message,
+        '%cwebforJ LiveReload%c ' + message,
         'background: #4c47ff; color: white; padding: 2px 6px; border-radius: 3px; font-weight: bold;',
+        'color: inherit;'
+      );
+    }
+
+    /**
+     * Logs one failure under the LiveReload error badge, on the error channel of the console.
+     *
+     * @param {string} message the message to log
+     */
+    error(message) {
+      console.error(
+        '%cwebforJ LiveReload%c ' + message,
+        'background: #d64545; color: white; padding: 2px 6px; border-radius: 3px; font-weight: bold;',
         'color: inherit;'
       );
     }
@@ -40,13 +53,13 @@
   class StatusIndicator {
     constructor() {
       /** @type {string} id of the toast element */
-      this.statusId = 'webforj-devtools-status';
+      this.statusId = 'webforj-livereload-status';
 
       /** @type {string} id of the veil element */
-      this.veilId = 'webforj-devtools-veil';
+      this.veilId = 'webforj-livereload-veil';
 
       /** @type {string} id of the injected style element */
-      this.styleId = 'webforj-devtools-status-style';
+      this.styleId = 'webforj-livereload-status-style';
     }
 
     /**
@@ -80,16 +93,16 @@
         const style = document.createElement('style');
         style.id = this.styleId;
         style.textContent = /* css */`
-          @keyframes webforjDevToolsSpin {
+          @keyframes webforjLivereloadSpin {
             to { transform: rotate(360deg); }
           }
 
-          @keyframes webforjDevToolsIn {
+          @keyframes webforjLivereloadIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: none; }
           }
 
-          #webforj-devtools-veil {
+          #webforj-livereload-veil {
             position: fixed;
             inset: 0;
             z-index: 2147483646;
@@ -97,7 +110,7 @@
             background: var(--dwc-overlay-background, rgba(17, 20, 30, 0.16));
           }
 
-          #webforj-devtools-status {
+          #webforj-livereload-status {
             position: fixed;
             bottom: 18px;
             right: 18px;
@@ -111,16 +124,16 @@
             color: var(--dwc-color-default-text, #222);
             font: 500 13px/1 var(--dwc-font-family, system-ui, sans-serif);
             box-shadow: var(--dwc-shadow-l, 0 8px 24px rgba(0, 0, 0, 0.2));
-            animation: webforjDevToolsIn 0.22s ease both;
+            animation: webforjLivereloadIn 0.22s ease both;
           }
 
-          #webforj-devtools-status .webforj-devtools-spin {
+          #webforj-livereload-status .webforj-livereload-spin {
             width: 14px;
             height: 14px;
             border-radius: 50%;
             border: 2px solid rgba(128, 128, 128, 0.3);
             border-top-color: var(--dwc-color-primary, #6c7bff);
-            animation: webforjDevToolsSpin 0.7s linear infinite;
+            animation: webforjLivereloadSpin 0.7s linear infinite;
           }
         `;
         document.head.appendChild(style);
@@ -136,7 +149,7 @@
       host.id = this.statusId;
 
       const spinner = document.createElement('span');
-      spinner.className = 'webforj-devtools-spin';
+      spinner.className = 'webforj-livereload-spin';
 
       const label = document.createElement('span');
       label.setAttribute('data-webforj-status', '');
@@ -146,6 +159,468 @@
       document.body.appendChild(host);
 
       return host;
+    }
+  }
+
+  /**
+   * Presents one card of feedback in the corner of the page.
+   *
+   * Every card wears the same self contained look, the one the craftforJ intro card renders in
+   * the app page, and only the content and the tone change between cards. The cards live in one
+   * shared stack, so two cards on screen together park above each other instead of overlapping.
+   */
+  class FeedbackCard {
+    /**
+     * @param {string} id id of the card element
+     * @param {string} tone the visual tone, 'notice' keeps the neutral accent and 'alarm' wears
+     *     the failure accent
+     */
+    constructor(id, tone) {
+      /** @type {string} id of the card element */
+      this.id = id;
+
+      /** @type {string} the visual tone of the card */
+      this.tone = tone;
+
+      /** @type {string} id of the shared stack element every card parks in */
+      this.stackId = 'webforj-livereload-feedback';
+
+      /** @type {string} id of the shared style element */
+      this.styleId = 'webforj-livereload-feedback-style';
+    }
+
+    /**
+     * Tells whether the card is on screen.
+     *
+     * @returns {boolean} true while the card is in the page
+     */
+    isShowing() {
+      return !!document.getElementById(this.id);
+    }
+
+    /**
+     * Shows the card, replacing an earlier appearance of the same card.
+     *
+     * @param {{role: string, label: string, eyebrow: string, title: string, texts: string[],
+     *     detail: string, link: {text: string, url: string},
+     *     buttons: {text: string, accent: boolean, url: string, onSelect: Function}[]}} content
+     *     the card content, texts, detail, link and buttons may be absent
+     */
+    show(content) {
+      this.clear();
+
+      const stack = this.stack();
+      const host = document.createElement('div');
+      host.id = this.id;
+      host.className = 'wdt-feedback' + (this.tone === 'alarm' ? ' wdt-feedback--alarm' : '');
+      host.setAttribute('role', content.role);
+      if (content.label) {
+        host.setAttribute('aria-label', content.label);
+      }
+
+      const body = document.createElement('div');
+      body.className = 'wdt-feedback__body';
+
+      const eyebrow = document.createElement('span');
+      eyebrow.className = 'wdt-feedback__eyebrow';
+      eyebrow.textContent = content.eyebrow;
+
+      const title = document.createElement('h2');
+      title.className = 'wdt-feedback__title';
+      title.textContent = content.title;
+
+      body.appendChild(eyebrow);
+      body.appendChild(title);
+      (content.texts || []).forEach(function (line) {
+        const text = document.createElement('p');
+        text.className = 'wdt-feedback__text';
+        text.textContent = line;
+        body.appendChild(text);
+      });
+
+      if (content.detail) {
+        const detail = document.createElement('p');
+        detail.className = 'wdt-feedback__detail';
+        detail.textContent = content.detail;
+        body.appendChild(detail);
+      }
+
+      if (content.link) {
+        const link = document.createElement('a');
+        link.className = 'wdt-feedback__link';
+        link.textContent = content.link.text;
+        link.href = content.link.url;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        body.appendChild(link);
+      }
+
+      const footer = document.createElement('div');
+      footer.className = 'wdt-feedback__footer';
+
+      const card = this;
+      (content.buttons || []).forEach(function (choice) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className =
+          'wdt-feedback__btn wdt-feedback__btn--' + (choice.accent ? 'accent' : 'quiet');
+        button.textContent = choice.text;
+        button.addEventListener('click', function () {
+          if (choice.url) {
+            window.open(choice.url, '_blank', 'noopener');
+          }
+          if (choice.onSelect) {
+            choice.onSelect();
+          }
+          card.dismiss();
+        });
+        footer.appendChild(button);
+      });
+
+      host.appendChild(body);
+      host.appendChild(footer);
+      stack.appendChild(host);
+
+      requestAnimationFrame(function () {
+        host.classList.add('is-in');
+      });
+    }
+
+    /**
+     * Plays the card out, the exit mirroring the entrance.
+     */
+    dismiss() {
+      const host = document.getElementById(this.id);
+      if (host) {
+        host.classList.remove('is-in');
+        setTimeout(function () {
+          host.remove();
+        }, 240);
+      }
+    }
+
+    /**
+     * Removes the card at once, so a superseded card never lingers on screen.
+     */
+    clear() {
+      const host = document.getElementById(this.id);
+      if (host) {
+        host.remove();
+      }
+    }
+
+    /**
+     * Returns the shared stack, creating it and its style on the first card.
+     *
+     * @returns {HTMLElement} the stack element every card parks in
+     */
+    stack() {
+      if (!document.getElementById(this.styleId)) {
+        const style = document.createElement('style');
+        style.id = this.styleId;
+        style.textContent = /* css */`
+          #webforj-livereload-feedback {
+            position: fixed;
+            left: 14px;
+            bottom: 72px;
+            z-index: 2147483645;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 10px;
+            pointer-events: none;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback {
+            display: flex;
+            flex-direction: column;
+            width: 360px;
+            max-width: calc(100vw - 28px);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 16px;
+            background: linear-gradient(160deg, #26262e 0%, #131317 55%, #08080a 100%);
+            box-shadow: 0 18px 50px rgba(10, 6, 24, 0.5), 0 0 0 1px rgba(0, 0, 0, 0.12),
+              0 0 0 1px rgba(255, 255, 255, 0.08), 0 8px 22px rgba(0, 0, 0, 0.55);
+            color: #f4f4f6;
+            font: 400 13px/1.55 system-ui, sans-serif;
+            pointer-events: auto;
+            opacity: 0;
+            transform: translateY(14px) scale(0.96);
+            transition: opacity 240ms cubic-bezier(0.34, 1.4, 0.64, 1),
+              transform 240ms cubic-bezier(0.34, 1.4, 0.64, 1);
+          }
+
+          #webforj-livereload-feedback .wdt-feedback.is-in {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+
+          #webforj-livereload-feedback .wdt-feedback--alarm {
+            border-color: rgba(255, 122, 122, 0.35);
+            background: linear-gradient(160deg, #2e2226 0%, #171114 55%, #0a0708 100%);
+            box-shadow: 0 18px 50px rgba(24, 6, 10, 0.5), 0 0 0 1px rgba(0, 0, 0, 0.12),
+              0 0 0 1px rgba(255, 255, 255, 0.08), 0 8px 22px rgba(0, 0, 0, 0.55);
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__body {
+            padding: 14px 16px 4px;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__eyebrow {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #86a8ff;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback--alarm .wdt-feedback__eyebrow {
+            color: #ff8f8f;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__title {
+            margin: 4px 0 6px;
+            font-size: 17px;
+            font-weight: 650;
+            color: #fff;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__text {
+            margin: 0;
+            color: #b5b5be;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__text + .wdt-feedback__text {
+            margin-top: 9px;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__detail {
+            margin: 9px 0 0;
+            padding: 8px 10px;
+            border-radius: 9px;
+            background: rgba(255, 122, 122, 0.09);
+            color: #ffb3b3;
+            font: 400 12px/1.5 ui-monospace, monospace;
+            overflow-wrap: anywhere;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__link {
+            display: inline-block;
+            margin-top: 9px;
+            color: #86a8ff;
+            text-decoration: none;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__link:hover {
+            text-decoration: underline;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            padding: 12px 16px 14px;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__btn {
+            all: unset;
+            padding: 7px 13px;
+            border-radius: 9px;
+            font: 500 12.5px/1 system-ui, sans-serif;
+            cursor: pointer;
+            transition: background 140ms ease, transform 140ms ease;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__btn:active {
+            transform: scale(0.96);
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__btn--quiet {
+            color: #b5b5be;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__btn--quiet:hover {
+            background: rgba(255, 255, 255, 0.07);
+            color: #f4f4f6;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__btn--accent {
+            background: #3b6ef6;
+            color: #fff;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__btn--accent:hover {
+            background: #5b8cff;
+          }
+
+          @media (prefers-reduced-motion: reduce) {
+            #webforj-livereload-feedback .wdt-feedback {
+              transition: opacity 220ms ease;
+              transform: none;
+            }
+          }
+        `;
+        document.head.appendChild(style);
+      }
+
+      let stack = document.getElementById(this.stackId);
+      if (!stack) {
+        stack = document.createElement('div');
+        stack.id = this.stackId;
+        document.body.appendChild(stack);
+      }
+
+      return stack;
+    }
+  }
+
+  /**
+   * Tells the developer when the attached hotswap tool runs with limited depth on this machine.
+   *
+   * The state arrives with the connected handshake. On a virtual machine with full class
+   * redefinition nothing ever shows, the run simply works. The card appears only for the limited
+   * state, once, and stays away after the developer acknowledges it until the state changes
+   * again, a different tool or a different virtual machine.
+   */
+  class HotswapNotice {
+    constructor() {
+      /** @type {string} localStorage key holding the acknowledged state */
+      this.storageKey = 'webforj-devtools:hotswap-state';
+
+      /** @type {FeedbackCard} the card the notice presents itself on */
+      this.card = new FeedbackCard('webforj-livereload-hotswap-notice', 'notice');
+    }
+
+    /**
+     * Handles the state carried by one connected message.
+     *
+     * @param {{hotswapTool: string, hotswapLevel: string}} message the connected message
+     */
+    handle(message) {
+      const tool = message.hotswapTool;
+      if (!tool || message.hotswapLevel !== 'limited') {
+        // A full depth run needs no explanation, it simply works. Only the limitation is worth
+        // interrupting the developer for.
+        return;
+      }
+
+      const state = tool + '/' + message.hotswapLevel;
+      if (this.acknowledgedState() === state || this.card.isShowing()) {
+        return;
+      }
+
+      const notice = this;
+      this.card.show({
+        role: 'dialog',
+        label: 'webforJ LiveReload',
+        eyebrow: 'hotswap',
+        title: 'webforJ LiveReload',
+        texts: [
+          'Edits inside a method body reach the running application instantly. Changes to the '
+            + 'structure of a class, a new field or a new method for example, do not reach it at '
+            + 'all until you restart the application yourself.',
+          'Run the application on the JetBrains Runtime and every class change applies '
+            + 'instantly with the application state kept.'
+        ],
+        link: {
+          text: 'Or explore the other reload methods webforJ supports',
+          url: 'https://docs.webforj.com/docs/configuration/deploy-reload/overview'
+        },
+        buttons: [
+          {
+            text: 'Got it',
+            onSelect: function () {
+              notice.acknowledge(state);
+            }
+          },
+          {
+            text: 'Get the JetBrains Runtime',
+            accent: true,
+            url: 'https://github.com/JetBrains/JetBrainsRuntime/releases',
+            onSelect: function () {
+              notice.acknowledge(state);
+            }
+          }
+        ]
+      });
+    }
+
+    /**
+     * Reads the acknowledged state.
+     *
+     * @returns {string|null} the acknowledged state, null when none is stored
+     */
+    acknowledgedState() {
+      try {
+        return localStorage.getItem(this.storageKey);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    /**
+     * Remembers one state as acknowledged.
+     *
+     * @param {string} state the state to remember
+     */
+    acknowledge(state) {
+      try {
+        localStorage.setItem(this.storageKey, state);
+      } catch (e) {
+        // Without storage the card simply returns on the next connection.
+      }
+    }
+  }
+
+  /**
+   * Shows the rejection of a class change, in place of the refresh the change would have earned.
+   *
+   * The runtime refused the change, so the running application still executes the previous code.
+   * A refresh at this point would present the old behavior as if it were the new one, which is
+   * exactly the confusion this card prevents. The card leaves on its close button or with the
+   * next change that does apply.
+   */
+  class SwapRejection {
+    constructor() {
+      /** @type {FeedbackCard} the card the rejection presents itself on */
+      this.card = new FeedbackCard('webforj-livereload-swap-rejection', 'alarm');
+    }
+
+    /**
+     * Shows the rejection, replacing the card of an earlier rejection.
+     *
+     * @param {string[]} classes the names of the classes whose change was refused
+     * @param {string} reason the refusal reason the runtime reported
+     */
+    show(classes, reason) {
+      const named = (classes || []).map(function (name) {
+        return name.substring(name.lastIndexOf('.') + 1);
+      });
+      // The batch can span the whole application, so the card names a couple of classes and
+      // counts the rest instead of growing with the batch.
+      let subject = '';
+      if (named.length) {
+        const rest = named.length - 2;
+        subject = ' of ' + named.slice(0, 2).join(', ') + (rest > 0 ? ' and ' + rest + ' more' : '');
+      }
+
+      this.card.show({
+        role: 'alert',
+        eyebrow: 'hotswap',
+        title: 'Change not applied',
+        texts: [
+          'The runtime refused this class change, so the application still runs the previous code'
+            + subject + '. Restart the application to apply it.'
+        ],
+        detail: reason || '',
+        buttons: [{ text: 'Dismiss' }]
+      });
+    }
+
+    /**
+     * Removes the card, so an applied change never leaves a stale rejection on screen.
+     */
+    clear() {
+      this.card.clear();
     }
   }
 
@@ -306,7 +781,7 @@
     /**
      * @param {string} url the reload server websocket url
      * @param {number} heartbeatInterval milliseconds between heartbeat pings
-     * @param {DevToolsLogger} logger the client logger
+     * @param {LiveReloadLogger} logger the client logger
      * @param {{onFirstOpen: function(): void, onReopen: function(): void,
      *          onMessage: function(Object): void,
      *          onDown: function(boolean, boolean, number): void}} callbacks
@@ -321,7 +796,7 @@
       /** @type {number} */
       this.heartbeatInterval = heartbeatInterval;
 
-      /** @type {DevToolsLogger} */
+      /** @type {LiveReloadLogger} */
       this.logger = logger;
 
       /** @type {{onFirstOpen: function(): void, onReopen: function(): void,
@@ -364,10 +839,16 @@
         this.socket = new WebSocket(this.url);
 
         this.socket.onopen = function () {
-          self.logger.log('✅ DevTools connection established! Ready to rock 🎸');
+          self.logger.log('Connection established');
           self.instanceOpened = true;
           self.everOpened = true;
           self.startHeartbeat();
+          // The served stamp lets the server spot a page that predates the last reload command,
+          // so a reload that found nobody connected still reaches this page now.
+          self.socket.send(JSON.stringify({
+            type: 'hello',
+            pageServedAt: (window.webforjLivereloadConfig || {}).pageServedAt || 0
+          }));
           self.socket.send('ping');
 
           if (self.everDown) {
@@ -381,7 +862,7 @@
           try {
             self.callbacks.onMessage(JSON.parse(event.data));
           } catch (e) {
-            self.logger.log('💥 Message parsing hiccup: ' + e.message);
+            self.logger.error('Message could not be parsed: ' + e.message);
           }
         };
 
@@ -400,7 +881,7 @@
           self.stopHeartbeat();
         };
       } catch (e) {
-        this.logger.log('🙅 WebSocket creation failed: ' + e.message);
+        this.logger.error('WebSocket creation failed: ' + e.message);
         const firstDrop = !this.everDown;
         this.everDown = true;
         this.callbacks.onDown(firstDrop, false, 0);
@@ -494,12 +975,12 @@
    */
   class ResourceUpdater {
     /**
-     * @param {DevToolsLogger} logger the client logger
+     * @param {LiveReloadLogger} logger the client logger
      * @param {function(string): void} reload asks the coordinator for a full reload with the
      *        given reason
      */
     constructor(logger, reload) {
-      /** @type {DevToolsLogger} */
+      /** @type {LiveReloadLogger} */
       this.logger = logger;
 
       /** @type {function(string): void} */
@@ -522,13 +1003,13 @@
           this.updateImages(resourcePath, message.timestamp);
           break;
         case 'js':
-          this.reload('⚡ JavaScript updated: ' + resourcePath + ' - full refresh incoming!');
+          this.reload('JavaScript updated: ' + resourcePath + ', reloading the page');
           break;
         case 'other':
-          this.reload('📝 File modified: ' + resourcePath + ' - refreshing to apply changes!');
+          this.reload('File modified: ' + resourcePath + ', reloading the page');
           break;
         default:
-          this.logger.log('❓ Unrecognized resource type: ' + message.resourceType);
+          this.logger.log('Unrecognized resource type: ' + message.resourceType);
       }
     }
 
@@ -552,14 +1033,14 @@
           const baseHref = href.split('?')[0];
           link.href = baseHref + '?webforj-dev=' + timestamp;
           updatedCount++;
-          logger.log('🎨 CSS hot-reloaded: ' + resourcePath);
+          logger.log('Stylesheet updated in place: ' + resourcePath);
         }
       });
 
       if (updatedCount === 0) {
-        logger.log('🔍 No stylesheet found matching: ' + resourcePath);
+        logger.log('No stylesheet matches: ' + resourcePath);
       } else if (updatedCount > 1) {
-        logger.log('🎨 Hot-reloaded ' + updatedCount + ' stylesheets for: ' + resourcePath);
+        logger.log('Updated ' + updatedCount + ' stylesheets in place for: ' + resourcePath);
       }
     }
 
@@ -585,9 +1066,9 @@
       });
 
       if (updatedCount > 0) {
-        this.logger.log('🖼️ Refreshed ' + updatedCount + ' image(s): ' + resourcePath);
+        this.logger.log('Refreshed ' + updatedCount + ' image(s): ' + resourcePath);
       } else {
-        this.logger.log('🔍 No images found matching: ' + resourcePath);
+        this.logger.log('No image matches: ' + resourcePath);
       }
     }
 
@@ -616,7 +1097,7 @@
   class ScrollPositionKeeper {
     constructor() {
       /** @type {string} session storage key holding the captured positions */
-      this.storageKey = 'webforj-devtools-scroll';
+      this.storageKey = 'webforj-livereload-scroll';
 
       /** @type {number} milliseconds a captured snapshot stays valid */
       this.snapshotMaxAgeMs = 30000;
@@ -885,7 +1366,7 @@
    * continues against the live server. A dead application means the page would only pretend to
    * work, so the reload goes through and the browser reports the server state.
    */
-  class DevToolsClient {
+  class LiveReloadClient {
     /**
      * @param {Object} config the injected client configuration
      */
@@ -906,11 +1387,17 @@
       /** @type {number} milliseconds before a restarting notice with no restart releases */
       this.holdReleaseFallbackMs = config.holdReleaseFallbackMs || 15000;
 
-      /** @type {DevToolsLogger} */
-      this.logger = new DevToolsLogger();
+      /** @type {LiveReloadLogger} */
+      this.logger = new LiveReloadLogger();
 
       /** @type {StatusIndicator} */
       this.status = new StatusIndicator();
+
+      /** @type {HotswapNotice} */
+      this.hotswapNotice = new HotswapNotice();
+
+      /** @type {SwapRejection} */
+      this.swapRejection = new SwapRejection();
 
       /** @type {StateBroadcaster} */
       this.state = new StateBroadcaster('webforj-devtools-bus');
@@ -969,7 +1456,7 @@
       this.gate.install();
       this.hideServerProgressbar();
       this.scroll.restore();
-      this.logger.log('🚀 Initiating DevTools connection to: ' + this.socket.url);
+      this.logger.log('Connecting to ' + this.socket.url);
       this.socket.connect();
 
       const self = this;
@@ -990,7 +1477,7 @@
      * Handles the socket coming back while a recovery runs.
      */
     handleReopen() {
-      this.logger.log('🔌 Server socket is back. Waiting until the app can serve before reloading...');
+      this.logger.log('The server socket is back, waiting until the application can serve before reloading');
       this.status.show('Waiting for the app…');
       this.state.publish('awaiting-app');
       this.socketDownSince = 0;
@@ -1004,7 +1491,8 @@
     handleMessage(message) {
       switch (message.type) {
         case 'reload':
-          this.reload('🎯 Hot reload triggered! Refreshing in 3... 2... 1...');
+          this.swapRejection.clear();
+          this.reload('Reload requested by the server, reloading the page');
           break;
 
         case 'config':
@@ -1017,11 +1505,12 @@
           break;
 
         case 'connected':
-          this.logger.log('🤝 Handshake complete - DevTools is listening for changes!');
+          this.logger.log('Connected, listening for changes');
+          this.hotswapNotice.handle(message);
           break;
 
         case 'restarting':
-          this.logger.log('♻️ Server is restarting - holding the page until it is back...');
+          this.logger.log('The server is restarting, holding the page until it is back');
           this.gate.hold();
           this.status.show('Server restarting…');
           this.state.publish('restarting');
@@ -1029,12 +1518,39 @@
           break;
 
         case 'resource-update':
-          this.logger.log('📦 Incoming update: ' + message.resourceType + ' → ' + message.path);
+          this.logger.log('Incoming update: ' + message.resourceType + ' ' + message.path);
           this.resources.apply(message);
+          // The applied update advances the served stamp, so a later reconnect never mistakes
+          // this page for one that missed the update.
+          if (message.timestamp && window.webforjLivereloadConfig
+              && message.timestamp > (window.webforjLivereloadConfig.pageServedAt || 0)) {
+            window.webforjLivereloadConfig.pageServedAt = message.timestamp;
+          }
+          break;
+
+        case 'class-update':
+          this.logger.log('Incoming class update: ' + (message.classes || []).join(', '));
+          this.swapRejection.clear();
+          // The page hands the change to its own application instance, which rebuilds the
+          // affected part of the interface or reloads the page when it cannot.
+          window.dispatchEvent(new CustomEvent('webforj-devtools-class-update', {
+            detail: { classes: message.classes || [] }
+          }));
+          if (message.timestamp && window.webforjLivereloadConfig
+              && message.timestamp > (window.webforjLivereloadConfig.pageServedAt || 0)) {
+            window.webforjLivereloadConfig.pageServedAt = message.timestamp;
+          }
+          break;
+
+        case 'class-update-error':
+          this.logger.error('Class change refused by the runtime: ' + (message.reason || ''));
+          // The change never reached the application, so nothing refreshes. The card explains
+          // why the page still shows the previous behavior.
+          this.swapRejection.show(message.classes || [], message.reason || '');
           break;
 
         default:
-          this.logger.log('🤔 Received mystery message type: ' + message.type);
+          this.logger.log('Received an unknown message type: ' + message.type);
       }
     }
 
@@ -1049,7 +1565,7 @@
      */
     handleSocketDown(firstDrop, wasOpen, code) {
       if (firstDrop) {
-        this.logger.log('📡 Connection closed (code: ' + code + ') - standing by until the app is back...');
+        this.logger.log('Connection closed (code ' + code + '), standing by until the application is back');
       }
 
       this.gate.hold();
@@ -1142,9 +1658,9 @@
 
         if (self.consecutiveReadyProbes >= self.reloadStableProbes) {
           if (socketOpen) {
-            self.reload('✅ App is ready, reloading.');
+            self.reload('The application is ready, reloading');
           } else {
-            self.reload('🔄 The app serves again but its reload socket is gone, reloading into a fresh session.');
+            self.reload('The application serves again but its reload socket is gone, reloading into a fresh session');
           }
           return;
         }
@@ -1163,7 +1679,7 @@
      */
     giveUp() {
       if (this.socket.isOpen()) {
-        this.reload('⏳ App did not become ready in time, reloading anyway.');
+        this.reload('The application did not become ready in time, reloading');
         return;
       }
 
@@ -1171,7 +1687,7 @@
       this.probe.check().then(function (serves) {
         if (serves) {
           self.stopRecovery();
-          self.logger.log('😌 The reload socket has not come back in '
+          self.logger.log('The reload socket has not come back in '
             + Math.round(self.recoveryMaxWaitMs / 1000)
             + 's but the app still serves, resuming against it.');
           self.gate.release();
@@ -1180,7 +1696,7 @@
           return;
         }
 
-        self.reload('💀 Nothing answered in ' + Math.round(self.recoveryMaxWaitMs / 1000)
+        self.reload('Nothing answered in ' + Math.round(self.recoveryMaxWaitMs / 1000)
           + 's, reloading so the browser shows the server state.');
       });
     }
@@ -1216,7 +1732,7 @@
       const self = this;
       this.holdReleaseTimer = setTimeout(function () {
         if (self.gate.holding && self.socket.isOpen()) {
-          self.logger.log('🤷 Restart notice was not followed by a restart, resuming.');
+          self.logger.log('The restart notice was not followed by a restart, resuming');
           self.gate.release();
           self.status.hide();
           self.state.publish('live');
@@ -1239,16 +1755,16 @@
      * restart indicator.
      */
     hideServerProgressbar() {
-      if (document.getElementById('webforj-devtools-progressbar-style')) {
+      if (document.getElementById('webforj-livereload-progressbar-style')) {
         return;
       }
 
       const style = document.createElement('style');
-      style.id = 'webforj-devtools-progressbar-style';
+      style.id = 'webforj-livereload-progressbar-style';
       style.textContent = '#' + this.serverProgressbarId + '{display:none!important}';
       (document.head || document.documentElement).appendChild(style);
     }
   }
 
-  new DevToolsClient(window.webforjDevToolsConfig).start();
+  new LiveReloadClient(window.webforjLivereloadConfig).start();
 })();

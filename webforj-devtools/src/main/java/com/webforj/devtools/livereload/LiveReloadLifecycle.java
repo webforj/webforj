@@ -1,13 +1,20 @@
 package com.webforj.devtools.livereload;
 
+import com.webforj.devtools.livereload.receiver.HotswapAgentReceiver;
+import com.webforj.devtools.livereload.receiver.JrebelReceiver;
+import com.webforj.devtools.livereload.receiver.LiveReloadReceiver;
+import com.webforj.devtools.livereload.receiver.WatchReceiver;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Owns the reload server and the watch receiver for one container context.
+ * Owns the reload server and its receivers for one container context.
  *
  * <p>
  * Each runtime contributes a thin adapter that calls {@link #start(LiveReloadOptions)} when its
  * context comes up and {@link #stop()} when the context is torn down. The lifecycle creates the
- * reload server and the receiver, hands the server to the receiver, and tears both down together,
- * so the next context binds the reload port cleanly and runs a single receiver.
+ * reload server, hands it to every receiver, and tears everything down together, so the next
+ * context binds the reload port cleanly and runs a single set of receivers.
  * </p>
  *
  * @author Hyyan Abo Fakher
@@ -17,9 +24,8 @@ public final class LiveReloadLifecycle {
 
   private static final System.Logger logger = System.getLogger(LiveReloadLifecycle.class.getName());
 
+  private final List<LiveReloadReceiver> receivers = new ArrayList<>();
   private LiveReloadServer server;
-  private WatchReceiver receiver;
-  private JrebelReceiver jrebelReceiver;
   private boolean notifiedRestarting;
 
   /**
@@ -40,44 +46,23 @@ public final class LiveReloadLifecycle {
     LiveReloadServer reloadServer = new LiveReloadServer(options.getWebsocketPort());
     reloadServer.start();
 
-    WatchReceiver watchReceiver =
-        new WatchReceiver(reloadServer, options.isStaticResourcesEnabled());
-    watchReceiver.start();
-
-    JrebelReceiver jrebelWatchReceiver = new JrebelReceiver(reloadServer);
-    jrebelWatchReceiver.start();
+    receivers.add(new WatchReceiver(reloadServer, options.isStaticResourcesEnabled()));
+    receivers.add(new JrebelReceiver(reloadServer));
+    receivers.add(new HotswapAgentReceiver(reloadServer));
+    receivers.forEach(LiveReloadReceiver::start);
 
     this.server = reloadServer;
-    this.receiver = watchReceiver;
-    this.jrebelReceiver = jrebelWatchReceiver;
     this.notifiedRestarting = false;
     logger.log(System.Logger.Level.INFO,
         "webforJ live reload ready on port " + options.getWebsocketPort());
   }
 
   /**
-   * Gets the receiver that listens for hotswap class reload events, so a test can assert that the
-   * lifecycle owns it.
-   *
-   * @return the receiver while the lifecycle is running, {@code null} otherwise
-   */
-  JrebelReceiver getJrebelReceiver() {
-    return jrebelReceiver;
-  }
-
-  /**
-   * Stops the receiver and the reload server, releasing the reload port.
+   * Stops the receivers and the reload server, releasing the reload port.
    */
   public synchronized void stop() {
-    if (receiver != null) {
-      receiver.stop();
-      receiver = null;
-    }
-
-    if (jrebelReceiver != null) {
-      jrebelReceiver.stop();
-      jrebelReceiver = null;
-    }
+    receivers.forEach(LiveReloadReceiver::stop);
+    receivers.clear();
 
     if (server != null) {
       try {
@@ -131,5 +116,35 @@ public final class LiveReloadLifecycle {
    */
   public synchronized boolean isRunning() {
     return server != null && server.isRunning();
+  }
+
+  /**
+   * Gets the receiver that listens for hotswap class reload events, so a test can assert that the
+   * lifecycle owns it.
+   *
+   * @return the receiver while the lifecycle is running, {@code null} otherwise
+   */
+  JrebelReceiver getJrebelReceiver() {
+    return findReceiver(JrebelReceiver.class);
+  }
+
+  /**
+   * Gets the receiver that listens for HotswapAgent class redefinitions, so a test can assert that
+   * the lifecycle owns it.
+   *
+   * @return the receiver while the lifecycle is running, {@code null} otherwise
+   */
+  HotswapAgentReceiver getHotswapAgentReceiver() {
+    return findReceiver(HotswapAgentReceiver.class);
+  }
+
+  private <T extends LiveReloadReceiver> T findReceiver(Class<T> type) {
+    for (LiveReloadReceiver receiver : receivers) {
+      if (type.isInstance(receiver)) {
+        return type.cast(receiver);
+      }
+    }
+
+    return null;
   }
 }

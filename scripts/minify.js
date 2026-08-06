@@ -37,8 +37,8 @@ const files = [
   },
   {
     module: 'webforj-devtools',
-    input: 'META-INF/resources/webforj/devtools-reload-client.js',
-    output: 'META-INF/resources/webforj/devtools-reload-client.min.js'
+    input: 'META-INF/resources/webforj/livereload-client.js',
+    output: 'META-INF/resources/webforj/livereload-client.min.js'
   }
 ];
 

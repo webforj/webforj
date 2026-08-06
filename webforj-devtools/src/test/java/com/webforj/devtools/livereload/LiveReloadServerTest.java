@@ -20,6 +20,7 @@ import com.webforj.devtools.livereload.message.ReloadMessage;
 import com.webforj.devtools.livereload.message.RestartingMessage;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.Set;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.junit.jupiter.api.AfterEach;
@@ -68,6 +69,21 @@ class LiveReloadServerTest {
 
     assertEquals(1, server.getConnectionCount());
     verify(mockConnection).send(gson.toJson(new ConnectedMessage()));
+  }
+
+  @Test
+  void shouldHandTheDeclaredHotswapStateToTheConnectingClient() {
+    System.setProperty(LiveReloadServer.HOTSWAP_TOOL_PROPERTY, "hotswapAgent");
+    System.setProperty(LiveReloadServer.HOTSWAP_LEVEL_PROPERTY, "limited");
+
+    try {
+      server.onOpen(mockConnection, mockHandshake);
+
+      verify(mockConnection).send(gson.toJson(new ConnectedMessage("hotswapAgent", "limited")));
+    } finally {
+      System.clearProperty(LiveReloadServer.HOTSWAP_TOOL_PROPERTY);
+      System.clearProperty(LiveReloadServer.HOTSWAP_LEVEL_PROPERTY);
+    }
   }
 
   @Test
@@ -132,6 +148,200 @@ class LiveReloadServerTest {
   }
 
   @Test
+  void shouldReloadTheConnectingPageServedBeforeTheLastReloadCommand() {
+    // The command fires while nobody is connected, exactly the moment a browser is between pages.
+    server.sendReloadMessage();
+
+    WebSocket conn = openConnection();
+    server.onMessage(conn, helloMessage(System.currentTimeMillis() - 60_000));
+
+    verify(conn).send(gson.toJson(new ReloadMessage()));
+  }
+
+  @Test
+  void shouldNotReloadTheConnectingPageServedAfterTheLastReloadCommand() {
+    server.sendReloadMessage();
+
+    WebSocket conn = openConnection();
+    server.onMessage(conn, helloMessage(System.currentTimeMillis() + 60_000));
+
+    verify(conn, never()).send(gson.toJson(new ReloadMessage()));
+  }
+
+  @Test
+  void shouldNotReloadTheConnectingPageWhenNoReloadCommandEverFired() {
+    WebSocket conn = openConnection();
+    server.onMessage(conn, helloMessage(System.currentTimeMillis() - 60_000));
+
+    verify(conn, never()).send(gson.toJson(new ReloadMessage()));
+  }
+
+  @Test
+  void shouldIgnoreTheHelloWithoutTheServedStamp() {
+    // A page without a stamp must never be reloaded on connect, or every reconnect would loop.
+    server.sendReloadMessage();
+
+    WebSocket conn = openConnection();
+    server.onMessage(conn, "{\"type\":\"hello\",\"pageServedAt\":0}");
+
+    verify(conn, never()).send(gson.toJson(new ReloadMessage()));
+  }
+
+  @Test
+  void shouldReplayTheResourceUpdateTheConnectingPageMissed() {
+    // The update goes out while nobody is connected, exactly the moment a browser is between
+    // pages. The page must receive it in place on connect, never as a page reload.
+    server.sendResourceUpdateMessage("css", "styles/app.css", null);
+
+    WebSocket conn = openConnection();
+    server.onMessage(conn, helloMessage(System.currentTimeMillis() - 60_000));
+
+    verify(conn).send(contains("styles/app.css"));
+    verify(conn, never()).send(gson.toJson(new ReloadMessage()));
+  }
+
+  @Test
+  void shouldNotReplayToThePageServedAfterTheUpdate() {
+    server.sendResourceUpdateMessage("css", "styles/app.css", null);
+
+    WebSocket conn = openConnection();
+    server.onMessage(conn, helloMessage(System.currentTimeMillis() + 60_000));
+
+    verify(conn, never()).send(contains("styles/app.css"));
+  }
+
+  @Test
+  void shouldReplayOnlyTheLatestUpdatePerPath() {
+    server.sendResourceUpdateMessage("css", "styles/app.css", null);
+    server.sendResourceUpdateMessage("css", "styles/app.css", null);
+    server.sendResourceUpdateMessage("image", "logo.png", null);
+
+    WebSocket conn = openConnection();
+    server.onMessage(conn, helloMessage(System.currentTimeMillis() - 60_000));
+
+    verify(conn, times(1)).send(contains("styles/app.css"));
+    verify(conn, times(1)).send(contains("logo.png"));
+  }
+
+  @Test
+  void shouldBroadcastTheClassUpdateToEveryConnection() {
+    WebSocket conn1 = openConnection();
+    WebSocket conn2 = openConnection();
+
+    server.sendClassUpdateMessage(Set.of("com.example.DashboardView"));
+
+    verify(conn1).send(contains("com.example.DashboardView"));
+    verify(conn2).send(contains("com.example.DashboardView"));
+  }
+
+  @Test
+  void shouldSendNothingForTheEmptyClassUpdate() {
+    WebSocket conn = openConnection();
+
+    server.sendClassUpdateMessage(Set.of());
+
+    // Only the connected handshake reaches the client.
+    verify(conn, times(1)).send(any(String.class));
+  }
+
+  @Test
+  void shouldBroadcastTheClassUpdateRejectionToEveryConnection() {
+    WebSocket conn1 = openConnection();
+    WebSocket conn2 = openConnection();
+
+    server.sendClassUpdateErrorMessage(Set.of("com.example.DashboardView"),
+        "attempted to change the schema (add/remove fields)");
+
+    verify(conn1).send(contains("class-update-error"));
+    verify(conn2).send(contains("class-update-error"));
+    verify(conn1).send(contains("attempted to change the schema"));
+  }
+
+  @Test
+  void shouldNotReplayTheRejectionToTheConnectingPage() {
+    // The rejection describes one moment. A page connecting later starts from the served code
+    // anyway, so a replayed rejection would only report a problem that page never had.
+    server.sendClassUpdateErrorMessage(Set.of("com.example.DashboardView"), "rejected");
+
+    WebSocket conn = openConnection();
+    server.onMessage(conn, helloMessage(System.currentTimeMillis() - 60_000));
+
+    verify(conn, never()).send(contains("class-update-error"));
+  }
+
+  @Test
+  void shouldReplayTheClassUpdateTheConnectingPageMissed() {
+    // The update goes out while nobody is connected, exactly the moment a browser is between
+    // pages. The page must receive the class names on connect, so its application instance can
+    // rebuild the affected part instead of reloading blindly.
+    server.sendClassUpdateMessage(Set.of("com.example.DashboardView"));
+
+    WebSocket conn = openConnection();
+    server.onMessage(conn, helloMessage(System.currentTimeMillis() - 60_000));
+
+    verify(conn).send(contains("com.example.DashboardView"));
+    verify(conn, never()).send(gson.toJson(new ReloadMessage()));
+  }
+
+  @Test
+  void shouldNotReplayTheClassUpdateToThePageServedAfterIt() {
+    server.sendClassUpdateMessage(Set.of("com.example.DashboardView"));
+
+    WebSocket conn = openConnection();
+    server.onMessage(conn, helloMessage(System.currentTimeMillis() + 60_000));
+
+    verify(conn, never()).send(contains("class-update"));
+  }
+
+  @Test
+  void shouldReplayTheMissedClassesInOneMessage() {
+    server.sendClassUpdateMessage(Set.of("com.example.DashboardView"));
+    server.sendClassUpdateMessage(Set.of("com.example.MainLayout"));
+
+    WebSocket conn = openConnection();
+    server.onMessage(conn, helloMessage(System.currentTimeMillis() - 60_000));
+
+    verify(conn, times(1)).send(contains("class-update"));
+    verify(conn).send(contains("com.example.DashboardView"));
+    verify(conn).send(contains("com.example.MainLayout"));
+  }
+
+  @Test
+  void shouldPreferTheReloadWhenThePageMissedBothTheReloadAndTheClassUpdate() {
+    server.sendReloadMessage();
+    server.sendClassUpdateMessage(Set.of("com.example.DashboardView"));
+
+    WebSocket conn = openConnection();
+    server.onMessage(conn, helloMessage(System.currentTimeMillis() - 60_000));
+
+    verify(conn).send(gson.toJson(new ReloadMessage()));
+    verify(conn, never()).send(contains("class-update"));
+  }
+
+  @Test
+  void shouldPreferTheReloadWhenThePageMissedBoth() {
+    // The reloaded page fetches every resource fresh, so replaying on top would be noise.
+    server.sendReloadMessage();
+    server.sendResourceUpdateMessage("css", "styles/app.css", null);
+
+    WebSocket conn = openConnection();
+    server.onMessage(conn, helloMessage(System.currentTimeMillis() - 60_000));
+
+    verify(conn).send(gson.toJson(new ReloadMessage()));
+    verify(conn, never()).send(contains("styles/app.css"));
+  }
+
+  @Test
+  void shouldSurviveAnUnreadableClientMessage() {
+    WebSocket conn = openConnection();
+
+    server.onMessage(conn, "{broken json");
+    server.onMessage(conn, "{\"type\":\"other\"}");
+
+    verify(conn, times(1)).send(any(String.class));
+  }
+
+  @Test
   void shouldRemoveConnectionOnError() {
     server.onOpen(mockConnection, mockHandshake);
     assertEquals(1, server.getConnectionCount());
@@ -141,14 +351,14 @@ class LiveReloadServerTest {
   }
 
   @Test
-  void shouldSurviveAnErrorWithoutAConnection() {
+  void shouldSurviveAnErrorWithoutAnyConnection() {
     server.onError(null, new RuntimeException("Server error"));
 
     assertEquals(0, server.getConnectionCount());
   }
 
   @Test
-  void shouldDropABrokenConnectionWhenSendingFails() {
+  void shouldDropTheBrokenConnectionWhenSendingFails() {
     WebSocket brokenConn = mock(WebSocket.class);
     when(brokenConn.isOpen()).thenReturn(true);
     doAnswer(invocation -> {
@@ -180,6 +390,10 @@ class LiveReloadServerTest {
     verify(conn1).send(contains("reload"));
     verify(conn3).send(contains("reload"));
     verify(conn2, never()).send(contains("reload"));
+  }
+
+  private static String helloMessage(long pageServedAt) {
+    return "{\"type\":\"hello\",\"pageServedAt\":" + pageServedAt + "}";
   }
 
   private WebSocket openConnection() {

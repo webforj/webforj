@@ -18,6 +18,7 @@
 
   <modules>
     <module>webforj-plugin-foundation</module>
+    <module>webforj-hotswap-observer</module>
     <module>webforj-maven-plugin</module>
     <module>webforj-gradle-plugin</module>
   </modules>

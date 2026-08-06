@@ -3,6 +3,7 @@ package com.webforj.devtools.craftforj.capabilities.action;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.gson.JsonObject;
@@ -57,6 +58,31 @@ class GetCapabilitiesActionTest {
     assertNotNull(response);
     assertEquals(null, response.getVersion());
     assertTrue(response.getCapabilities().isEmpty());
+  }
+
+  @Test
+  @DisplayName("Should return the hotswap state of the run")
+  void shouldReturnTheHotswapState() {
+    GetCapabilitiesAction action =
+        new GetCapabilitiesAction("26.02", true, List.of(), "full", "hotswapAgent", "limited");
+
+    GetCapabilitiesAction.Response response = action.handle(new JsonObject());
+
+    assertNotNull(response);
+    assertEquals("hotswapAgent", response.getHotswapTool());
+    assertEquals("limited", response.getHotswapLevel());
+  }
+
+  @Test
+  @DisplayName("Should answer without a hotswap state when no tool is attached")
+  void shouldAnswerWithoutTheHotswapState() {
+    GetCapabilitiesAction action = new GetCapabilitiesAction("26.02", true, List.of());
+
+    GetCapabilitiesAction.Response response = action.handle(new JsonObject());
+
+    assertNotNull(response);
+    assertNull(response.getHotswapTool());
+    assertNull(response.getHotswapLevel());
   }
 
   @Test
