@@ -253,8 +253,8 @@ class LiveReloadServerTest {
         "attempted to change the schema (add/remove fields)");
 
     verify(conn1).send(contains("class-update-error"));
-    verify(conn1).send(contains("attempted to change the schema"));
     verify(conn2).send(contains("class-update-error"));
+    verify(conn1).send(contains("attempted to change the schema"));
   }
 
   @Test

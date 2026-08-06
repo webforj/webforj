@@ -138,10 +138,11 @@ public class WebforjPlugin implements Plugin<Project> {
       boolean springBootRunner, Path javaExecutable) {
     Object selection = project.findProperty(HotswapLaunch.SELECTION_PROPERTY);
 
-    return HotswapInjection.getArguments(extension.getHotswap(),
-        selection == null ? null : selection.toString(), springBootRunner,
-        project.getLayout().getBuildDirectory().get().getAsFile().toPath(), javaExecutable, project,
-        project.getLogger());
+    return HotswapInjection.create().setProject(project).setOptions(extension.getHotswap())
+        .setCommandLineValue(selection == null ? null : selection.toString())
+        .setSpringBootRunner(springBootRunner)
+        .setBuildDirectory(project.getLayout().getBuildDirectory().get().getAsFile().toPath())
+        .setJavaExecutable(javaExecutable).setLog(project.getLogger()).build().getArguments();
   }
 
   private static Path launcherExecutable(JavaExec task) {

@@ -64,6 +64,7 @@ final class RedefinitionFailureHandler implements Thread.UncaughtExceptionHandle
    * {@inheritDoc}
    */
   @Override
+  @SuppressWarnings("java:S106")
   public void uncaughtException(Thread thread, Throwable exception) {
     try {
       String reason = rejectionReason(exception);

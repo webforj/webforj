@@ -45,6 +45,7 @@ public final class HotswapObserver implements ClassFileTransformer {
    * @param agentArguments the arguments of the java agent, unused
    * @param instrumentation the instrumentation of the virtual machine
    */
+  @SuppressWarnings("java:S1172")
   public static void premain(String agentArguments, Instrumentation instrumentation) {
     instrumentation.addTransformer(new HotswapObserver());
   }
@@ -53,6 +54,7 @@ public final class HotswapObserver implements ClassFileTransformer {
    * {@inheritDoc}
    */
   @Override
+  @SuppressWarnings("java:S1168")
   public byte[] transform(Module module, ClassLoader loader, String className,
       Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) {
     if (classBeingRedefined == null || loader == null || className == null) {

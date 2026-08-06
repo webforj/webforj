@@ -42,8 +42,7 @@ class HotswapInjectionTest {
 
   @Test
   void shouldStayOffWithoutAnyConfiguration() {
-    List<String> arguments = HotswapInjection.getArguments(extension.getHotswap(), null, false,
-        buildDirectory(), null, project.getLogger(), null, neverAsked(), neverResolved());
+    List<String> arguments = injection().build().getArguments();
 
     assertTrue(arguments.isEmpty());
   }
@@ -54,8 +53,7 @@ class HotswapInjectionTest {
     extension
         .hotswap(hotswap -> hotswap.jrebel(jrebel -> jrebel.getPath().set(project.file(library))));
 
-    List<String> arguments = HotswapInjection.getArguments(extension.getHotswap(), null, false,
-        buildDirectory(), null, project.getLogger(), null, neverAsked(), neverResolved());
+    List<String> arguments = injection().build().getArguments();
 
     assertEquals(List.of("-agentpath:" + library.toAbsolutePath(), "-Dwebforj.hotswap.tool=jrebel",
         "-Dwebforj.hotswap.level=full"), arguments);
@@ -69,8 +67,7 @@ class HotswapInjectionTest {
     // Kotlin build language produce, without the configuration block ever running.
     extension.getHotswap().getJrebel().getPath().set(project.file(library));
 
-    List<String> arguments = HotswapInjection.getArguments(extension.getHotswap(), null, false,
-        buildDirectory(), null, project.getLogger(), null, neverAsked(), neverResolved());
+    List<String> arguments = injection().build().getArguments();
 
     assertEquals(List.of("-agentpath:" + library.toAbsolutePath(), "-Dwebforj.hotswap.tool=jrebel",
         "-Dwebforj.hotswap.level=full"), arguments);
@@ -85,12 +82,13 @@ class HotswapInjectionTest {
     extension
         .hotswap(hotswap -> hotswap.hotswapAgent(agent -> agent.getPath().set(project.file(jar))));
 
-    List<String> arguments = HotswapInjection.getArguments(extension.getHotswap(), null, false,
-        buildDirectory(), java, project.getLogger(), tmp.resolve("cache"),
-        HotswapInjectionTest::classpathWithFramework, (groupId, artifactId, version) -> {
-          versions.add(version);
-          return List.of(new ResolvedJar(groupId, artifactId, version, observer));
-        });
+    List<String> arguments =
+        injection().setJavaExecutable(java).setAgentCacheRoot(tmp.resolve("cache"))
+            .setApplicationClasspath(HotswapInjectionTest::classpathWithFramework)
+            .setResolver((groupId, artifactId, version) -> {
+              versions.add(version);
+              return List.of(new ResolvedJar(groupId, artifactId, version, observer));
+            }).build().getArguments();
 
     assertTrue(arguments.contains("-XX:+AllowEnhancedClassRedefinition"));
     assertTrue(arguments.stream()
@@ -108,8 +106,7 @@ class HotswapInjectionTest {
     extension
         .hotswap(hotswap -> hotswap.jrebel(jrebel -> jrebel.getPath().set(project.file(library))));
 
-    List<String> arguments = HotswapInjection.getArguments(extension.getHotswap(), null, true,
-        buildDirectory(), null, project.getLogger(), null, neverAsked(), neverResolved());
+    List<String> arguments = injection().setSpringBootRunner(true).build().getArguments();
 
     assertTrue(arguments.contains("-Dspring.devtools.restart.enabled=false"),
         "the development restart cannot race the redefinition");
@@ -121,27 +118,25 @@ class HotswapInjectionTest {
     extension
         .hotswap(hotswap -> hotswap.jrebel(jrebel -> jrebel.getPath().set(project.file(library))));
 
-    List<String> arguments = HotswapInjection.getArguments(extension.getHotswap(), "off", false,
-        buildDirectory(), null, project.getLogger(), null, neverAsked(), neverResolved());
+    List<String> arguments = injection().setCommandLineValue("off").build().getArguments();
 
     assertTrue(arguments.isEmpty());
   }
 
   @Test
   void shouldRejectAnUnknownCommandLineValue() {
-    assertThrows(GradleException.class,
-        () -> HotswapInjection.getArguments(extension.getHotswap(), "dcevm", false,
-            buildDirectory(), null, project.getLogger(), null, neverAsked(), neverResolved()));
+    HotswapInjection unknown = injection().setCommandLineValue("dcevm").build();
+
+    assertThrows(GradleException.class, unknown::getArguments);
   }
 
   @Test
   void shouldRequireTheJrebelPath() {
     extension.hotswap(hotswap -> hotswap.jrebel(jrebel -> {
     }));
+    HotswapInjection incomplete = injection().build();
 
-    GradleException failure = assertThrows(GradleException.class,
-        () -> HotswapInjection.getArguments(extension.getHotswap(), null, false, buildDirectory(),
-            null, project.getLogger(), null, neverAsked(), neverResolved()));
+    GradleException failure = assertThrows(GradleException.class, incomplete::getArguments);
 
     assertTrue(failure.getMessage().contains("jrebel path"));
   }
@@ -154,13 +149,18 @@ class HotswapInjectionTest {
       hotswap.hotswapAgent(agent -> {
       });
     });
+    HotswapInjection ambiguous = injection().build();
 
-    GradleException failure = assertThrows(GradleException.class,
-        () -> HotswapInjection.getArguments(extension.getHotswap(), null, false, buildDirectory(),
-            null, project.getLogger(), null, neverAsked(), neverResolved()));
+    GradleException failure = assertThrows(GradleException.class, ambiguous::getArguments);
 
     assertTrue(failure.getMessage().contains("hotswapAgent"));
     assertTrue(failure.getMessage().contains("jrebel"));
+  }
+
+  private HotswapInjection.Builder injection() {
+    return HotswapInjection.create().setProject(project).setOptions(extension.getHotswap())
+        .setBuildDirectory(buildDirectory()).setLog(project.getLogger())
+        .setApplicationClasspath(neverAsked()).setResolver(neverResolved());
   }
 
   private Path buildDirectory() {
