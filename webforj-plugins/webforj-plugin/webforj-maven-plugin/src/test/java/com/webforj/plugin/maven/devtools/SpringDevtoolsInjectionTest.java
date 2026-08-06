@@ -6,7 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.webforj.plugin.maven.devtools.SpringDevtoolsInjection.ResolvedJar;
+import com.webforj.plugin.foundation.resolve.ApplicationClasspath.ResolvedJar;
+import com.webforj.plugin.foundation.resolve.ArtifactResolver;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -36,16 +37,16 @@ class SpringDevtoolsInjectionTest {
     Path devtools = tmp.resolve("webforj-spring-devtools.jar");
     AtomicReference<String> requested = new AtomicReference<>();
 
-    newInjection(project, new Properties(), (artifactId, version) -> {
+    newInjection(project, new Properties(), (groupId, artifactId, version) -> {
       requested.set(version);
       if (FRAMEWORK.equals(artifactId)) {
-        return List.of(new ResolvedJar("com.webforj", FRAMEWORK, tmp.resolve("foundation.jar")),
-            new ResolvedJar("com.fasterxml.jackson.core", "jackson-core", tmp.resolve("j.jar")));
+        return List.of(jar("com.webforj", FRAMEWORK, tmp.resolve("foundation.jar")),
+            jar("com.fasterxml.jackson.core", "jackson-core", tmp.resolve("j.jar")));
       }
 
-      return List.of(new ResolvedJar("com.webforj", DEVTOOLS, devtools),
-          new ResolvedJar("com.fasterxml.jackson.core", "jackson-core", tmp.resolve("j2.jar")),
-          new ResolvedJar("org.java-websocket", "Java-WebSocket", tmp.resolve("dupe.jar")));
+      return List.of(jar("com.webforj", DEVTOOLS, devtools),
+          jar("com.fasterxml.jackson.core", "jackson-core", tmp.resolve("j2.jar")),
+          jar("org.java-websocket", "Java-WebSocket", tmp.resolve("dupe.jar")));
     }).apply();
 
     assertEquals(VERSION, requested.get(),
@@ -61,7 +62,7 @@ class SpringDevtoolsInjectionTest {
     MavenProject project = newProject(Set.of(framework()));
     AtomicBoolean resolved = new AtomicBoolean();
 
-    newInjection(project, new Properties(), (artifactId, version) -> {
+    newInjection(project, new Properties(), (groupId, artifactId, version) -> {
       resolved.set(true);
       return List.of();
     }).apply();
@@ -76,7 +77,7 @@ class SpringDevtoolsInjectionTest {
     MavenProject project = newProject(Set.of(), SPRING);
     AtomicBoolean resolved = new AtomicBoolean();
 
-    newInjection(project, new Properties(), (artifactId, version) -> {
+    newInjection(project, new Properties(), (groupId, artifactId, version) -> {
       resolved.set(true);
       return List.of();
     }).apply();
@@ -92,8 +93,8 @@ class SpringDevtoolsInjectionTest {
         newProject(Set.of(framework(), artifact("com.webforj", DEVTOOLS, VERSION)), SPRING);
 
     newInjection(project, new Properties(),
-        (artifactId, version) -> FRAMEWORK.equals(artifactId) ? List.of()
-            : List.of(new ResolvedJar("com.webforj", DEVTOOLS, tmp.resolve("devtools.jar"))))
+        (groupId, artifactId, version) -> FRAMEWORK.equals(artifactId) ? List.of()
+            : List.of(jar("com.webforj", DEVTOOLS, tmp.resolve("devtools.jar"))))
         .apply();
 
     assertNull(
@@ -104,9 +105,9 @@ class SpringDevtoolsInjectionTest {
   @Test
   void shouldAppendAfterTheExistingElements(@TempDir Path tmp) throws Exception {
     Path devtools = tmp.resolve("webforj-spring-devtools.jar");
-    SpringDevtoolsInjection.Resolver resolver =
-        (artifactId, version) -> FRAMEWORK.equals(artifactId) ? List.of()
-            : List.of(new ResolvedJar("com.webforj", DEVTOOLS, devtools));
+    ArtifactResolver resolver =
+        (groupId, artifactId, version) -> FRAMEWORK.equals(artifactId) ? List.of()
+            : List.of(jar("com.webforj", DEVTOOLS, devtools));
 
     MavenProject buildConfigured = newProject(Set.of(framework()), SPRING);
     buildConfigured.getProperties().setProperty(SpringDevtoolsInjection.SPRING_ADDITIONAL_CLASSPATH,
@@ -127,9 +128,13 @@ class SpringDevtoolsInjectionTest {
   }
 
   private static SpringDevtoolsInjection newInjection(MavenProject project,
-      Properties userProperties, SpringDevtoolsInjection.Resolver resolver) {
+      Properties userProperties, ArtifactResolver resolver) {
     return SpringDevtoolsInjection.create().setProject(project).setUserProperties(userProperties)
         .setResolver(resolver).setLog(mock(Log.class)).build();
+  }
+
+  private static ResolvedJar jar(String groupId, String artifactId, Path file) {
+    return new ResolvedJar(groupId, artifactId, VERSION, file);
   }
 
   private static Artifact framework() {

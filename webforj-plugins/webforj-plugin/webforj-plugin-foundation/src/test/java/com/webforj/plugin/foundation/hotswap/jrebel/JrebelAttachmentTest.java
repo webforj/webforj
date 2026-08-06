@@ -19,7 +19,7 @@ class JrebelAttachmentTest {
     assertEquals(
         List.of("-agentpath:" + library.toAbsolutePath(), JrebelAttachment.TOOL_ARGUMENT,
             JrebelAttachment.LEVEL_ARGUMENT),
-        JrebelAttachment.create().setPath(library).build().arguments());
+        JrebelAttachment.create().setPath(library).build().getArguments());
   }
 
   @Test
@@ -29,7 +29,7 @@ class JrebelAttachmentTest {
     assertEquals(
         List.of("-javaagent:" + jar.toAbsolutePath(), JrebelAttachment.TOOL_ARGUMENT,
             JrebelAttachment.LEVEL_ARGUMENT),
-        JrebelAttachment.create().setPath(jar).build().arguments());
+        JrebelAttachment.create().setPath(jar).build().getArguments());
   }
 
   @Test
@@ -37,6 +37,6 @@ class JrebelAttachmentTest {
     JrebelAttachment attachment =
         JrebelAttachment.create().setPath(tmp.resolve("missing.dylib")).build();
 
-    assertThrows(IOException.class, attachment::arguments);
+    assertThrows(IOException.class, attachment::getArguments);
   }
 }

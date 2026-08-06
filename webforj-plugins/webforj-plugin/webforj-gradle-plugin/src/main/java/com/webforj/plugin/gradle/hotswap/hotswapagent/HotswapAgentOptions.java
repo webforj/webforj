@@ -14,7 +14,7 @@ import org.gradle.api.provider.Property;
  * @author Hyyan Abo Fakher
  * @since 26.02
  */
-public abstract class HotswapAgentConfiguration {
+public abstract class HotswapAgentOptions {
 
   /**
    * The agent version to download when no path is supplied.

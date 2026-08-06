@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.webforj.plugin.foundation.resolve.ApplicationClasspath;
+import com.webforj.plugin.foundation.resolve.ApplicationClasspath.ResolvedJar;
+import com.webforj.plugin.foundation.resolve.ArtifactResolver;
 import com.webforj.plugin.gradle.WebforjExtension;
 import com.webforj.plugin.gradle.WebforjPlugin;
 import java.io.IOException;
@@ -11,7 +14,9 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
@@ -20,7 +25,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-class HotswapLauncherTest {
+class HotswapInjectionTest {
+
+  private static final String VERSION = "26.02-SNAPSHOT";
 
   private Project project;
   private WebforjExtension extension;
@@ -35,8 +42,8 @@ class HotswapLauncherTest {
 
   @Test
   void shouldStayOffWithoutAnyConfiguration() {
-    List<String> arguments = HotswapLauncher.arguments(extension.getHotswap(), null, false,
-        buildDirectory(), null, project.getLogger());
+    List<String> arguments = HotswapInjection.getArguments(extension.getHotswap(), null, false,
+        buildDirectory(), null, project.getLogger(), null, neverAsked(), neverResolved());
 
     assertTrue(arguments.isEmpty());
   }
@@ -47,8 +54,8 @@ class HotswapLauncherTest {
     extension
         .hotswap(hotswap -> hotswap.jrebel(jrebel -> jrebel.getPath().set(project.file(library))));
 
-    List<String> arguments = HotswapLauncher.arguments(extension.getHotswap(), null, false,
-        buildDirectory(), null, project.getLogger());
+    List<String> arguments = HotswapInjection.getArguments(extension.getHotswap(), null, false,
+        buildDirectory(), null, project.getLogger(), null, neverAsked(), neverResolved());
 
     assertEquals(List.of("-agentpath:" + library.toAbsolutePath(), "-Dwebforj.hotswap.tool=jrebel",
         "-Dwebforj.hotswap.level=full"), arguments);
@@ -62,8 +69,8 @@ class HotswapLauncherTest {
     // Kotlin build language produce, without the configuration block ever running.
     extension.getHotswap().getJrebel().getPath().set(project.file(library));
 
-    List<String> arguments = HotswapLauncher.arguments(extension.getHotswap(), null, false,
-        buildDirectory(), null, project.getLogger());
+    List<String> arguments = HotswapInjection.getArguments(extension.getHotswap(), null, false,
+        buildDirectory(), null, project.getLogger(), null, neverAsked(), neverResolved());
 
     assertEquals(List.of("-agentpath:" + library.toAbsolutePath(), "-Dwebforj.hotswap.tool=jrebel",
         "-Dwebforj.hotswap.level=full"), arguments);
@@ -72,39 +79,71 @@ class HotswapLauncherTest {
   @Test
   void shouldComposeTheHotswapAgentArguments(@TempDir Path tmp) throws Exception {
     Path jar = Files.createFile(tmp.resolve("hotswap-agent.jar"));
+    Path observer = Files.createFile(tmp.resolve("webforj-hotswap-observer.jar"));
     Path java = fakeJava(tmp, 0);
+    List<String> versions = new ArrayList<>();
     extension
         .hotswap(hotswap -> hotswap.hotswapAgent(agent -> agent.getPath().set(project.file(jar))));
 
-    List<String> arguments = HotswapLauncher.arguments(extension.getHotswap(), null, false,
-        buildDirectory(), project.getLogger(), tmp.resolve("cache"), java);
+    List<String> arguments = HotswapInjection.getArguments(extension.getHotswap(), null, false,
+        buildDirectory(), java, project.getLogger(), tmp.resolve("cache"),
+        HotswapInjectionTest::classpathWithFramework, (groupId, artifactId, version) -> {
+          versions.add(version);
+          return List.of(new ResolvedJar(groupId, artifactId, version, observer));
+        });
 
     assertTrue(arguments.contains("-XX:+AllowEnhancedClassRedefinition"));
     assertTrue(arguments.stream()
         .anyMatch(argument -> argument.startsWith("-javaagent:" + jar.toAbsolutePath())
-            && argument.contains("autoHotswap=true") && argument.contains("propertiesFilePath=")));
-
-    Path properties = buildDirectory().resolve("hotswap").resolve("hotswap-agent.properties");
-    assertTrue(Files.isRegularFile(properties));
-    assertTrue(
-        Files.readString(properties).contains("pluginPackages=com.webforj.devtools.hotswap"));
+            && argument.contains("autoHotswap=true")));
+    assertTrue(arguments.contains("-javaagent:" + observer.toAbsolutePath()),
+        "the resolved observer attaches behind the agent");
+    assertEquals(List.of(VERSION), versions,
+        "the observer resolves at the framework version of the application");
   }
 
   @Test
-  void shouldAttachWithoutTheFlagOnTheVirtualMachineWithoutRedefinitionSupport(@TempDir Path tmp)
-      throws Exception {
-    Path jar = Files.createFile(tmp.resolve("hotswap-agent.jar"));
-    Path java = fakeJava(tmp, 1);
+  void shouldSwitchTheSpringDevelopmentRestartOff(@TempDir Path tmp) throws Exception {
+    Path library = Files.createFile(tmp.resolve("libjrebel64.dylib"));
     extension
-        .hotswap(hotswap -> hotswap.hotswapAgent(agent -> agent.getPath().set(project.file(jar))));
+        .hotswap(hotswap -> hotswap.jrebel(jrebel -> jrebel.getPath().set(project.file(library))));
 
-    List<String> arguments = HotswapLauncher.arguments(extension.getHotswap(), null, false,
-        buildDirectory(), project.getLogger(), tmp.resolve("cache"), java);
+    List<String> arguments = HotswapInjection.getArguments(extension.getHotswap(), null, true,
+        buildDirectory(), null, project.getLogger(), null, neverAsked(), neverResolved());
 
-    assertTrue(arguments.stream().anyMatch(argument -> argument.startsWith("-javaagent:")),
-        "the agent still attaches for the method body changes");
-    assertTrue(arguments.stream().noneMatch("-XX:+AllowEnhancedClassRedefinition"::equals),
-        "the unsupported flag never reaches the virtual machine");
+    assertTrue(arguments.contains("-Dspring.devtools.restart.enabled=false"),
+        "the development restart cannot race the redefinition");
+  }
+
+  @Test
+  void shouldStayOffWhenTheCommandLineSaysOff(@TempDir Path tmp) throws Exception {
+    Path library = Files.createFile(tmp.resolve("libjrebel64.dylib"));
+    extension
+        .hotswap(hotswap -> hotswap.jrebel(jrebel -> jrebel.getPath().set(project.file(library))));
+
+    List<String> arguments = HotswapInjection.getArguments(extension.getHotswap(), "off", false,
+        buildDirectory(), null, project.getLogger(), null, neverAsked(), neverResolved());
+
+    assertTrue(arguments.isEmpty());
+  }
+
+  @Test
+  void shouldRejectAnUnknownCommandLineValue() {
+    assertThrows(GradleException.class,
+        () -> HotswapInjection.getArguments(extension.getHotswap(), "dcevm", false,
+            buildDirectory(), null, project.getLogger(), null, neverAsked(), neverResolved()));
+  }
+
+  @Test
+  void shouldRequireTheJrebelPath() {
+    extension.hotswap(hotswap -> hotswap.jrebel(jrebel -> {
+    }));
+
+    GradleException failure = assertThrows(GradleException.class,
+        () -> HotswapInjection.getArguments(extension.getHotswap(), null, false, buildDirectory(),
+            null, project.getLogger(), null, neverAsked(), neverResolved()));
+
+    assertTrue(failure.getMessage().contains("jrebel path"));
   }
 
   @Test
@@ -116,59 +155,33 @@ class HotswapLauncherTest {
       });
     });
 
-    GradleException failure =
-        assertThrows(GradleException.class, () -> HotswapLauncher.arguments(extension.getHotswap(),
-            null, false, buildDirectory(), null, project.getLogger()));
+    GradleException failure = assertThrows(GradleException.class,
+        () -> HotswapInjection.getArguments(extension.getHotswap(), null, false, buildDirectory(),
+            null, project.getLogger(), null, neverAsked(), neverResolved()));
 
     assertTrue(failure.getMessage().contains("hotswapAgent"));
     assertTrue(failure.getMessage().contains("jrebel"));
   }
 
-  @Test
-  void shouldSwitchTheSpringDevelopmentRestartOff(@TempDir Path tmp) throws Exception {
-    Path library = Files.createFile(tmp.resolve("libjrebel64.dylib"));
-    extension
-        .hotswap(hotswap -> hotswap.jrebel(jrebel -> jrebel.getPath().set(project.file(library))));
-
-    List<String> arguments = HotswapLauncher.arguments(extension.getHotswap(), null, true,
-        buildDirectory(), null, project.getLogger());
-
-    assertTrue(arguments.contains(HotswapLauncher.SPRING_RESTART_OFF),
-        "the development restart cannot race the redefinition");
-  }
-
-  @Test
-  void shouldStayOffWhenTheCommandLineSaysOff(@TempDir Path tmp) throws Exception {
-    Path library = Files.createFile(tmp.resolve("libjrebel64.dylib"));
-    extension
-        .hotswap(hotswap -> hotswap.jrebel(jrebel -> jrebel.getPath().set(project.file(library))));
-
-    List<String> arguments = HotswapLauncher.arguments(extension.getHotswap(), "off", false,
-        buildDirectory(), null, project.getLogger());
-
-    assertTrue(arguments.isEmpty());
-  }
-
-  @Test
-  void shouldRejectAnUnknownCommandLineValue() {
-    assertThrows(GradleException.class, () -> HotswapLauncher.arguments(extension.getHotswap(),
-        "dcevm", false, buildDirectory(), null, project.getLogger()));
-  }
-
-  @Test
-  void shouldRequireTheJrebelPath() {
-    extension.hotswap(hotswap -> hotswap.jrebel(jrebel -> {
-    }));
-
-    GradleException failure =
-        assertThrows(GradleException.class, () -> HotswapLauncher.arguments(extension.getHotswap(),
-            null, false, buildDirectory(), null, project.getLogger()));
-
-    assertTrue(failure.getMessage().contains("jrebel path"));
-  }
-
   private Path buildDirectory() {
     return project.getLayout().getBuildDirectory().get().getAsFile().toPath();
+  }
+
+  private static ApplicationClasspath classpathWithFramework() {
+    return new ApplicationClasspath(List.of(new ResolvedJar(ApplicationClasspath.FRAMEWORK_GROUP_ID,
+        ApplicationClasspath.FRAMEWORK_ARTIFACT_ID, VERSION, Path.of("webforj-foundation.jar"))));
+  }
+
+  private static Supplier<ApplicationClasspath> neverAsked() {
+    return () -> {
+      throw new AssertionError("the classpath is asked only when the hotswap agent attaches");
+    };
+  }
+
+  private static ArtifactResolver neverResolved() {
+    return (groupId, artifactId, version) -> {
+      throw new AssertionError("the observer resolves only when the hotswap agent attaches");
+    };
   }
 
   private static Path fakeJava(Path dir, int exitCode) throws IOException {

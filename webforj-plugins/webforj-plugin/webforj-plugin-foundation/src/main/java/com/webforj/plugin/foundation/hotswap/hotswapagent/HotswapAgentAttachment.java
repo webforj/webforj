@@ -9,7 +9,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -41,13 +40,11 @@ import java.util.function.Predicate;
  */
 public final class HotswapAgentAttachment implements HotswapAttachment {
 
-  /** The package holding the forwarder the agent discovers, shipped in webforj-devtools. */
-  static final String PLUGIN_PACKAGES = "com.webforj.devtools.hotswap";
-  static final String PROPERTIES_FILE_NAME = "hotswap-agent.properties";
   static final String REDEFINITION_OPTION = "AllowEnhancedClassRedefinition";
   static final String REDEFINITION_FLAG = "-XX:+" + REDEFINITION_OPTION;
   static final String TOOL_ARGUMENT = "-Dwebforj.hotswap.tool=hotswapAgent";
   static final String LEVEL_ARGUMENT_PREFIX = "-Dwebforj.hotswap.level=";
+  static final String AGENT_PROPERTIES_FILE_NAME = "hotswap-agent.properties";
 
   static final String DEFAULT_REPOSITORY_HOST = "https://repo1.maven.org/maven2";
   static final String GROUP_ID = "org.hotswapagent";
@@ -64,6 +61,7 @@ public final class HotswapAgentAttachment implements HotswapAttachment {
   private final Path cacheRoot;
   private final String version;
   private final Path overridePath;
+  private final Path observerJar;
   private final Path configurationDirectory;
   private final String repositoryHost;
   private final Path javaExecutable;
@@ -76,6 +74,7 @@ public final class HotswapAgentAttachment implements HotswapAttachment {
     this.version =
         builder.version == null || builder.version.isBlank() ? DEFAULT_VERSION : builder.version;
     this.overridePath = builder.overridePath;
+    this.observerJar = builder.observerJar;
     this.configurationDirectory = builder.configurationDirectory;
     this.repositoryHost = builder.repositoryHost;
     this.javaExecutable = builder.javaExecutable;
@@ -106,16 +105,24 @@ public final class HotswapAgentAttachment implements HotswapAttachment {
    * {@inheritDoc}
    */
   @Override
-  public List<String> arguments() throws IOException {
+  public List<String> getArguments() throws IOException {
+    if (observerJar == null) {
+      throw new IOException("the redefinition observer jar was not supplied, the build system "
+          + "must resolve " + HotswapObserverJar.GROUP_ID + ":" + HotswapObserverJar.ARTIFACT_ID
+          + " and hand its location over");
+    }
+
+    if (!Files.isRegularFile(observerJar)) {
+      throw new IOException("the redefinition observer jar does not exist: " + observerJar);
+    }
+
     boolean enhanced = supportsEnhancedRedefinition();
 
     Path jar = resolve();
-    Path propertiesFile = writeProperties();
     log.accept("webforJ hotswap: HotswapAgent " + version
         + " attached to the application virtual machine");
 
-    // autoHotswap must travel as an agent argument. The agent reads it only from this line, a
-    // value in the properties file never turns the automatic mode on.
+    // autoHotswap must travel as an agent argument, the agent reads it only from this line.
     List<String> arguments = new ArrayList<>();
     if (enhanced) {
       // The flag only exists on a machine that supports the capability, anywhere else it ends the
@@ -123,15 +130,24 @@ public final class HotswapAgentAttachment implements HotswapAttachment {
       arguments.add(REDEFINITION_FLAG);
     }
 
-    // The agent log level keeps the reload lines and the warnings while its routine chatter
-    // stays out of the application console.
-    arguments.add("-javaagent:" + jar.toAbsolutePath()
-        + "=autoHotswap=true,LOGGER=warning,propertiesFilePath=" + propertiesFile.toAbsolutePath());
+    // The agent reads autoHotswap only from this line. The named properties file replaces the
+    // configuration file the agent carries inside its own jar, whose LOGGER=info line would
+    // otherwise reset the log level on every classloader the agent reaches. The LOGGER argument
+    // still travels on the line itself, it covers the window before the file is read.
+    Path agentProperties = writeAgentProperties(jar);
+    arguments.add("-javaagent:" + jar.toAbsolutePath() + "=autoHotswap=true,LOGGER=error"
+        + ",propertiesFilePath=" + agentProperties.toAbsolutePath());
 
-    // Each open stays one self contained token
+    // Each open stays one self contained token. java.net and jdk.internal.loader carry the ucp
+    // field the agent rewrites to honor the extraClasspath entry of the properties file.
     arguments.addAll(List.of("--add-opens=java.base/java.lang=ALL-UNNAMED",
-        "--add-opens=java.base/java.io=ALL-UNNAMED",
+        "--add-opens=java.base/java.io=ALL-UNNAMED", "--add-opens=java.base/java.net=ALL-UNNAMED",
+        "--add-opens=java.base/jdk.internal.loader=ALL-UNNAMED",
         "--add-opens=java.desktop/java.beans=ALL-UNNAMED"));
+
+    // The observer travels behind the agent, so its transformer registers last and reports the
+    // redefinitions the agent applies to the running application.
+    arguments.add("-javaagent:" + observerJar.toAbsolutePath());
 
     // The properties tell the application which tool this attachment installed and how deep its
     // updates go on this machine, so the running application can tell the developer.
@@ -252,10 +268,17 @@ public final class HotswapAgentAttachment implements HotswapAttachment {
     return jar;
   }
 
-  private Path writeProperties() throws IOException {
+  private Path writeAgentProperties(Path jar) throws IOException {
     Files.createDirectories(configurationDirectory);
-    Path file = configurationDirectory.resolve(PROPERTIES_FILE_NAME);
-    Files.writeString(file, "pluginPackages=" + PLUGIN_PACKAGES + "\n", StandardCharsets.UTF_8);
+    Path file = configurationDirectory.resolve(AGENT_PROPERTIES_FILE_NAME);
+
+    // extraClasspath names the agent jar itself. The agent prepends the entry into every
+    // application classloader it initializes, so its own classes stay resolvable inside a webapp
+    // classloader whose parent chain never reaches the system classpath. The forward slashes keep
+    // the path intact under the escape rules of the properties format.
+    String extraClasspath = jar.toAbsolutePath().toString().replace('\\', '/');
+    Files.writeString(file,
+        "autoHotswap=true\nLOGGER=error\nextraClasspath=" + extraClasspath + "\n");
 
     return file;
   }
@@ -355,6 +378,7 @@ public final class HotswapAgentAttachment implements HotswapAttachment {
     private Path cacheRoot;
     private String version;
     private Path overridePath;
+    private Path observerJar;
     private Path configurationDirectory;
     private String repositoryHost = DEFAULT_REPOSITORY_HOST;
     private Path javaExecutable;
@@ -397,6 +421,18 @@ public final class HotswapAgentAttachment implements HotswapAttachment {
      */
     public Builder setOverridePath(Path overridePath) {
       this.overridePath = overridePath;
+      return this;
+    }
+
+    /**
+     * Sets the redefinition observer jar that attaches behind the agent, as resolved by a build
+     * system.
+     *
+     * @param observerJar the observer jar
+     * @return this builder
+     */
+    public Builder setObserverJar(Path observerJar) {
+      this.observerJar = observerJar;
       return this;
     }
 

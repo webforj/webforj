@@ -46,7 +46,7 @@ public final class JrebelAttachment implements HotswapAttachment {
    * {@inheritDoc}
    */
   @Override
-  public List<String> arguments() throws IOException {
+  public List<String> getArguments() throws IOException {
     if (!Files.isRegularFile(path)) {
       throw new IOException("the JRebel agent does not exist: " + path);
     }

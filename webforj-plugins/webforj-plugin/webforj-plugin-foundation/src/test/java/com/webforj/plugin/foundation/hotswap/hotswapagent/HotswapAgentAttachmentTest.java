@@ -64,7 +64,7 @@ class HotswapAgentAttachmentTest {
   void shouldDownloadVerifyAndCacheTheJar(@TempDir Path tmp) throws Exception {
     HotswapAgentAttachment attachment = newAttachment(tmp).setVersion("9.9.9").build();
 
-    List<String> arguments = attachment.arguments();
+    List<String> arguments = attachment.getArguments();
 
     Path jar = tmp.resolve("cache/9.9.9/hotswap-agent-9.9.9.jar");
     assertArrayEquals(JAR_BYTES, Files.readAllBytes(jar), "the verified jar lands in the cache");
@@ -75,7 +75,7 @@ class HotswapAgentAttachmentTest {
             .anyMatch(argument -> argument.startsWith("-javaagent:" + jar.toAbsolutePath())),
         "the agent flag names the cached jar");
 
-    attachment.arguments();
+    attachment.getArguments();
     assertEquals(1, jarRequests.get(), "the second attachment is served from the cache");
   }
 
@@ -84,7 +84,7 @@ class HotswapAgentAttachmentTest {
     servedChecksum = sha1("other bytes".getBytes(StandardCharsets.UTF_8));
     HotswapAgentAttachment attachment = newAttachment(tmp).setVersion("9.9.9").build();
 
-    IOException failure = assertThrows(IOException.class, attachment::arguments);
+    IOException failure = assertThrows(IOException.class, attachment::getArguments);
 
     assertTrue(failure.getMessage().contains("checksum"));
     assertTrue(listFiles(tmp.resolve("cache")).stream()
@@ -96,27 +96,50 @@ class HotswapAgentAttachmentTest {
     Path local = Files.write(tmp.resolve("hotswap-agent.jar"), JAR_BYTES);
     HotswapAgentAttachment attachment = newAttachment(tmp).setOverridePath(local).build();
 
-    List<String> arguments = attachment.arguments();
+    List<String> arguments = attachment.getArguments();
 
+    Path agentProperties = tmp.resolve("hotswap/hotswap-agent.properties");
     assertTrue(arguments.contains("-javaagent:" + local.toAbsolutePath()
-        + "=autoHotswap=true,LOGGER=warning," + "propertiesFilePath="
-        + tmp.resolve("hotswap/hotswap-agent.properties").toAbsolutePath()));
-    assertTrue(
-        arguments.containsAll(List.of("--add-opens=java.base/java.lang=ALL-UNNAMED",
-            "--add-opens=java.base/java.io=ALL-UNNAMED",
-            "--add-opens=java.desktop/java.beans=ALL-UNNAMED")),
+        + "=autoHotswap=true,LOGGER=error,propertiesFilePath=" + agentProperties.toAbsolutePath()));
+    assertEquals(
+        "autoHotswap=true\nLOGGER=error\nextraClasspath="
+            + local.toAbsolutePath().toString().replace('\\', '/') + "\n",
+        Files.readString(agentProperties),
+        "the written file replaces the agent bundled configuration and names the agent jar as the"
+            + " extra classpath every application classloader receives");
+    assertTrue(arguments.contains("-javaagent:" + observerJar(tmp).toAbsolutePath()),
+        "the redefinition observer attaches behind the agent");
+    assertTrue(arguments.containsAll(List.of("--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.io=ALL-UNNAMED", "--add-opens=java.base/java.net=ALL-UNNAMED",
+        "--add-opens=java.base/jdk.internal.loader=ALL-UNNAMED",
+        "--add-opens=java.desktop/java.beans=ALL-UNNAMED")),
         "the agent needs the reflective opens as self contained tokens");
     assertEquals(0, jarRequests.get(), "nothing is downloaded for an override");
   }
 
   @Test
-  void shouldWriteTheAgentConfiguration(@TempDir Path tmp) throws Exception {
+  void shouldFailWithoutTheObserverJar(@TempDir Path tmp) throws Exception {
     Path local = Files.write(tmp.resolve("hotswap-agent.jar"), JAR_BYTES);
-    newAttachment(tmp).setOverridePath(local).build().arguments();
+    HotswapAgentAttachment attachment = HotswapAgentAttachment.create()
+        .setCacheRoot(tmp.resolve("cache")).setConfigurationDirectory(tmp.resolve("hotswap"))
+        .setRepositoryHost(host).setOverridePath(local).setJavaExecutable(fakeJava(tmp, 0)).build();
 
-    String configuration = Files.readString(tmp.resolve("hotswap/hotswap-agent.properties"));
-    assertTrue(configuration.contains("pluginPackages=com.webforj.devtools.hotswap"),
-        "the forwarder package is discovered");
+    IOException failure = assertThrows(IOException.class, attachment::getArguments);
+
+    assertTrue(failure.getMessage().contains(HotswapObserverJar.ARTIFACT_ID),
+        "the missing requirement is named");
+  }
+
+  @Test
+  void shouldFailWhenTheObserverJarDoesNotExist(@TempDir Path tmp) throws Exception {
+    Path local = Files.write(tmp.resolve("hotswap-agent.jar"), JAR_BYTES);
+    HotswapAgentAttachment attachment = newAttachment(tmp).setOverridePath(local)
+        .setObserverJar(tmp.resolve("missing-observer.jar")).build();
+
+    IOException failure = assertThrows(IOException.class, attachment::getArguments);
+
+    assertTrue(failure.getMessage().contains("missing-observer.jar"),
+        "the missing location is named");
   }
 
   @Test
@@ -124,7 +147,7 @@ class HotswapAgentAttachmentTest {
     HotswapAgentAttachment attachment =
         newAttachment(tmp).setOverridePath(tmp.resolve("missing.jar")).build();
 
-    assertThrows(IOException.class, attachment::arguments);
+    assertThrows(IOException.class, attachment::getArguments);
   }
 
   @Test
@@ -134,10 +157,10 @@ class HotswapAgentAttachmentTest {
     List<String> warnings = new ArrayList<>();
     HotswapAgentAttachment attachment = HotswapAgentAttachment.create()
         .setCacheRoot(tmp.resolve("cache")).setConfigurationDirectory(tmp.resolve("hotswap"))
-        .setRepositoryHost(host).setOverridePath(local).setJavaExecutable(fakeJava(tmp, 1))
-        .setWarn(warnings::add).build();
+        .setRepositoryHost(host).setOverridePath(local).setObserverJar(observerJar(tmp))
+        .setJavaExecutable(fakeJava(tmp, 1)).setWarn(warnings::add).build();
 
-    List<String> arguments = attachment.arguments();
+    List<String> arguments = attachment.getArguments();
 
     assertTrue(arguments.stream().anyMatch(argument -> argument.startsWith("-javaagent:")),
         "the agent still attaches for the method body changes");
@@ -160,10 +183,10 @@ class HotswapAgentAttachmentTest {
     List<String> warnings = new ArrayList<>();
     HotswapAgentAttachment attachment = HotswapAgentAttachment.create()
         .setCacheRoot(tmp.resolve("cache")).setConfigurationDirectory(tmp.resolve("hotswap"))
-        .setRepositoryHost(host).setOverridePath(local)
+        .setRepositoryHost(host).setOverridePath(local).setObserverJar(observerJar(tmp))
         .setJavaExecutable(tmp.resolve("missing-java")).setWarn(warnings::add).build();
 
-    List<String> arguments = attachment.arguments();
+    List<String> arguments = attachment.getArguments();
 
     assertTrue(arguments.stream().anyMatch(argument -> argument.startsWith("-javaagent:")));
     assertTrue(arguments.stream().noneMatch("-XX:+AllowEnhancedClassRedefinition"::equals));
@@ -177,11 +200,11 @@ class HotswapAgentAttachmentTest {
     List<String> warnings = new ArrayList<>();
     HotswapAgentAttachment attachment = HotswapAgentAttachment.create()
         .setCacheRoot(tmp.resolve("cache")).setConfigurationDirectory(tmp.resolve("hotswap"))
-        .setRepositoryHost(host).setOverridePath(local)
+        .setRepositoryHost(host).setOverridePath(local).setObserverJar(observerJar(tmp))
         .setRunningVirtualMachineOptions(HotswapAgentAttachment.REDEFINITION_OPTION::equals)
         .setWarn(warnings::add).build();
 
-    List<String> arguments = attachment.arguments();
+    List<String> arguments = attachment.getArguments();
 
     assertTrue(arguments.contains("-XX:+AllowEnhancedClassRedefinition"),
         "the running virtual machine answered the capability itself");
@@ -198,10 +221,10 @@ class HotswapAgentAttachmentTest {
     List<String> warnings = new ArrayList<>();
     HotswapAgentAttachment attachment = HotswapAgentAttachment.create()
         .setCacheRoot(tmp.resolve("cache")).setConfigurationDirectory(tmp.resolve("hotswap"))
-        .setRepositoryHost(host).setOverridePath(local)
+        .setRepositoryHost(host).setOverridePath(local).setObserverJar(observerJar(tmp))
         .setRunningVirtualMachineOptions(option -> false).setWarn(warnings::add).build();
 
-    List<String> arguments = attachment.arguments();
+    List<String> arguments = attachment.getArguments();
 
     assertTrue(arguments.stream().anyMatch(argument -> argument.startsWith("-javaagent:")),
         "the agent still attaches for the method body changes");
@@ -218,7 +241,16 @@ class HotswapAgentAttachmentTest {
   private HotswapAgentAttachment.Builder newAttachment(Path tmp) throws IOException {
     return HotswapAgentAttachment.create().setCacheRoot(tmp.resolve("cache"))
         .setConfigurationDirectory(tmp.resolve("hotswap")).setRepositoryHost(host)
-        .setJavaExecutable(fakeJava(tmp, 0));
+        .setObserverJar(observerJar(tmp)).setJavaExecutable(fakeJava(tmp, 0));
+  }
+
+  private static Path observerJar(Path dir) throws IOException {
+    Path jar = dir.resolve("webforj-hotswap-observer.jar");
+    if (!Files.exists(jar)) {
+      Files.createFile(jar);
+    }
+
+    return jar;
   }
 
   private static Path fakeJava(Path dir, int exitCode) throws IOException {

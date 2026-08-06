@@ -7,9 +7,12 @@ import com.webforj.plugin.foundation.WatchConfigGuard;
 import com.webforj.plugin.foundation.WatchPortFile;
 import com.webforj.plugin.foundation.WatchProtocol;
 import com.webforj.plugin.foundation.WatchSocketServer;
+import com.webforj.plugin.foundation.hotswap.HotswapLaunch;
+import com.webforj.plugin.foundation.resolve.ArtifactResolver;
 import com.webforj.plugin.maven.devtools.SpringDevtoolsInjection;
 import com.webforj.plugin.maven.hotswap.HotswapInjection;
 import com.webforj.plugin.maven.hotswap.HotswapOptions;
+import com.webforj.plugin.maven.resolve.MavenArtifacts;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -72,7 +75,7 @@ public class WatchMojo extends AbstractBundlerMojo {
    * When given, this wins over the project configuration for the run.
    * </p>
    */
-  @Parameter(property = HotswapInjection.SELECTION_PROPERTY)
+  @Parameter(property = HotswapLaunch.SELECTION_PROPERTY)
   protected String hotswapSelection;
 
   /** The current Maven session, the source of the command line properties. */
@@ -152,15 +155,19 @@ public class WatchMojo extends AbstractBundlerMojo {
     Properties userProperties = session == null ? new Properties() : session.getUserProperties();
     HotswapInjection.create().setProject(project).setUserProperties(userProperties)
         .setOptions(hotswap).setCommandLineValue(hotswapSelection)
-        .setJavaExecutable(toolchainJavaExecutable()).setLog(getLog()).build().apply();
+        .setResolver(getArtifactResolver()).setJavaExecutable(toolchainJavaExecutable())
+        .setLog(getLog()).build().apply();
   }
 
   private void deliverDevtools() throws MojoExecutionException {
     Properties userProperties = session == null ? new Properties() : session.getUserProperties();
     SpringDevtoolsInjection.create().setProject(project).setUserProperties(userProperties)
-        .setResolver(SpringDevtoolsInjection.resolver(repositorySystem, repositorySession,
-            project.getRemoteProjectRepositories()))
-        .setLog(getLog()).build().apply();
+        .setResolver(getArtifactResolver()).setLog(getLog()).build().apply();
+  }
+
+  private ArtifactResolver getArtifactResolver() {
+    return MavenArtifacts.getResolver(repositorySystem, repositorySession,
+        project.getRemoteProjectRepositories());
   }
 
   private Path toolchainJavaExecutable() {

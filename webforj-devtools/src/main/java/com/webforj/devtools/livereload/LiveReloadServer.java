@@ -2,6 +2,7 @@ package com.webforj.devtools.livereload;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.webforj.devtools.livereload.message.ClassUpdateErrorMessage;
 import com.webforj.devtools.livereload.message.ClassUpdateMessage;
 import com.webforj.devtools.livereload.message.ConnectedMessage;
 import com.webforj.devtools.livereload.message.HeartbeatAckMessage;
@@ -299,6 +300,42 @@ public class LiveReloadServer extends WebSocketServer {
           conn.send(json);
         } catch (Exception e) {
           logger.log(System.Logger.Level.ERROR, "Error sending class update", e);
+          connections.remove(conn);
+        }
+      }
+    }
+  }
+
+  /**
+   * Broadcasts a class update rejection to every connected browser.
+   *
+   * <p>
+   * The virtual machine refused the redefinition, so the change never reached the application. Each
+   * page shows the rejection instead of refreshing into the unchanged code, which would silently
+   * present the old behavior as the new one.
+   * </p>
+   *
+   * @param classNames the binary names of the classes whose redefinition was in flight
+   * @param reason the rejection reason the virtual machine reported
+   *
+   * @since 26.02
+   */
+  public void sendClassUpdateErrorMessage(Set<String> classNames, String reason) {
+    ClassUpdateErrorMessage message = new ClassUpdateErrorMessage(
+        List.copyOf(classNames == null ? Set.of() : classNames), reason);
+    String json = gson.toJson(message);
+
+    cleanupConnections();
+
+    logger.log(System.Logger.Level.INFO, "Class update rejected by the virtual machine (" + reason
+        + "), notifying " + connections.size() + CONNECTED_SESSIONS);
+
+    for (WebSocket conn : connections) {
+      if (conn.isOpen()) {
+        try {
+          conn.send(json);
+        } catch (Exception e) {
+          logger.log(System.Logger.Level.ERROR, "Error sending class update rejection", e);
           connections.remove(conn);
         }
       }

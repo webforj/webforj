@@ -196,6 +196,91 @@ class HotswapAgentReceiverTest {
     assertFalse(await(update, 400));
   }
 
+  @Test
+  @Timeout(10)
+  void shouldReportTheRejectionInsteadOfTheUpdate() {
+    LiveReloadServer server = runningServer();
+    AtomicReference<Set<String>> classes = new AtomicReference<>();
+    AtomicReference<String> reason = new AtomicReference<>();
+    final CountDownLatch rejection = rejectionLatch(server, 1, classes, reason);
+
+    Thread.UncaughtExceptionHandler original = Thread.getDefaultUncaughtExceptionHandler();
+    Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> {
+    });
+    try {
+      receiver = HotswapAgentReceiverFixture.withAgentDetected(server);
+      receiver.start();
+
+      HotswapAgentReceiver.onClassRedefinition(CLASS_NAME, new byte[] {1});
+      Thread.getDefaultUncaughtExceptionHandler().uncaughtException(new Thread("hotswap"),
+          redefinitionRejection("attempted to change the schema (add/remove fields)"));
+
+      assertTrue(await(rejection, 2000));
+      assertEquals(Set.of(CLASS_NAME), classes.get());
+      assertEquals("attempted to change the schema (add/remove fields)", reason.get());
+      verify(server, never()).sendClassUpdateMessage(any());
+      verify(server, never()).sendReloadMessage();
+    } finally {
+      receiver.stop();
+      Thread.setDefaultUncaughtExceptionHandler(original);
+    }
+  }
+
+  @Test
+  @Timeout(10)
+  void shouldForgetTheDigestsOfTheRejectedBytes() {
+    LiveReloadServer server = runningServer();
+    final CountDownLatch rejection = rejectionLatch(server, 1, null, null);
+
+    Thread.UncaughtExceptionHandler original = Thread.getDefaultUncaughtExceptionHandler();
+    Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> {
+    });
+    try {
+      receiver = HotswapAgentReceiverFixture.withAgentDetected(server);
+      receiver.start();
+
+      byte[] bytes = new byte[] {1, 2, 3};
+      HotswapAgentReceiver.onClassRedefinition(CLASS_NAME, bytes);
+      Thread.getDefaultUncaughtExceptionHandler().uncaughtException(new Thread("hotswap"),
+          redefinitionRejection("rejected"));
+      assertTrue(await(rejection, 2000));
+
+      // The same bytes come back when the developer retries the same edit. The rejected attempt
+      // never became the running code, so the retry must report as a fresh change.
+      CountDownLatch update = classUpdateLatch(server, 1, null);
+      HotswapAgentReceiver.onClassRedefinition(CLASS_NAME, bytes);
+      assertTrue(await(update, 2000));
+    } finally {
+      receiver.stop();
+      Thread.setDefaultUncaughtExceptionHandler(original);
+    }
+  }
+
+  private static CountDownLatch rejectionLatch(LiveReloadServer server, int count,
+      AtomicReference<Set<String>> lastClasses, AtomicReference<String> lastReason) {
+    CountDownLatch latch = new CountDownLatch(count);
+    doAnswer(invocation -> {
+      if (lastClasses != null) {
+        lastClasses.set(invocation.getArgument(0));
+      }
+      if (lastReason != null) {
+        lastReason.set(invocation.getArgument(1));
+      }
+      latch.countDown();
+      return null;
+    }).when(server).sendClassUpdateErrorMessage(any(), any());
+
+    return latch;
+  }
+
+  private static Throwable redefinitionRejection(String reason) {
+    UnsupportedOperationException cause = new UnsupportedOperationException(reason);
+    cause.setStackTrace(new StackTraceElement[] {
+        new StackTraceElement("sun.instrument.InstrumentationImpl", "redefineClasses0", null, -2)});
+
+    return new IllegalStateException("Unable to redefine classes", cause);
+  }
+
   private static boolean await(CountDownLatch latch, long millis) {
     try {
       return latch.await(millis, TimeUnit.MILLISECONDS);

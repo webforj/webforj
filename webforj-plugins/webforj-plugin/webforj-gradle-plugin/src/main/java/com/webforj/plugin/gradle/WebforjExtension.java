@@ -1,6 +1,6 @@
 package com.webforj.plugin.gradle;
 
-import com.webforj.plugin.gradle.hotswap.HotswapConfiguration;
+import com.webforj.plugin.gradle.hotswap.HotswapOptions;
 import org.gradle.api.Action;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.RegularFileProperty;
@@ -135,7 +135,7 @@ public abstract class WebforjExtension {
    * @return the hotswap configuration
    */
   @Nested
-  public abstract HotswapConfiguration getHotswap();
+  public abstract HotswapOptions getHotswap();
 
   /**
    * Configures the hotswap integration, naming the tool to attach.
@@ -147,7 +147,7 @@ public abstract class WebforjExtension {
    *
    * @param action the configuration action
    */
-  public void hotswap(Action<? super HotswapConfiguration> action) {
+  public void hotswap(Action<? super HotswapOptions> action) {
     action.execute(getHotswap());
   }
 }

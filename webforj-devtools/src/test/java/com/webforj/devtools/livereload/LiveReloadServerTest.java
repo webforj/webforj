@@ -245,6 +245,31 @@ class LiveReloadServerTest {
   }
 
   @Test
+  void shouldBroadcastTheClassUpdateRejectionToEveryConnection() {
+    WebSocket conn1 = openConnection();
+    WebSocket conn2 = openConnection();
+
+    server.sendClassUpdateErrorMessage(Set.of("com.example.DashboardView"),
+        "attempted to change the schema (add/remove fields)");
+
+    verify(conn1).send(contains("class-update-error"));
+    verify(conn1).send(contains("attempted to change the schema"));
+    verify(conn2).send(contains("class-update-error"));
+  }
+
+  @Test
+  void shouldNotReplayTheRejectionToTheConnectingPage() {
+    // The rejection describes one moment. A page connecting later starts from the served code
+    // anyway, so a replayed rejection would only report a problem that page never had.
+    server.sendClassUpdateErrorMessage(Set.of("com.example.DashboardView"), "rejected");
+
+    WebSocket conn = openConnection();
+    server.onMessage(conn, helloMessage(System.currentTimeMillis() - 60_000));
+
+    verify(conn, never()).send(contains("class-update-error"));
+  }
+
+  @Test
   void shouldReplayTheClassUpdateTheConnectingPageMissed() {
     // The update goes out while nobody is connected, exactly the moment a browser is between
     // pages. The page must receive the class names on connect, so its application instance can

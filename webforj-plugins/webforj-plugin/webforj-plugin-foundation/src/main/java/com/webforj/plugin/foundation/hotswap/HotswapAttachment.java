@@ -18,5 +18,5 @@ public interface HotswapAttachment {
    * @return the arguments, one flag or value per element
    * @throws IOException if the attachment cannot be prepared
    */
-  List<String> arguments() throws IOException;
+  List<String> getArguments() throws IOException;
 }

@@ -31,6 +31,19 @@
         'color: inherit;'
       );
     }
+
+    /**
+     * Logs one failure under the LiveReload error badge, on the error channel of the console.
+     *
+     * @param {string} message the message to log
+     */
+    error(message) {
+      console.error(
+        '%cwebforJ LiveReload%c ' + message,
+        'background: #d64545; color: white; padding: 2px 6px; border-radius: 3px; font-weight: bold;',
+        'color: inherit;'
+      );
+    }
   }
 
   /**
@@ -150,6 +163,317 @@
   }
 
   /**
+   * Presents one card of feedback in the corner of the page.
+   *
+   * Every card wears the same self contained look, the one the craftforJ intro card renders in
+   * the app page, and only the content and the tone change between cards. The cards live in one
+   * shared stack, so two cards on screen together park above each other instead of overlapping.
+   */
+  class FeedbackCard {
+    /**
+     * @param {string} id id of the card element
+     * @param {string} tone the visual tone, 'notice' keeps the neutral accent and 'alarm' wears
+     *     the failure accent
+     */
+    constructor(id, tone) {
+      /** @type {string} id of the card element */
+      this.id = id;
+
+      /** @type {string} the visual tone of the card */
+      this.tone = tone;
+
+      /** @type {string} id of the shared stack element every card parks in */
+      this.stackId = 'webforj-livereload-feedback';
+
+      /** @type {string} id of the shared style element */
+      this.styleId = 'webforj-livereload-feedback-style';
+    }
+
+    /**
+     * Tells whether the card is on screen.
+     *
+     * @returns {boolean} true while the card is in the page
+     */
+    isShowing() {
+      return !!document.getElementById(this.id);
+    }
+
+    /**
+     * Shows the card, replacing an earlier appearance of the same card.
+     *
+     * @param {{role: string, label: string, eyebrow: string, title: string, texts: string[],
+     *     detail: string, link: {text: string, url: string},
+     *     buttons: {text: string, accent: boolean, url: string, onSelect: Function}[]}} content
+     *     the card content, texts, detail, link and buttons may be absent
+     */
+    show(content) {
+      this.clear();
+
+      const stack = this.stack();
+      const host = document.createElement('div');
+      host.id = this.id;
+      host.className = 'wdt-feedback' + (this.tone === 'alarm' ? ' wdt-feedback--alarm' : '');
+      host.setAttribute('role', content.role);
+      if (content.label) {
+        host.setAttribute('aria-label', content.label);
+      }
+
+      const body = document.createElement('div');
+      body.className = 'wdt-feedback__body';
+
+      const eyebrow = document.createElement('span');
+      eyebrow.className = 'wdt-feedback__eyebrow';
+      eyebrow.textContent = content.eyebrow;
+
+      const title = document.createElement('h2');
+      title.className = 'wdt-feedback__title';
+      title.textContent = content.title;
+
+      body.appendChild(eyebrow);
+      body.appendChild(title);
+      (content.texts || []).forEach(function (line) {
+        const text = document.createElement('p');
+        text.className = 'wdt-feedback__text';
+        text.textContent = line;
+        body.appendChild(text);
+      });
+
+      if (content.detail) {
+        const detail = document.createElement('p');
+        detail.className = 'wdt-feedback__detail';
+        detail.textContent = content.detail;
+        body.appendChild(detail);
+      }
+
+      if (content.link) {
+        const link = document.createElement('a');
+        link.className = 'wdt-feedback__link';
+        link.textContent = content.link.text;
+        link.href = content.link.url;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        body.appendChild(link);
+      }
+
+      const footer = document.createElement('div');
+      footer.className = 'wdt-feedback__footer';
+
+      const card = this;
+      (content.buttons || []).forEach(function (choice) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className =
+          'wdt-feedback__btn wdt-feedback__btn--' + (choice.accent ? 'accent' : 'quiet');
+        button.textContent = choice.text;
+        button.addEventListener('click', function () {
+          if (choice.url) {
+            window.open(choice.url, '_blank', 'noopener');
+          }
+          if (choice.onSelect) {
+            choice.onSelect();
+          }
+          card.dismiss();
+        });
+        footer.appendChild(button);
+      });
+
+      host.appendChild(body);
+      host.appendChild(footer);
+      stack.appendChild(host);
+
+      requestAnimationFrame(function () {
+        host.classList.add('is-in');
+      });
+    }
+
+    /**
+     * Plays the card out, the exit mirroring the entrance.
+     */
+    dismiss() {
+      const host = document.getElementById(this.id);
+      if (host) {
+        host.classList.remove('is-in');
+        setTimeout(function () {
+          host.remove();
+        }, 240);
+      }
+    }
+
+    /**
+     * Removes the card at once, so a superseded card never lingers on screen.
+     */
+    clear() {
+      const host = document.getElementById(this.id);
+      if (host) {
+        host.remove();
+      }
+    }
+
+    /**
+     * Returns the shared stack, creating it and its style on the first card.
+     *
+     * @returns {HTMLElement} the stack element every card parks in
+     */
+    stack() {
+      if (!document.getElementById(this.styleId)) {
+        const style = document.createElement('style');
+        style.id = this.styleId;
+        style.textContent = /* css */`
+          #webforj-livereload-feedback {
+            position: fixed;
+            left: 14px;
+            bottom: 72px;
+            z-index: 2147483645;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 10px;
+            pointer-events: none;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback {
+            display: flex;
+            flex-direction: column;
+            width: 360px;
+            max-width: calc(100vw - 28px);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 16px;
+            background: linear-gradient(160deg, #26262e 0%, #131317 55%, #08080a 100%);
+            box-shadow: 0 18px 50px rgba(10, 6, 24, 0.5), 0 0 0 1px rgba(0, 0, 0, 0.12),
+              0 0 0 1px rgba(255, 255, 255, 0.08), 0 8px 22px rgba(0, 0, 0, 0.55);
+            color: #f4f4f6;
+            font: 400 13px/1.55 system-ui, sans-serif;
+            pointer-events: auto;
+            opacity: 0;
+            transform: translateY(14px) scale(0.96);
+            transition: opacity 240ms cubic-bezier(0.34, 1.4, 0.64, 1),
+              transform 240ms cubic-bezier(0.34, 1.4, 0.64, 1);
+          }
+
+          #webforj-livereload-feedback .wdt-feedback.is-in {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+
+          #webforj-livereload-feedback .wdt-feedback--alarm {
+            border-color: rgba(255, 122, 122, 0.35);
+            background: linear-gradient(160deg, #2e2226 0%, #171114 55%, #0a0708 100%);
+            box-shadow: 0 18px 50px rgba(24, 6, 10, 0.5), 0 0 0 1px rgba(0, 0, 0, 0.12),
+              0 0 0 1px rgba(255, 255, 255, 0.08), 0 8px 22px rgba(0, 0, 0, 0.55);
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__body {
+            padding: 14px 16px 4px;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__eyebrow {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #86a8ff;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback--alarm .wdt-feedback__eyebrow {
+            color: #ff8f8f;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__title {
+            margin: 4px 0 6px;
+            font-size: 17px;
+            font-weight: 650;
+            color: #fff;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__text {
+            margin: 0;
+            color: #b5b5be;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__text + .wdt-feedback__text {
+            margin-top: 9px;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__detail {
+            margin: 9px 0 0;
+            padding: 8px 10px;
+            border-radius: 9px;
+            background: rgba(255, 122, 122, 0.09);
+            color: #ffb3b3;
+            font: 400 12px/1.5 ui-monospace, monospace;
+            overflow-wrap: anywhere;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__link {
+            display: inline-block;
+            margin-top: 9px;
+            color: #86a8ff;
+            text-decoration: none;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__link:hover {
+            text-decoration: underline;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            padding: 12px 16px 14px;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__btn {
+            all: unset;
+            padding: 7px 13px;
+            border-radius: 9px;
+            font: 500 12.5px/1 system-ui, sans-serif;
+            cursor: pointer;
+            transition: background 140ms ease, transform 140ms ease;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__btn:active {
+            transform: scale(0.96);
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__btn--quiet {
+            color: #b5b5be;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__btn--quiet:hover {
+            background: rgba(255, 255, 255, 0.07);
+            color: #f4f4f6;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__btn--accent {
+            background: #3b6ef6;
+            color: #fff;
+          }
+
+          #webforj-livereload-feedback .wdt-feedback__btn--accent:hover {
+            background: #5b8cff;
+          }
+
+          @media (prefers-reduced-motion: reduce) {
+            #webforj-livereload-feedback .wdt-feedback {
+              transition: opacity 220ms ease;
+              transform: none;
+            }
+          }
+        `;
+        document.head.appendChild(style);
+      }
+
+      let stack = document.getElementById(this.stackId);
+      if (!stack) {
+        stack = document.createElement('div');
+        stack.id = this.stackId;
+        document.body.appendChild(stack);
+      }
+
+      return stack;
+    }
+  }
+
+  /**
    * Tells the developer when the attached hotswap tool runs with limited depth on this machine.
    *
    * The state arrives with the connected handshake. On a virtual machine with full class
@@ -162,11 +486,8 @@
       /** @type {string} localStorage key holding the acknowledged state */
       this.storageKey = 'webforj-devtools:hotswap-state';
 
-      /** @type {string} id of the notice element */
-      this.noticeId = 'webforj-livereload-hotswap-notice';
-
-      /** @type {string} id of the injected style element */
-      this.styleId = 'webforj-livereload-hotswap-style';
+      /** @type {FeedbackCard} the card the notice presents itself on */
+      this.card = new FeedbackCard('webforj-livereload-hotswap-notice', 'notice');
     }
 
     /**
@@ -183,11 +504,15 @@
       }
 
       const state = tool + '/' + message.hotswapLevel;
-      if (this.acknowledgedState() === state || document.getElementById(this.noticeId)) {
+      if (this.acknowledgedState() === state || this.card.isShowing()) {
         return;
       }
 
-      this.show({
+      const notice = this;
+      this.card.show({
+        role: 'dialog',
+        label: 'webforJ LiveReload',
+        eyebrow: 'hotswap',
         title: 'webforJ LiveReload',
         texts: [
           'Edits inside a method body reach the running application instantly. Changes to the '
@@ -196,11 +521,27 @@
           'Run the application on the JetBrains Runtime and every class change applies '
             + 'instantly with the application state kept.'
         ],
-        linkText: 'Or explore the other reload methods webforJ supports',
-        linkUrl: 'https://docs.webforj.com/docs/configuration/deploy-reload/overview',
-        actionText: 'Get the JetBrains Runtime',
-        actionUrl: 'https://github.com/JetBrains/JetBrainsRuntime/releases'
-      }, state);
+        link: {
+          text: 'Or explore the other reload methods webforJ supports',
+          url: 'https://docs.webforj.com/docs/configuration/deploy-reload/overview'
+        },
+        buttons: [
+          {
+            text: 'Got it',
+            onSelect: function () {
+              notice.acknowledge(state);
+            }
+          },
+          {
+            text: 'Get the JetBrains Runtime',
+            accent: true,
+            url: 'https://github.com/JetBrains/JetBrainsRuntime/releases',
+            onSelect: function () {
+              notice.acknowledge(state);
+            }
+          }
+        ]
+      });
     }
 
     /**
@@ -228,206 +569,58 @@
         // Without storage the card simply returns on the next connection.
       }
     }
+  }
+
+  /**
+   * Shows the rejection of a class change, in place of the refresh the change would have earned.
+   *
+   * The runtime refused the change, so the running application still executes the previous code.
+   * A refresh at this point would present the old behavior as if it were the new one, which is
+   * exactly the confusion this card prevents. The card leaves on its close button or with the
+   * next change that does apply.
+   */
+  class SwapRejection {
+    constructor() {
+      /** @type {FeedbackCard} the card the rejection presents itself on */
+      this.card = new FeedbackCard('webforj-livereload-swap-rejection', 'alarm');
+    }
 
     /**
-     * Shows the card for one state.
+     * Shows the rejection, replacing the card of an earlier rejection.
      *
-     * The card wears the same self contained look as the craftforJ intro card, which renders in
-     * the app page the same way and defines these values for exactly that reason.
-     *
-     * @param {{title: string, texts: string[], linkText: string, linkUrl: string,
-     *     actionText: string, actionUrl: string}} content the card content
-     * @param {string} state the state the card describes
+     * @param {string[]} classes the names of the classes whose change was refused
+     * @param {string} reason the refusal reason the runtime reported
      */
-    show(content, state) {
-      if (!document.getElementById(this.styleId)) {
-        const style = document.createElement('style');
-        style.id = this.styleId;
-        style.textContent = /* css */`
-          #webforj-livereload-hotswap-notice {
-            position: fixed;
-            left: 14px;
-            bottom: 72px;
-            z-index: 2147483644;
-            display: flex;
-            flex-direction: column;
-            width: 360px;
-            max-width: calc(100vw - 28px);
-            border: 1px solid rgba(255, 255, 255, 0.22);
-            border-radius: 16px;
-            background: linear-gradient(160deg, #26262e 0%, #131317 55%, #08080a 100%);
-            box-shadow: 0 18px 50px rgba(10, 6, 24, 0.5), 0 0 0 1px rgba(0, 0, 0, 0.12),
-              0 0 0 1px rgba(255, 255, 255, 0.08), 0 8px 22px rgba(0, 0, 0, 0.55);
-            color: #f4f4f6;
-            font: 400 13px/1.55 system-ui, sans-serif;
-            opacity: 0;
-            transform: translateY(14px) scale(0.96);
-            transition: opacity 240ms cubic-bezier(0.34, 1.4, 0.64, 1),
-              transform 240ms cubic-bezier(0.34, 1.4, 0.64, 1);
-          }
-
-          #webforj-livereload-hotswap-notice.is-in {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-
-          #webforj-livereload-hotswap-notice .wdt-hotswap__body {
-            padding: 14px 16px 4px;
-          }
-
-          #webforj-livereload-hotswap-notice .wdt-hotswap__eyebrow {
-            font-size: 10px;
-            font-weight: 600;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: #86a8ff;
-          }
-
-          #webforj-livereload-hotswap-notice .wdt-hotswap__title {
-            margin: 4px 0 6px;
-            font-size: 17px;
-            font-weight: 650;
-            color: #fff;
-          }
-
-          #webforj-livereload-hotswap-notice .wdt-hotswap__text {
-            margin: 0;
-            color: #b5b5be;
-          }
-
-          #webforj-livereload-hotswap-notice .wdt-hotswap__text + .wdt-hotswap__text {
-            margin-top: 9px;
-          }
-
-          #webforj-livereload-hotswap-notice .wdt-hotswap__link {
-            display: inline-block;
-            margin-top: 9px;
-            color: #86a8ff;
-            text-decoration: none;
-          }
-
-          #webforj-livereload-hotswap-notice .wdt-hotswap__link:hover {
-            text-decoration: underline;
-          }
-
-          #webforj-livereload-hotswap-notice .wdt-hotswap__footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-            padding: 12px 16px 14px;
-          }
-
-          #webforj-livereload-hotswap-notice .wdt-hotswap__btn {
-            all: unset;
-            padding: 7px 13px;
-            border-radius: 9px;
-            font: 500 12.5px/1 system-ui, sans-serif;
-            cursor: pointer;
-            transition: background 140ms ease, transform 140ms ease;
-          }
-
-          #webforj-livereload-hotswap-notice .wdt-hotswap__btn:active {
-            transform: scale(0.96);
-          }
-
-          #webforj-livereload-hotswap-notice .wdt-hotswap__btn--quiet {
-            color: #b5b5be;
-          }
-
-          #webforj-livereload-hotswap-notice .wdt-hotswap__btn--quiet:hover {
-            background: rgba(255, 255, 255, 0.07);
-            color: #f4f4f6;
-          }
-
-          #webforj-livereload-hotswap-notice .wdt-hotswap__btn--accent {
-            background: #3b6ef6;
-            color: #fff;
-          }
-
-          #webforj-livereload-hotswap-notice .wdt-hotswap__btn--accent:hover {
-            background: #5b8cff;
-          }
-
-          @media (prefers-reduced-motion: reduce) {
-            #webforj-livereload-hotswap-notice {
-              transition: opacity 220ms ease;
-              transform: none;
-            }
-          }
-        `;
-        document.head.appendChild(style);
+    show(classes, reason) {
+      const named = (classes || []).map(function (name) {
+        return name.substring(name.lastIndexOf('.') + 1);
+      });
+      // The batch can span the whole application, so the card names a couple of classes and
+      // counts the rest instead of growing with the batch.
+      let subject = '';
+      if (named.length) {
+        const rest = named.length - 2;
+        subject = ' of ' + named.slice(0, 2).join(', ') + (rest > 0 ? ' and ' + rest + ' more' : '');
       }
 
-      const host = document.createElement('div');
-      host.id = this.noticeId;
-      host.setAttribute('role', 'dialog');
-      host.setAttribute('aria-label', content.title);
-
-      const body = document.createElement('div');
-      body.className = 'wdt-hotswap__body';
-
-      const eyebrow = document.createElement('span');
-      eyebrow.className = 'wdt-hotswap__eyebrow';
-      eyebrow.textContent = 'hotswap';
-
-      const title = document.createElement('h2');
-      title.className = 'wdt-hotswap__title';
-      title.textContent = content.title;
-
-      body.appendChild(eyebrow);
-      body.appendChild(title);
-      content.texts.forEach(function (line) {
-        const text = document.createElement('p');
-        text.className = 'wdt-hotswap__text';
-        text.textContent = line;
-        body.appendChild(text);
+      this.card.show({
+        role: 'alert',
+        eyebrow: 'hotswap',
+        title: 'Change not applied',
+        texts: [
+          'The runtime refused this class change, so the application still runs the previous code'
+            + subject + '. Restart the application to apply it.'
+        ],
+        detail: reason || '',
+        buttons: [{ text: 'Dismiss' }]
       });
+    }
 
-      const link = document.createElement('a');
-      link.className = 'wdt-hotswap__link';
-      link.textContent = content.linkText;
-      link.href = content.linkUrl;
-      link.target = '_blank';
-      link.rel = 'noopener';
-      body.appendChild(link);
-
-      const footer = document.createElement('div');
-      footer.className = 'wdt-hotswap__footer';
-
-      const notice = this;
-      const dismiss = function () {
-        notice.acknowledge(state);
-        // The exit mirrors the entrance, and the card leaves the tree once it has played.
-        host.classList.remove('is-in');
-        setTimeout(function () {
-          host.remove();
-        }, 240);
-      };
-
-      const gotIt = document.createElement('button');
-      gotIt.type = 'button';
-      gotIt.className = 'wdt-hotswap__btn wdt-hotswap__btn--quiet';
-      gotIt.textContent = 'Got it';
-      gotIt.addEventListener('click', dismiss);
-
-      const action = document.createElement('button');
-      action.type = 'button';
-      action.className = 'wdt-hotswap__btn wdt-hotswap__btn--accent';
-      action.textContent = content.actionText;
-      action.addEventListener('click', function () {
-        window.open(content.actionUrl, '_blank', 'noopener');
-        dismiss();
-      });
-
-      footer.appendChild(gotIt);
-      footer.appendChild(action);
-      host.appendChild(body);
-      host.appendChild(footer);
-      document.body.appendChild(host);
-
-      requestAnimationFrame(function () {
-        host.classList.add('is-in');
-      });
+    /**
+     * Removes the card, so an applied change never leaves a stale rejection on screen.
+     */
+    clear() {
+      this.card.clear();
     }
   }
 
@@ -646,7 +839,7 @@
         this.socket = new WebSocket(this.url);
 
         this.socket.onopen = function () {
-          self.logger.log('✅ LiveReload connection established! Ready to rock 🎸');
+          self.logger.log('Connection established');
           self.instanceOpened = true;
           self.everOpened = true;
           self.startHeartbeat();
@@ -669,7 +862,7 @@
           try {
             self.callbacks.onMessage(JSON.parse(event.data));
           } catch (e) {
-            self.logger.log('💥 Message parsing hiccup: ' + e.message);
+            self.logger.error('Message could not be parsed: ' + e.message);
           }
         };
 
@@ -688,7 +881,7 @@
           self.stopHeartbeat();
         };
       } catch (e) {
-        this.logger.log('🙅 WebSocket creation failed: ' + e.message);
+        this.logger.error('WebSocket creation failed: ' + e.message);
         const firstDrop = !this.everDown;
         this.everDown = true;
         this.callbacks.onDown(firstDrop, false, 0);
@@ -810,13 +1003,13 @@
           this.updateImages(resourcePath, message.timestamp);
           break;
         case 'js':
-          this.reload('⚡ JavaScript updated: ' + resourcePath + ' - full refresh incoming!');
+          this.reload('JavaScript updated: ' + resourcePath + ', reloading the page');
           break;
         case 'other':
-          this.reload('📝 File modified: ' + resourcePath + ' - refreshing to apply changes!');
+          this.reload('File modified: ' + resourcePath + ', reloading the page');
           break;
         default:
-          this.logger.log('❓ Unrecognized resource type: ' + message.resourceType);
+          this.logger.log('Unrecognized resource type: ' + message.resourceType);
       }
     }
 
@@ -840,14 +1033,14 @@
           const baseHref = href.split('?')[0];
           link.href = baseHref + '?webforj-dev=' + timestamp;
           updatedCount++;
-          logger.log('🎨 CSS hot-reloaded: ' + resourcePath);
+          logger.log('Stylesheet updated in place: ' + resourcePath);
         }
       });
 
       if (updatedCount === 0) {
-        logger.log('🔍 No stylesheet found matching: ' + resourcePath);
+        logger.log('No stylesheet matches: ' + resourcePath);
       } else if (updatedCount > 1) {
-        logger.log('🎨 Hot-reloaded ' + updatedCount + ' stylesheets for: ' + resourcePath);
+        logger.log('Updated ' + updatedCount + ' stylesheets in place for: ' + resourcePath);
       }
     }
 
@@ -873,9 +1066,9 @@
       });
 
       if (updatedCount > 0) {
-        this.logger.log('🖼️ Refreshed ' + updatedCount + ' image(s): ' + resourcePath);
+        this.logger.log('Refreshed ' + updatedCount + ' image(s): ' + resourcePath);
       } else {
-        this.logger.log('🔍 No images found matching: ' + resourcePath);
+        this.logger.log('No image matches: ' + resourcePath);
       }
     }
 
@@ -1203,6 +1396,9 @@
       /** @type {HotswapNotice} */
       this.hotswapNotice = new HotswapNotice();
 
+      /** @type {SwapRejection} */
+      this.swapRejection = new SwapRejection();
+
       /** @type {StateBroadcaster} */
       this.state = new StateBroadcaster('webforj-devtools-bus');
 
@@ -1260,7 +1456,7 @@
       this.gate.install();
       this.hideServerProgressbar();
       this.scroll.restore();
-      this.logger.log('🚀 Initiating LiveReload connection to: ' + this.socket.url);
+      this.logger.log('Connecting to ' + this.socket.url);
       this.socket.connect();
 
       const self = this;
@@ -1281,7 +1477,7 @@
      * Handles the socket coming back while a recovery runs.
      */
     handleReopen() {
-      this.logger.log('🔌 Server socket is back. Waiting until the app can serve before reloading...');
+      this.logger.log('The server socket is back, waiting until the application can serve before reloading');
       this.status.show('Waiting for the app…');
       this.state.publish('awaiting-app');
       this.socketDownSince = 0;
@@ -1295,7 +1491,8 @@
     handleMessage(message) {
       switch (message.type) {
         case 'reload':
-          this.reload('🎯 Hot reload triggered! Refreshing in 3... 2... 1...');
+          this.swapRejection.clear();
+          this.reload('Reload requested by the server, reloading the page');
           break;
 
         case 'config':
@@ -1308,12 +1505,12 @@
           break;
 
         case 'connected':
-          this.logger.log('🤝 Handshake complete - LiveReload is listening for changes!');
+          this.logger.log('Connected, listening for changes');
           this.hotswapNotice.handle(message);
           break;
 
         case 'restarting':
-          this.logger.log('♻️ Server is restarting - holding the page until it is back...');
+          this.logger.log('The server is restarting, holding the page until it is back');
           this.gate.hold();
           this.status.show('Server restarting…');
           this.state.publish('restarting');
@@ -1321,7 +1518,7 @@
           break;
 
         case 'resource-update':
-          this.logger.log('📦 Incoming update: ' + message.resourceType + ' → ' + message.path);
+          this.logger.log('Incoming update: ' + message.resourceType + ' ' + message.path);
           this.resources.apply(message);
           // The applied update advances the served stamp, so a later reconnect never mistakes
           // this page for one that missed the update.
@@ -1332,7 +1529,8 @@
           break;
 
         case 'class-update':
-          this.logger.log('♻️ Incoming class update: ' + (message.classes || []).join(', '));
+          this.logger.log('Incoming class update: ' + (message.classes || []).join(', '));
+          this.swapRejection.clear();
           // The page hands the change to its own application instance, which rebuilds the
           // affected part of the interface or reloads the page when it cannot.
           window.dispatchEvent(new CustomEvent('webforj-devtools-class-update', {
@@ -1344,8 +1542,15 @@
           }
           break;
 
+        case 'class-update-error':
+          this.logger.error('Class change refused by the runtime: ' + (message.reason || ''));
+          // The change never reached the application, so nothing refreshes. The card explains
+          // why the page still shows the previous behavior.
+          this.swapRejection.show(message.classes || [], message.reason || '');
+          break;
+
         default:
-          this.logger.log('🤔 Received mystery message type: ' + message.type);
+          this.logger.log('Received an unknown message type: ' + message.type);
       }
     }
 
@@ -1360,7 +1565,7 @@
      */
     handleSocketDown(firstDrop, wasOpen, code) {
       if (firstDrop) {
-        this.logger.log('📡 Connection closed (code: ' + code + ') - standing by until the app is back...');
+        this.logger.log('Connection closed (code ' + code + '), standing by until the application is back');
       }
 
       this.gate.hold();
@@ -1453,9 +1658,9 @@
 
         if (self.consecutiveReadyProbes >= self.reloadStableProbes) {
           if (socketOpen) {
-            self.reload('✅ App is ready, reloading.');
+            self.reload('The application is ready, reloading');
           } else {
-            self.reload('🔄 The app serves again but its reload socket is gone, reloading into a fresh session.');
+            self.reload('The application serves again but its reload socket is gone, reloading into a fresh session');
           }
           return;
         }
@@ -1474,7 +1679,7 @@
      */
     giveUp() {
       if (this.socket.isOpen()) {
-        this.reload('⏳ App did not become ready in time, reloading anyway.');
+        this.reload('The application did not become ready in time, reloading');
         return;
       }
 
@@ -1482,7 +1687,7 @@
       this.probe.check().then(function (serves) {
         if (serves) {
           self.stopRecovery();
-          self.logger.log('😌 The reload socket has not come back in '
+          self.logger.log('The reload socket has not come back in '
             + Math.round(self.recoveryMaxWaitMs / 1000)
             + 's but the app still serves, resuming against it.');
           self.gate.release();
@@ -1491,7 +1696,7 @@
           return;
         }
 
-        self.reload('💀 Nothing answered in ' + Math.round(self.recoveryMaxWaitMs / 1000)
+        self.reload('Nothing answered in ' + Math.round(self.recoveryMaxWaitMs / 1000)
           + 's, reloading so the browser shows the server state.');
       });
     }
@@ -1527,7 +1732,7 @@
       const self = this;
       this.holdReleaseTimer = setTimeout(function () {
         if (self.gate.holding && self.socket.isOpen()) {
-          self.logger.log('🤷 Restart notice was not followed by a restart, resuming.');
+          self.logger.log('The restart notice was not followed by a restart, resuming');
           self.gate.release();
           self.status.hide();
           self.state.publish('live');

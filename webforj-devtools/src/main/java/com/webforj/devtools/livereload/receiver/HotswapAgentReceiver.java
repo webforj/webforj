@@ -12,13 +12,14 @@ import java.util.zip.CRC32;
 /**
  * Receives HotswapAgent class redefinitions and pushes the redefined class names through the
  * {@link LiveReloadServer} it is given, falling back to a full page reload when the redefinition
- * does not name the class.
+ * does not name the class, and reporting the rejection instead of refreshing when the virtual
+ * machine refuses the redefinition.
  *
  * <p>
  * The HotswapAgent java agent redefines Java bytecode in place and never restarts the server, so
- * none of the restart signals the reload pipeline reacts to ever fire. The webforJ forwarder
- * running inside the agent reports every redefinition to this receiver instead, and a quick burst
- * of redefinitions collapses into one update.
+ * none of the restart signals the reload pipeline reacts to ever fire. The webforJ observer agent
+ * attached next to it reports every applied redefinition to this receiver instead, and a quick
+ * burst of redefinitions collapses into one update.
  * </p>
  *
  * @author Hyyan Abo Fakher
@@ -36,6 +37,7 @@ public class HotswapAgentReceiver implements LiveReloadReceiver {
 
   private final boolean agentPresent;
   private final ClassUpdateDelivery delivery;
+  private final RedefinitionFailureHandler failureHandler;
   private final AtomicBoolean running = new AtomicBoolean(false);
   private final Map<String, Long> lastSeenDigests = new ConcurrentHashMap<>();
 
@@ -59,15 +61,16 @@ public class HotswapAgentReceiver implements LiveReloadReceiver {
     this.agentPresent = isAgentPresent(vmArguments);
     this.delivery = new ClassUpdateDelivery(server, "a HotswapAgent class redefinition",
         "webforj-hotswap-receiver");
+    this.failureHandler = new RedefinitionFailureHandler(this::updateRejected);
   }
 
   /**
-   * Accepts a class redefinition reported by the agent forwarder and schedules a debounced update
-   * on every running receiver.
+   * Accepts a class redefinition reported by the observer agent and schedules a debounced update on
+   * every running receiver.
    *
    * <p>
-   * The forwarder resolves this method reflectively through the application classloader and calls
-   * it on the thread that redefines the class, so the method returns quickly and never throws.
+   * The observer resolves this method reflectively through the application classloader and calls it
+   * on the thread that redefines the class, so the method returns quickly and never throws.
    * </p>
    *
    * @param className the name of the redefined class, in the binary or the internal form
@@ -96,6 +99,7 @@ public class HotswapAgentReceiver implements LiveReloadReceiver {
     }
 
     delivery.start();
+    failureHandler.install();
     activeReceivers.add(this);
 
     logger.log(System.Logger.Level.INFO,
@@ -111,6 +115,7 @@ public class HotswapAgentReceiver implements LiveReloadReceiver {
     }
 
     activeReceivers.remove(this);
+    failureHandler.uninstall();
     delivery.stop();
     lastSeenDigests.clear();
   }
@@ -126,6 +131,13 @@ public class HotswapAgentReceiver implements LiveReloadReceiver {
 
   void sendReload() {
     delivery.deliver();
+  }
+
+  private void updateRejected(String reason) {
+    // The rejected bytes never became the running code, so their digests are forgotten and the
+    // next attempt reports in full instead of being mistaken for a repeat.
+    lastSeenDigests.clear();
+    delivery.updateRejected(reason);
   }
 
   private void scheduleUpdateSafely(String className, byte[] classBytes) {

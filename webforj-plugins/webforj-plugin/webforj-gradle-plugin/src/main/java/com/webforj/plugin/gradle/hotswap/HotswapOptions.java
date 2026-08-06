@@ -1,7 +1,7 @@
 package com.webforj.plugin.gradle.hotswap;
 
-import com.webforj.plugin.gradle.hotswap.hotswapagent.HotswapAgentConfiguration;
-import com.webforj.plugin.gradle.hotswap.jrebel.JrebelConfiguration;
+import com.webforj.plugin.gradle.hotswap.hotswapagent.HotswapAgentOptions;
+import com.webforj.plugin.gradle.hotswap.jrebel.JrebelOptions;
 import org.gradle.api.Action;
 import org.gradle.api.tasks.Nested;
 
@@ -16,7 +16,7 @@ import org.gradle.api.tasks.Nested;
  * @author Hyyan Abo Fakher
  * @since 26.02
  */
-public abstract class HotswapConfiguration {
+public abstract class HotswapOptions {
 
   private boolean hotswapAgentConfigured;
   private boolean jrebelConfigured;
@@ -27,14 +27,14 @@ public abstract class HotswapConfiguration {
    * @return the HotswapAgent configuration
    */
   @Nested
-  public abstract HotswapAgentConfiguration getHotswapAgent();
+  public abstract HotswapAgentOptions getHotswapAgent();
 
   /**
    * Attaches HotswapAgent and configures it.
    *
    * @param action the configuration action
    */
-  public void hotswapAgent(Action<? super HotswapAgentConfiguration> action) {
+  public void hotswapAgent(Action<? super HotswapAgentOptions> action) {
     hotswapAgentConfigured = true;
     action.execute(getHotswapAgent());
   }
@@ -56,14 +56,14 @@ public abstract class HotswapConfiguration {
    * @return the JRebel configuration
    */
   @Nested
-  public abstract JrebelConfiguration getJrebel();
+  public abstract JrebelOptions getJrebel();
 
   /**
    * Attaches JRebel and configures it.
    *
    * @param action the configuration action
    */
-  public void jrebel(Action<? super JrebelConfiguration> action) {
+  public void jrebel(Action<? super JrebelOptions> action) {
     jrebelConfigured = true;
     action.execute(getJrebel());
   }

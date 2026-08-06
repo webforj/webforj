@@ -10,6 +10,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.webforj.plugin.foundation.resolve.ApplicationClasspath.ResolvedJar;
+import com.webforj.plugin.foundation.resolve.ArtifactResolver;
 import com.webforj.plugin.maven.hotswap.hotswapagent.HotswapAgentOptions;
 import com.webforj.plugin.maven.hotswap.jrebel.JrebelOptions;
 import java.io.IOException;
@@ -20,6 +22,8 @@ import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Build;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -33,6 +37,8 @@ class HotswapInjectionTest {
 
   private static final String SPRING = "spring-boot-maven-plugin";
   private static final String JETTY = "jetty-ee11-maven-plugin";
+  private static final String FRAMEWORK = "webforj-foundation";
+  private static final String VERSION = "26.02";
 
   @Test
   void shouldHandTheAgentToTheSpringBootFork(@TempDir Path tmp) throws Exception {
@@ -41,7 +47,7 @@ class HotswapInjectionTest {
 
     String arguments = project.getProperties().getProperty(HotswapInjection.SPRING_JVM_ARGUMENTS);
     assertTrue(arguments.contains("-agentpath:"), "the agent flag reaches the fork arguments");
-    assertTrue(arguments.contains(HotswapInjection.SPRING_RESTART_OFF),
+    assertTrue(arguments.contains("-Dspring.devtools.restart.enabled=false"),
         "the development restart cannot race the redefinition");
   }
 
@@ -130,37 +136,6 @@ class HotswapInjectionTest {
   }
 
   @Test
-  void shouldHandTheHotswapAgentToTheSpringBootFork(@TempDir Path tmp) throws Exception {
-    MavenProject project = newProject(tmp, SPRING);
-    HotswapInjection.create().setProject(project).setUserProperties(new Properties())
-        .setOptions(hotswapAgentOptions(tmp)).setAgentCacheRoot(tmp.resolve("cache"))
-        .setJavaExecutable(fakeJava(tmp, 0)).setLog(mock(Log.class)).build().apply();
-
-    String arguments = project.getProperties().getProperty(HotswapInjection.SPRING_JVM_ARGUMENTS);
-    assertTrue(arguments.contains("-javaagent:"), "the agent flag reaches the fork arguments");
-    assertTrue(arguments.contains("-XX:+AllowEnhancedClassRedefinition"));
-    assertTrue(arguments.contains(HotswapInjection.SPRING_RESTART_OFF),
-        "the development restart cannot race the redefinition");
-  }
-
-  @Test
-  void shouldWarnAndAttachLimitedOnTheVirtualMachineWithoutRedefinitionSupport(@TempDir Path tmp)
-      throws Exception {
-    MavenProject project = newProject(tmp, SPRING);
-    Log log = mock(Log.class);
-    HotswapInjection.create().setProject(project).setUserProperties(new Properties())
-        .setOptions(hotswapAgentOptions(tmp)).setAgentCacheRoot(tmp.resolve("cache"))
-        .setJavaExecutable(fakeJava(tmp, 1)).setLog(log).build().apply();
-
-    String arguments = project.getProperties().getProperty(HotswapInjection.SPRING_JVM_ARGUMENTS);
-    assertTrue(arguments.contains("-javaagent:"),
-        "the agent still attaches for the method body changes");
-    assertFalse(arguments.contains("-XX:+AllowEnhancedClassRedefinition"),
-        "the unsupported flag never reaches the virtual machine");
-    verify(log).warn(contains("method body changes"));
-  }
-
-  @Test
   void shouldFailWhenTheBuildNamesBothTools(@TempDir Path tmp) throws Exception {
     MavenProject project = newProject(tmp, SPRING);
     HotswapOptions options = jrebelOptions(tmp).setHotswapAgent(new HotswapAgentOptions());
@@ -174,17 +149,96 @@ class HotswapInjectionTest {
   @Test
   void shouldWarnWhenTheBuildHasNoSupportedRunner(@TempDir Path tmp) throws Exception {
     MavenProject project = newProject(tmp);
-
-    newInjection(project, new Properties(), jrebelOptions(tmp), null).apply();
+    Log log = mock(Log.class);
+    HotswapInjection.create().setProject(project).setUserProperties(new Properties())
+        .setOptions(jrebelOptions(tmp)).setLog(log).build().apply();
 
     assertNull(project.getProperties().getProperty(HotswapInjection.SPRING_JVM_ARGUMENTS));
     assertNull(project.getProperties().getProperty(HotswapInjection.JETTY_JVM_ARGS));
+    verify(log).warn(contains("no supported application runner"));
+  }
+
+  @Test
+  void shouldHandTheHotswapAgentToTheSpringBootFork(@TempDir Path tmp) throws Exception {
+    MavenProject project = newProject(tmp, SPRING);
+    givenFramework(project);
+    List<String> versions = new ArrayList<>();
+    Path observer = observerJar(tmp);
+
+    HotswapInjection.create().setProject(project).setUserProperties(new Properties())
+        .setOptions(hotswapAgentOptions(tmp)).setAgentCacheRoot(tmp.resolve("cache"))
+        .setResolver((groupId, artifactId, version) -> {
+          versions.add(version);
+          return List.of(new ResolvedJar(groupId, artifactId, version, observer));
+        }).setJavaExecutable(fakeJava(tmp, 0)).setLog(mock(Log.class)).build().apply();
+
+    String arguments = project.getProperties().getProperty(HotswapInjection.SPRING_JVM_ARGUMENTS);
+    assertTrue(arguments.contains("-javaagent:"), "the agent flag reaches the fork arguments");
+    assertTrue(arguments.contains("-XX:+AllowEnhancedClassRedefinition"));
+    assertTrue(arguments.contains("-javaagent:" + observer.toAbsolutePath()),
+        "the resolved observer jar reaches the fork arguments");
+    assertEquals(List.of(VERSION), versions,
+        "the observer resolves at the framework version of the application");
+  }
+
+  @Test
+  void shouldWarnAndAttachLimitedOnTheVirtualMachineWithoutRedefinitionSupport(@TempDir Path tmp)
+      throws Exception {
+    MavenProject project = newProject(tmp, SPRING);
+    givenFramework(project);
+    Log log = mock(Log.class);
+    Path observer = observerJar(tmp);
+
+    HotswapInjection.create().setProject(project).setUserProperties(new Properties())
+        .setOptions(hotswapAgentOptions(tmp)).setAgentCacheRoot(tmp.resolve("cache"))
+        .setResolver((groupId, artifactId, version) -> List
+            .of(new ResolvedJar(groupId, artifactId, version, observer)))
+        .setJavaExecutable(fakeJava(tmp, 1)).setLog(log).build().apply();
+
+    String arguments = project.getProperties().getProperty(HotswapInjection.SPRING_JVM_ARGUMENTS);
+    assertTrue(arguments.contains("-javaagent:"),
+        "the agent still attaches for the method body changes");
+    assertFalse(arguments.contains("-XX:+AllowEnhancedClassRedefinition"),
+        "the unsupported flag never reaches the virtual machine");
+    verify(log).warn(contains("method body changes"));
+  }
+
+  @Test
+  void shouldFailWhenTheApplicationHasNoFramework(@TempDir Path tmp) throws Exception {
+    MavenProject project = newProject(tmp, SPRING);
+    when(project.getArtifacts()).thenReturn(Set.of());
+    HotswapInjection injection =
+        HotswapInjection.create().setProject(project).setUserProperties(new Properties())
+            .setOptions(hotswapAgentOptions(tmp)).setAgentCacheRoot(tmp.resolve("cache"))
+            .setResolver((groupId, artifactId, version) -> List.of())
+            .setJavaExecutable(fakeJava(tmp, 0)).setLog(mock(Log.class)).build();
+
+    MojoExecutionException failure = assertThrows(MojoExecutionException.class, injection::apply);
+
+    assertTrue(failure.getMessage().contains(FRAMEWORK), "the missing requirement is named");
   }
 
   private static HotswapInjection newInjection(MavenProject project, Properties userProperties,
       HotswapOptions options, String commandLineValue) {
     return HotswapInjection.create().setProject(project).setUserProperties(userProperties)
         .setOptions(options).setCommandLineValue(commandLineValue).setLog(mock(Log.class)).build();
+  }
+
+  private static void givenFramework(MavenProject project) {
+    Artifact framework = mock(Artifact.class);
+    when(framework.getGroupId()).thenReturn("com.webforj");
+    when(framework.getArtifactId()).thenReturn(FRAMEWORK);
+    when(framework.getBaseVersion()).thenReturn(VERSION);
+    when(project.getArtifacts()).thenReturn(Set.of(framework));
+  }
+
+  private static Path observerJar(Path tmp) throws IOException {
+    Path jar = tmp.resolve("webforj-hotswap-observer.jar");
+    if (!Files.exists(jar)) {
+      Files.createFile(jar);
+    }
+
+    return jar;
   }
 
   private static HotswapOptions hotswapAgentOptions(Path tmp) throws Exception {

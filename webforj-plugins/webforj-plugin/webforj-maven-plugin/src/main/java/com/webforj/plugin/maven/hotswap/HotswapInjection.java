@@ -1,18 +1,15 @@
 package com.webforj.plugin.maven.hotswap;
 
-import com.webforj.plugin.foundation.hotswap.HotswapAttachment;
-import com.webforj.plugin.foundation.hotswap.HotswapTool;
-import com.webforj.plugin.foundation.hotswap.hotswapagent.HotswapAgentAttachment;
-import com.webforj.plugin.foundation.hotswap.jrebel.JrebelAttachment;
+import com.webforj.plugin.foundation.hotswap.HotswapLaunch;
+import com.webforj.plugin.foundation.resolve.ArtifactResolver;
+import com.webforj.plugin.maven.RunnerProperties;
 import com.webforj.plugin.maven.hotswap.hotswapagent.HotswapAgentOptions;
 import com.webforj.plugin.maven.hotswap.jrebel.JrebelOptions;
+import com.webforj.plugin.maven.resolve.MavenArtifacts;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Properties;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import org.apache.maven.model.Plugin;
@@ -21,14 +18,14 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 
 /**
- * Hands the configured hotswap agent to the application virtual machine.
+ * Hands the configured hotswap tool to the application virtual machine of a Maven run.
  *
  * <p>
  * The watch goal runs in the build process before the application run goal on the same command
- * line, so the agent arguments are placed into the properties that goal reads for its fork. The
- * agent therefore enters only the application virtual machine, never the build process. For the
- * Jetty runner that requires the forked deploy mode, which is turned on when the build does not
- * pick a mode itself.
+ * line, so the arguments the foundation launch composes are placed into the properties that goal
+ * reads for its fork. The tool therefore enters only the application virtual machine, never the
+ * build process. For the Jetty runner that requires the forked deploy mode, which is turned on when
+ * the build does not pick a mode itself.
  * </p>
  *
  * @author Hyyan Abo Fakher
@@ -36,11 +33,7 @@ import org.apache.maven.project.MavenProject;
  */
 public final class HotswapInjection {
 
-  /** The property that selects the tool on the command line. */
-  public static final String SELECTION_PROPERTY = "webforj.hotswap";
-
   static final String SPRING_JVM_ARGUMENTS = "spring-boot.run.jvmArguments";
-  static final String SPRING_RESTART_OFF = "-Dspring.devtools.restart.enabled=false";
   static final String JETTY_JVM_ARGS = "jetty.jvmArgs";
   static final String JETTY_DEPLOY_MODE = "jetty.deployMode";
 
@@ -51,6 +44,7 @@ public final class HotswapInjection {
   private final Properties userProperties;
   private final HotswapOptions options;
   private final String commandLineValue;
+  private final ArtifactResolver resolver;
   private final Log log;
   private final Path agentCacheRoot;
   private final Path javaExecutable;
@@ -60,9 +54,9 @@ public final class HotswapInjection {
     this.userProperties = builder.userProperties;
     this.options = builder.options;
     this.commandLineValue = builder.commandLineValue;
+    this.resolver = builder.resolver;
     this.log = builder.log;
-    this.agentCacheRoot = builder.agentCacheRoot != null ? builder.agentCacheRoot
-        : Path.of(System.getProperty("user.home"), ".webforj", "hotswap-agent");
+    this.agentCacheRoot = builder.agentCacheRoot;
     this.javaExecutable = builder.javaExecutable;
   }
 
@@ -76,89 +70,52 @@ public final class HotswapInjection {
   }
 
   /**
-   * Resolves the selected tool and places its arguments into the runner properties.
+   * Resolves the selected tool through the foundation launch and places its arguments into the
+   * runner properties.
    *
-   * @throws MojoExecutionException if the configuration is invalid or the agent cannot be resolved
+   * @throws MojoExecutionException if the configuration is invalid or the launch cannot be prepared
    */
   public void apply() throws MojoExecutionException {
-    Optional<HotswapTool> selected;
+    List<String> arguments;
     try {
-      selected = HotswapTool.select(configuredTools(), commandLineValue);
-    } catch (IllegalArgumentException e) {
+      arguments = createLaunch().getArguments();
+    } catch (IllegalArgumentException | IOException e) {
       throw new MojoExecutionException(e.getMessage(), e);
     }
 
-    if (commandLineValue != null && !commandLineValue.isBlank()) {
-      log.info("hotswap selection from the command line: " + commandLineValue);
-    }
-
-    if (selected.isEmpty()) {
+    if (arguments.isEmpty()) {
       return;
     }
 
-    inject(composeArguments(selected.get()));
+    inject(String.join(" ", arguments));
   }
 
-  private Set<HotswapTool> configuredTools() {
-    Set<HotswapTool> configured = EnumSet.noneOf(HotswapTool.class);
-    if (options != null && options.getHotswapAgent() != null) {
-      configured.add(HotswapTool.HOTSWAP_AGENT);
-    }
+  private HotswapLaunch createLaunch() {
+    HotswapAgentOptions agent = options == null ? null : options.getHotswapAgent();
+    JrebelOptions jrebel = options == null ? null : options.getJrebel();
+    String buildDirectory = project.getBuild() == null ? null : project.getBuild().getDirectory();
 
-    if (options != null && options.getJrebel() != null) {
-      configured.add(HotswapTool.JREBEL);
-    }
-
-    return configured;
+    return HotswapLaunch.create().setHotswapAgentConfigured(agent != null)
+        .setHotswapAgentVersion(agent == null ? null : agent.getVersion())
+        .setHotswapAgentPath(
+            agent == null || agent.getPath() == null ? null : agent.getPath().toPath())
+        .setJrebelConfigured(jrebel != null)
+        .setJrebelPath(
+            jrebel == null || jrebel.getPath() == null ? null : jrebel.getPath().toPath())
+        .setCommandLineValue(commandLineValue)
+        .setBuildDirectory(buildDirectory == null ? null : Path.of(buildDirectory))
+        .setAgentCacheRoot(agentCacheRoot).setJavaExecutable(javaExecutable)
+        .setApplicationClasspath(() -> MavenArtifacts.getApplicationClasspath(project))
+        .setResolver(resolver).setLog(log::info).setWarn(log::warn).build();
   }
 
-  private List<String> composeArguments(HotswapTool tool) throws MojoExecutionException {
-    try {
-      return createAttachment(tool).arguments();
-    } catch (IOException e) {
-      throw new MojoExecutionException(e.getMessage(), e);
-    }
-  }
-
-  private HotswapAttachment createAttachment(HotswapTool tool) throws MojoExecutionException {
-    return switch (tool) {
-      case HOTSWAP_AGENT -> createHotswapAgentAttachment();
-      case JREBEL -> createJrebelAttachment();
-    };
-  }
-
-  private HotswapAttachment createHotswapAgentAttachment() {
-    HotswapAgentOptions agentOptions = options == null ? null : options.getHotswapAgent();
-
-    return HotswapAgentAttachment.create().setCacheRoot(agentCacheRoot)
-        .setVersion(agentOptions == null ? null : agentOptions.getVersion())
-        .setOverridePath(agentOptions == null || agentOptions.getPath() == null ? null
-            : agentOptions.getPath().toPath())
-        .setConfigurationDirectory(Path.of(project.getBuild().getDirectory()).resolve("hotswap"))
-        .setJavaExecutable(javaExecutable).setLog(log::info).setWarn(log::warn).build();
-  }
-
-  private HotswapAttachment createJrebelAttachment() throws MojoExecutionException {
-    JrebelOptions jrebelOptions = options == null ? null : options.getJrebel();
-    if (jrebelOptions == null || jrebelOptions.getPath() == null) {
-      throw new MojoExecutionException(
-          "set the jrebel path in the webforj plugin hotswap configuration, "
-              + "the JRebel agent location cannot be guessed");
-    }
-
-    return JrebelAttachment.create().setPath(jrebelOptions.getPath().toPath()).setLog(log::info)
-        .build();
-  }
-
-  private void inject(List<String> arguments) {
+  private void inject(String joined) {
     boolean spring = hasPlugin(artifactId -> SPRING_PLUGIN.equals(artifactId));
     boolean jetty = hasPlugin(artifactId -> JETTY_PLUGIN.matcher(artifactId).matches());
-    String joined = String.join(" ", arguments);
 
     if (spring) {
-      // A development restart would replace the very classes the tool just swapped, so the two
-      // must not run together, whichever tool is attached.
-      appendProperty(SPRING_JVM_ARGUMENTS, joined + " " + SPRING_RESTART_OFF);
+      RunnerProperties.append(project, userProperties, SPRING_JVM_ARGUMENTS,
+          joined + " " + HotswapLaunch.SPRING_RESTART_OFF, " ");
     }
 
     if (jetty) {
@@ -166,13 +123,12 @@ public final class HotswapInjection {
     }
 
     if (!spring && !jetty) {
-      log.warn("hotswap is configured but the build has no supported application runner, "
-          + "expected the Spring Boot plugin or the Jetty plugin");
+      log.warn(HotswapLaunch.getMissingRunnerWarning("the Spring Boot plugin or the Jetty plugin"));
     }
   }
 
   private void injectIntoJetty(String joined) {
-    String mode = effectiveProperty(JETTY_DEPLOY_MODE);
+    String mode = RunnerProperties.getEffectiveValue(project, userProperties, JETTY_DEPLOY_MODE);
     if (mode == null || mode.isBlank()) {
       project.getProperties().setProperty(JETTY_DEPLOY_MODE, "FORK");
     } else if (!"FORK".equalsIgnoreCase(mode)) {
@@ -182,13 +138,7 @@ public final class HotswapInjection {
       return;
     }
 
-    appendProperty(JETTY_JVM_ARGS, joined);
-  }
-
-  private String effectiveProperty(String key) {
-    String fromCommandLine = userProperties.getProperty(key);
-
-    return fromCommandLine != null ? fromCommandLine : project.getProperties().getProperty(key);
+    RunnerProperties.append(project, userProperties, JETTY_JVM_ARGS, joined, " ");
   }
 
   private boolean hasPlugin(Predicate<String> artifactId) {
@@ -199,20 +149,6 @@ public final class HotswapInjection {
     }
 
     return false;
-  }
-
-  private void appendProperty(String key, String value) {
-    String fromCommandLine = userProperties.getProperty(key);
-    String existing =
-        fromCommandLine != null ? fromCommandLine : project.getProperties().getProperty(key);
-    String merged = existing == null || existing.isBlank() ? value : existing + " " + value;
-
-    project.getProperties().setProperty(key, merged);
-    // A value given on the command line outranks the project properties when the run goal reads
-    // its parameters, so the merge must land there too or it would never be seen.
-    if (fromCommandLine != null) {
-      userProperties.setProperty(key, merged);
-    }
   }
 
   /**
@@ -227,6 +163,7 @@ public final class HotswapInjection {
     private Properties userProperties = new Properties();
     private HotswapOptions options;
     private String commandLineValue;
+    private ArtifactResolver resolver;
     private Log log;
     private Path agentCacheRoot;
     private Path javaExecutable;
@@ -274,6 +211,17 @@ public final class HotswapInjection {
      */
     public Builder setCommandLineValue(String commandLineValue) {
       this.commandLineValue = commandLineValue;
+      return this;
+    }
+
+    /**
+     * Sets the resolver the observer artifact is resolved through.
+     *
+     * @param resolver the resolver
+     * @return this builder
+     */
+    public Builder setResolver(ArtifactResolver resolver) {
+      this.resolver = resolver;
       return this;
     }
 

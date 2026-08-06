@@ -8,7 +8,7 @@ import org.gradle.api.file.RegularFileProperty;
  * @author Hyyan Abo Fakher
  * @since 26.02
  */
-public abstract class JrebelConfiguration {
+public abstract class JrebelOptions {
 
   /**
    * The JRebel agent on disk, a native library or a jar.

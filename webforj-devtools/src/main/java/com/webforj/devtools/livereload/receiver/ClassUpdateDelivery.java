@@ -36,6 +36,7 @@ final class ClassUpdateDelivery {
   private final AtomicReference<ScheduledFuture<?>> pendingReload = new AtomicReference<>();
   private final Set<String> pendingClasses = ConcurrentHashMap.newKeySet();
   private final AtomicBoolean sawUnnamedChange = new AtomicBoolean(false);
+  private final AtomicReference<String> rejectionReason = new AtomicReference<>();
 
   private volatile ScheduledExecutorService executor;
 
@@ -73,6 +74,7 @@ final class ClassUpdateDelivery {
 
     pendingClasses.clear();
     sawUnnamedChange.set(false);
+    rejectionReason.set(null);
 
     if (current != null) {
       current.shutdownNow();
@@ -117,6 +119,22 @@ final class ClassUpdateDelivery {
     schedule(current);
   }
 
+  /**
+   * Accepts the rejection of the changes in flight, so the batch reports the rejection instead of
+   * refreshing the browser into the unchanged code, and schedules the debounced update.
+   *
+   * @param reason the rejection reason the virtual machine reported
+   */
+  void updateRejected(String reason) {
+    ScheduledExecutorService current = executor;
+    if (current == null) {
+      return;
+    }
+
+    rejectionReason.set(reason);
+    schedule(current);
+  }
+
   void deliver() {
     pendingReload.set(null);
 
@@ -125,14 +143,24 @@ final class ClassUpdateDelivery {
     Set<String> changedClasses = new TreeSet<>(pendingClasses);
     pendingClasses.clear();
     boolean unnamed = sawUnnamedChange.getAndSet(false);
+    String rejection = rejectionReason.getAndSet(null);
 
     // Every schedule follows a recorded change, so an empty batch without the unnamed flag only
     // means an earlier drain already delivered these classes and nothing is left to send.
-    if (changedClasses.isEmpty() && !unnamed) {
+    if (changedClasses.isEmpty() && !unnamed && rejection == null) {
       return;
     }
 
     if (server == null || !server.isRunning()) {
+      return;
+    }
+
+    // A rejection wins over everything else in the window. The classes it names never reached
+    // the application, so a refresh would only present the old code as the new one.
+    if (rejection != null) {
+      logger.log(System.Logger.Level.DEBUG,
+          "Reporting a rejected class update for " + description + ": " + rejection);
+      server.sendClassUpdateErrorMessage(changedClasses, rejection);
       return;
     }
 

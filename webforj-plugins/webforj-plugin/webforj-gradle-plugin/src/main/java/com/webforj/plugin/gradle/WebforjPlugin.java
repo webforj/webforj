@@ -1,7 +1,8 @@
 package com.webforj.plugin.gradle;
 
-import com.webforj.plugin.gradle.devtools.SpringDevtoolsClasspath;
-import com.webforj.plugin.gradle.hotswap.HotswapLauncher;
+import com.webforj.plugin.foundation.hotswap.HotswapLaunch;
+import com.webforj.plugin.gradle.devtools.SpringDevtoolsInjection;
+import com.webforj.plugin.gradle.hotswap.HotswapInjection;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
@@ -96,10 +97,9 @@ public class WebforjPlugin implements Plugin<Project> {
     // The devtools resolve against the application runtime classpath, so the lookup is wrapped in
     // a callable that the run task asks only when it actually starts. The packaging tasks never
     // read that classpath, so a packaged application can never contain the devtools.
-    project.getPlugins().withId(SPRING_BOOT_PLUGIN_ID,
-        applied -> project.getTasks().withType(JavaExec.class)
-            .matching(task -> "bootRun".equals(task.getName())).configureEach(
-                task -> task.classpath(project.files(SpringDevtoolsClasspath.callable(project)))));
+    project.getPlugins().withId(SPRING_BOOT_PLUGIN_ID, applied -> project.getTasks()
+        .withType(JavaExec.class).matching(task -> "bootRun".equals(task.getName())).configureEach(
+            task -> task.classpath(project.files(SpringDevtoolsInjection.getCallable(project)))));
   }
 
   private void configureHotswap(Project project, WebforjExtension extension) {
@@ -128,19 +128,19 @@ public class WebforjPlugin implements Plugin<Project> {
           || project.getPluginManager().hasPlugin("org.gretty");
 
       if (configured && !runner) {
-        project.getLogger().warn("hotswap is configured but the build has no supported "
-            + "application runner, expected the Spring Boot plugin or the Gretty plugin");
+        project.getLogger().warn(
+            HotswapLaunch.getMissingRunnerWarning("the Spring Boot plugin or the Gretty plugin"));
       }
     });
   }
 
   private List<String> hotswapArguments(Project project, WebforjExtension extension,
       boolean springBootRunner, Path javaExecutable) {
-    Object selection = project.findProperty(HotswapLauncher.SELECTION_PROPERTY);
+    Object selection = project.findProperty(HotswapLaunch.SELECTION_PROPERTY);
 
-    return HotswapLauncher.arguments(extension.getHotswap(),
+    return HotswapInjection.getArguments(extension.getHotswap(),
         selection == null ? null : selection.toString(), springBootRunner,
-        project.getLayout().getBuildDirectory().get().getAsFile().toPath(), javaExecutable,
+        project.getLayout().getBuildDirectory().get().getAsFile().toPath(), javaExecutable, project,
         project.getLogger());
   }
 
