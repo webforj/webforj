@@ -13,6 +13,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.webforj.component.element.Element;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -115,11 +117,39 @@ class ViewTransitionTest {
     }
 
     @Test
+    @DisplayName("should execute complete callback")
+    void shouldRunCompleteCallback() {
+      AtomicBoolean called = new AtomicBoolean(false);
+      viewTransition.onComplete(() -> called.set(true));
+      viewTransition.executeComplete();
+      assertTrue(called.get());
+    }
+
+    @Test
+    @DisplayName("should run complete after update finishes")
+    void shouldRunCompleteAfterUpdateFinishes() {
+      List<String> events = new ArrayList<>();
+
+      viewTransition.onUpdate(done -> {
+        events.add("update");
+        done.run();
+        events.add("after-done");
+      });
+      viewTransition.onComplete(() -> events.add("complete"));
+
+      viewTransition.executeUpdate(() -> events.add("done"));
+      viewTransition.executeComplete();
+
+      assertEquals(List.of("update", "done", "after-done", "complete"), events);
+    }
+
+    @Test
     @DisplayName("should handle null callbacks gracefully")
     void shouldHandleNullCallbacks() {
       assertDoesNotThrow(() -> viewTransition.executeUpdate(() -> {
       }));
       assertDoesNotThrow(() -> viewTransition.executeReady());
+      assertDoesNotThrow(() -> viewTransition.executeComplete());
     }
   }
 

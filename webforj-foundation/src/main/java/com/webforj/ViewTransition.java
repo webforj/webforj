@@ -122,6 +122,7 @@ public final class ViewTransition {
   private final String transitionId;
   private Consumer<Runnable> updateCallback;
   private Runnable readyCallback;
+  private Runnable completeCallback;
   private String defaultType;
   private final Map<Component, String> exitComponents = new LinkedHashMap<>();
   private final Map<Component, String> enterComponents = new LinkedHashMap<>();
@@ -178,6 +179,23 @@ public final class ViewTransition {
    */
   public ViewTransition onReady(Runnable callback) {
     this.readyCallback = callback;
+    return this;
+  }
+
+  /**
+   * Sets a callback to execute when the transition fully completes.
+   *
+   * <p>
+   * This callback is invoked after the browser reports that the transition has finished animating.
+   * Use it for follow-up work that should only run after the update phase and transition lifecycle
+   * are fully complete.
+   * </p>
+   *
+   * @param callback the callback to execute when the transition completes
+   * @return this builder for chaining
+   */
+  public ViewTransition onComplete(Runnable callback) {
+    this.completeCallback = callback;
     return this;
   }
 
@@ -338,6 +356,15 @@ public final class ViewTransition {
   void executeReady() {
     if (readyCallback != null) {
       readyCallback.run();
+    }
+  }
+
+  /**
+   * Executes the complete callback. Called by the JS coordination code.
+   */
+  void executeComplete() {
+    if (completeCallback != null) {
+      completeCallback.run();
     }
   }
 
