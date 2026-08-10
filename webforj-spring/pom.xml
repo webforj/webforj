@@ -14,10 +14,6 @@
   <name>webforj-spring</name>
   <description>${project.name}</description>
 
-  <properties>
-    <spring.boot.version>4.1.0</spring.boot.version>
-  </properties>
-
   <dependencyManagement>
     <dependencies>
       <dependency>

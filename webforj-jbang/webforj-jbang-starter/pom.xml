@@ -22,11 +22,18 @@
       <version>${project.version}</version>
     </dependency>
 
-    <!-- DevTools for auto browser opening -->
+    <!-- Development tools for auto browser opening and live reload -->
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-spring-devtools</artifactId>
       <version>${project.version}</version>
+    </dependency>
+
+    <!-- The Spring development tools that webforj-spring-devtools builds on. It is provided there,
+         so a script that does not ship it starts without the classes the module registers. -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-devtools</artifactId>
     </dependency>
 
     <!-- Test dependencies -->
