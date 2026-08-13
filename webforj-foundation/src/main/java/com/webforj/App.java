@@ -27,6 +27,7 @@ import com.webforj.router.RouteRegistry;
 import com.webforj.router.Router;
 import com.webforj.router.RouterDevUtils;
 import com.webforj.router.event.NavigateEvent;
+import com.webforj.router.history.Location;
 import java.lang.System.Logger;
 import java.net.URL;
 import java.util.ArrayList;
@@ -895,6 +896,16 @@ public abstract class App {
       root = root.isBlank() ? "/" : root;
     }
 
+    // When the app is embedded via DWC embedded deployment the top-level URL is the host HTML
+    // page, not a webforJ route. Use its pathname as the router root so route resolution aligns
+    // with the page that served the embed.
+    if (Page.isPresent() && Page.getCurrent().isEmbedded()) {
+      Object pathname = Page.getCurrent().executeJs("window.location.pathname");
+      if (pathname instanceof String path && !path.isBlank()) {
+        root = path;
+      }
+    }
+
     RouteRegistry registry = RouteRegistry.ofPackage(packages);
     Router router = new Router(root, registry);
     ObjectTable.put(Router.class.getName(), router);
@@ -973,13 +984,27 @@ public abstract class App {
     }
 
     Router router = Router.getCurrent();
-    if (router != null) {
-      router.getHistory().getLocation().ifPresent(location -> {
+    if (router == null) {
+      return;
+    }
+
+    // An embedding page may declare the location the application opens at, since the URL of an
+    // embedded frame carries no route segment of its own to resolve.
+    if (Page.isPresent() && Page.getCurrent().isEmbedded()) {
+      Object declared = Page.getCurrent().executeJs("window.__webforjEmbedLocation || ''");
+      if (declared instanceof String route && !route.isBlank()) {
         NavigationOptions options = new NavigationOptions();
         options.setUpdateHistory(false);
-        Router.getCurrent().navigate(location, options);
-      });
+        router.navigate(new Location(route), options);
+        return;
+      }
     }
+
+    router.getHistory().getLocation().ifPresent(location -> {
+      NavigationOptions options = new NavigationOptions();
+      options.setUpdateHistory(false);
+      Router.getCurrent().navigate(location, options);
+    });
   }
 
   /**

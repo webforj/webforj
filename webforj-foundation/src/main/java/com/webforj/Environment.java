@@ -167,6 +167,40 @@ public final class Environment {
   }
 
   /**
+   * Gets the public origin the deployment is reached on.
+   *
+   * <p>
+   * The origin names the address the browser loads the application from when it differs from the
+   * address the requests arrive on, as behind a proxy or inside an embedding host. Addresses the
+   * framework emits into the page become absolute against it. The value comes from the
+   * {@code webforj.origin} system property, or the {@code webforj.origin} configuration key when no
+   * property is set.
+   * </p>
+   *
+   * @return the configured origin without a trailing slash, {@code null} when the deployment does
+   *         not name one
+   *
+   * @since 26.02
+   */
+  public static String getOrigin() {
+    String key = "webforj.origin";
+    String origin = Util.getProperty(key, "");
+
+    if ((origin == null || origin.isBlank()) && isPresent()) {
+      Config config = getCurrent().getConfig();
+      if (config.hasPath(key) && !config.getIsNull(key)) {
+        origin = config.getString(key);
+      }
+    }
+
+    if (origin == null || origin.isBlank()) {
+      return null;
+    }
+
+    return origin.trim().replaceAll("/+$", "");
+  }
+
+  /**
    * Executes the given task in an Environment's thread context. This method allows safe access to
    * the Environment from background threads.
    *

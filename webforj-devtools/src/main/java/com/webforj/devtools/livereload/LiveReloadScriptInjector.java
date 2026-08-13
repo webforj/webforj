@@ -9,6 +9,7 @@ import com.webforj.Request;
 import com.webforj.annotation.AppListenerPriority;
 import com.webforj.exceptions.WebforjRuntimeException;
 import java.io.InputStream;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -47,8 +48,23 @@ public class LiveReloadScriptInjector implements AppLifecycleListener {
         return;
       }
 
-      String url = resolveWebsocketUrl(request.getProtocol(), request.getHost(),
-          options.getWebsocketPort(), options.getWebsocketPath());
+      String protocol = request.getProtocol();
+      String host = request.getHost();
+
+      // A page rendered inside an embedding host reaches the server through the public origin,
+      // not through the host of the request, so the socket follows the origin when one is named.
+      // A directly opened page keeps the request host and never depends on the origin.
+      String origin = page.isEmbedded() ? Environment.getOrigin() : null;
+      if (origin != null) {
+        URI originUri = URI.create(origin);
+        if (originUri.getScheme() != null && originUri.getHost() != null) {
+          protocol = originUri.getScheme();
+          host = originUri.getHost();
+        }
+      }
+
+      String url = resolveWebsocketUrl(protocol, host, options.getWebsocketPort(),
+          options.getWebsocketPath());
       page.addInlineJavaScript(composeScript(url, options.getHeartbeatInterval(), reloadScript),
           true);
       logger.log(System.Logger.Level.DEBUG, "webforJ livereload script injected into page");

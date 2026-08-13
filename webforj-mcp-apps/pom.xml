@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.webforj</groupId>
+    <artifactId>webforj-parent</artifactId>
+    <version>26.02-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>webforj-mcp-apps</artifactId>
+  <name>${project.artifactId}</name>
+
+  <properties>
+    <!-- The SDK version Spring AI 2.0.0 resolves -->
+    <mcp.sdk.version>2.0.0</mcp.sdk.version>
+  </properties>
+  <description>webforJ MCP integration and MCP apps</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-foundation</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-engine</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>io.github.classgraph</groupId>
+      <artifactId>classgraph</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.typesafe</groupId>
+      <artifactId>config</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>io.modelcontextprotocol.sdk</groupId>
+      <artifactId>mcp-core</artifactId>
+      <version>${mcp.sdk.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.modelcontextprotocol.sdk</groupId>
+      <artifactId>mcp-json-jackson3</artifactId>
+      <version>${mcp.sdk.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.victools</groupId>
+      <artifactId>jsonschema-generator</artifactId>
+      <version>5.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.victools</groupId>
+      <artifactId>jsonschema-module-jackson</artifactId>
+      <version>5.0.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>6.1.0</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

@@ -52,6 +52,13 @@
     </dependency>
 
     <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-mcp-apps</artifactId>
+      <version>${project.version}</version>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-configuration-processor</artifactId>
       <optional>true</optional>

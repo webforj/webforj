@@ -14,6 +14,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -118,6 +119,28 @@ class PageTest {
   void testReload() {
     page.reload();
     verify(page, times(1)).executeJsAsync("window.location.reload();");
+  }
+
+  @Test
+  void shouldReportEmbeddedFromTheWebManagerOnce() throws BBjException {
+    when(webManager.isEmbedded()).thenReturn(true);
+
+    assertTrue(page.isEmbedded());
+    assertTrue(page.isEmbedded());
+
+    verify(webManager, times(1)).isEmbedded();
+    verify(webManager, never()).executeScript(anyString());
+  }
+
+  @Test
+  void shouldAskTheClientOnceWhenTheWebManagerReportsNotEmbedded() throws BBjException {
+    when(webManager.isEmbedded()).thenReturn(false);
+    when(webManager.executeScript("window.bbjEmbedded === true")).thenReturn(true);
+
+    assertTrue(page.isEmbedded());
+    assertTrue(page.isEmbedded());
+
+    verify(webManager, times(1)).executeScript("window.bbjEmbedded === true");
   }
 
 

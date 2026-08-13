@@ -644,4 +644,27 @@ class WebforjConfigBuilderTest {
       assertEquals(35730, config.getInt("webforj.devtools.livereload.websocket-port"));
     }
   }
+
+  @Nested
+  class McpProperties {
+
+    @Test
+    void shouldMapMcpKeys() {
+      properties.setOrigin("https://demo.example");
+      properties.getMcp().setAllowedOrigins(List.of("https://host.example"));
+      Config config = WebforjConfigBuilder.buildConfig(properties);
+
+      assertEquals("https://demo.example", config.getString("webforj.origin"));
+      assertEquals(List.of("https://host.example"),
+          config.getStringList("webforj.mcp.allowed-origins"));
+    }
+
+    @Test
+    void shouldOmitUnsetMcpKeys() {
+      Config config = WebforjConfigBuilder.buildConfig(properties);
+
+      assertFalse(config.hasPath("webforj.origin"));
+      assertFalse(config.hasPath("webforj.mcp.allowed-origins"));
+    }
+  }
 }
