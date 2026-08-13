@@ -2,6 +2,7 @@ package com.webforj.mcp;
 
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletRegistration;
+import java.util.Iterator;
 
 /**
  * Resolves the path prefix the webforJ servlet answers on.
@@ -39,8 +40,9 @@ public final class McpAppServletPath {
         continue;
       }
 
-      for (String mapping : registration.getMappings()) {
-        return normalize(mapping);
+      Iterator<String> mappings = registration.getMappings().iterator();
+      if (mappings.hasNext()) {
+        return normalize(mappings.next());
       }
     }
 
