@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -50,6 +51,7 @@ public final class McpHost {
   private final AtomicReference<JsonNode> hostInfo = new AtomicReference<>();
   private final AtomicReference<JsonNode> hostCapabilities = new AtomicReference<>();
   private final AtomicReference<ObjectNode> hostContext = new AtomicReference<>();
+  private final AtomicBoolean openingToolResult = new AtomicBoolean(true);
 
   McpHost(Page page) {
     this.page = page;
@@ -420,7 +422,13 @@ public final class McpHost {
   }
 
   private void toolResult(JsonNode payload) {
-    navigate(payload);
+    // The first result always answers the call that opened the frame, whose route the frame
+    // already booted at and the router already resolved, security redirects included.
+    // Re-asserting that route would tear the settled view down, so it never navigates.
+    if (!openingToolResult.getAndSet(false)) {
+      navigate(payload);
+    }
+
     CallToolResult result = mapper.convertValue(payload, CallToolResult.class);
     dispatcher.dispatchEvent(new McpToolResultEvent(this, result));
   }

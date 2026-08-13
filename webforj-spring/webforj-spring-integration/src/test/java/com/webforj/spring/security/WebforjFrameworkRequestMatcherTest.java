@@ -49,6 +49,32 @@ class WebforjFrameworkRequestMatcherTest {
   }
 
   @Nested
+  class ServletRootChannel {
+
+    @ParameterizedTest
+    @MethodSource("servletRootTestCases")
+    void shouldExemptOnlyTheServletRoot(String servletMapping, String servletPath, String pathInfo,
+        boolean expectedMatch) {
+      when(properties.getServletMapping()).thenReturn(servletMapping);
+      matcher = new WebforjFrameworkRequestMatcher(properties);
+
+      when(request.getServletPath()).thenReturn(servletPath);
+      when(request.getPathInfo()).thenReturn(pathInfo);
+
+      assertEquals(expectedMatch, matcher.matches(request));
+    }
+
+    static Stream<Arguments> servletRootTestCases() {
+      return Stream.of(Arguments.of("/*", "/webforjServlet", null, true),
+          Arguments.of("/*", "/webforjServlet", "/", true),
+          Arguments.of("/*", "/webforjServlet", "/orders", false),
+          Arguments.of("/myapp/*", "/myapp", null, true),
+          Arguments.of("/myapp/*", "/myapp", "/", true),
+          Arguments.of("/myapp/*", "/api", "/users", false));
+    }
+  }
+
+  @Nested
   class RpcEndpointMatching {
 
     @BeforeEach

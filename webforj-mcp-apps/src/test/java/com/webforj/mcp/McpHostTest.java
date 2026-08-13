@@ -6,13 +6,18 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.webforj.Page;
 import com.webforj.PendingResult;
+import com.webforj.router.Router;
+import com.webforj.router.history.Location;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema.ListResourcesResult;
 import java.util.List;
@@ -21,6 +26,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.MockedStatic;
 import tools.jackson.databind.JsonNode;
 
 class McpHostTest {
@@ -88,6 +94,50 @@ class McpHostTest {
         }""");
 
     assertEquals("user stopped", received.get());
+  }
+
+  @Test
+  @DisplayName("Should not navigate for the tool result opening the frame")
+  void shouldNotNavigateForOpeningToolResult() {
+    Router router = mock(Router.class);
+    try (MockedStatic<Router> routers = mockStatic(Router.class)) {
+      routers.when(Router::getCurrent).thenReturn(router);
+
+      host.dispatch("""
+          {
+            "type": "tool-result",
+            "payload": { "structuredContent": { "_route": "/orders" } }
+          }""");
+
+      verify(router, never()).navigate(any(Location.class));
+    }
+  }
+
+  @Test
+  @DisplayName("Should navigate for every tool result after the opening one")
+  void shouldNavigateForFollowUpToolResults() {
+    Router router = mock(Router.class);
+    try (MockedStatic<Router> routers = mockStatic(Router.class)) {
+      routers.when(Router::getCurrent).thenReturn(router);
+
+      host.dispatch("""
+          {
+            "type": "tool-result",
+            "payload": { "structuredContent": { "_route": "/orders" } }
+          }""");
+      host.dispatch("""
+          {
+            "type": "tool-result",
+            "payload": { "structuredContent": { "_route": "/orders" } }
+          }""");
+      host.dispatch("""
+          {
+            "type": "tool-result",
+            "payload": { "structuredContent": { "_route": "/inventory" } }
+          }""");
+
+      verify(router, times(2)).navigate(any(Location.class));
+    }
   }
 
   @Test
