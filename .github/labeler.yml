@@ -26,6 +26,10 @@
 - changed-files:
   - any-glob-to-any-file: 'webforj-foundation/**'
 
+"module: mcp-apps":
+- changed-files:
+  - any-glob-to-any-file: 'webforj-mcp-apps/**'
+
 "module: plugins":
 - changed-files:
   - any-glob-to-any-file: 'webforj-plugins/**'
