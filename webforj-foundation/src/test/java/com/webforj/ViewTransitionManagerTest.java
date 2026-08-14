@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import com.webforj.utilities.Assets;
@@ -93,6 +94,11 @@ class ViewTransitionManagerTest {
 
       manager.register("test-id", transition);
       assertDoesNotThrow(() -> manager.executeComplete("test-id"));
+
+      verify(transition).executeComplete();
+
+      manager.executeReady("test-id");
+      verify(transition, never()).executeReady();
     }
   }
 

@@ -135,11 +135,14 @@ final class ViewTransitionManager {
   }
 
   /**
-   * Completes a view transition and removes it from tracking.
+   * Completes a view transition, executes its completion callback, and removes it from tracking.
    *
    * @param transitionId the transition ID
    */
   void executeComplete(String transitionId) {
-    pendingTransitions.remove(transitionId);
+    ViewTransition transition = pendingTransitions.remove(transitionId);
+    if (transition != null) {
+      transition.executeComplete();
+    }
   }
 }
