@@ -193,6 +193,8 @@ public final class ViewTransition {
    *
    * @param callback the callback to execute when the transition completes
    * @return this builder for chaining
+   *
+   * @since 26.01
    */
   public ViewTransition onComplete(Runnable callback) {
     this.completeCallback = callback;
