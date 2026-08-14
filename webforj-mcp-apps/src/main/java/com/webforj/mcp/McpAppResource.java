@@ -152,18 +152,6 @@ public class McpAppResource {
         List.of(origin, socketOrigin));
   }
 
-  private static String readResource(String path) {
-    try (InputStream stream = McpAppResource.class.getResourceAsStream(path)) {
-      if (stream == null) {
-        throw new IllegalStateException("The app page is missing from the jar at " + path);
-      }
-
-      return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
-    } catch (IOException e) {
-      throw new UncheckedIOException("Cannot read the app page at " + path, e);
-    }
-  }
-
   // Read on first use and kept, since the page and the SDK inside the jar never change. The
   // official MCP Apps SDK is inlined into the page, so the rendered document stays self
   // contained under the sandbox policy that forbids loading scripts from other origins.
@@ -173,6 +161,18 @@ public class McpAppResource {
 
     private Template() {
       // Constant holder
+    }
+
+    private static String readResource(String path) {
+      try (InputStream stream = McpAppResource.class.getResourceAsStream(path)) {
+        if (stream == null) {
+          throw new IllegalStateException("The app page is missing from the jar at " + path);
+        }
+
+        return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+      } catch (IOException e) {
+        throw new UncheckedIOException("Cannot read the app page at " + path, e);
+      }
     }
   }
 }

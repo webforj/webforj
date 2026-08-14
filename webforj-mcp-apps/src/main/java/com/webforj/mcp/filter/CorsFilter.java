@@ -28,6 +28,7 @@ import java.util.List;
 public class CorsFilter implements Filter {
 
   private static final String ORIGIN = "Origin";
+  private static final String PREFLIGHT_METHOD = "OPTIONS";
   private static final String ALLOWED_METHODS = "GET, POST, DELETE, OPTIONS";
   private static final String COMPONENTS_PATH = "/webapp/_lib/components/";
   private static final List<String> HOST_ORIGINS =
@@ -83,7 +84,7 @@ public class CorsFilter implements Filter {
       // of session data, so it is served the way a CDN serves it: any origin reads it and no
       // credentials ride the answer.
       httpResponse.setHeader("Access-Control-Allow-Origin", "*");
-      if ("OPTIONS".equalsIgnoreCase(httpRequest.getMethod())) {
+      if (PREFLIGHT_METHOD.equalsIgnoreCase(httpRequest.getMethod())) {
         httpResponse.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
         httpResponse.setStatus(HttpServletResponse.SC_NO_CONTENT);
         return;
@@ -94,7 +95,7 @@ public class CorsFilter implements Filter {
     }
 
     if (!isAllowed(origin)) {
-      if ("OPTIONS".equalsIgnoreCase(httpRequest.getMethod())) {
+      if (PREFLIGHT_METHOD.equalsIgnoreCase(httpRequest.getMethod())) {
         httpResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
         return;
       }
@@ -108,7 +109,7 @@ public class CorsFilter implements Filter {
     httpResponse.setHeader("Vary", ORIGIN);
     httpResponse.setHeader("Access-Control-Expose-Headers", "Mcp-Session-Id");
 
-    if ("OPTIONS".equalsIgnoreCase(httpRequest.getMethod())) {
+    if (PREFLIGHT_METHOD.equalsIgnoreCase(httpRequest.getMethod())) {
       httpResponse.setHeader("Access-Control-Allow-Methods", ALLOWED_METHODS);
       String requestedHeaders = httpRequest.getHeader("Access-Control-Request-Headers");
       httpResponse.setHeader("Access-Control-Allow-Headers",

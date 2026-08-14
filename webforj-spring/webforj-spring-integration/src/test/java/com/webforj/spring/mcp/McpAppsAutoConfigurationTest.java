@@ -118,9 +118,13 @@ class McpAppsAutoConfigurationTest {
   public static class ProbeView extends Component {
 
     @Override
-    protected void onCreate(Window window) {}
+    protected void onCreate(Window window) {
+      // Fixture, never rendered
+    }
 
     @Override
-    protected void onDestroy() {}
+    protected void onDestroy() {
+      // Fixture, never rendered
+    }
   }
 }

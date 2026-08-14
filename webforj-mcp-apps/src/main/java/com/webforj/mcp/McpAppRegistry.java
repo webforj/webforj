@@ -1,7 +1,7 @@
 package com.webforj.mcp;
 
-import com.webforj.mcp.annotation.McpApp;
 import com.webforj.component.Component;
+import com.webforj.mcp.annotation.McpApp;
 import com.webforj.router.RouteEntry;
 import com.webforj.router.RouteRegistry;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;

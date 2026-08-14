@@ -2,15 +2,15 @@ package com.webforj.mcp;
 
 import com.webforj.Page;
 import com.webforj.PendingResult;
+import com.webforj.dispatcher.EventDispatcher;
+import com.webforj.dispatcher.EventListener;
+import com.webforj.dispatcher.ListenerRegistration;
+import com.webforj.environment.ObjectTable;
 import com.webforj.mcp.event.McpHostContextChangedEvent;
 import com.webforj.mcp.event.McpToolCancelledEvent;
 import com.webforj.mcp.event.McpToolInputEvent;
 import com.webforj.mcp.event.McpToolInputPartialEvent;
 import com.webforj.mcp.event.McpToolResultEvent;
-import com.webforj.dispatcher.EventDispatcher;
-import com.webforj.dispatcher.EventListener;
-import com.webforj.dispatcher.ListenerRegistration;
-import com.webforj.environment.ObjectTable;
 import com.webforj.router.Router;
 import com.webforj.router.history.Location;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
@@ -43,6 +43,7 @@ public final class McpHost {
   private static final Logger logger = System.getLogger(McpHost.class.getName());
   private static final JsonMapper mapper = JsonMapper.shared();
   private static final String ROUTE_FIELD = "_route";
+  private static final String ARGUMENTS_FIELD = "arguments";
 
   private final Page page;
   private final EventDispatcher dispatcher = new EventDispatcher();
@@ -102,7 +103,7 @@ public final class McpHost {
    */
   public PendingResult<CallToolResult> callTool(String name, Map<String, Object> arguments) {
     return request("tools/call",
-        Map.of("name", name, "arguments", arguments == null ? Map.of() : arguments))
+        Map.of("name", name, ARGUMENTS_FIELD, arguments == null ? Map.of() : arguments))
         .thenApply(answer -> mapper.convertValue(answer, CallToolResult.class));
   }
 
@@ -136,7 +137,7 @@ public final class McpHost {
   public PendingResult<Void> sendMessage(String text) {
     return request("ui/message",
         Map.of("role", "user", "content", List.of(Map.of("type", "text", "text", text))))
-        .thenApply(answer -> (Void) null);
+        .thenApply(answer -> null);
   }
 
   /**
@@ -148,7 +149,7 @@ public final class McpHost {
   public PendingResult<Void> updateModelContext(String content) {
     return request("ui/update-model-context",
         Map.of("content", List.of(Map.of("type", "text", "text", content))))
-        .thenApply(answer -> (Void) null);
+        .thenApply(answer -> null);
   }
 
   /**
@@ -159,7 +160,7 @@ public final class McpHost {
    */
   public PendingResult<Void> updateModelContext(Map<String, Object> structuredContent) {
     return request("ui/update-model-context", Map.of("structuredContent", structuredContent))
-        .thenApply(answer -> (Void) null);
+        .thenApply(answer -> null);
   }
 
   /**
@@ -169,7 +170,7 @@ public final class McpHost {
    * @return the pending result
    */
   public PendingResult<Void> openLink(String url) {
-    return request("ui/open-link", Map.of("url", url)).thenApply(answer -> (Void) null);
+    return request("ui/open-link", Map.of("url", url)).thenApply(answer -> null);
   }
 
   /**
@@ -387,7 +388,7 @@ public final class McpHost {
   }
 
   private JsonNode arguments(JsonNode payload) {
-    return payload.path("arguments").isObject() ? payload.path("arguments")
+    return payload.path(ARGUMENTS_FIELD).isObject() ? payload.path(ARGUMENTS_FIELD)
         : mapper.createObjectNode();
   }
 

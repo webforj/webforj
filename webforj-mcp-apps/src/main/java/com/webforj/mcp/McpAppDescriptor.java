@@ -6,8 +6,8 @@ import com.github.victools.jsonschema.generator.SchemaGeneratorConfigBuilder;
 import com.github.victools.jsonschema.generator.SchemaVersion;
 import com.github.victools.jsonschema.module.jackson.JacksonOption;
 import com.github.victools.jsonschema.module.jackson.JacksonSchemaModule;
-import com.webforj.mcp.annotation.McpApp;
 import com.webforj.component.Component;
+import com.webforj.mcp.annotation.McpApp;
 import com.webforj.router.RoutePattern;
 import java.util.Locale;
 import java.util.Map;
@@ -179,7 +179,7 @@ public final class McpAppDescriptor {
   }
 
   private static String toToolName(String route) {
-    String trimmed = route.replaceAll("^/+", "").replaceAll("/+$", "");
+    String trimmed = route.replaceAll("^/++", "").replaceAll("/++$", "");
     if (trimmed.isBlank()) {
       return ROOT_TOOL_NAME;
     }

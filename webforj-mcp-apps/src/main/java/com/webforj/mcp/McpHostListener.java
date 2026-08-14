@@ -4,7 +4,6 @@ import com.webforj.App;
 import com.webforj.AppLifecycleListener;
 import com.webforj.Page;
 import com.webforj.annotation.AppListenerPriority;
-import com.webforj.environment.ObjectTable;
 import com.webforj.event.page.PageEventOptions;
 
 /**

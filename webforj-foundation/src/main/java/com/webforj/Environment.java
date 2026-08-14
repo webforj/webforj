@@ -197,7 +197,7 @@ public final class Environment {
       return null;
     }
 
-    return origin.trim().replaceAll("/+$", "");
+    return origin.trim().replaceAll("/++$", "");
   }
 
   /**

@@ -116,8 +116,8 @@
         applicationReady = true;
         var queued = buffered;
         buffered = [];
-        for (var index = 0; index < queued.length; index++) {
-          toApplication(queued[index]);
+        for (var message of queued) {
+          toApplication(message);
         }
       },
       request: function (callId, method, params) {
@@ -195,33 +195,13 @@
   (function () {
     var serverOrigin = "__WEBFORJ_ORIGIN__";
     var settled = false;
-    var settleWaiters = [];
 
     function settle() {
-      if (settled) {
-        return;
-      }
-
       settled = true;
-      for (var index = 0; index < settleWaiters.length; index++) {
-        settleWaiters[index]();
-      }
-      settleWaiters = [];
-    }
-
-    function whenSettled(capMillis) {
-      return new Promise(function (resolve) {
-        if (settled) {
-          resolve();
-          return;
-        }
-        settleWaiters.push(resolve);
-        setTimeout(resolve, capMillis);
-      });
     }
 
     function observe(url, status) {
-      if (status >= 200 && status < 300 && url.indexOf("/webapprmi") >= 0) {
+      if (status >= 200 && status < 300 && url.includes("/webapprmi")) {
         settle();
       }
     }
@@ -248,9 +228,8 @@
     };
     var originalSend = XMLHttpRequest.prototype.send;
     XMLHttpRequest.prototype.send = function () {
-      var request = this;
-      request.addEventListener("loadend", function () {
-        observe(request.__webforjUrl || "", request.status);
+      this.addEventListener("loadend", () => {
+        observe(this.__webforjUrl || "", this.status);
       });
       return originalSend.apply(this, arguments);
     };
@@ -262,7 +241,7 @@
     // retry joins the session the winning frame established. Two retries bound the healing.
     (function () {
       var marker = /#wfboot(\d)/.exec(window.location.hash);
-      var attempt = marker ? parseInt(marker[1], 10) : 0;
+      var attempt = marker ? Number.parseInt(marker[1], 10) : 0;
       var reloading = false;
 
       window.__webforjBootFailed = function () {
@@ -287,7 +266,7 @@
     var originalObserve = observe;
     observe = function (url, status) {
       originalObserve(url, status);
-      if (!settled && status >= 400 && url.indexOf("/webapprmi") >= 0) {
+      if (!settled && status >= 400 && url.includes("/webapprmi")) {
         window.__webforjBootFailed();
       }
     };
@@ -297,7 +276,7 @@
       warmUp.open("GET", "__WEBFORJ_ORIGIN____SERVLET_PATH__/", false);
       warmUp.withCredentials = true;
       warmUp.send();
-    } catch (ignored) {
+    } catch {
       // A context that forbids a synchronous request still reaches the server through the
       // script below, which carries the same credentials.
     }
