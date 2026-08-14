@@ -2,9 +2,9 @@ package com.webforj.mcp;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import com.webforj.mcp.annotation.McpApp;
 import com.webforj.component.Component;
 import com.webforj.component.window.Window;
+import com.webforj.mcp.annotation.McpApp;
 import com.webforj.router.annotation.Route;
 import java.util.List;
 
