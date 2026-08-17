@@ -2,6 +2,7 @@ package com.webforj.mcp;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -13,21 +14,31 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.webforj.Page;
 import com.webforj.PendingResult;
+import com.webforj.component.Component;
+import com.webforj.conceiver.Conceiver;
+import com.webforj.conceiver.ConceiverProvider;
+import com.webforj.router.RouteRegistry;
+import com.webforj.router.RouteRelation;
+import com.webforj.router.RouteRenderer;
 import com.webforj.router.Router;
 import com.webforj.router.history.Location;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema.ListResourcesResult;
+import io.modelcontextprotocol.spec.McpSchema.TextContent;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 
 class McpHostTest {
 
@@ -40,7 +51,7 @@ class McpHostTest {
     AtomicReference<JsonNode> received = new AtomicReference<>();
     host.onToolInput(event -> received.set(event.getArguments()));
 
-    host.dispatch("""
+    host.dispatchHostMessage("""
         {
           "type": "tool-input",
           "payload": { "arguments": { "name": "Anna" } }
@@ -55,7 +66,7 @@ class McpHostTest {
     AtomicReference<JsonNode> received = new AtomicReference<>();
     host.onToolInputPartial(event -> received.set(event.getArguments()));
 
-    host.dispatch("""
+    host.dispatchHostMessage("""
         {
           "type": "tool-input-partial",
           "payload": { "arguments": { "na": "An" } }
@@ -70,7 +81,7 @@ class McpHostTest {
     AtomicReference<CallToolResult> received = new AtomicReference<>();
     host.onToolResult(event -> received.set(event.getResult()));
 
-    host.dispatch("""
+    host.dispatchHostMessage("""
         {
           "type": "tool-result",
           "payload": { "structuredContent": { "_route": "/" } }
@@ -87,7 +98,7 @@ class McpHostTest {
     AtomicReference<String> received = new AtomicReference<>();
     host.onToolCancelled(event -> received.set(event.getReason()));
 
-    host.dispatch("""
+    host.dispatchHostMessage("""
         {
           "type": "tool-cancelled",
           "payload": { "reason": "user stopped" }
@@ -103,7 +114,7 @@ class McpHostTest {
     try (MockedStatic<Router> routers = mockStatic(Router.class)) {
       routers.when(Router::getCurrent).thenReturn(router);
 
-      host.dispatch("""
+      host.dispatchHostMessage("""
           {
             "type": "tool-result",
             "payload": { "structuredContent": { "_route": "/orders" } }
@@ -120,17 +131,17 @@ class McpHostTest {
     try (MockedStatic<Router> routers = mockStatic(Router.class)) {
       routers.when(Router::getCurrent).thenReturn(router);
 
-      host.dispatch("""
+      host.dispatchHostMessage("""
           {
             "type": "tool-result",
             "payload": { "structuredContent": { "_route": "/orders" } }
           }""");
-      host.dispatch("""
+      host.dispatchHostMessage("""
           {
             "type": "tool-result",
             "payload": { "structuredContent": { "_route": "/orders" } }
           }""");
-      host.dispatch("""
+      host.dispatchHostMessage("""
           {
             "type": "tool-result",
             "payload": { "structuredContent": { "_route": "/inventory" } }
@@ -143,7 +154,7 @@ class McpHostTest {
   @Test
   @DisplayName("Should keep the host context current with change notifications")
   void shouldTrackHostContext() {
-    host.dispatch("""
+    host.dispatchHostMessage("""
         {
           "type": "initialized",
           "payload": { "hostContext": { "theme": "light" } }
@@ -151,7 +162,7 @@ class McpHostTest {
 
     AtomicReference<JsonNode> received = new AtomicReference<>();
     host.onHostContextChanged(event -> received.set(event.getChanges()));
-    host.dispatch("""
+    host.dispatchHostMessage("""
         {
           "type": "host-context-changed",
           "payload": { "theme": "dark" }
@@ -164,11 +175,11 @@ class McpHostTest {
   @Test
   @DisplayName("Should carry the handshake identity and capabilities")
   void shouldCarryHandshake() {
-    host.dispatch("""
+    host.dispatchHostMessage("""
         {
           "type": "initialized",
           "payload": {
-            "hostInfo": { "name": "claude", "version": "1" },
+            "hostInfo": { "name": "test-host", "version": "1" },
             "hostCapabilities": {
               "openLinks": {},
               "serverTools": { "listChanged": true },
@@ -179,7 +190,7 @@ class McpHostTest {
           }
         }""");
 
-    assertEquals("claude", host.getHostInfo().orElseThrow().name());
+    assertEquals("test-host", host.getHostInfo().orElseThrow().name());
     McpHostCapabilities capabilities = host.getHostCapabilities().orElseThrow();
     assertNotNull(capabilities.openLinks());
     assertTrue(capabilities.serverTools().listChanged());
@@ -193,7 +204,7 @@ class McpHostTest {
   @Test
   @DisplayName("Should type the context the host reports")
   void shouldTypeHostContext() {
-    host.dispatch("""
+    host.dispatchHostMessage("""
         {
           "type": "initialized",
           "payload": {
@@ -228,7 +239,7 @@ class McpHostTest {
 
     AtomicReference<CallToolResult> answer = new AtomicReference<>();
     pending.thenAccept(answer::set);
-    host.dispatch("""
+    host.dispatchHostMessage("""
         {
           "type": "response",
           "callId": "%s",
@@ -255,7 +266,7 @@ class McpHostTest {
       failure.set(thrown);
       return null;
     });
-    host.dispatch("""
+    host.dispatchHostMessage("""
         {
           "type": "response",
           "callId": "%s",
@@ -297,7 +308,7 @@ class McpHostTest {
 
     AtomicReference<McpAppDisplayMode> settled = new AtomicReference<>();
     pending.thenAccept(settled::set);
-    host.dispatch("""
+    host.dispatchHostMessage("""
         {
           "type": "response",
           "callId": "%s",
@@ -320,14 +331,14 @@ class McpHostTest {
   @Test
   @DisplayName("Should discard an unreadable host message")
   void shouldDiscardUnreadableMessage() {
-    assertDoesNotThrow(() -> host.dispatch("not json at all"));
-    assertDoesNotThrow(() -> host.dispatch("[1,2,3]"));
+    assertDoesNotThrow(() -> host.dispatchHostMessage("not json at all"));
+    assertDoesNotThrow(() -> host.dispatchHostMessage("[1,2,3]"));
   }
 
   @Test
   @DisplayName("Should flush the channel when the application is ready")
   void shouldSignalReady() {
-    host.ready();
+    host.signalReady();
 
     verify(page).executeJsVoidAsync(contains("__webforjMcpChannel.ready()"));
   }
@@ -346,12 +357,325 @@ class McpHostTest {
 
     host.destroy();
 
-    host.dispatch("""
+    host.dispatchHostMessage("""
         {
           "type": "tool-input",
           "payload": { "arguments": { "name": "Anna" } }
         }""");
     assertNull(received.get());
     assertNotNull(failure.get());
+  }
+
+  @Test
+  @DisplayName("Should answer a server call with the result of the rendered view")
+  void shouldAnswerServerCall() {
+    McpHost live = new McpHost(page, task -> PendingResult.completedWith(task.get()));
+
+    Router router = routerShowing(McpTestViews.LiveView.class, new McpTestViews.LiveView());
+    try (MockedStatic<Router> routers = mockStatic(Router.class)) {
+      routers.when(Router::getCurrent).thenReturn(router);
+
+      CallToolResult result =
+          live.answerToolCall("live", JsonMapper.shared().createObjectNode().put("q", "alpha"));
+
+      assertEquals("live alpha", ((TextContent) result.content().get(0)).text());
+    }
+  }
+
+  @Test
+  @DisplayName("Should refuse a server call of a tool no view answers")
+  void shouldRefuseServerCallForUnknownTool() {
+    McpHost live = new McpHost(page, task -> PendingResult.completedWith(task.get()));
+
+    CallToolResult result = live.answerToolCall("missing", JsonMapper.shared().createObjectNode());
+
+    assertTrue(result.isError());
+    assertTrue(((TextContent) result.content().get(0)).text().contains("not on screen"));
+  }
+
+  @Test
+  @DisplayName("Should refuse a server call while the view is not rendered")
+  void shouldRefuseServerCallWhileViewNotRendered() {
+    McpHost live = new McpHost(page, task -> PendingResult.completedWith(task.get()));
+
+    Router router = routerShowing(McpTestViews.LiveView.class, null);
+    try (MockedStatic<Router> routers = mockStatic(Router.class)) {
+      routers.when(Router::getCurrent).thenReturn(router);
+
+      CallToolResult result = live.answerToolCall("live", JsonMapper.shared().createObjectNode());
+
+      assertTrue(result.isError());
+      assertTrue(((TextContent) result.content().get(0)).text().contains("not on screen"));
+    }
+  }
+
+  @Test
+  @DisplayName("Should answer with an error when the view fails")
+  void shouldAnswerObserverFailure() {
+    McpHost live = new McpHost(page, task -> PendingResult.completedWith(task.get()));
+
+    Router router =
+        routerShowing(McpTestViews.FailingLiveView.class, new McpTestViews.FailingLiveView());
+    try (MockedStatic<Router> routers = mockStatic(Router.class)) {
+      routers.when(Router::getCurrent).thenReturn(router);
+
+      CallToolResult result =
+          live.answerToolCall("failing-live", JsonMapper.shared().createObjectNode());
+
+      assertTrue(result.isError());
+      assertTrue(((TextContent) result.content().get(0)).text().contains("the table is gone"));
+    }
+  }
+
+  @Test
+  @DisplayName("Should bind the instance token of the opening result for server calls")
+  void shouldBindInstanceTokenForServerCalls() {
+    McpHost live = new McpHost(page, task -> PendingResult.completedWith(task.get()));
+
+    String token = McpAppInstances.deriveToken("session-bind", "live");
+    live.dispatchHostMessage("""
+        {
+          "type": "tool-result",
+          "payload": { "structuredContent": { "_route": "/live" },
+            "_meta": { "webforj/instance": "%s" } }
+        }""".formatted(token));
+
+    Router router = routerShowing(McpTestViews.LiveView.class, new McpTestViews.LiveView());
+    try (MockedStatic<Router> routers = mockStatic(Router.class)) {
+      routers.when(Router::getCurrent).thenReturn(router);
+
+      CallToolResult result = McpAppInstances.answerUpdateCall("session-bind", "live",
+          JsonMapper.shared().createObjectNode().put("q", "beta"));
+
+      assertEquals("live beta", ((TextContent) result.content().get(0)).text());
+    }
+  }
+
+  @Test
+  @DisplayName("Should refuse a server call of a session that opened no view")
+  void shouldRefuseServerCallWithoutOpenView() {
+    CallToolResult result = McpAppInstances.answerUpdateCall("session-unopened", "live",
+        JsonMapper.shared().createObjectNode());
+
+    assertTrue(result.isError());
+    assertTrue(((TextContent) result.content().get(0)).text().contains("not open"));
+  }
+
+  @Test
+  @DisplayName("Should unbind the instance on destroy")
+  void shouldUnbindInstanceOnDestroy() {
+    McpHost live = new McpHost(page, task -> PendingResult.completedWith(task.get()));
+
+    String token = McpAppInstances.deriveToken("session-destroy", "live");
+    live.dispatchHostMessage("""
+        {
+          "type": "tool-result",
+          "payload": { "structuredContent": { "_route": "/live" },
+            "_meta": { "webforj/instance": "%s" } }
+        }""".formatted(token));
+
+    live.destroy();
+    CallToolResult result = McpAppInstances.answerUpdateCall("session-destroy", "live",
+        JsonMapper.shared().createObjectNode());
+
+    assertTrue(result.isError());
+  }
+
+  @Test
+  @DisplayName("Should answer with a refusal when the session terminates mid call")
+  void shouldRefuseWhenSessionTerminatesMidCall() {
+    McpHost live = new McpHost(page, task -> {
+      PendingResult<CallToolResult> pending = new PendingResult<>();
+      pending.cancel();
+      return pending;
+    });
+
+    Router router = routerShowing(McpTestViews.LiveView.class, new McpTestViews.LiveView());
+    try (MockedStatic<Router> routers = mockStatic(Router.class)) {
+      routers.when(Router::getCurrent).thenReturn(router);
+
+      CallToolResult result = live.answerToolCall("live", JsonMapper.shared().createObjectNode());
+
+      assertTrue(result.isError());
+      assertTrue(((TextContent) result.content().get(0)).text().contains("terminated"));
+    }
+  }
+
+  @Test
+  @DisplayName("Should dispatch an action to the rendered view")
+  void shouldDispatchActionToRenderedView() {
+    McpHost live = new McpHost(page, task -> PendingResult.completedWith(task.get()));
+    McpAppActionDescriptor action = actionNamed("actions_filter");
+    Router router = routerShowing(McpTestViews.ActionsView.class, new McpTestViews.ActionsView());
+    try (MockedStatic<Router> routers = mockStatic(Router.class)) {
+      routers.when(Router::getCurrent).thenReturn(router);
+
+      CallToolResult result = live.answerActionCall("actions", action,
+          JsonMapper.shared().createObjectNode().put("query", "late").put("limit", 4));
+
+      assertEquals("filtered late", ((TextContent) result.content().get(0)).text());
+    }
+  }
+
+  @Test
+  @DisplayName("Should confirm a void action")
+  void shouldConfirmVoidAction() {
+    McpHost live = new McpHost(page, task -> PendingResult.completedWith(task.get()));
+    McpAppActionDescriptor action = actionNamed("actions_refresh");
+    Router router = routerShowing(McpTestViews.ActionsView.class, new McpTestViews.ActionsView());
+    try (MockedStatic<Router> routers = mockStatic(Router.class)) {
+      routers.when(Router::getCurrent).thenReturn(router);
+
+      CallToolResult result =
+          live.answerActionCall("actions", action, JsonMapper.shared().createObjectNode());
+
+      assertEquals("The 'actions_refresh' action completed.",
+          ((TextContent) result.content().get(0)).text());
+    }
+  }
+
+  @Test
+  @DisplayName("Should return the structured value of an action")
+  void shouldReturnActionStructuredValue() {
+    McpHost live = new McpHost(page, task -> PendingResult.completedWith(task.get()));
+    McpAppActionDescriptor action = actionNamed("actions_summarize");
+    Router router = routerShowing(McpTestViews.ActionsView.class, new McpTestViews.ActionsView());
+    try (MockedStatic<Router> routers = mockStatic(Router.class)) {
+      routers.when(Router::getCurrent).thenReturn(router);
+
+      CallToolResult result = live.answerActionCall("actions", action,
+          JsonMapper.shared().createObjectNode().put("query", "late").put("limit", 4));
+
+      assertEquals(new McpTestViews.ActionSummary("late", 4), result.structuredContent());
+    }
+  }
+
+  @Test
+  @DisplayName("Should resolve an external actions class through the conceiver")
+  void shouldResolveExternalActionsClass() {
+    McpHost live = new McpHost(page, task -> PendingResult.completedWith(task.get()));
+    RouteRegistry registry = new RouteRegistry();
+    registry.register("/external-actions", McpTestViews.ExternalActionsView.class);
+    McpAppActionDescriptor action =
+        McpAppRegistry.ofRegistry(registry).getDescriptors().get(0).getActionDescriptors().get(0);
+    Router router = routerShowing(McpTestViews.ExternalActionsView.class,
+        new McpTestViews.ExternalActionsView());
+    Conceiver conceiver = mock(Conceiver.class);
+    when(conceiver.get(McpTestViews.ExternalActions.class))
+        .thenReturn(new McpTestViews.ExternalActions());
+    try (MockedStatic<Router> routers = mockStatic(Router.class);
+        MockedStatic<ConceiverProvider> conceivers = mockStatic(ConceiverProvider.class)) {
+      routers.when(Router::getCurrent).thenReturn(router);
+      conceivers.when(ConceiverProvider::getCurrent).thenReturn(conceiver);
+
+      CallToolResult result = live.answerActionCall("external-actions", action,
+          JsonMapper.shared().createObjectNode().put("query", "ignored").put("limit", 9));
+
+      assertFalse(result.isError());
+      assertEquals(new McpTestViews.ActionSummary("ExternalActionsView", 9),
+          result.structuredContent());
+    }
+  }
+
+  @Test
+  @DisplayName("Should deliver opening arguments to an input method")
+  void shouldDeliverOpeningArgumentsToInputMethod() {
+    McpTestViews.InputMethodView view = new McpTestViews.InputMethodView();
+    Router router = routerShowing(McpTestViews.InputMethodView.class, view);
+    try (MockedStatic<Router> routers = mockStatic(Router.class)) {
+      routers.when(Router::getCurrent).thenReturn(router);
+
+      host.dispatchHostMessage("""
+          {
+            "type": "tool-input",
+            "payload": { "arguments": { "query": "late", "limit": 4 } }
+          }""");
+
+      assertEquals(new McpTestViews.ActionInput("late", 4), view.getOpeningInput());
+    }
+  }
+
+  @Test
+  @DisplayName("Should deliver opening arguments to the active view instead of a cached view")
+  void shouldDeliverOpeningArgumentsToActiveView() {
+    McpTestViews.InputMethodView cached = new McpTestViews.InputMethodView();
+    McpTestViews.SecondInputMethodView active = new McpTestViews.SecondInputMethodView();
+    RouteRegistry registry = new RouteRegistry();
+    registry.register(McpTestViews.InputMethodView.class);
+    registry.register(McpTestViews.SecondInputMethodView.class);
+    RouteRenderer renderer = mock(RouteRenderer.class);
+    when(renderer.getRenderedComponent(McpTestViews.InputMethodView.class))
+        .thenReturn(Optional.of(cached));
+    when(renderer.getRenderedComponent(McpTestViews.SecondInputMethodView.class))
+        .thenReturn(Optional.of(active));
+    when(renderer.getActiveRoutePath())
+        .thenReturn(Optional.of(new RouteRelation<>(McpTestViews.SecondInputMethodView.class)));
+    Router router = mock(Router.class);
+    when(router.getRegistry()).thenReturn(registry);
+    when(router.getRenderer()).thenReturn(renderer);
+
+    try (MockedStatic<Router> routers = mockStatic(Router.class)) {
+      routers.when(Router::getCurrent).thenReturn(router);
+
+      host.dispatchHostMessage("""
+          {
+            "type": "tool-input",
+            "payload": { "arguments": { "query": "active", "limit": 6 } }
+          }""");
+
+      assertNull(cached.getOpeningInput());
+      assertEquals(new McpTestViews.ActionInput("active", 6), active.getOpeningInput());
+    }
+  }
+
+  @Test
+  @DisplayName("Should refuse an action for a cached view that is no longer active")
+  void shouldRefuseActionForCachedInactiveView() {
+    McpHost live = new McpHost(page, task -> PendingResult.completedWith(task.get()));
+    McpAppActionDescriptor action = actionNamed("actions_filter");
+    RouteRegistry registry = new RouteRegistry();
+    registry.register(McpTestViews.ActionsView.class);
+    registry.register(McpTestViews.InputMethodView.class);
+    RouteRenderer renderer = mock(RouteRenderer.class);
+    when(renderer.getRenderedComponent(McpTestViews.ActionsView.class))
+        .thenReturn(Optional.of(new McpTestViews.ActionsView()));
+    when(renderer.getRenderedComponent(McpTestViews.InputMethodView.class))
+        .thenReturn(Optional.of(new McpTestViews.InputMethodView()));
+    when(renderer.getActiveRoutePath())
+        .thenReturn(Optional.of(new RouteRelation<>(McpTestViews.InputMethodView.class)));
+    Router router = mock(Router.class);
+    when(router.getRegistry()).thenReturn(registry);
+    when(router.getRenderer()).thenReturn(renderer);
+
+    try (MockedStatic<Router> routers = mockStatic(Router.class)) {
+      routers.when(Router::getCurrent).thenReturn(router);
+
+      CallToolResult result = live.answerActionCall("actions", action,
+          JsonMapper.shared().createObjectNode().put("query", "stale").put("limit", 1));
+
+      assertTrue(result.isError());
+      assertTrue(((TextContent) result.content().get(0)).text().contains("not on screen"));
+    }
+  }
+
+  private static McpAppActionDescriptor actionNamed(String toolName) {
+    RouteRegistry registry = new RouteRegistry();
+    registry.register("/actions", McpTestViews.ActionsView.class);
+
+    return McpAppRegistry.ofRegistry(registry).getDescriptors().get(0).getActionDescriptors()
+        .stream().filter(action -> action.getToolName().equals(toolName)).findFirst().orElseThrow();
+  }
+
+  private static Router routerShowing(Class<? extends Component> viewClass, Component rendered) {
+    RouteRegistry registry = new RouteRegistry();
+    registry.register(viewClass);
+    RouteRenderer renderer = mock(RouteRenderer.class);
+    when(renderer.getRenderedComponent(viewClass)).thenReturn(Optional.ofNullable(rendered));
+    when(renderer.getActiveRoutePath()).thenReturn(Optional.of(new RouteRelation<>(viewClass)));
+    Router router = mock(Router.class);
+    when(router.getRegistry()).thenReturn(registry);
+    when(router.getRenderer()).thenReturn(renderer);
+
+    return router;
   }
 }

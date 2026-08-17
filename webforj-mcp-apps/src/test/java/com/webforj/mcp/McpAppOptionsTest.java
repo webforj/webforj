@@ -18,6 +18,8 @@ class McpAppOptionsTest {
   void clearProperties() {
     System.clearProperty(McpAppOptions.KEY_ORIGIN);
     System.clearProperty(McpAppOptions.KEY_ALLOWED_ORIGINS);
+    System.clearProperty(McpAppOptions.KEY_RESOURCE_DOMAINS);
+    System.clearProperty(McpAppOptions.KEY_CONNECT_DOMAINS);
   }
 
   @Test
@@ -27,6 +29,8 @@ class McpAppOptionsTest {
 
     assertNull(options.getOrigin());
     assertTrue(options.getAllowedOrigins().isEmpty());
+    assertTrue(options.getResourceDomains().isEmpty());
+    assertTrue(options.getConnectDomains().isEmpty());
   }
 
   @Test
@@ -35,10 +39,14 @@ class McpAppOptionsTest {
     McpAppOptions options = McpAppOptions.from(ConfigFactory.parseString("""
         webforj.origin = "https://demo.example/"
         webforj.mcp.allowed-origins = ["https://host.example"]
+        webforj.mcp.resource-domains = ["https://tiles.example"]
+        webforj.mcp.connect-domains = ["https://api.example"]
         """));
 
     assertEquals("https://demo.example/", options.getOrigin());
     assertEquals(List.of("https://host.example"), options.getAllowedOrigins());
+    assertEquals(List.of("https://tiles.example"), options.getResourceDomains());
+    assertEquals(List.of("https://api.example"), options.getConnectDomains());
   }
 
   @Test

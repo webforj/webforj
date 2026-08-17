@@ -23,6 +23,7 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletRegistration;
 import jakarta.servlet.SessionCookieConfig;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -89,6 +90,25 @@ class McpAppContributionTest {
     @AfterEach
     void clearServletConfig() {
       WebforjServlet.setConfig(null);
+    }
+
+    @Test
+    @DisplayName("Should declare the configured domains on every resource")
+    void shouldDeclareDomainsOnResources() {
+      when(context.getSessionCookieConfig()).thenReturn(mock(SessionCookieConfig.class));
+      contribution.getOrigin().configure("https://app.example.com");
+
+      contribution.install(context,
+          new McpAppOptions().setResourceDomains(List.of("https://tiles.example.com"))
+              .setConnectDomains(List.of("https://api.example.com")));
+
+      Map<String, Object> meta = contribution.getResourceSpecifications().get(0).resource().meta();
+      @SuppressWarnings("unchecked")
+      Map<String, Object> csp =
+          (Map<String, Object>) ((Map<String, Object>) meta.get("ui")).get("csp");
+
+      assertTrue(((List<?>) csp.get("resourceDomains")).contains("https://tiles.example.com"));
+      assertTrue(((List<?>) csp.get("connectDomains")).contains("https://api.example.com"));
     }
 
     @Test

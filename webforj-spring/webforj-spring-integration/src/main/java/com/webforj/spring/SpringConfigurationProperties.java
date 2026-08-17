@@ -1434,6 +1434,18 @@ public class SpringConfigurationProperties {
     private List<String> allowedOrigins;
 
     /**
+     * The origins the embedding frame may load resources from in addition to the application origin
+     * and framework domains.
+     */
+    private List<String> resourceDomains;
+
+    /**
+     * The origins the embedding frame may connect to in addition to the application origin and the
+     * framework domains.
+     */
+    private List<String> connectDomains;
+
+    /**
      * Gets the origins allowed to embed the application.
      *
      * @return the allowed origins
@@ -1449,6 +1461,46 @@ public class SpringConfigurationProperties {
      */
     public void setAllowedOrigins(List<String> allowedOrigins) {
       this.allowedOrigins = allowedOrigins;
+    }
+
+    /**
+     * Gets the origins the embedding frame may load resources from in addition to the application
+     * origin and framework domains.
+     *
+     * @return the additional resource origins
+     */
+    public List<String> getResourceDomains() {
+      return resourceDomains;
+    }
+
+    /**
+     * Sets the origins the embedding frame may load resources from in addition to the application
+     * origin and framework domains.
+     *
+     * @param resourceDomains the additional resource origins
+     */
+    public void setResourceDomains(List<String> resourceDomains) {
+      this.resourceDomains = resourceDomains;
+    }
+
+    /**
+     * Gets the origins the embedding frame may connect to in addition to the application origin
+     * and framework domains.
+     *
+     * @return the additional connect origins
+     */
+    public List<String> getConnectDomains() {
+      return connectDomains;
+    }
+
+    /**
+     * Sets the origins the embedding frame may connect to in addition to the application origin
+     * and framework domains.
+     *
+     * @param connectDomains the additional connect origins
+     */
+    public void setConnectDomains(List<String> connectDomains) {
+      this.connectDomains = connectDomains;
     }
   }
 }

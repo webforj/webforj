@@ -5,14 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>webforJ</title>
 <style>
-  /* The page stays pinned to the frame so the application boots into a sized root and the
-    empty document never measures zero, which would collapse the frame before anything
-    renders. Once the application has rendered, the measured content height replaces the pin
-    as the document height, which hosts sizing the frame from the document read. The body is
-    pinned to the real viewport and scrolls, so a host that grants less room than the content
-    needs still reaches all of it. */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { width: 100%; }
+  html, body { width: 100%; margin: 0; padding: 0; }
   html { height: 100%; overflow: hidden; }
   body { height: 100vh; overflow: auto; }
   #bbj-dwc { width: 100%; height: 100%; }
@@ -20,27 +13,24 @@
 </head>
 <body>
 <div id="bbj-dwc"></div>
-<script type="text/javascript">__EXT_APPS_SDK__</script>
 <script type="text/javascript">
   var context = "__WEBFORJ_ORIGIN____SERVLET_PATH__";
   // The location the embedded application opens at, read by the framework before its first
   // route resolution, because the URL of the frame carries no route segment of its own.
   window.__webforjEmbedLocation = "__EMBED_LOCATION__";
 
-  // The channel speaks the MCP Apps protocol through the official SDK inlined above, and carries
-  // every message into the application through a DOM event the application listens on once it
-  // runs. Messages arriving before the application is ready are buffered, so nothing the host
-  // sends during boot is lost.
   (function () {
-    // The page renders a full application, which lays out at any of the modes the protocol
-    // defines, so all of them are declared supported. The automatic size reporting of the SDK
-    // stays off, it would announce the empty page as zero height before the application
-    // renders. The measurement below reports instead, once there is content to measure.
-    var app = new McpExtApps.App({ name: "webforj", version: "1.0.0" },
-        { availableDisplayModes: ["inline", "fullscreen", "pip"] }, { autoResize: false });
-
     var applicationReady = false;
     var buffered = [];
+    var attachApp = null;
+    var failAttach = null;
+    var attached = new Promise(function (resolve, reject) {
+      attachApp = resolve;
+      failAttach = reject;
+    });
+    // A rejected attach answers every waiting request through their own handlers, this handler
+    // only keeps the rejection itself from surfacing as unhandled.
+    attached.catch(function () {});
 
     function toApplication(message) {
       if (applicationReady) {
@@ -52,61 +42,26 @@
       }
     }
 
-    app.ontoolinput = function (params) {
-      toApplication({ type: "tool-input", payload: params || {} });
-    };
-
-    app.ontoolinputpartial = function (params) {
-      toApplication({ type: "tool-input-partial", payload: params || {} });
-    };
-
-    app.ontoolresult = function (params) {
-      var structured = params && params.structuredContent;
-      if (structured && structured._displayMode != null) {
-        // The view declared the mode it wants to open in. The host answers with the mode it
-        // settled on and may keep another one, so the request carries no expectation the
-        // application waits on.
-        app.requestDisplayMode({ mode: structured._displayMode }).catch(function (error) {
-          console.warn("webforJ MCP channel: ui/request-display-mode answered with an error",
-              error);
-        });
-      }
-      toApplication({ type: "tool-result", payload: params || {} });
-    };
-
-    app.ontoolcancelled = function (params) {
-      toApplication({ type: "tool-cancelled", payload: params || {} });
-    };
-
-    app.onhostcontextchanged = function (params) {
-      toApplication({ type: "host-context-changed", payload: params || {} });
-    };
-
-    app.onteardown = function (params) {
-      toApplication({ type: "teardown", payload: params || {} });
-      return {};
-    };
-
     var requests = {
-      "tools/call": function (params) {
+      "tools/call": function (app, params) {
         return app.callServerTool(params);
       },
-      "resources/read": function (params) {
+      "resources/read": function (app, params) {
         return app.readServerResource(params);
       },
-      "resources/list": function (params) {
+      "resources/list": function (app, params) {
         return app.listServerResources(params);
       },
-      "ui/message": function (params) {
+      "ui/message": function (app, params) {
         return app.sendMessage(params);
       },
-      "ui/update-model-context": function (params) {
+      "ui/update-model-context": function (app, params) {
         return app.updateModelContext(params);
       },
-      "ui/open-link": function (params) {
+      "ui/open-link": function (app, params) {
         return app.openLink(params);
       },
-      "ui/request-display-mode": function (params) {
+      "ui/request-display-mode": function (app, params) {
         return app.requestDisplayMode(params);
       }
     };
@@ -128,7 +83,9 @@
           return;
         }
 
-        call(params || {}).then(function (result) {
+        attached.then(function (app) {
+          return call(app, params || {});
+        }).then(function (result) {
           toApplication({ type: "response", callId: callId,
             result: result != null ? result : null, error: null });
         }, function (error) {
@@ -139,57 +96,113 @@
       }
     };
 
-    // The application fills the frame, so its height never reaches the document on its own.
-    // The content height is measured with the pinning lifted for the measurement, written into
-    // the document height for hosts that size the frame from the document, and sent as the
-    // size notification for hosts that listen. Reports are deduplicated and at most one goes
-    // out per animation frame. Zero measurements never leave the page, the empty document must
-    // keep its frame until the application renders.
-    if (typeof ResizeObserver === "function") {
-      var lastWidth = -1;
-      var lastHeight = -1;
-      var scheduled = false;
-      var reportSize = function () {
-        scheduled = false;
-        var html = document.documentElement;
-        var originalHeight = html.style.height;
-        html.style.height = "max-content";
-        var height = Math.ceil(html.getBoundingClientRect().height);
-        html.style.height = originalHeight;
-        var width = Math.ceil(window.innerWidth);
-        if (height <= 0) {
-          return;
-        }
-        if (width !== lastWidth || height !== lastHeight) {
-          lastWidth = width;
-          lastHeight = height;
-          html.style.height = height + "px";
-          app.sendSizeChanged({ width: width, height: height });
-          console.debug("webforJ MCP app: content measured " + width + "x" + height
-              + ", host granted viewport " + window.innerWidth + "x" + window.innerHeight
-              + ", document height set and size notification sent");
-        }
-      };
-      var observer = new ResizeObserver(function () {
-        if (!scheduled) {
-          scheduled = true;
-          requestAnimationFrame(reportSize);
-        }
-      });
-      observer.observe(document.documentElement);
-      observer.observe(document.body);
-    }
+    window.__webforjMcpAttachFailed = function (error) {
+      failAttach(error);
+    };
 
-    app.connect().then(function () {
-      toApplication({ type: "initialized", payload: {
-        hostInfo: app.getHostVersion(),
-        hostCapabilities: app.getHostCapabilities(),
-        hostContext: app.getHostContext()
-      } });
-    }, function (error) {
-      console.warn("webforJ MCP channel: ui/initialize answered with an error", error);
-    });
+    window.__webforjMcpAttach = function (app) {
+      app.ontoolinput = function (params) {
+        toApplication({ type: "tool-input", payload: params || {} });
+      };
+
+      app.ontoolinputpartial = function (params) {
+        toApplication({ type: "tool-input-partial", payload: params || {} });
+      };
+
+      app.ontoolresult = function (params) {
+        var structured = params && params.structuredContent;
+        if (structured && structured._displayMode != null) {
+          // The view declared the mode it wants to open in. The host answers with the mode it
+          // settled on and may keep another one, so the request carries no expectation the
+          // application waits on.
+          app.requestDisplayMode({ mode: structured._displayMode }).catch(function (error) {
+            console.warn("webforJ MCP channel: ui/request-display-mode answered with an error",
+                error);
+          });
+        }
+        toApplication({ type: "tool-result", payload: params || {} });
+      };
+
+      app.ontoolcancelled = function (params) {
+        toApplication({ type: "tool-cancelled", payload: params || {} });
+      };
+
+      app.onhostcontextchanged = function (params) {
+        toApplication({ type: "host-context-changed", payload: params || {} });
+      };
+
+      app.onteardown = function (params) {
+        toApplication({ type: "teardown", payload: params || {} });
+        return {};
+      };
+
+      // The application fills the frame, so its height never reaches the document on its own.
+      // The content height is measured with the pinning lifted for the measurement, written into
+      // the document height for hosts that size the frame from the document, and sent as the
+      // size notification for hosts that listen. Reports are deduplicated and at most one goes
+      // out per animation frame. Zero measurements never leave the page, the empty document must
+      // keep its frame until the application renders.
+      if (typeof ResizeObserver === "function") {
+        var lastWidth = -1;
+        var lastHeight = -1;
+        var scheduled = false;
+        var reportSize = function () {
+          scheduled = false;
+          var html = document.documentElement;
+          var originalHeight = html.style.height;
+          html.style.height = "max-content";
+          var height = Math.ceil(html.getBoundingClientRect().height);
+          html.style.height = originalHeight;
+          var width = Math.ceil(window.innerWidth);
+          if (height <= 0) {
+            return;
+          }
+          if (width !== lastWidth || height !== lastHeight) {
+            lastWidth = width;
+            lastHeight = height;
+            html.style.height = height + "px";
+            app.sendSizeChanged({ width: width, height: height });
+            console.debug("webforJ MCP app: content measured " + width + "x" + height
+                + ", host granted viewport " + window.innerWidth + "x" + window.innerHeight
+                + ", document height set and size notification sent");
+          }
+        };
+        var observer = new ResizeObserver(function () {
+          if (!scheduled) {
+            scheduled = true;
+            requestAnimationFrame(reportSize);
+          }
+        });
+        observer.observe(document.documentElement);
+        observer.observe(document.body);
+      }
+
+      app.connect().then(function () {
+        attachApp(app);
+        toApplication({ type: "initialized", payload: {
+          hostInfo: app.getHostVersion(),
+          hostCapabilities: app.getHostCapabilities(),
+          hostContext: app.getHostContext()
+        } });
+      }, function (error) {
+        console.warn("webforJ MCP channel: ui/initialize answered with an error", error);
+        // The waiting requests still reach the SDK, whose answers name the real failure
+        // instead of the channel holding them forever.
+        attachApp(app);
+      });
+    };
   })();
+</script>
+<script type="module">
+  import("https://cdn.jsdelivr.net/npm/@modelcontextprotocol/ext-apps@1.7.5/dist/src/app-with-deps.js")
+      .then(function (sdk) {
+        window.__webforjMcpAttach(new sdk.App({ name: "webforj", version: "1.0.0" },
+            { availableDisplayModes: ["inline", "fullscreen", "pip"] },
+            { autoResize: false }));
+      }, function (error) {
+        console.error("webforJ MCP app: the MCP Apps SDK failed to load from the CDN", error);
+        window.__webforjMcpAttachFailed(error);
+      });
 </script>
 <script type="text/javascript">
   (function () {

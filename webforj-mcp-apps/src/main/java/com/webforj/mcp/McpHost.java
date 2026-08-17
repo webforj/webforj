@@ -1,16 +1,23 @@
 package com.webforj.mcp;
 
+import com.webforj.Environment;
 import com.webforj.Page;
 import com.webforj.PendingResult;
+import com.webforj.component.Component;
 import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.environment.ObjectTable;
+import com.webforj.mcp.annotation.McpApp;
+import com.webforj.mcp.event.McpAppUpdateEvent;
 import com.webforj.mcp.event.McpHostContextChangedEvent;
 import com.webforj.mcp.event.McpToolCancelledEvent;
 import com.webforj.mcp.event.McpToolInputEvent;
 import com.webforj.mcp.event.McpToolInputPartialEvent;
 import com.webforj.mcp.event.McpToolResultEvent;
+import com.webforj.mcp.observer.McpAppUpdateObserver;
+import com.webforj.router.RouteEntry;
+import com.webforj.router.RouteRelation;
 import com.webforj.router.Router;
 import com.webforj.router.history.Location;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
@@ -18,14 +25,21 @@ import io.modelcontextprotocol.spec.McpSchema.Implementation;
 import io.modelcontextprotocol.spec.McpSchema.ListResourcesResult;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceResult;
 import java.lang.System.Logger;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.node.ObjectNode;
@@ -38,6 +52,11 @@ import tools.jackson.databind.node.ObjectNode;
  */
 public final class McpHost {
 
+  @FunctionalInterface
+  interface SessionRunner {
+    PendingResult<CallToolResult> run(Supplier<CallToolResult> task);
+  }
+
   static final String OBJECT_TABLE_KEY = McpHost.class.getName();
 
   private static final Logger logger = System.getLogger(McpHost.class.getName());
@@ -46,6 +65,7 @@ public final class McpHost {
   private static final String ARGUMENTS_FIELD = "arguments";
 
   private final Page page;
+  private final SessionRunner sessionRunner;
   private final EventDispatcher dispatcher = new EventDispatcher();
   private final Map<String, PendingResult<JsonNode>> pendingResults = new ConcurrentHashMap<>();
   private final AtomicLong callIds = new AtomicLong();
@@ -53,9 +73,15 @@ public final class McpHost {
   private final AtomicReference<JsonNode> hostCapabilities = new AtomicReference<>();
   private final AtomicReference<ObjectNode> hostContext = new AtomicReference<>();
   private final AtomicBoolean openingToolResult = new AtomicBoolean(true);
+  private final AtomicReference<String> instanceToken = new AtomicReference<>();
 
   McpHost(Page page) {
+    this(page, createSessionRunner());
+  }
+
+  McpHost(Page page, SessionRunner sessionRunner) {
     this.page = page;
+    this.sessionRunner = sessionRunner;
     ObjectTable.put(McpHost.OBJECT_TABLE_KEY, this);
   }
 
@@ -102,7 +128,7 @@ public final class McpHost {
    * @return the pending call result
    */
   public PendingResult<CallToolResult> callTool(String name, Map<String, Object> arguments) {
-    return request("tools/call",
+    return sendRequest("tools/call",
         Map.of("name", name, ARGUMENTS_FIELD, arguments == null ? Map.of() : arguments))
         .thenApply(answer -> mapper.convertValue(answer, CallToolResult.class));
   }
@@ -114,7 +140,7 @@ public final class McpHost {
    * @return the pending read result
    */
   public PendingResult<ReadResourceResult> readResource(String uri) {
-    return request("resources/read", Map.of("uri", uri))
+    return sendRequest("resources/read", Map.of("uri", uri))
         .thenApply(answer -> mapper.convertValue(answer, ReadResourceResult.class));
   }
 
@@ -124,7 +150,7 @@ public final class McpHost {
    * @return the pending listing result
    */
   public PendingResult<ListResourcesResult> listResources() {
-    return request("resources/list", Map.of())
+    return sendRequest("resources/list", Map.of())
         .thenApply(answer -> mapper.convertValue(answer, ListResourcesResult.class));
   }
 
@@ -135,7 +161,7 @@ public final class McpHost {
    * @return the pending result
    */
   public PendingResult<Void> sendMessage(String text) {
-    return request("ui/message",
+    return sendRequest("ui/message",
         Map.of("role", "user", "content", List.of(Map.of("type", "text", "text", text))))
         .thenApply(answer -> null);
   }
@@ -147,7 +173,7 @@ public final class McpHost {
    * @return the pending result
    */
   public PendingResult<Void> updateModelContext(String content) {
-    return request("ui/update-model-context",
+    return sendRequest("ui/update-model-context",
         Map.of("content", List.of(Map.of("type", "text", "text", content))))
         .thenApply(answer -> null);
   }
@@ -159,7 +185,7 @@ public final class McpHost {
    * @return the pending result
    */
   public PendingResult<Void> updateModelContext(Map<String, Object> structuredContent) {
-    return request("ui/update-model-context", Map.of("structuredContent", structuredContent))
+    return sendRequest("ui/update-model-context", Map.of("structuredContent", structuredContent))
         .thenApply(answer -> null);
   }
 
@@ -170,7 +196,7 @@ public final class McpHost {
    * @return the pending result
    */
   public PendingResult<Void> openLink(String url) {
-    return request("ui/open-link", Map.of("url", url)).thenApply(answer -> null);
+    return sendRequest("ui/open-link", Map.of("url", url)).thenApply(answer -> null);
   }
 
   /**
@@ -185,7 +211,7 @@ public final class McpHost {
       throw new IllegalArgumentException("Name the display mode to request.");
     }
 
-    return request("ui/request-display-mode", Map.of("mode", mode.getValue()))
+    return sendRequest("ui/request-display-mode", Map.of("mode", mode.getValue()))
         .thenApply(answer -> McpAppDisplayMode.fromValue(answer.path("mode").asString()));
   }
 
@@ -329,7 +355,7 @@ public final class McpHost {
     return addHostContextChangedListener(listener);
   }
 
-  void dispatch(String json) {
+  void dispatchHostMessage(String json) {
     JsonNode message;
     try {
       message = mapper.readTree(json);
@@ -348,22 +374,21 @@ public final class McpHost {
         message.path("payload").isObject() ? message.path("payload") : mapper.createObjectNode();
 
     switch (type) {
-      case "initialized" -> initialized(payload);
-      case "response" -> complete(message);
-      case "tool-input" ->
-        dispatcher.dispatchEvent(new McpToolInputEvent(this, arguments(payload)));
+      case "initialized" -> handleInitialized(payload);
+      case "response" -> handleResponse(message);
+      case "tool-input" -> handleToolInput(payload);
       case "tool-input-partial" ->
-        dispatcher.dispatchEvent(new McpToolInputPartialEvent(this, arguments(payload)));
-      case "tool-result" -> toolResult(payload);
+        dispatcher.dispatchEvent(new McpToolInputPartialEvent(this, readArguments(payload)));
+      case "tool-result" -> handleToolResult(payload);
       case "tool-cancelled" -> dispatcher.dispatchEvent(new McpToolCancelledEvent(this,
           payload.path("reason").isString() ? payload.path("reason").asString() : null));
-      case "host-context-changed" -> hostContextChanged(payload);
+      case "host-context-changed" -> handleHostContextChanged(payload);
       case "teardown" -> logger.log(Logger.Level.DEBUG, "The host is tearing the application down");
       default -> logger.log(Logger.Level.DEBUG, () -> "Unknown host message type: " + type);
     }
   }
 
-  void ready() {
+  void signalReady() {
     page.executeJsVoidAsync("window.__webforjMcpChannel && window.__webforjMcpChannel.ready()");
   }
 
@@ -373,9 +398,98 @@ public final class McpHost {
     pendingResults.values().forEach(pending -> pending.completeExceptionally(
         new IllegalStateException("The application terminated before the host answered")));
     pendingResults.clear();
+
+    String token = instanceToken.getAndSet(null);
+    if (token != null) {
+      McpAppInstances.unbindInstance(token, this);
+    }
   }
 
-  private PendingResult<JsonNode> request(String method, Map<String, Object> params) {
+  CallToolResult answerToolCall(String appToolName, JsonNode arguments) {
+    return dispatchToSession(appToolName, () -> {
+      McpAppUpdateObserver observer = findRenderedObserver(appToolName);
+      if (observer == null) {
+        return createNotOnScreenResponse(appToolName);
+      }
+
+      return observer.onMcpAppUpdate(new McpAppUpdateEvent(this, appToolName, arguments));
+    });
+  }
+
+  CallToolResult answerActionCall(String appName, McpAppActionDescriptor action,
+      JsonNode arguments) {
+    return dispatchToSession(appName, () -> {
+      Component view = findRenderedView(appName);
+      if (view == null) {
+        return createNotOnScreenResponse(appName);
+      }
+
+      Object value = action.invoke(view, arguments);
+      if (action.hasVoidReturnType()) {
+        return CallToolResult.builder()
+            .addTextContent("The '" + action.getToolName() + "' action completed.").build();
+      }
+      if (value instanceof CallToolResult result) {
+        return result;
+      }
+
+      return CallToolResult.builder().structuredContent(value).build();
+    });
+  }
+
+  private CallToolResult dispatchToSession(String appToolName, Supplier<CallToolResult> task) {
+    CompletableFuture<CallToolResult> answer = new CompletableFuture<>();
+    String viewDescription = describeView(appToolName);
+
+    try {
+      PendingResult<CallToolResult> pending = sessionRunner.run(task);
+      pending.thenAccept(answer::complete);
+      pending.exceptionally(error -> {
+        answer.completeExceptionally(error);
+        return null;
+      });
+    } catch (RuntimeException e) {
+      answer.completeExceptionally(e);
+    }
+
+    try {
+      CallToolResult result = answer.get();
+      if (result == null) {
+        return createRefusal(viewDescription + " answered nothing.");
+      }
+
+      return result;
+    } catch (CancellationException e) {
+      return createRefusal(viewDescription + " terminated before answering.");
+    } catch (ExecutionException e) {
+      Throwable cause = e.getCause() == null ? e : e.getCause();
+      if (cause instanceof CompletionException wrapped && wrapped.getCause() != null) {
+        cause = wrapped.getCause();
+      }
+      if (cause instanceof CancellationException) {
+        return createRefusal(viewDescription + " terminated before answering.");
+      }
+
+      logger.log(Logger.Level.WARNING, viewDescription + " failed to answer its call", cause);
+      return createRefusal(viewDescription + " failed to answer: "
+          + (cause.getMessage() == null ? cause.toString() : cause.getMessage()));
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      return createRefusal(
+          viewDescription + " did not finish answering, the call was interrupted.");
+    }
+  }
+
+  private CallToolResult createNotOnScreenResponse(String appToolName) {
+    return createRefusal(describeView(appToolName) + " is not on screen. Call the tool '"
+        + appToolName + "' to open it first.");
+  }
+
+  private static String describeView(String appToolName) {
+    return "The view '" + appToolName + "'";
+  }
+
+  private PendingResult<JsonNode> sendRequest(String method, Map<String, Object> params) {
     String callId = "call-" + callIds.incrementAndGet();
     PendingResult<JsonNode> result = new PendingResult<>();
     pendingResults.put(callId, result);
@@ -387,12 +501,12 @@ public final class McpHost {
     return result;
   }
 
-  private JsonNode arguments(JsonNode payload) {
+  private JsonNode readArguments(JsonNode payload) {
     return payload.path(ARGUMENTS_FIELD).isObject() ? payload.path(ARGUMENTS_FIELD)
         : mapper.createObjectNode();
   }
 
-  private void initialized(JsonNode payload) {
+  private void handleInitialized(JsonNode payload) {
     if (payload.path("hostInfo").isObject()) {
       hostInfo.set(payload.path("hostInfo"));
     }
@@ -404,7 +518,7 @@ public final class McpHost {
     }
   }
 
-  private void complete(JsonNode message) {
+  private void handleResponse(JsonNode message) {
     String callId = message.path("callId").isString() ? message.path("callId").asString() : null;
     PendingResult<JsonNode> pending = callId == null ? null : pendingResults.remove(callId);
     if (pending == null) {
@@ -422,19 +536,76 @@ public final class McpHost {
     pending.complete(result.isObject() ? result : mapper.createObjectNode());
   }
 
-  private void toolResult(JsonNode payload) {
+  private void handleToolResult(JsonNode payload) {
     // The first result always answers the call that opened the frame, whose route the frame
     // already booted at and the router already resolved, security redirects included.
     // Re-asserting that route would tear the settled view down, so it never navigates.
     if (!openingToolResult.getAndSet(false)) {
-      navigate(payload);
+      navigateToRoute(payload);
     }
 
+    bindInstance(payload);
     CallToolResult result = mapper.convertValue(payload, CallToolResult.class);
     dispatcher.dispatchEvent(new McpToolResultEvent(this, result));
   }
 
-  private void navigate(JsonNode payload) {
+  private void handleToolInput(JsonNode payload) {
+    JsonNode arguments = readArguments(payload);
+    dispatcher.dispatchEvent(new McpToolInputEvent(this, arguments));
+    deliverOpeningInput(arguments);
+  }
+
+  private void deliverOpeningInput(JsonNode arguments) {
+    Router router = Router.getCurrent();
+    if (router == null) {
+      return;
+    }
+
+    for (Class<? extends Component> viewType : getActiveViewTypes(router)) {
+      if (viewType == null || !viewType.isAnnotationPresent(McpApp.class)) {
+        continue;
+      }
+
+      McpAppMethodDescriptor inputMethod = McpAppDescriptor.resolveOpeningInputMethod(viewType);
+      if (inputMethod == null) {
+        continue;
+      }
+
+      Optional<Component> rendered = router.getRenderer().getRenderedComponent(viewType);
+      if (rendered.isEmpty()) {
+        continue;
+      }
+
+      try {
+        inputMethod.invoke(rendered.get(), arguments);
+      } catch (RuntimeException e) {
+        logger.log(Logger.Level.WARNING,
+            "The opening input method of " + viewType.getName() + " failed", e);
+      }
+      return;
+    }
+  }
+
+  private void bindInstance(JsonNode payload) {
+    JsonNode token = payload.path("_meta").path(McpAppInstances.INSTANCE_META_KEY);
+    if (!token.isString()) {
+      return;
+    }
+
+    String value = token.asString();
+    String previous = instanceToken.getAndSet(value);
+    if (value.equals(previous)) {
+      return;
+    }
+
+    if (previous != null) {
+      McpAppInstances.unbindInstance(previous, this);
+    }
+
+    McpAppInstances.bindInstance(value, this);
+  }
+
+  private void navigateToRoute(JsonNode payload) {
     JsonNode route = payload.path("structuredContent").path(ROUTE_FIELD);
     if (!route.isString()) {
       return;
@@ -450,7 +621,7 @@ public final class McpHost {
     router.navigate(new Location(route.asString()));
   }
 
-  private void hostContextChanged(JsonNode payload) {
+  private void handleHostContextChanged(JsonNode payload) {
     ObjectNode current = hostContext.get();
     if (current == null) {
       hostContext.set((ObjectNode) payload.deepCopy());
@@ -459,5 +630,71 @@ public final class McpHost {
     }
 
     dispatcher.dispatchEvent(new McpHostContextChangedEvent(this, payload));
+  }
+
+  private static SessionRunner createSessionRunner() {
+    Environment environment = Environment.getCurrent();
+
+    return task -> {
+      if (environment == null) {
+        throw new IllegalStateException(
+            "The host connection was created outside an Environment, so no session thread can"
+                + " answer the call.");
+      }
+
+      return Environment.runLater(environment, task);
+    };
+  }
+
+  private static CallToolResult createRefusal(String message) {
+    return CallToolResult.builder().isError(true).addTextContent(message).build();
+  }
+
+  private static McpAppUpdateObserver findRenderedObserver(String appToolName) {
+    Component rendered = findRenderedView(appToolName);
+    return rendered instanceof McpAppUpdateObserver observer ? observer : null;
+  }
+
+  private static Component findRenderedView(String appToolName) {
+    Router router = Router.getCurrent();
+    if (router == null) {
+      return null;
+    }
+
+    return getActiveViewTypes(router).stream()
+        .filter(viewType -> isAppNamed(router, viewType, appToolName)).findFirst()
+        .flatMap(viewType -> router.getRenderer().getRenderedComponent(viewType)).orElse(null);
+  }
+
+  private static List<Class<? extends Component>> getActiveViewTypes(Router router) {
+    Optional<RouteRelation<Class<? extends Component>>> activePath =
+        router.getRenderer().getActiveRoutePath();
+    if (activePath.isEmpty()) {
+      return List.of();
+    }
+
+    List<Class<? extends Component>> viewTypes = new ArrayList<>();
+    for (RouteRelation<Class<? extends Component>> node : activePath.get()) {
+      viewTypes.add(node.getData());
+    }
+    Collections.reverse(viewTypes);
+
+    return viewTypes;
+  }
+
+  private static boolean isAppNamed(Router router, Class<? extends Component> viewType,
+      String appToolName) {
+    return router.getRegistry().getAvailableRouteEntires().stream()
+        .filter(entry -> viewType.equals(entry.getComponent()))
+        .anyMatch(entry -> belongsToApp(entry, appToolName));
+  }
+
+  private static boolean belongsToApp(RouteEntry entry, String appToolName) {
+    Class<? extends Component> componentClass = entry.getComponent();
+    if (componentClass == null || !componentClass.isAnnotationPresent(McpApp.class)) {
+      return false;
+    }
+
+    return McpAppDescriptor.resolveToolName(componentClass, entry.getPath()).equals(appToolName);
   }
 }

@@ -71,7 +71,7 @@ class McpHostListenerTest {
 
       listener.onDidRun(app);
 
-      verify(host).ready();
+      verify(host).signalReady();
     }
   }
 

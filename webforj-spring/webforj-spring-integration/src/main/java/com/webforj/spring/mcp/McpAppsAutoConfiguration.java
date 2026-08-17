@@ -94,11 +94,11 @@ public class McpAppsAutoConfiguration {
   }
 
   private static McpAppOptions deploymentOptions(SpringConfigurationProperties properties) {
-    List<String> allowedOrigins = properties.getMcp().getAllowedOrigins();
+    SpringConfigurationProperties.Mcp mcp = properties.getMcp();
 
     return new McpAppOptions().setOrigin(properties.getOrigin())
-        .setAllowedOrigins(allowedOrigins == null ? List.of() : allowedOrigins)
-        .setComponents(properties.getComponents());
+        .setAllowedOrigins(mcp.getAllowedOrigins()).setResourceDomains(mcp.getResourceDomains())
+        .setConnectDomains(mcp.getConnectDomains()).setComponents(properties.getComponents());
   }
 
   @SuppressWarnings("unchecked")

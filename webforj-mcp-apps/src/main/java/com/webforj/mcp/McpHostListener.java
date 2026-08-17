@@ -38,14 +38,14 @@ public class McpHostListener implements AppLifecycleListener {
     page.addEventListener(MESSAGE_EVENT, event -> {
       Object payload = event.getData().get("payload");
       if (payload != null) {
-        host.dispatch(payload.toString());
+        host.dispatchHostMessage(payload.toString());
       }
     }, options);
   }
 
   @Override
   public void onDidRun(App app) {
-    McpHost.ifPresent(McpHost::ready);
+    McpHost.ifPresent(McpHost::signalReady);
   }
 
   @Override

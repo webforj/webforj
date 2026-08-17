@@ -2,6 +2,7 @@ package com.webforj.mcp;
 
 import com.webforj.component.Component;
 import com.webforj.mcp.annotation.McpApp;
+import com.webforj.mcp.observer.McpAppUpdateObserver;
 import com.webforj.router.RouteEntry;
 import com.webforj.router.RouteRegistry;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
@@ -29,6 +30,7 @@ public final class McpAppRegistry {
   private static final TypeReference<Map<String, Object>> SCHEMA_MAP = new TypeReference<>() {};
   private static final String ROUTE_FIELD = "_route";
   private static final String DISPLAY_MODE_FIELD = "_displayMode";
+  private static final String UPDATE_TOOL_SUFFIX = "_update";
 
   private final List<McpAppDescriptor> descriptors;
 
@@ -44,8 +46,7 @@ public final class McpAppRegistry {
    * @throws IllegalStateException if two marked views claim the same tool name
    */
   public static McpAppRegistry ofRegistry(RouteRegistry registry) {
-    // Sorted by tool name so the host sees a stable list. The registry orders entries by route
-    // matching precedence, which is an ordering the tool list has no use for.
+    // Sorted by tool name so the host sees a stable list.
     Map<String, McpAppDescriptor> byToolName = new TreeMap<>();
 
     for (RouteEntry entry : registry.getAvailableRouteEntires()) {
@@ -62,6 +63,8 @@ public final class McpAppRegistry {
             + component.getName() + ". Set a distinct name on one of them.");
       }
     }
+
+    requireUniqueToolNames(byToolName.values());
 
     return new McpAppRegistry(List.copyOf(byToolName.values()));
   }
@@ -87,32 +90,91 @@ public final class McpAppRegistry {
   }
 
   /**
-   * Returns one tool specification per marked view.
-   *
-   * <p>
-   * Each tool takes no arguments, points at the app resource through its meta, and answers with the
-   * route of its view.
-   * </p>
+   * Returns the tool specifications projected from the marked views.
    *
    * @return the tool specifications
    */
   public List<SyncToolSpecification> getToolSpecifications() {
-    List<SyncToolSpecification> specifications = new ArrayList<>(descriptors.size());
+    List<SyncToolSpecification> specifications = new ArrayList<>();
     for (McpAppDescriptor descriptor : descriptors) {
-      specifications.add(toSpecification(descriptor));
+      specifications.add(toOpenSpecification(descriptor));
+      if (canAnswerUpdates(descriptor)) {
+        specifications.add(toUpdateSpecification(descriptor));
+      }
+      for (McpAppActionDescriptor actionDescriptor : descriptor.getActionDescriptors()) {
+        specifications.add(toActionSpecification(descriptor, actionDescriptor));
+      }
     }
 
     return List.copyOf(specifications);
   }
 
-  private static SyncToolSpecification toSpecification(McpAppDescriptor descriptor) {
+  private static SyncToolSpecification toOpenSpecification(McpAppDescriptor descriptor) {
     Tool tool = Tool.builder(descriptor.getToolName(), toSchemaMap(descriptor))
         .description(descriptor.getDescription()).meta(toolMeta(descriptor)).build();
 
-    CallToolResult result = CallToolResult.builder().addTextContent(descriptor.getDescription())
-        .structuredContent(toStructuredContent(descriptor)).build();
+    return new SyncToolSpecification(tool,
+        (exchange, request) -> CallToolResult.builder().addTextContent(descriptor.getDescription())
+            .structuredContent(toStructuredContent(descriptor))
+            .meta(Map.of(McpAppInstances.INSTANCE_META_KEY,
+                McpAppInstances.deriveToken(exchange.sessionId(), descriptor.getToolName())))
+            .build());
+  }
 
-    return new SyncToolSpecification(tool, (exchange, request) -> result);
+  private static boolean canAnswerUpdates(McpAppDescriptor descriptor) {
+    // Only a view implementing the observer can answer while running, so only those views
+    // publish an update tool. The others render fresh on every call of their opening tool.
+    return McpAppUpdateObserver.class.isAssignableFrom(descriptor.getComponentClass());
+  }
+
+  private static SyncToolSpecification toUpdateSpecification(McpAppDescriptor descriptor) {
+    String name = descriptor.getToolName();
+    Tool tool = Tool.builder(name + UPDATE_TOOL_SUFFIX, toSchemaMap(descriptor))
+        .description("Applies new input to the '" + name + "' view that is already open, without"
+            + " rendering it again. Call '" + name + "' first when it is not open.")
+        .build();
+
+    return new SyncToolSpecification(tool,
+        (exchange, request) -> McpAppInstances.answerUpdateCall(exchange.sessionId(), name,
+            JsonMapper.shared().valueToTree(request.arguments())));
+  }
+
+  private static SyncToolSpecification toActionSpecification(McpAppDescriptor viewDescriptor,
+      McpAppActionDescriptor actionDescriptor) {
+    Map<String, Object> inputSchema =
+        actionDescriptor.getInputSchema() == null ? NO_ARGUMENTS_SCHEMA
+            : toSchemaMap(actionDescriptor.getInputSchema());
+    Tool tool = Tool.builder(actionDescriptor.getToolName(), inputSchema)
+        .description(actionDescriptor.getDescription()).build();
+
+    return new SyncToolSpecification(tool,
+        (exchange, request) -> McpAppInstances.answerActionCall(exchange.sessionId(),
+            viewDescriptor.getToolName(), actionDescriptor,
+            JsonMapper.shared().valueToTree(request.arguments())));
+  }
+
+  private static void requireUniqueToolNames(Iterable<McpAppDescriptor> descriptors) {
+    Map<String, String> claims = new LinkedHashMap<>();
+
+    for (McpAppDescriptor descriptor : descriptors) {
+      claim(claims, descriptor.getToolName(), descriptor.getComponentClass().getName());
+      if (canAnswerUpdates(descriptor)) {
+        claim(claims, descriptor.getToolName() + UPDATE_TOOL_SUFFIX,
+            "the update tool of " + descriptor.getComponentClass().getName());
+      }
+      for (McpAppActionDescriptor actionDescriptor : descriptor.getActionDescriptors()) {
+        claim(claims, actionDescriptor.getToolName(),
+            McpAppMethodDescriptor.describeMethod(actionDescriptor.getInvocationMethod()));
+      }
+    }
+  }
+
+  private static void claim(Map<String, String> claims, String toolName, String origin) {
+    String holder = claims.putIfAbsent(toolName, origin);
+    if (holder != null) {
+      throw new IllegalStateException("The MCP tool name '" + toolName + "' is claimed twice, by "
+          + holder + " and " + origin + ". Set a distinct name on one of them.");
+    }
   }
 
   private static Map<String, Object> toStructuredContent(McpAppDescriptor descriptor) {
@@ -124,6 +186,11 @@ public final class McpAppRegistry {
     return structured;
   }
 
+  private static Map<String, Object> toSchemaMap(String document) {
+    JsonNode schema = JsonMapper.shared().readTree(document);
+    return JsonMapper.shared().convertValue(schema, SCHEMA_MAP);
+  }
+
   private static Map<String, Object> toSchemaMap(McpAppDescriptor descriptor) {
     if (descriptor.getInputSchema() == null) {
       return NO_ARGUMENTS_SCHEMA;
@@ -131,8 +198,7 @@ public final class McpAppRegistry {
 
     // The declared document goes in verbatim, read into the map form the SDK accepts. The
     // descriptor already proved the document parses, so this read cannot fail here.
-    JsonNode schema = JsonMapper.shared().readTree(descriptor.getInputSchema());
-    return JsonMapper.shared().convertValue(schema, SCHEMA_MAP);
+    return toSchemaMap(descriptor.getInputSchema());
   }
 
   private static Map<String, Object> toolMeta(McpAppDescriptor descriptor) {

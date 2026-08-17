@@ -29,6 +29,18 @@ public class McpAppOptions {
    */
   public static final String KEY_ALLOWED_ORIGINS = "webforj.mcp.allowed-origins";
 
+  /**
+   * The configuration key for origins the embedding frame may load resources from in addition to
+   * the application origin and the framework domains.
+   */
+  public static final String KEY_RESOURCE_DOMAINS = "webforj.mcp.resource-domains";
+
+  /**
+   * The configuration key for origins the embedding frame may connect to in addition to the
+   * application origin and the framework domains.
+   */
+  public static final String KEY_CONNECT_DOMAINS = "webforj.mcp.connect-domains";
+
   private static final String CONFIG_PROPERTY = "webforj.conf";
   private static final String RESOURCE_PREFIX = "!!";
   private static final String DEFAULT_CONFIG = "!!webforj.conf";
@@ -36,6 +48,8 @@ public class McpAppOptions {
 
   private String origin;
   private List<String> allowedOrigins = List.of();
+  private List<String> resourceDomains = List.of();
+  private List<String> connectDomains = List.of();
   private String components;
 
   /**
@@ -66,6 +80,8 @@ public class McpAppOptions {
   public static McpAppOptions from(Config config) {
     return new McpAppOptions().setOrigin(getString(config, KEY_ORIGIN, null))
         .setAllowedOrigins(getStrings(config, KEY_ALLOWED_ORIGINS))
+        .setResourceDomains(getStrings(config, KEY_RESOURCE_DOMAINS))
+        .setConnectDomains(getStrings(config, KEY_CONNECT_DOMAINS))
         .setComponents(getString(config, COMPONENTS_KEY, null));
   }
 
@@ -107,6 +123,50 @@ public class McpAppOptions {
    */
   public List<String> getAllowedOrigins() {
     return allowedOrigins;
+  }
+
+  /**
+   * Sets the origins the embedding frame may load resources from in addition to the application
+   * origin and the framework domains.
+   *
+   * @param resourceDomains the additional resource origins, an empty list adding none
+   * @return this options instance
+   */
+  public McpAppOptions setResourceDomains(List<String> resourceDomains) {
+    this.resourceDomains = resourceDomains == null ? List.of() : List.copyOf(resourceDomains);
+    return this;
+  }
+
+  /**
+   * Gets the origins the embedding frame may load resources from in addition to the application
+   * origin and the framework domains.
+   *
+   * @return the additional resource origins, an empty list adding none
+   */
+  public List<String> getResourceDomains() {
+    return resourceDomains;
+  }
+
+  /**
+   * Sets the origins the embedding frame may connect to in addition to the application origin and
+   * the framework domains.
+   *
+   * @param connectDomains the additional connect origins, an empty list adding none
+   * @return this options instance
+   */
+  public McpAppOptions setConnectDomains(List<String> connectDomains) {
+    this.connectDomains = connectDomains == null ? List.of() : List.copyOf(connectDomains);
+    return this;
+  }
+
+  /**
+   * Gets the origins the embedding frame may connect to in addition to the application origin and
+   * the framework domains.
+   *
+   * @return the additional connect origins, an empty list adding none
+   */
+  public List<String> getConnectDomains() {
+    return connectDomains;
   }
 
   /**

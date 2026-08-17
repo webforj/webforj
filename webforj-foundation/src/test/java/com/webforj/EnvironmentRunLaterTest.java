@@ -2,7 +2,9 @@ package com.webforj;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -14,11 +16,15 @@ import com.basis.bbj.proxies.BBjAPI;
 import com.basis.bbj.proxies.BBjSysGui;
 import com.basis.startup.type.BBjException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,8 +42,21 @@ class EnvironmentRunLaterTest {
   @Mock
   private BBjSysGui mockSysGui;
 
+  private static ExecutorService foreignThread;
+
   private Environment environment;
   private ConcurrentHashMap<String, String> postedEvents = new ConcurrentHashMap<>();
+
+  @BeforeAll
+  static void startForeignThread() throws Exception {
+    foreignThread = Executors.newSingleThreadExecutor();
+    foreignThread.submit(() -> null).get();
+  }
+
+  @AfterAll
+  static void stopForeignThread() {
+    foreignThread.shutdownNow();
+  }
 
   @BeforeEach
   void setUp() throws BBjException {
@@ -308,5 +327,62 @@ class EnvironmentRunLaterTest {
 
     // Supplier should not have been executed
     assertFalse(supplierExecuted.get(), "Supplier should not execute for cancelled request");
+  }
+
+  @Test
+  void shouldRunImmediatelyWhenTargetIsTheCurrentEnvironment() {
+    PendingResult<String> result = Environment.runLater(environment, () -> "named");
+
+    assertTrue(result.isDone(), "A call on the target's own thread should not be queued");
+    assertTrue(postedEvents.isEmpty(), "No custom event is needed on the target's own thread");
+  }
+
+  @Test
+  void shouldRunTheRunnableOverloadImmediatelyOnTheTargetThread() {
+    AtomicBoolean ran = new AtomicBoolean(false);
+
+    PendingResult<Void> result = Environment.runLater(environment, () -> ran.set(true));
+
+    assertTrue(ran.get(), "The task should have run");
+    assertTrue(result.isDone(), "The result should be complete");
+  }
+
+  @Test
+  void shouldRejectANullTarget() {
+    assertThrows(NullPointerException.class, () -> Environment.runLater(null, () -> "x"));
+  }
+
+  @Test
+  void shouldPostCustomEventForAThreadThatNeverInheritedAnEnvironment() throws Exception {
+    CountDownLatch eventPosted = new CountDownLatch(1);
+    AtomicReference<String> capturedRequestId = new AtomicReference<>();
+
+    doAnswer(new Answer<Void>() {
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        capturedRequestId.set((String) invocation.getArguments()[1]);
+        eventPosted.countDown();
+        return null;
+      }
+    }).when(mockApi).postCustomEvent(anyString(), anyString());
+
+    AtomicReference<Throwable> inferred = new AtomicReference<>();
+    foreignThread.submit(() -> {
+      try {
+        Environment.runLater(() -> "inferred");
+      } catch (Throwable e) {
+        inferred.set(e);
+      }
+    }).get(2, TimeUnit.SECONDS);
+
+    assertInstanceOf(IllegalStateException.class, inferred.get(),
+        "The inferring overload cannot reach an Environment from a foreign thread");
+
+    AtomicReference<PendingResult<String>> resultRef = new AtomicReference<>();
+    foreignThread.submit(() -> resultRef.set(Environment.runLater(environment, () -> "named")))
+        .get(2, TimeUnit.SECONDS);
+
+    assertTrue(eventPosted.await(2, TimeUnit.SECONDS), "The named target should be reached");
+    assertNotNull(capturedRequestId.get());
+    assertFalse(resultRef.get().isDone(), "The result waits for the Environment to process it");
   }
 }

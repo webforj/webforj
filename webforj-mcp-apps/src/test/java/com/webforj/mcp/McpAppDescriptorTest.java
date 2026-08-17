@@ -95,6 +95,15 @@ class McpAppDescriptorTest {
 
       assertTrue(thrown.getMessage().contains("root is not a"));
     }
+
+    @Test
+    @DisplayName("Should retain a referenced object schema")
+    void shouldRetainReferencedObjectSchema() {
+      McpAppDescriptor descriptor =
+          new McpAppDescriptor(McpTestViews.ReferencedSchemaView.class, "/referenced");
+
+      assertTrue(descriptor.getInputSchema().contains("\"$ref\""));
+    }
   }
 
   @Nested

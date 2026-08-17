@@ -1,16 +1,18 @@
 package com.webforj.mcp;
 
-import com.github.victools.jsonschema.generator.OptionPreset;
-import com.github.victools.jsonschema.generator.SchemaGenerator;
-import com.github.victools.jsonschema.generator.SchemaGeneratorConfigBuilder;
-import com.github.victools.jsonschema.generator.SchemaVersion;
-import com.github.victools.jsonschema.module.jackson.JacksonOption;
-import com.github.victools.jsonschema.module.jackson.JacksonSchemaModule;
 import com.webforj.component.Component;
 import com.webforj.mcp.annotation.McpApp;
+import com.webforj.mcp.annotation.McpAppAction;
+import com.webforj.mcp.annotation.McpAppInput;
 import com.webforj.router.RoutePattern;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TreeMap;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -30,6 +32,8 @@ public final class McpAppDescriptor {
   private final String description;
   private final String inputSchema;
   private final McpAppDisplayMode displayMode;
+  private final List<McpAppActionDescriptor> actionDescriptors;
+  private final McpAppMethodDescriptor openingInputMethod;
 
   /**
    * Creates a descriptor for a marked view.
@@ -56,8 +60,10 @@ public final class McpAppDescriptor {
     this.componentClass = componentClass;
     this.route = url.isEmpty() ? "/" : url;
     this.description = annotation.description();
-    this.toolName = annotation.name().isBlank() ? toToolName(this.route) : annotation.name();
-    this.inputSchema = resolveInputSchema(componentClass, annotation);
+    this.toolName = resolveToolName(componentClass, route);
+    this.actionDescriptors = createActionDescriptors(componentClass, annotation, this.toolName);
+    this.openingInputMethod = findOpeningInputMethod(componentClass, annotation);
+    this.inputSchema = resolveInputSchema(componentClass, annotation, this.openingInputMethod);
     this.displayMode = annotation.displayMode();
   }
 
@@ -116,6 +122,29 @@ public final class McpAppDescriptor {
     return displayMode;
   }
 
+  List<McpAppActionDescriptor> getActionDescriptors() {
+    return actionDescriptors;
+  }
+
+  McpAppMethodDescriptor getOpeningInputMethod() {
+    return openingInputMethod;
+  }
+
+  static String resolveToolName(Class<? extends Component> componentClass, String route) {
+    McpApp annotation = componentClass.getAnnotation(McpApp.class);
+    if (annotation == null) {
+      throw new IllegalArgumentException(
+          "Class is not annotated with @McpApp: " + componentClass.getName());
+    }
+
+    if (!annotation.name().isBlank()) {
+      return annotation.name();
+    }
+
+    String url = resolveParameterFreeUrl(componentClass, route);
+    return toToolName(url.isEmpty() ? "/" : url);
+  }
+
   private static String resolveParameterFreeUrl(Class<? extends Component> componentClass,
       String route) {
     // The router's own pattern decides what the route needs. Required parameters refuse an empty
@@ -132,10 +161,97 @@ public final class McpAppDescriptor {
     }
   }
 
-  private static String resolveInputSchema(Class<? extends Component> componentClass,
+  static McpAppMethodDescriptor resolveOpeningInputMethod(Class<? extends Component> viewClass) {
+    McpApp annotation = viewClass.getAnnotation(McpApp.class);
+    if (annotation == null) {
+      return null;
+    }
+
+    return findOpeningInputMethod(viewClass, annotation);
+  }
+
+  private static List<McpAppActionDescriptor> createActionDescriptors(
+      Class<? extends Component> viewType, McpApp annotation, String appToolName) {
+    Map<String, McpAppActionDescriptor> actionsBySegment = new TreeMap<>();
+
+    for (Class<?> ownerType : getMethodOwnerTypes(viewType, annotation)) {
+      for (Method actionMethod : getDeclaredMethodsInStableOrder(ownerType)) {
+        if (!actionMethod.isAnnotationPresent(McpAppAction.class)) {
+          continue;
+        }
+
+        McpAppActionDescriptor action =
+            new McpAppActionDescriptor(appToolName, viewType, actionMethod, ownerType);
+        McpAppActionDescriptor duplicate = actionsBySegment.put(action.getNameSegment(), action);
+        if (duplicate != null) {
+          throw new IllegalArgumentException("Two actions of " + viewType.getName()
+              + " claim the tool name '" + action.getToolName() + "': "
+              + McpAppMethodDescriptor.describeMethod(duplicate.getInvocationMethod()) + " and "
+              + McpAppMethodDescriptor.describeMethod(actionMethod) + ".");
+        }
+      }
+    }
+
+    return List.copyOf(actionsBySegment.values());
+  }
+
+  private static McpAppMethodDescriptor findOpeningInputMethod(Class<? extends Component> viewType,
       McpApp annotation) {
+    McpAppMethodDescriptor inputMethod = null;
+
+    for (Class<?> ownerType : getMethodOwnerTypes(viewType, annotation)) {
+      for (Method candidate : getDeclaredMethodsInStableOrder(ownerType)) {
+        if (!candidate.isAnnotationPresent(McpAppInput.class)) {
+          continue;
+        }
+
+        if (inputMethod != null) {
+          throw new IllegalArgumentException(
+              "The view " + viewType.getName() + " declares more than one @McpAppInput method: "
+                  + McpAppMethodDescriptor.describeMethod(inputMethod.getInvocationMethod())
+                  + " and " + McpAppMethodDescriptor.describeMethod(candidate) + ".");
+        }
+
+        inputMethod = new McpAppMethodDescriptor(viewType, candidate, ownerType);
+        if (inputMethod.getInputType() == null) {
+          throw new IllegalArgumentException(
+              "The @McpAppInput method " + McpAppMethodDescriptor.describeMethod(candidate)
+                  + " must declare an object input parameter.");
+        }
+      }
+    }
+
+    return inputMethod;
+  }
+
+  private static List<Class<?>> getMethodOwnerTypes(Class<? extends Component> componentClass,
+      McpApp annotation) {
+    List<Class<?>> ownerTypes = new ArrayList<>();
+    ownerTypes.add(componentClass);
+    ownerTypes.addAll(List.of(annotation.actions()));
+
+    return ownerTypes;
+  }
+
+  private static List<Method> getDeclaredMethodsInStableOrder(Class<?> ownerType) {
+    return Arrays.stream(ownerType.getDeclaredMethods())
+        .sorted(Comparator.comparing(Method::toGenericString)).toList();
+  }
+
+  private static String resolveInputSchema(Class<? extends Component> componentClass,
+      McpApp annotation, McpAppMethodDescriptor openingInputMethod) {
     boolean declaresDocument = !annotation.inputSchema().isBlank();
     boolean declaresClass = annotation.input() != Void.class;
+
+    if (openingInputMethod != null) {
+      if (declaresDocument || declaresClass) {
+        throw new IllegalArgumentException("The view " + componentClass.getName()
+            + " declares an @McpAppInput method together with input or inputSchema on @McpApp. The"
+            + " opening input has one source, declare it in one place.");
+      }
+
+      return openingInputMethod.getInputSchema();
+    }
 
     if (declaresDocument && declaresClass) {
       throw new IllegalArgumentException("@McpApp declares both input and inputSchema on class "
@@ -171,7 +287,7 @@ public final class McpAppDescriptor {
   private static String generateInputSchema(Class<? extends Component> componentClass,
       Class<?> input) {
     try {
-      return InputSchemaGenerator.INSTANCE.generateSchema(input).toString();
+      return McpAppSchemas.generateSchemaDocument(input);
     } catch (RuntimeException e) {
       throw new IllegalArgumentException("@McpApp declares an input class the schema cannot be"
           + " generated from on class " + componentClass.getName(), e);
@@ -185,18 +301,5 @@ public final class McpAppDescriptor {
     }
 
     return trimmed.replace('/', '-').toLowerCase(Locale.ROOT);
-  }
-
-  // Built on first use so only views declaring an input class touch the generation stack. The
-  // Jackson module resolves the descriptions from @JsonPropertyDescription and the required
-  // properties from @JsonProperty(required = true).
-  private static final class InputSchemaGenerator {
-    private static final SchemaGenerator INSTANCE = new SchemaGenerator(
-        new SchemaGeneratorConfigBuilder(SchemaVersion.DRAFT_2020_12, OptionPreset.PLAIN_JSON)
-            .with(new JacksonSchemaModule(JacksonOption.RESPECT_JSONPROPERTY_REQUIRED)).build());
-
-    private InputSchemaGenerator() {
-      // Constant holder
-    }
   }
 }

@@ -92,17 +92,20 @@ class McpAppResourceTest {
   }
 
   @Test
-  @DisplayName("Should carry the official SDK and the channel over it")
+  @DisplayName("Should carry the channel and boot the official SDK from the pinned address")
   void shouldCarryChannel() {
     origin.configure("https://app.example.com");
 
     String page = resource.render();
 
     assertTrue(page.contains("__webforjMcpChannel"));
-    assertTrue(page.contains("new McpExtApps.App"));
+    String sdkUrl = "https://cdn.jsdelivr.net/npm/@modelcontextprotocol/ext-apps@1.7.5/"
+        + "dist/src/app-with-deps.js";
+    assertTrue(page.contains(sdkUrl));
+    assertTrue(page.contains(".App("));
+    assertTrue(page.contains("__webforjMcpAttachFailed"));
     assertTrue(page.contains("availableDisplayModes"));
     assertTrue(page.contains("webforj-mcp-message"));
-    assertFalse(page.contains("__EXT_APPS_SDK__"));
   }
 
   @Test
@@ -149,14 +152,16 @@ class McpAppResourceTest {
 
     assertFalse(ui.containsKey("domain"),
         "hosts derive the sandbox domain themselves and refuse a published one");
-    assertEquals(List.of("https://app.example.com"), csp.get("resourceDomains"));
+    assertEquals(
+        List.of("https://app.example.com", "https://cdn.jsdelivr.net", "https://www.gstatic.com"),
+        csp.get("resourceDomains"));
     assertEquals(List.of("https://app.example.com"), csp.get("frameDomains"));
-    assertEquals(List.of("https://app.example.com", "wss://app.example.com"),
-        csp.get("connectDomains"));
+    assertEquals(List.of("https://app.example.com", "wss://app.example.com",
+        "https://cdn.jsdelivr.net", "https://www.gstatic.com", "data:"), csp.get("connectDomains"));
   }
 
   @Test
-  @DisplayName("Should publish the widget policy under the keys ChatGPT reads")
+  @DisplayName("Should publish the widget policy under both key forms")
   void shouldPublishWidgetPolicyMeta() {
     origin.configure("https://app.example.com");
 
@@ -166,9 +171,12 @@ class McpAppResourceTest {
     Map<String, Object> widgetCsp = (Map<String, Object>) meta.get("openai/widgetCSP");
 
     assertEquals("https://app.example.com", meta.get("openai/widgetDomain"));
-    assertEquals(List.of("https://app.example.com"), widgetCsp.get("resource_domains"));
+    assertEquals(
+        List.of("https://app.example.com", "https://cdn.jsdelivr.net", "https://www.gstatic.com"),
+        widgetCsp.get("resource_domains"));
     assertEquals(List.of("https://app.example.com"), widgetCsp.get("frame_domains"));
-    assertEquals(List.of("https://app.example.com", "wss://app.example.com"),
+    assertEquals(List.of("https://app.example.com", "wss://app.example.com",
+        "https://cdn.jsdelivr.net", "https://www.gstatic.com", "data:"),
         widgetCsp.get("connect_domains"));
   }
 
@@ -188,7 +196,31 @@ class McpAppResourceTest {
     Map<String, Object> ui = (Map<String, Object>) meta.get("ui");
     @SuppressWarnings("unchecked")
     Map<String, Object> csp = (Map<String, Object>) ui.get("csp");
-    assertEquals(List.of("https://late.example.com"), csp.get("resourceDomains"));
+    assertEquals(
+        List.of("https://late.example.com", "https://cdn.jsdelivr.net", "https://www.gstatic.com"),
+        csp.get("resourceDomains"));
+  }
+
+  @Test
+  @DisplayName("Should carry declared domains with the origin and framework domains")
+  void shouldCarryDeclaredDomains() {
+    origin.configure("https://app.example.com");
+    resource.configureDomains(List.of("https://tiles.example.com", "https://cdn.jsdelivr.net"),
+        List.of("https://api.example.com"));
+
+    Map<String, Object> meta = resource.toSpecification().resource().meta();
+
+    @SuppressWarnings("unchecked")
+    Map<String, Object> ui = (Map<String, Object>) meta.get("ui");
+    @SuppressWarnings("unchecked")
+    Map<String, Object> csp = (Map<String, Object>) ui.get("csp");
+
+    assertEquals(List.of("https://app.example.com", "https://cdn.jsdelivr.net",
+        "https://www.gstatic.com", "https://tiles.example.com"), csp.get("resourceDomains"));
+    assertEquals(
+        List.of("https://app.example.com", "wss://app.example.com", "https://cdn.jsdelivr.net",
+            "https://www.gstatic.com", "data:", "https://api.example.com"),
+        csp.get("connectDomains"));
   }
 
   @Test

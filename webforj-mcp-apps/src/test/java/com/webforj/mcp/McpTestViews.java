@@ -5,10 +5,15 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.webforj.component.Component;
 import com.webforj.component.window.Window;
 import com.webforj.mcp.annotation.McpApp;
+import com.webforj.mcp.annotation.McpAppAction;
+import com.webforj.mcp.annotation.McpAppInput;
+import com.webforj.mcp.event.McpAppUpdateEvent;
+import com.webforj.mcp.observer.McpAppUpdateObserver;
 import com.webforj.router.annotation.Route;
+import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import java.util.List;
 
-final class McpTestViews {
+public final class McpTestViews {
 
   private McpTestViews() {}
 
@@ -45,6 +50,27 @@ final class McpTestViews {
   static class PlainView extends BaseView {
   }
 
+  @Route("/live")
+  @McpApp(description = "Shows the live view")
+  static class LiveView extends BaseView implements McpAppUpdateObserver {
+
+    @Override
+    public CallToolResult onMcpAppUpdate(McpAppUpdateEvent event) {
+      return CallToolResult.builder()
+          .addTextContent("live " + event.getArguments().path("q").asString("")).build();
+    }
+  }
+
+  @Route("/failing-live")
+  @McpApp(description = "Shows the failing live view")
+  static class FailingLiveView extends BaseView implements McpAppUpdateObserver {
+
+    @Override
+    public CallToolResult onMcpAppUpdate(McpAppUpdateEvent event) {
+      throw new IllegalStateException("the table is gone");
+    }
+  }
+
   @Route("/user/:id")
   @McpApp(description = "Shows one user")
   static class UserView extends BaseView {
@@ -78,7 +104,12 @@ final class McpTestViews {
         },
         "required": ["name"]
       }""")
-  static class GreetView extends BaseView {
+  static class GreetView extends BaseView implements McpAppUpdateObserver {
+
+    @Override
+    public CallToolResult onMcpAppUpdate(McpAppUpdateEvent event) {
+      return CallToolResult.builder().addTextContent("greeted").build();
+    }
   }
 
   @Route("/trip")
@@ -124,6 +155,22 @@ final class McpTestViews {
   static class ArrayRootSchemaView extends BaseView {
   }
 
+  @Route("/referenced")
+  @McpApp(description = "Carries a referenced object schema", inputSchema = """
+      {
+        "$ref": "#/$defs/filterInput",
+        "$defs": {
+          "filterInput": {
+            "type": "object",
+            "properties": {
+              "query": { "type": "string" }
+            }
+          }
+        }
+      }""")
+  static class ReferencedSchemaView extends BaseView {
+  }
+
   @Route("/files/:path*")
   @McpApp(description = "Shows the file browser")
   static class WildcardView extends BaseView {
@@ -148,6 +195,102 @@ final class McpTestViews {
   @McpApp(description = "Second view", name = "same-tool")
   static class SecondClashingView extends BaseView {
   }
+
+  @Route("/live-shadow")
+  @McpApp(description = "Claims the name of an update tool", name = "live_update")
+  static class UpdateShadowingView extends BaseView {
+  }
+
+  @Route("/actions")
+  @McpApp(name = "actions", description = "Shows an actionable view")
+  static class ActionsView extends BaseView {
+
+    @McpAppAction(description = "Filters the current values")
+    CallToolResult filter(ActionInput input) {
+      return CallToolResult.builder().addTextContent("filtered " + input.query()).build();
+    }
+
+    @McpAppAction(description = "Refreshes the current values")
+    void refresh() {
+      // no-op
+    }
+
+    @McpAppAction(description = "Summarizes the current values")
+    ActionSummary summarize(ActionInput input) {
+      return new ActionSummary(input.query(), input.limit());
+    }
+  }
+
+  @Route("/input-method")
+  @McpApp(description = "Shows a view with an input method")
+  static class InputMethodView extends BaseView {
+
+    private ActionInput openingInput;
+
+    @McpAppInput
+    void receiveOpeningInput(ActionInput input) {
+      openingInput = input;
+    }
+
+    ActionInput getOpeningInput() {
+      return openingInput;
+    }
+  }
+
+  @Route("/second-input-method")
+  @McpApp(description = "Shows a second view with an input method")
+  static class SecondInputMethodView extends BaseView {
+
+    private ActionInput openingInput;
+
+    @McpAppInput
+    void receiveOpeningInput(ActionInput input) {
+      openingInput = input;
+    }
+
+    ActionInput getOpeningInput() {
+      return openingInput;
+    }
+  }
+
+  @Route("/external-actions")
+  @McpApp(description = "Shows a view with external actions", actions = ExternalActions.class)
+  static class ExternalActionsView extends BaseView {
+  }
+
+  public static class ExternalActions {
+
+    @McpAppAction(description = "Names the active external view")
+    ActionSummary name(ExternalActionsView view, ActionInput input) {
+      return new ActionSummary(view.getClass().getSimpleName(), input.limit());
+    }
+  }
+
+  @Route("/scalar-action")
+  @McpApp(description = "Shows an invalid scalar action")
+  static class ScalarActionView extends BaseView {
+
+    @McpAppAction(description = "Accepts an invalid scalar")
+    public void accept(String input) {}
+  }
+
+  @Route("/conflicting-input")
+  @McpApp(description = "Shows conflicting input declarations", input = ActionInput.class)
+  static class ConflictingInputView extends BaseView {
+
+    @McpAppInput
+    public void receiveOpeningInput(ActionInput input) {}
+  }
+
+  @Route("/action-name-clash")
+  @McpApp(name = "actions_filter", description = "Claims an action tool name")
+  static class ActionNameClashView extends BaseView {
+  }
+
+  record ActionInput(@JsonPropertyDescription("Text used to filter values") String query,
+      @JsonPropertyDescription("Maximum number of values") int limit) {}
+
+  record ActionSummary(String query, int limit) {}
 
   static class UnroutedView extends BaseView {
   }

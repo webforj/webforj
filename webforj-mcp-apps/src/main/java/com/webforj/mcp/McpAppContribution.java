@@ -138,11 +138,17 @@ public final class McpAppContribution {
    * @param options the options of the deployment
    */
   public void install(ServletContext context, McpAppOptions options) {
+    declareDomains(options);
     deriveComponents(options);
     registerCorsFilter(context, options);
     registerAuthorizationDiscovery(context);
     registerFavicon(context);
     configureSessionCookies(context);
+  }
+
+  private void declareDomains(McpAppOptions options) {
+    resources.forEach(resource -> resource.configureDomains(options.getResourceDomains(),
+        options.getConnectDomains()));
   }
 
   private void deriveComponents(McpAppOptions options) {

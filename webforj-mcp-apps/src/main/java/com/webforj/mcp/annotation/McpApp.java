@@ -64,6 +64,17 @@ public @interface McpApp {
   Class<?> input() default Void.class;
 
   /**
+   * Names classes that hold actions and opening input methods for the view.
+   *
+   * <p>
+   * The framework resolves each class through the conceiver before calling its methods.
+   * </p>
+   *
+   * @return the classes carrying the actions of the view
+   */
+  Class<?>[] actions() default {};
+
+  /**
    * Declares the display mode the view asks the host for when it opens.
    *
    * <p>
