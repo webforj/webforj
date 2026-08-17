@@ -43,7 +43,7 @@ class McpAppRegistryTest {
 
       McpAppRegistry projection = McpAppRegistry.ofRegistry(registry);
 
-      assertEquals(List.of("dashboard", "reports-sales"),
+      assertEquals(List.of("dashboard", "reports_sales"),
           projection.getDescriptors().stream().map(McpAppDescriptor::getToolName).toList());
     }
 
@@ -57,7 +57,7 @@ class McpAppRegistryTest {
 
       McpAppRegistry projection = McpAppRegistry.ofRegistry(registry);
 
-      assertEquals(List.of("app", "dashboard", "reports-sales"),
+      assertEquals(List.of("app", "dashboard", "reports_sales"),
           projection.getDescriptors().stream().map(McpAppDescriptor::getToolName).toList());
     }
 

@@ -300,6 +300,6 @@ public final class McpAppDescriptor {
       return ROOT_TOOL_NAME;
     }
 
-    return trimmed.replace('/', '-').toLowerCase(Locale.ROOT);
+    return trimmed.replace('/', '_').toLowerCase(Locale.ROOT);
   }
 }

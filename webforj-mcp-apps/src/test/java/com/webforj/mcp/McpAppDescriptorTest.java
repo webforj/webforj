@@ -32,11 +32,11 @@ class McpAppDescriptorTest {
     }
 
     @Test
-    @DisplayName("Should join nested route segments with a dash")
+    @DisplayName("Should join nested route segments with an underscore")
     void shouldJoinNestedSegments() {
       McpAppDescriptor descriptor = new McpAppDescriptor(SalesReportView.class, "/reports/sales");
 
-      assertEquals("reports-sales", descriptor.getToolName());
+      assertEquals("reports_sales", descriptor.getToolName());
     }
 
     @Test
