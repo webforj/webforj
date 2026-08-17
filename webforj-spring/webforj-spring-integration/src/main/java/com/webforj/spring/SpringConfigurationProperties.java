@@ -257,6 +257,20 @@ public class SpringConfigurationProperties {
   private DevTools devtools = new DevTools();
 
   /**
+   * MCP apps configuration.
+   *
+   * @since 26.02
+   */
+  private Mcp mcp = new Mcp();
+
+  /**
+   * The public origin the deployment is reached at.
+   *
+   * @since 26.02
+   */
+  private String origin;
+
+  /**
    * Sets the URL mapping for the Webforj servlet.
    *
    * @param servletMapping the URL mapping for the Webforj servlet
@@ -676,6 +690,46 @@ public class SpringConfigurationProperties {
    */
   public void setDevtools(DevTools devtools) {
     this.devtools = devtools;
+  }
+
+  /**
+   * Gets the MCP apps configuration.
+   *
+   * @return the MCP apps configuration
+   * @since 26.02
+   */
+  public Mcp getMcp() {
+    return mcp;
+  }
+
+  /**
+   * Sets the MCP apps configuration.
+   *
+   * @param mcp the MCP apps configuration
+   * @since 26.02
+   */
+  public void setMcp(Mcp mcp) {
+    this.mcp = mcp;
+  }
+
+  /**
+   * Gets the public origin the deployment is reached at.
+   *
+   * @return the public origin
+   * @since 26.02
+   */
+  public String getOrigin() {
+    return origin;
+  }
+
+  /**
+   * Sets the public origin the deployment is reached at.
+   *
+   * @param origin the public origin
+   * @since 26.02
+   */
+  public void setOrigin(String origin) {
+    this.origin = origin;
   }
 
   /**
@@ -1364,6 +1418,89 @@ public class SpringConfigurationProperties {
      */
     public void setStaticResourcesEnabled(Boolean staticResourcesEnabled) {
       this.staticResourcesEnabled = staticResourcesEnabled;
+    }
+  }
+
+  /**
+   * MCP configuration properties.
+   *
+   * @since 26.02
+   */
+  public static class Mcp {
+
+    /**
+     * The origins allowed to embed the application beside the known MCP hosts.
+     */
+    private List<String> allowedOrigins;
+
+    /**
+     * The origins the embedding frame may load resources from in addition to the application origin
+     * and framework domains.
+     */
+    private List<String> resourceDomains;
+
+    /**
+     * The origins the embedding frame may connect to in addition to the application origin and the
+     * framework domains.
+     */
+    private List<String> connectDomains;
+
+    /**
+     * Gets the origins allowed to embed the application.
+     *
+     * @return the allowed origins
+     */
+    public List<String> getAllowedOrigins() {
+      return allowedOrigins;
+    }
+
+    /**
+     * Sets the origins allowed to embed the application.
+     *
+     * @param allowedOrigins the allowed origins
+     */
+    public void setAllowedOrigins(List<String> allowedOrigins) {
+      this.allowedOrigins = allowedOrigins;
+    }
+
+    /**
+     * Gets the origins the embedding frame may load resources from in addition to the application
+     * origin and framework domains.
+     *
+     * @return the additional resource origins
+     */
+    public List<String> getResourceDomains() {
+      return resourceDomains;
+    }
+
+    /**
+     * Sets the origins the embedding frame may load resources from in addition to the application
+     * origin and framework domains.
+     *
+     * @param resourceDomains the additional resource origins
+     */
+    public void setResourceDomains(List<String> resourceDomains) {
+      this.resourceDomains = resourceDomains;
+    }
+
+    /**
+     * Gets the origins the embedding frame may connect to in addition to the application origin
+     * and framework domains.
+     *
+     * @return the additional connect origins
+     */
+    public List<String> getConnectDomains() {
+      return connectDomains;
+    }
+
+    /**
+     * Sets the origins the embedding frame may connect to in addition to the application origin
+     * and framework domains.
+     *
+     * @param connectDomains the additional connect origins
+     */
+    public void setConnectDomains(List<String> connectDomains) {
+      this.connectDomains = connectDomains;
     }
   }
 }

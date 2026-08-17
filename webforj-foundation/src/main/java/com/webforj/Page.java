@@ -58,6 +58,7 @@ public final class Page implements HasJsExecution {
   private Environment environment = Environment.getCurrent();
   private boolean isBrowserCloseEventRegistered = false;
   private boolean isVisibilityChangeEventRegistered = false;
+  private Boolean embedded;
   private ViewTransitionManager viewTransitionManager;
   private final Map<String, PageEventSinkRegistry> registries = new HashMap<>();
   private final EventDispatcher eventDispatcher = new EventDispatcher();
@@ -123,6 +124,32 @@ public final class Page implements HasJsExecution {
     } catch (NullPointerException e) {
       throw new BBjException(e, 0);
     }
+  }
+
+  /**
+   * Reports whether the page renders embedded inside a hosting document.
+   *
+   * @return {@code true} when the page is embedded, {@code false} when it is the top level document
+   */
+  public boolean isEmbedded() {
+    if (embedded != null) {
+      return embedded;
+    }
+
+    try {
+      if (getWebManager().isEmbedded()) {
+        embedded = true;
+        return true;
+      }
+    } catch (Exception ignored) {
+      // fall through
+    }
+
+    // The client answer cannot change for the life of the page, so it is asked for once.
+    Object bbjEmbedded = executeJs("window.bbjEmbedded === true");
+    embedded = bbjEmbedded instanceof Boolean b && b;
+
+    return embedded;
   }
 
   /**

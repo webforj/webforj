@@ -1,2 +1,3 @@
 com.webforj.spring.SpringAutoConfiguration
 com.webforj.spring.security.SpringSecurityAutoConfiguration
+com.webforj.spring.mcp.McpAppsAutoConfiguration

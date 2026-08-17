@@ -3,6 +3,7 @@ package com.webforj.utilities;
 import com.typesafe.config.Config;
 import com.webforj.App;
 import com.webforj.Environment;
+import com.webforj.Page;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.router.RouterUtils;
 import java.io.BufferedReader;
@@ -81,9 +82,15 @@ public class Assets {
   }
 
   /**
-   * Get the URL of the Jetty Web Server's files directory.
+   * Get the URL of the Web Server's files directory.
    *
-   * @return The URL of the Jetty Web Server's files directory.
+   * <p>
+   * When the deployment names its public origin through the {@code webforj.origin} configuration
+   * and the page renders inside an embedding host, the returned URL is absolute against that
+   * origin.
+   * </p>
+   *
+   * @return The URL of the Web Server's files directory.
    */
   public static String getWebServerFilesUrl() {
     String url = "/files/" + App.getApplicationName() + "/";
@@ -103,7 +110,7 @@ public class Assets {
 
     String context = getFullContextPath();
     String fullUrl = context + "/" + url;
-    return RouterUtils.normalizePath(fullUrl);
+    return prefixOrigin(RouterUtils.normalizePath(fullUrl));
   }
 
   /**
@@ -200,6 +207,12 @@ public class Assets {
    * </ul>
    * </p>
    *
+   * <p>
+   * When the deployment names its public origin through the {@code webforj.origin} configuration
+   * and the page renders inside an embedding host, the returned URL is absolute against that
+   * origin.
+   * </p>
+   *
    * @return The URL of the icons endpoint.
    * @since 24.22
    */
@@ -221,7 +234,7 @@ public class Assets {
 
     String context = getFullContextPath();
     String fullUrl = context + "/" + url;
-    return RouterUtils.normalizePath(fullUrl);
+    return prefixOrigin(RouterUtils.normalizePath(fullUrl));
   }
 
   /**
@@ -342,6 +355,21 @@ public class Assets {
 
     int lastDotIndex = fileName.lastIndexOf('.');
     return lastDotIndex == -1 ? "" : fileName.substring(lastDotIndex);
+  }
+
+  private static String prefixOrigin(String path) {
+    String origin = Environment.getOrigin();
+    if (origin == null) {
+      return path;
+    }
+
+    // Only a page rendered inside an embedding host resolves against a foreign document, a
+    // directly opened page stays on relative addresses and never depends on the public origin.
+    if (!Page.isPresent() || !Page.getCurrent().isEmbedded()) {
+      return path;
+    }
+
+    return origin + path;
   }
 
   private static String getFullContextPath() {

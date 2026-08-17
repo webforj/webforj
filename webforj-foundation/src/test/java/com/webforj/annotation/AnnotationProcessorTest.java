@@ -1,9 +1,11 @@
 package com.webforj.annotation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -190,5 +192,33 @@ class AnnotationProcessorTest {
     assertEquals("http://localhost/static/default-icon-512x512.png",
         descriptor.getIcons().get(2).getSrc());
     assertEquals("512x512", descriptor.getIcons().get(2).getSizes());
+  }
+
+  @Test
+  void shouldRegisterManifestOnTopLevelPage() {
+    @AppProfile(name = "my-app-name", shortName = "my-app-short-name")
+    class MockAppClass extends App {
+      @Override
+      public void run() throws WebforjException {}
+    }
+
+    new AnnotationProcessor().processAppProfile(new MockAppClass());
+
+    verify(page).executeJsVoidAsync(contains("manifest"));
+  }
+
+  @Test
+  void shouldSkipManifestOnEmbeddedPage() {
+    when(page.isEmbedded()).thenReturn(true);
+
+    @AppProfile(name = "my-app-name", shortName = "my-app-short-name")
+    class MockAppClass extends App {
+      @Override
+      public void run() throws WebforjException {}
+    }
+
+    new AnnotationProcessor().processAppProfile(new MockAppClass());
+
+    verify(page, never()).executeJsVoidAsync(contains("manifest"));
   }
 }

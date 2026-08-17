@@ -65,6 +65,14 @@ public class WebforjFrameworkRequestMatcher implements RequestMatcher {
       return false;
     }
 
+    // The servlet root carries the session channel of the embedded client, the same protocol
+    // the RPC endpoint carries, so the root itself gets the same exemption. Paths below the
+    // root stay protected.
+    if (!servletPrefix.isEmpty()
+        && (path.equals(servletPrefix) || path.equals(servletPrefix + "/"))) {
+      return true;
+    }
+
     // Check if this is a request under the servlet prefix
     String pathToCheck = path;
     if (!servletPrefix.isEmpty() && path.startsWith(servletPrefix)) {

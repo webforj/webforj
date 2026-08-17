@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
@@ -167,6 +168,40 @@ public final class Environment {
   }
 
   /**
+   * Gets the public origin the deployment is reached on.
+   *
+   * <p>
+   * The origin names the address the browser loads the application from when it differs from the
+   * address the requests arrive on, as behind a proxy or inside an embedding host. Addresses the
+   * framework emits into the page become absolute against it. The value comes from the
+   * {@code webforj.origin} system property, or the {@code webforj.origin} configuration key when no
+   * property is set.
+   * </p>
+   *
+   * @return the configured origin without a trailing slash, {@code null} when the deployment does
+   *         not name one
+   *
+   * @since 26.02
+   */
+  public static String getOrigin() {
+    String key = "webforj.origin";
+    String origin = Util.getProperty(key, "");
+
+    if ((origin == null || origin.isBlank()) && isPresent()) {
+      Config config = getCurrent().getConfig();
+      if (config.hasPath(key) && !config.getIsNull(key)) {
+        origin = config.getString(key);
+      }
+    }
+
+    if (origin == null || origin.isBlank()) {
+      return null;
+    }
+
+    return origin.trim().replaceAll("/++$", "");
+  }
+
+  /**
    * Executes the given task in an Environment's thread context. This method allows safe access to
    * the Environment from background threads.
    *
@@ -211,6 +246,75 @@ public final class Environment {
   }
 
   /**
+   * Executes the given task in the specified Environment.
+   *
+   * <p>
+   * ⚠️ WARNING: This method is experimental since 26.02 and may change in future releases.
+   * </p>
+   *
+   * <p>
+   * Use this overload when the calling thread has no current Environment.
+   * </p>
+   *
+   * @param target the Environment to execute the task in
+   * @param task the task to execute
+   *
+   * @return a PendingResult that completes when the task is executed
+   * @throws NullPointerException if the target Environment is null
+   *
+   * @since 26.02
+   */
+  @Experimental(since = "26.02")
+  public static PendingResult<Void> runLater(Environment target, Runnable task) {
+    return runLater(target, () -> {
+      task.run();
+
+      return null;
+    });
+  }
+
+  /**
+   * Executes the given supplier in the specified Environment.
+   *
+   * <p>
+   * ⚠️ WARNING: This method is experimental since 26.02 and may change in future releases.
+   * </p>
+   *
+   * <p>
+   * If the calling thread is already the target Environment's thread, the supplier runs
+   * immediately. Otherwise it is queued and runs asynchronously in that Environment's thread.
+   * </p>
+   *
+   * @param <T> the type of the result
+   * @param target the Environment to execute the supplier in
+   * @param supplier the supplier to execute
+   *
+   * @return a PendingResult that completes with the supplier's result
+   * @throws NullPointerException if the target Environment is null
+   *
+   * @since 26.02
+   */
+  @Experimental(since = "26.02")
+  public static <T> PendingResult<T> runLater(Environment target, Supplier<T> supplier) {
+    Objects.requireNonNull(target, "The target Environment cannot be null");
+
+    if (getCurrent() == target) {
+      logger.log(Level.DEBUG, "runLater called from the target Environment thread, running now");
+
+      try {
+        return PendingResult.completedWith(supplier.get());
+      } catch (Exception e) {
+        return PendingResult.completedExceptionallyWith(e);
+      }
+    }
+
+    logger.log(Level.DEBUG, "runLater called from thread {0} for a named Environment",
+        Thread.currentThread().getName());
+
+    return target.doRunLater(supplier);
+  }
+
+  /**
    * Executes the given supplier in an Environment's thread context and returns its result. This
    * method allows safe access to the Environment from background threads.
    *
@@ -234,31 +338,15 @@ public final class Environment {
    */
   @Experimental(since = "25.02")
   public static <T> PendingResult<T> runLater(Supplier<T> supplier) {
-    // Find the Environment for the current thread
     Environment env = findEnvironmentForThread();
 
     if (env == null) {
       throw new IllegalStateException("No Environment associated with current thread. "
           + "Environment.runLater() can only be called from threads started within an "
-          + "Environment context.");
+          + "Environment context, or with the Environment named.");
     }
 
-    // Check if we're already in the Environment's thread
-    Environment current = getCurrent();
-    if (current == env) {
-      logger.log(Level.DEBUG, "runLater Called from UI thread, executing immediately");
-      try {
-        T result = supplier.get();
-        return PendingResult.completedWith(result);
-      } catch (Exception e) {
-        return PendingResult.completedExceptionallyWith(e);
-      }
-    }
-
-    // We're in a background thread, delegate.
-    logger.log(Level.DEBUG, "runLater Called from background thread {0}",
-        Thread.currentThread().getName());
-    return env.doRunLater(supplier, env);
+    return runLater(env, supplier);
   }
 
   /**
@@ -495,11 +583,10 @@ public final class Environment {
    *
    * @param <T> the type of the result
    * @param supplier the supplier to execute
-   * @param targetEnv the target Environment to post the custom event to
    *
    * @return a PendingResult that completes with the supplier's result
    */
-  private <T> PendingResult<T> doRunLater(Supplier<T> supplier, Environment targetEnv) {
+  private <T> PendingResult<T> doRunLater(Supplier<T> supplier) {
     // Generate unique request ID
     String requestId = "runLater-" + runLaterCounter.incrementAndGet();
     PendingResult<T> result = new PendingResult<>();
@@ -513,7 +600,7 @@ public final class Environment {
 
     // Post custom event with the request ID
     try {
-      targetEnv.getBBjAPI().postCustomEvent(RUN_LATER_EVENT, requestId);
+      getBBjAPI().postCustomEvent(RUN_LATER_EVENT, requestId);
     } catch (Exception e) {
       pendingRequests.remove(requestId);
       logger.log(Level.ERROR, "Failed to post custom event for request {0}: {1}", requestId,

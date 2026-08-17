@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>webforJ</title>
+<style>
+  html, body { width: 100%; margin: 0; padding: 0; }
+  html { height: 100%; overflow: hidden; }
+  body { height: 100vh; overflow: auto; }
+  #bbj-dwc { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div id="bbj-dwc"></div>
+<script type="text/javascript">
+  var context = "__WEBFORJ_ORIGIN____SERVLET_PATH__";
+  // The location the embedded application opens at, read by the framework before its first
+  // route resolution, because the URL of the frame carries no route segment of its own.
+  window.__webforjEmbedLocation = "__EMBED_LOCATION__";
+
+  (function () {
+    var applicationReady = false;
+    var buffered = [];
+    var attachApp = null;
+    var failAttach = null;
+    var attached = new Promise(function (resolve, reject) {
+      attachApp = resolve;
+      failAttach = reject;
+    });
+    // A rejected attach answers every waiting request through their own handlers, this handler
+    // only keeps the rejection itself from surfacing as unhandled.
+    attached.catch(function () {});
+
+    function toApplication(message) {
+      if (applicationReady) {
+        window.dispatchEvent(new CustomEvent("webforj-mcp-message", {
+          detail: JSON.stringify(message)
+        }));
+      } else {
+        buffered.push(message);
+      }
+    }
+
+    var requests = {
+      "tools/call": function (app, params) {
+        return app.callServerTool(params);
+      },
+      "resources/read": function (app, params) {
+        return app.readServerResource(params);
+      },
+      "resources/list": function (app, params) {
+        return app.listServerResources(params);
+      },
+      "ui/message": function (app, params) {
+        return app.sendMessage(params);
+      },
+      "ui/update-model-context": function (app, params) {
+        return app.updateModelContext(params);
+      },
+      "ui/open-link": function (app, params) {
+        return app.openLink(params);
+      },
+      "ui/request-display-mode": function (app, params) {
+        return app.requestDisplayMode(params);
+      }
+    };
+
+    window.__webforjMcpChannel = {
+      ready: function () {
+        applicationReady = true;
+        var queued = buffered;
+        buffered = [];
+        for (var message of queued) {
+          toApplication(message);
+        }
+      },
+      request: function (callId, method, params) {
+        var call = requests[method];
+        if (call === undefined) {
+          toApplication({ type: "response", callId: callId, result: null,
+            error: { message: "The channel does not know the method " + method } });
+          return;
+        }
+
+        attached.then(function (app) {
+          return call(app, params || {});
+        }).then(function (result) {
+          toApplication({ type: "response", callId: callId,
+            result: result != null ? result : null, error: null });
+        }, function (error) {
+          console.warn("webforJ MCP channel: " + method + " answered with an error", error);
+          toApplication({ type: "response", callId: callId, result: null,
+            error: { message: error && error.message ? error.message : String(error) } });
+        });
+      }
+    };
+
+    window.__webforjMcpAttachFailed = function (error) {
+      failAttach(error);
+    };
+
+    window.__webforjMcpAttach = function (app) {
+      app.ontoolinput = function (params) {
+        toApplication({ type: "tool-input", payload: params || {} });
+      };
+
+      app.ontoolinputpartial = function (params) {
+        toApplication({ type: "tool-input-partial", payload: params || {} });
+      };
+
+      app.ontoolresult = function (params) {
+        var structured = params && params.structuredContent;
+        if (structured && structured._displayMode != null) {
+          // The view declared the mode it wants to open in. The host answers with the mode it
+          // settled on and may keep another one, so the request carries no expectation the
+          // application waits on.
+          app.requestDisplayMode({ mode: structured._displayMode }).catch(function (error) {
+            console.warn("webforJ MCP channel: ui/request-display-mode answered with an error",
+                error);
+          });
+        }
+        toApplication({ type: "tool-result", payload: params || {} });
+      };
+
+      app.ontoolcancelled = function (params) {
+        toApplication({ type: "tool-cancelled", payload: params || {} });
+      };
+
+      app.onhostcontextchanged = function (params) {
+        toApplication({ type: "host-context-changed", payload: params || {} });
+      };
+
+      app.onteardown = function (params) {
+        toApplication({ type: "teardown", payload: params || {} });
+        return {};
+      };
+
+      // The application fills the frame, so its height never reaches the document on its own.
+      // The content height is measured with the pinning lifted for the measurement, written into
+      // the document height for hosts that size the frame from the document, and sent as the
+      // size notification for hosts that listen. Reports are deduplicated and at most one goes
+      // out per animation frame. Zero measurements never leave the page, the empty document must
+      // keep its frame until the application renders.
+      if (typeof ResizeObserver === "function") {
+        var lastWidth = -1;
+        var lastHeight = -1;
+        var scheduled = false;
+        var reportSize = function () {
+          scheduled = false;
+          var html = document.documentElement;
+          var originalHeight = html.style.height;
+          html.style.height = "max-content";
+          var height = Math.ceil(html.getBoundingClientRect().height);
+          html.style.height = originalHeight;
+          var width = Math.ceil(window.innerWidth);
+          if (height <= 0) {
+            return;
+          }
+          if (width !== lastWidth || height !== lastHeight) {
+            lastWidth = width;
+            lastHeight = height;
+            html.style.height = height + "px";
+            app.sendSizeChanged({ width: width, height: height });
+            console.debug("webforJ MCP app: content measured " + width + "x" + height
+                + ", host granted viewport " + window.innerWidth + "x" + window.innerHeight
+                + ", document height set and size notification sent");
+          }
+        };
+        var observer = new ResizeObserver(function () {
+          if (!scheduled) {
+            scheduled = true;
+            requestAnimationFrame(reportSize);
+          }
+        });
+        observer.observe(document.documentElement);
+        observer.observe(document.body);
+      }
+
+      app.connect().then(function () {
+        attachApp(app);
+        toApplication({ type: "initialized", payload: {
+          hostInfo: app.getHostVersion(),
+          hostCapabilities: app.getHostCapabilities(),
+          hostContext: app.getHostContext()
+        } });
+      }, function (error) {
+        console.warn("webforJ MCP channel: ui/initialize answered with an error", error);
+        // The waiting requests still reach the SDK, whose answers name the real failure
+        // instead of the channel holding them forever.
+        attachApp(app);
+      });
+    };
+  })();
+</script>
+<script type="module">
+  import("https://cdn.jsdelivr.net/npm/@modelcontextprotocol/ext-apps@1.7.5/dist/src/app-with-deps.js")
+      .then(function (sdk) {
+        window.__webforjMcpAttach(new sdk.App({ name: "webforj", version: "1.0.0" },
+            { availableDisplayModes: ["inline", "fullscreen", "pip"] },
+            { autoResize: false }));
+      }, function (error) {
+        console.error("webforJ MCP app: the MCP Apps SDK failed to load from the CDN", error);
+        window.__webforjMcpAttachFailed(error);
+      });
+</script>
+<script type="text/javascript">
+  (function () {
+    var serverOrigin = "__WEBFORJ_ORIGIN__";
+    var settled = false;
+
+    function settle() {
+      settled = true;
+    }
+
+    function observe(url, status) {
+      if (status >= 200 && status < 300 && url.includes("/webapprmi")) {
+        settle();
+      }
+    }
+
+    var originalFetch = window.fetch;
+    window.fetch = function (input, init) {
+      var url = typeof input === "string" ? input : (input && input.url) || "";
+      if (url.indexOf(serverOrigin) === 0) {
+        init = init || {};
+        if (init.credentials == null) {
+          init.credentials = "include";
+        }
+      }
+      return originalFetch.call(this, input, init).then(function (response) {
+        observe(url, response.status);
+        return response;
+      });
+    };
+
+    var originalOpen = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function (method, url) {
+      this.__webforjUrl = String(url);
+      return originalOpen.apply(this, arguments);
+    };
+    var originalSend = XMLHttpRequest.prototype.send;
+    XMLHttpRequest.prototype.send = function () {
+      this.addEventListener("loadend", () => {
+        observe(this.__webforjUrl || "", this.status);
+      });
+      return originalSend.apply(this, arguments);
+    };
+
+    // Widgets booting at the same moment race the session the first request establishes, and
+    // the losers die on their first client call. The embed script must stay parser inserted,
+    // because its bootstrap writes into the parsing document, so the race is healed by retrying.
+    // A frame whose first client call failed reloads itself after a short random delay, and the
+    // retry joins the session the winning frame established. Two retries bound the healing.
+    (function () {
+      var marker = /#wfboot(\d)/.exec(window.location.hash);
+      var attempt = marker ? Number.parseInt(marker[1], 10) : 0;
+      var reloading = false;
+
+      window.__webforjBootFailed = function () {
+        if (reloading || settled || attempt >= 2) {
+          return;
+        }
+        if (window.location.origin !== serverOrigin) {
+          // A sandboxed frame carries no reloadable address of its own, so a reload would
+          // replace the application with the sandbox shell. The failure stays visible instead.
+          console.warn("webforJ MCP app: boot failed inside a sandboxed frame, not reloading");
+          return;
+        }
+        reloading = true;
+        setTimeout(function () {
+          window.location.replace(window.location.pathname + window.location.search
+              + "#wfboot" + (attempt + 1));
+          window.location.reload();
+        }, 200 + Math.floor(Math.random() * 1600));
+      };
+    })();
+
+    var originalObserve = observe;
+    observe = function (url, status) {
+      originalObserve(url, status);
+      if (!settled && status >= 400 && url.includes("/webapprmi")) {
+        window.__webforjBootFailed();
+      }
+    };
+
+    try {
+      var warmUp = new XMLHttpRequest();
+      warmUp.open("GET", "__WEBFORJ_ORIGIN____SERVLET_PATH__/", false);
+      warmUp.withCredentials = true;
+      warmUp.send();
+    } catch {
+      // A context that forbids a synchronous request still reaches the server through the
+      // script below, which carries the same credentials.
+    }
+  })();
+</script>
+<script type="text/javascript" crossorigin="use-credentials"
+        src="__WEBFORJ_ORIGIN____SERVLET_PATH__/dwcembed/webforj.js"></script>
+</body>
+</html>

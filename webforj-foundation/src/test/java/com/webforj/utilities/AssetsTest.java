@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import com.typesafe.config.Config;
 import com.webforj.App;
 import com.webforj.Environment;
+import com.webforj.Page;
 import com.webforj.exceptions.WebforjRuntimeException;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -40,6 +41,63 @@ class AssetsTest {
 
       String result = Assets.getWebServerFilesUrl();
       assertEquals("/customContext/files/myApp/", result);
+    }
+  }
+
+  @Test
+  void shouldPrefixFilesUrlWithConfiguredOriginOnEmbeddedPage() {
+    try (MockedStatic<Environment> environmentMock = mockStatic(Environment.class);
+        MockedStatic<App> appMock = mockStatic(App.class);
+        MockedStatic<Page> pageMock = mockStatic(Page.class)) {
+      environmentMock.when(Environment::isRunningWithBBjServices).thenReturn(true);
+      environmentMock.when(Environment::getContextPath).thenReturn("/");
+      environmentMock.when(Environment::getOrigin).thenReturn("https://demo.example");
+      appMock.when(App::getApplicationName).thenReturn("myApp");
+      Page embeddedPage = mock(Page.class);
+      when(embeddedPage.isEmbedded()).thenReturn(true);
+      pageMock.when(Page::isPresent).thenReturn(true);
+      pageMock.when(Page::getCurrent).thenReturn(embeddedPage);
+
+      String result = Assets.getWebServerFilesUrl();
+      assertEquals("https://demo.example/files/myApp/", result);
+    }
+  }
+
+  @Test
+  void shouldKeepRelativeFilesUrlOnDirectlyOpenedPage() {
+    try (MockedStatic<Environment> environmentMock = mockStatic(Environment.class);
+        MockedStatic<App> appMock = mockStatic(App.class);
+        MockedStatic<Page> pageMock = mockStatic(Page.class)) {
+      environmentMock.when(Environment::isRunningWithBBjServices).thenReturn(true);
+      environmentMock.when(Environment::getContextPath).thenReturn("/");
+      environmentMock.when(Environment::getOrigin).thenReturn("https://demo.example");
+      appMock.when(App::getApplicationName).thenReturn("myApp");
+      pageMock.when(Page::isPresent).thenReturn(false);
+
+      String result = Assets.getWebServerFilesUrl();
+      assertEquals("/files/myApp/", result);
+    }
+  }
+
+  @Test
+  void shouldPrefixIconsEndpointWithConfiguredOriginOnEmbeddedPage() {
+    try (MockedStatic<Environment> environmentMock = mockStatic(Environment.class);
+        MockedStatic<Page> pageMock = mockStatic(Page.class)) {
+      environmentMock.when(Environment::isRunningWithBBjServices).thenReturn(false);
+      environmentMock.when(Environment::getContextPath).thenReturn("/");
+      environmentMock.when(Environment::getOrigin).thenReturn("https://demo.example");
+      Environment mockEnvironment = mock(Environment.class);
+      Config mockConfig = mock(Config.class);
+      environmentMock.when(Environment::getCurrent).thenReturn(mockEnvironment);
+      when(mockEnvironment.getConfig()).thenReturn(mockConfig);
+      when(mockConfig.hasPath("webforj.iconsDir")).thenReturn(false);
+      Page embeddedPage = mock(Page.class);
+      when(embeddedPage.isEmbedded()).thenReturn(true);
+      pageMock.when(Page::isPresent).thenReturn(true);
+      pageMock.when(Page::getCurrent).thenReturn(embeddedPage);
+
+      String result = Assets.getIconsEndpoint();
+      assertEquals("https://demo.example/icons/", result);
     }
   }
 

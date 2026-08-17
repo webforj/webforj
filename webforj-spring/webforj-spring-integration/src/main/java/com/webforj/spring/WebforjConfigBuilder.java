@@ -112,6 +112,14 @@ class WebforjConfigBuilder {
       });
     });
 
+    // Public origin configuration
+    builder.add("webforj.origin", properties::getOrigin);
+
+    // MCP apps configuration
+    builder.addNested(properties::getMcp, mcp -> {
+      builder.addList("webforj.mcp.allowed-origins", mcp::getAllowedOrigins);
+    });
+
     // Servlet configurations
     builder.add("webforj.servlets", () -> {
       if (properties.getServlets() == null || properties.getServlets().isEmpty()) {

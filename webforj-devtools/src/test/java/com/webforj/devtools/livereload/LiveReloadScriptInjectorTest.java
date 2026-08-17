@@ -111,4 +111,43 @@ class LiveReloadScriptInjectorTest {
 
     verify(page, never()).addInlineJavaScript(anyString(), eq(true));
   }
+
+  @Test
+  void shouldFollowConfiguredOriginOnEmbeddedPage() {
+    Page page = mock(Page.class);
+    Request request = mock(Request.class);
+    when(page.isEmbedded()).thenReturn(true);
+    when(request.getProtocol()).thenReturn("http");
+    when(request.getHost()).thenReturn("localhost:8080");
+
+    System.setProperty("webforj.origin", "https://demo.example");
+    try {
+      new LiveReloadScriptInjector()
+          .inject(new LiveReloadOptions().setEnabled(true).setWebsocketPort(40000), page, request);
+    } finally {
+      System.clearProperty("webforj.origin");
+    }
+
+    verify(page).addInlineJavaScript(contains("wss://demo.example:40000/webforj-devtools-ws"),
+        eq(true));
+  }
+
+  @Test
+  void shouldKeepRequestHostOnDirectlyOpenedPage() {
+    Page page = mock(Page.class);
+    Request request = mock(Request.class);
+    when(request.getProtocol()).thenReturn("http");
+    when(request.getHost()).thenReturn("localhost:8080");
+
+    System.setProperty("webforj.origin", "https://demo.example");
+    try {
+      new LiveReloadScriptInjector()
+          .inject(new LiveReloadOptions().setEnabled(true).setWebsocketPort(40000), page, request);
+    } finally {
+      System.clearProperty("webforj.origin");
+    }
+
+    verify(page).addInlineJavaScript(contains("ws://localhost:40000/webforj-devtools-ws"),
+        eq(true));
+  }
 }

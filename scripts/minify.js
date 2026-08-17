@@ -1,10 +1,7 @@
 /**
- * Minifies webforJ client-side resources using esbuild.
+ * Minifies webforJ client-side resources.
  *
  * Usage: node scripts/minify.js
- *
- * Requires esbuild to be installed: npm install -g esbuild
- * Or download standalone binary from: https://github.com/evanw/esbuild/releases
  *
  * @author Hyyan Abo Fakher
  * @since 25.11
@@ -18,6 +15,17 @@ const BANNER = `/*!
  * Copyright BASIS International Ltd.
  */
 `;
+
+const HTML_MINIFIER = 'html-minifier-terser@7.2.0';
+const ESBUILD = 'esbuild@0.27.1';
+
+const htmlFiles = [
+  {
+    module: 'webforj-mcp-apps',
+    input: 'META-INF/mcp/app.html',
+    output: 'META-INF/mcp/app.min.html'
+  }
+];
 
 const files = [
   {
@@ -46,15 +54,6 @@ function moduleResources(module) {
   return path.join(__dirname, '..', module, 'src/main/resources');
 }
 
-function checkEsbuild() {
-  try {
-    execSync('esbuild --version', { stdio: 'pipe' });
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 function minify(module, inputFile, outputFile) {
   const resources = moduleResources(module);
   const inputPath = path.join(resources, inputFile);
@@ -67,7 +66,7 @@ function minify(module, inputFile, outputFile) {
 
   const originalSize = fs.statSync(inputPath).size;
 
-  execSync(`esbuild "${inputPath}" --minify --outfile="${outputPath}"`, {
+  execSync(`npx --yes ${ESBUILD} "${inputPath}" --minify --outfile="${outputPath}"`, {
     stdio: 'pipe'
   });
 
@@ -82,18 +81,41 @@ function minify(module, inputFile, outputFile) {
   );
 }
 
-function run() {
-  console.log('Minifying webforJ resources...\n');
+function minifyHtml(module, inputFile, outputFile) {
+  const resources = moduleResources(module);
+  const inputPath = path.join(resources, inputFile);
+  const outputPath = path.join(resources, outputFile);
 
-  if (!checkEsbuild()) {
-    console.error('Error: esbuild not found.');
-    console.error('Install with: npm install -g esbuild');
-    console.error('Or download from: https://github.com/evanw/esbuild/releases');
+  if (!fs.existsSync(inputPath)) {
+    console.error(`Error: Input file not found: ${inputPath}`);
     process.exit(1);
   }
 
+  const originalSize = fs.statSync(inputPath).size;
+
+  execSync(
+    `npx --yes ${HTML_MINIFIER} --collapse-whitespace --remove-comments` +
+      ` --minify-css true --minify-js true -o "${outputPath}" "${inputPath}"`,
+    { stdio: 'pipe' }
+  );
+
+  const minifiedSize = fs.statSync(outputPath).size;
+  const reduction = Math.round((1 - minifiedSize / originalSize) * 100);
+
+  console.log(
+    `${inputFile}: ${originalSize} -> ${minifiedSize} bytes (${reduction}% reduction)`
+  );
+}
+
+function run() {
+  console.log('Minifying webforJ resources...\n');
+
   for (const file of files) {
     minify(file.module, file.input, file.output);
+  }
+
+  for (const file of htmlFiles) {
+    minifyHtml(file.module, file.input, file.output);
   }
 
   console.log('\nDone!');

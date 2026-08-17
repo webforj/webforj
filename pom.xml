@@ -63,6 +63,7 @@
     <module>webforj-foundation</module>
     <module>webforj-jbang</module>
     <module>webforj-kotlin</module>
+    <module>webforj-mcp-apps</module>
     <module>webforj-rewrite</module>
     <module>webforj-bundle</module>
     <module>webforj-devtools</module>

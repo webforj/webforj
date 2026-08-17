@@ -453,13 +453,20 @@ public final class AnnotationProcessor {
   }
 
   private void setManifest(ProfileDescriptor profileDescriptor) {
+    Page page = getPage();
+    if (page.isEmbedded()) {
+      // An embedded page cannot be installed, and embedding hosts block the data address the
+      // manifest link carries.
+      return;
+    }
+
     String registerManifest = "let element = document.createElement('link');"
         + "let encoded = encodeURIComponent(JSON.stringify(" + profileDescriptor.toString() + "));"
         + "element.setAttribute('rel', 'manifest');"
         + "element.setAttribute('href', 'data:application/manifest+json,' + encoded);"
         + "document.querySelector('head').appendChild(element);";
 
-    getPage().executeJsVoidAsync(registerManifest);
+    page.executeJsVoidAsync(registerManifest);
   }
 
   private void setMetaTags(AppProfile appProfile, String base) {

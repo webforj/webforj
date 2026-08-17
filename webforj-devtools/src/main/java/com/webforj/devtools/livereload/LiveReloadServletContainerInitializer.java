@@ -39,6 +39,9 @@ public class LiveReloadServletContainerInitializer implements ServletContainerIn
     FilterRegistration.Dynamic registration = context
         .addFilter(LiveReloadRestartFilter.class.getName(), new LiveReloadRestartFilter(lifecycle));
     if (registration != null) {
+      // The filter maps to every request, so a registration without async support would refuse
+      // async processing for every servlet in the deployment, not only for this filter.
+      registration.setAsyncSupported(true);
       registration.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/*");
     }
   }

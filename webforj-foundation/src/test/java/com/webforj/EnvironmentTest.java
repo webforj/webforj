@@ -1,6 +1,8 @@
 package com.webforj;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -179,6 +181,34 @@ class EnvironmentTest {
       } finally {
         Files.deleteIfExists(tempConfigFile);
       }
+    }
+  }
+
+  @Nested
+  class Origin {
+
+    @AfterEach
+    void teardown() {
+      System.clearProperty("webforj.origin");
+    }
+
+    @Test
+    void shouldReturnNullWhenOriginIsUnset() {
+      assertNull(Environment.getOrigin());
+    }
+
+    @Test
+    void shouldReadOriginFromSystemProperty() {
+      System.setProperty("webforj.origin", "https://demo.example");
+
+      assertEquals("https://demo.example", Environment.getOrigin());
+    }
+
+    @Test
+    void shouldTrimTrailingSlashesFromOrigin() {
+      System.setProperty("webforj.origin", "https://demo.example//");
+
+      assertEquals("https://demo.example", Environment.getOrigin());
     }
   }
 
