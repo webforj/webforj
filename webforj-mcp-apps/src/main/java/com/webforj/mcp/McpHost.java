@@ -562,28 +562,35 @@ public final class McpHost {
     }
 
     for (Class<? extends Component> viewType : getActiveViewTypes(router)) {
-      if (viewType == null || !viewType.isAnnotationPresent(McpApp.class)) {
-        continue;
+      if (deliverOpeningInput(router, viewType, arguments)) {
+        return;
       }
-
-      McpAppMethodDescriptor inputMethod = McpAppDescriptor.resolveOpeningInputMethod(viewType);
-      if (inputMethod == null) {
-        continue;
-      }
-
-      Optional<Component> rendered = router.getRenderer().getRenderedComponent(viewType);
-      if (rendered.isEmpty()) {
-        continue;
-      }
-
-      try {
-        inputMethod.invoke(rendered.get(), arguments);
-      } catch (RuntimeException e) {
-        logger.log(Logger.Level.WARNING,
-            "The opening input method of " + viewType.getName() + " failed", e);
-      }
-      return;
     }
+  }
+
+  private static boolean deliverOpeningInput(Router router, Class<? extends Component> viewType,
+      JsonNode arguments) {
+    if (viewType == null || !viewType.isAnnotationPresent(McpApp.class)) {
+      return false;
+    }
+
+    McpAppMethodDescriptor inputMethod = McpAppDescriptor.resolveOpeningInputMethod(viewType);
+    if (inputMethod == null) {
+      return false;
+    }
+
+    Optional<Component> rendered = router.getRenderer().getRenderedComponent(viewType);
+    if (rendered.isEmpty()) {
+      return false;
+    }
+
+    try {
+      inputMethod.invoke(rendered.get(), arguments);
+    } catch (RuntimeException e) {
+      logger.log(Logger.Level.WARNING,
+          "The opening input method of " + viewType.getName() + " failed", e);
+    }
+    return true;
   }
 
   private void bindInstance(JsonNode payload) {

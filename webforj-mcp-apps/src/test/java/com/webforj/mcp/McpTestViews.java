@@ -271,7 +271,9 @@ public final class McpTestViews {
   static class ScalarActionView extends BaseView {
 
     @McpAppAction(description = "Accepts an invalid scalar")
-    public void accept(String input) {}
+    public void accept(String input) {
+      // Fixture for validation: scalar action inputs are rejected before this method can run.
+    }
   }
 
   @Route("/conflicting-input")
@@ -279,7 +281,9 @@ public final class McpTestViews {
   static class ConflictingInputView extends BaseView {
 
     @McpAppInput
-    public void receiveOpeningInput(ActionInput input) {}
+    public void receiveOpeningInput(ActionInput input) {
+      // No-op fixture for conflicting input declarations.
+    }
   }
 
   @Route("/action-name-clash")
