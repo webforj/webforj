@@ -29,6 +29,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class McpAppContributionTest {
 
@@ -168,10 +170,25 @@ class McpAppContributionTest {
       verify(cookies).setAttribute("Partitioned", "");
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"http://localhost:8080", "http://127.1.2.3:8080", "http://[::1]:8080"})
+    @DisplayName("Should mark session cookies for a cross site embed on a loopback http origin")
+    void shouldConfigureCookiesForLoopbackHttpOrigin(String origin) {
+      contribution.getOrigin().configure(origin);
+      SessionCookieConfig cookies = mock(SessionCookieConfig.class);
+      when(context.getSessionCookieConfig()).thenReturn(cookies);
+
+      contribution.install(context, new McpAppOptions());
+
+      verify(cookies).setSecure(true);
+      verify(cookies).setAttribute("SameSite", "None");
+      verify(cookies).setAttribute("Partitioned", "");
+    }
+
     @Test
-    @DisplayName("Should keep the session cookie defaults on a plain http origin")
-    void shouldKeepCookieDefaultsForPlainOrigin() {
-      contribution.getOrigin().configure("http://localhost:8080");
+    @DisplayName("Should keep the session cookie defaults on a non-loopback http origin")
+    void shouldKeepCookieDefaultsForNonLoopbackHttpOrigin() {
+      contribution.getOrigin().configure("http://app.example.com");
 
       contribution.install(context, new McpAppOptions());
 

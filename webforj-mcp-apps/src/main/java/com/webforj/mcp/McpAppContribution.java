@@ -1,5 +1,6 @@
 package com.webforj.mcp;
 
+import com.google.common.net.InetAddresses;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValueFactory;
@@ -16,8 +17,10 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletRegistration;
 import jakarta.servlet.SessionCookieConfig;
 import java.lang.System.Logger;
+import java.net.URI;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Assembles the MCP specifications a webforJ application contributes to a server.
@@ -27,6 +30,7 @@ import java.util.List;
  */
 public final class McpAppContribution {
 
+  private static final String LOCALHOST = "localhost";
   private static final Logger logger = System.getLogger(McpAppContribution.class.getName());
   private static final String CORS_FILTER_NAME = "webforjMcpCors";
   private static final String DISCOVERY_FILTER_NAME = "webforjMcpAuthorizationDiscovery";
@@ -232,9 +236,7 @@ public final class McpAppContribution {
 
   private void configureSessionCookies(ServletContext context) {
     String resolved = origin.resolve();
-    if (resolved == null || !resolved.startsWith("https://")) {
-      // A browser only stores a cross site cookie that is marked secure, which a plain http
-      // deployment cannot be, so a local run keeps the defaults and stays same site.
+    if (!supportsCrossSiteCookies(resolved)) {
       return;
     }
 
@@ -242,5 +244,51 @@ public final class McpAppContribution {
     cookies.setSecure(true);
     cookies.setAttribute("SameSite", "None");
     cookies.setAttribute("Partitioned", "");
+  }
+
+  private static boolean supportsCrossSiteCookies(String resolved) {
+    if (resolved == null) {
+      return false;
+    }
+
+    URI uri = URI.create(resolved);
+    if ("https".equalsIgnoreCase(uri.getScheme())) {
+      return true;
+    }
+
+    String host = uri.getHost();
+    return "http".equalsIgnoreCase(uri.getScheme()) && isLoopback(host);
+  }
+
+  private static boolean isLoopback(String host) {
+    String address = normalize(host);
+    if (address == null) {
+      return false;
+    }
+
+    if (LOCALHOST.equals(address)) {
+      return true;
+    }
+
+    return InetAddresses.isInetAddress(address)
+        && InetAddresses.forString(address).isLoopbackAddress();
+  }
+
+  private static String normalize(String host) {
+    if (host == null) {
+      return null;
+    }
+
+    String normalized = host.trim().toLowerCase(Locale.ROOT);
+    if (normalized.startsWith("[") && normalized.endsWith("]")) {
+      normalized = normalized.substring(1, normalized.length() - 1);
+    }
+
+    int zone = normalized.indexOf('%');
+    if (zone >= 0) {
+      normalized = normalized.substring(0, zone);
+    }
+
+    return normalized.isEmpty() ? null : normalized;
   }
 }

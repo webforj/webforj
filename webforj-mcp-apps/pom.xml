@@ -43,6 +43,15 @@
       <artifactId>config</artifactId>
     </dependency>
 
+    <!-- Ships with webforj-engine at runtime. Used to recognize loopback address literals without
+         performing a name lookup. -->
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>33.5.0-jre</version>
+      <scope>provided</scope>
+    </dependency>
+
     <dependency>
       <groupId>io.modelcontextprotocol.sdk</groupId>
       <artifactId>mcp-core</artifactId>
