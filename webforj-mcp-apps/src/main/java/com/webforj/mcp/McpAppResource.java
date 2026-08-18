@@ -149,8 +149,7 @@ public class McpAppResource {
     String socketOrigin = origin.replaceFirst("^http", "ws");
 
     return Map.of("resourceDomains",
-        merge(List.of(origin), FRAMEWORK_RESOURCE_DOMAINS, resourceDomains.get()), "frameDomains",
-        List.of(origin), "connectDomains",
+        merge(List.of(origin), FRAMEWORK_RESOURCE_DOMAINS, resourceDomains.get()), "connectDomains",
         merge(List.of(origin, socketOrigin), FRAMEWORK_CONNECT_DOMAINS, connectDomains.get()));
   }
 
@@ -158,8 +157,8 @@ public class McpAppResource {
     String socketOrigin = origin.replaceFirst("^http", "ws");
 
     return Map.of("resource_domains",
-        merge(List.of(origin), FRAMEWORK_RESOURCE_DOMAINS, resourceDomains.get()), "frame_domains",
-        List.of(origin), "connect_domains",
+        merge(List.of(origin), FRAMEWORK_RESOURCE_DOMAINS, resourceDomains.get()),
+        "connect_domains",
         merge(List.of(origin, socketOrigin), FRAMEWORK_CONNECT_DOMAINS, connectDomains.get()));
   }
 
