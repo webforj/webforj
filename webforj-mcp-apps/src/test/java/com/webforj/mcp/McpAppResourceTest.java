@@ -155,7 +155,8 @@ class McpAppResourceTest {
     assertEquals(
         List.of("https://app.example.com", "https://cdn.jsdelivr.net", "https://www.gstatic.com"),
         csp.get("resourceDomains"));
-    assertEquals(List.of("https://app.example.com"), csp.get("frameDomains"));
+    assertFalse(csp.containsKey("frameDomains"),
+        "an application that embeds no frames must not ask hosts for frame permissions");
     assertEquals(List.of("https://app.example.com", "wss://app.example.com",
         "https://cdn.jsdelivr.net", "https://www.gstatic.com", "data:"), csp.get("connectDomains"));
   }
@@ -174,7 +175,8 @@ class McpAppResourceTest {
     assertEquals(
         List.of("https://app.example.com", "https://cdn.jsdelivr.net", "https://www.gstatic.com"),
         widgetCsp.get("resource_domains"));
-    assertEquals(List.of("https://app.example.com"), widgetCsp.get("frame_domains"));
+    assertFalse(widgetCsp.containsKey("frame_domains"),
+        "an application that embeds no frames must not ask hosts for frame permissions");
     assertEquals(List.of("https://app.example.com", "wss://app.example.com",
         "https://cdn.jsdelivr.net", "https://www.gstatic.com", "data:"),
         widgetCsp.get("connect_domains"));
