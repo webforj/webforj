@@ -37,8 +37,8 @@ public class AppNavItem extends NavigationContainer<AppNavItem> implements HasSt
     HasText<AppNavItem>, HasPrefixAndSuffix<AppNavItem>, HasEnablement<AppNavItem> {
   private String path;
   private ParametersBag queryParameters;
-  private Component prefix;
-  private Component suffix;
+  private final SlottedComponent prefix = new SlottedComponent();
+  private final SlottedComponent suffix = new SlottedComponent();
 
   private static final String SLOT_PREFIX = "prefix";
   private static final String SLOT_SUFFIX = "suffix";
@@ -366,16 +366,7 @@ public class AppNavItem extends NavigationContainer<AppNavItem> implements HasSt
    */
   @Override
   public AppNavItem setPrefixComponent(Component prefix) {
-    if (prefix.equals(this.prefix)) {
-      return this;
-    }
-
-    if (this.prefix != null) {
-      this.prefix.destroy();
-    }
-
-    this.prefix = prefix;
-    getElement().add(SLOT_PREFIX, prefix);
+    this.prefix.set(getElement(), SLOT_PREFIX, prefix);
     return this;
   }
 
@@ -384,7 +375,7 @@ public class AppNavItem extends NavigationContainer<AppNavItem> implements HasSt
    */
   @Override
   public Component getPrefixComponent() {
-    return prefix;
+    return prefix.get();
   }
 
   /**
@@ -392,16 +383,7 @@ public class AppNavItem extends NavigationContainer<AppNavItem> implements HasSt
    */
   @Override
   public AppNavItem setSuffixComponent(Component suffix) {
-    if (suffix.equals(this.suffix)) {
-      return this;
-    }
-
-    if (this.suffix != null) {
-      this.suffix.destroy();
-    }
-
-    this.suffix = suffix;
-    getElement().add(SLOT_SUFFIX, suffix);
+    this.suffix.set(getElement(), SLOT_SUFFIX, suffix);
     return this;
   }
 
@@ -410,7 +392,7 @@ public class AppNavItem extends NavigationContainer<AppNavItem> implements HasSt
    */
   @Override
   public Component getSuffixComponent() {
-    return suffix;
+    return suffix.get();
   }
 
   /**

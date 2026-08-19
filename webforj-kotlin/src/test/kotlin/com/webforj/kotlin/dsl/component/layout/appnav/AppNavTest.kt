@@ -184,4 +184,36 @@ class AppNavTest {
       }
     }
   }
+
+  @Test
+  fun shouldCreateAppNavLabel() {
+    val appNav = root.appNav {
+      val label = appNavLabel("Analytics")
+      assertTrue { hasComponent(label) }
+      assertEquals("Analytics", label.text)
+    }
+
+    assertTrue(root.hasComponent(appNav))
+  }
+
+  @Test
+  fun shouldCreateAppNavLabelWithPrefixAndSuffix() {
+    val appNav = root.appNav {
+      val navLabel = appNavLabel("Analytics") {
+        prefixSlot {
+          label("pie")
+        }
+        suffixSlot {
+          label("2")
+        }
+        val prefixComponent = prefix as Label
+        val suffixComponent = suffix as Label
+        assertEquals("pie", prefixComponent.text)
+        assertEquals("2", suffixComponent.text)
+      }
+      assertEquals("Analytics", navLabel.text)
+    }
+
+    assertTrue(root.hasComponent(appNav))
+  }
 }

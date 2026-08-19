@@ -3,6 +3,7 @@ package com.webforj.kotlin.dsl.component.layout.appnav
 import com.webforj.component.Component
 import com.webforj.component.layout.appnav.AppNav
 import com.webforj.component.layout.appnav.AppNavItem
+import com.webforj.component.layout.appnav.AppNavLabel
 import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
@@ -107,6 +108,34 @@ fun @WebforjDsl AppNavItem.appNavItem(
   addItem(item)
   return item
 }
+
+/**
+ * Adds an `AppNavLabel` to the `AppNav`, a non interactive section label that titles the run of
+ * items that follow it, up to the next label or the end of the menu.
+ * ```
+ * appNav {
+ *   appNavItem("Home", "/home")
+ *   appNavLabel("Analytics") {
+ *     prefixSlot { icon("chart-pie") }
+ *     suffixSlot { badge("2") }
+ *   }
+ *   appNavItem("Overview", OverviewView::class)
+ * }
+ * ```
+ *
+ * To configure the slots of the `AppNavLabel` see:
+ * - [prefixSlot], and
+ * - [suffixSlot]
+ *
+ * @param text The display text of the label.
+ * @param block The initialization steps of the `AppNavLabel`.
+ * @return The configured `AppNavLabel`.
+ * @see AppNavLabel
+ */
+fun @WebforjDsl AppNav.appNavLabel(
+  text: String,
+  block: @WebforjDsl AppNavLabel.() -> Unit = {}
+): AppNavLabel = init(AppNavLabel(text), block)
 
 /**
  * Configures the `AppNav`'s embedded search field.
