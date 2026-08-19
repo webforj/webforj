@@ -35,8 +35,8 @@ import com.webforj.concern.HasVisibility;
 public class AppNavLabel extends ElementComposite
     implements HasText<AppNavLabel>, HasStyle<AppNavLabel>, HasClassName<AppNavLabel>,
     HasAttribute<AppNavLabel>, HasVisibility<AppNavLabel>, HasPrefixAndSuffix<AppNavLabel> {
-  private Component prefix;
-  private Component suffix;
+  private final SlottedComponent prefix = new SlottedComponent();
+  private final SlottedComponent suffix = new SlottedComponent();
 
   private static final String SLOT_PREFIX = "prefix";
   private static final String SLOT_SUFFIX = "suffix";
@@ -77,16 +77,7 @@ public class AppNavLabel extends ElementComposite
    */
   @Override
   public AppNavLabel setPrefixComponent(Component prefix) {
-    if (prefix.equals(this.prefix)) {
-      return this;
-    }
-
-    if (this.prefix != null) {
-      this.prefix.destroy();
-    }
-
-    this.prefix = prefix;
-    getElement().add(SLOT_PREFIX, prefix);
+    this.prefix.set(getElement(), SLOT_PREFIX, prefix);
     return this;
   }
 
@@ -95,7 +86,7 @@ public class AppNavLabel extends ElementComposite
    */
   @Override
   public Component getPrefixComponent() {
-    return prefix;
+    return prefix.get();
   }
 
   /**
@@ -103,16 +94,7 @@ public class AppNavLabel extends ElementComposite
    */
   @Override
   public AppNavLabel setSuffixComponent(Component suffix) {
-    if (suffix.equals(this.suffix)) {
-      return this;
-    }
-
-    if (this.suffix != null) {
-      this.suffix.destroy();
-    }
-
-    this.suffix = suffix;
-    getElement().add(SLOT_SUFFIX, suffix);
+    this.suffix.set(getElement(), SLOT_SUFFIX, suffix);
     return this;
   }
 
@@ -121,6 +103,6 @@ public class AppNavLabel extends ElementComposite
    */
   @Override
   public Component getSuffixComponent() {
-    return suffix;
+    return suffix.get();
   }
 }
