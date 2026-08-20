@@ -119,7 +119,7 @@
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>
           </descriptorRefs>
-          <attach>true</attach>
+          <attach>false</attach>
         </configuration>
         <executions>
           <execution>
