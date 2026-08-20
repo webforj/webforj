@@ -1,8 +1,10 @@
 package com.webforj.devtools.craftforj.utilities;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anySet;
@@ -201,6 +203,142 @@ class ComponentMapBuilderTest {
       assertNotNull(meta.getUsageSource());
       assertEquals(callerFile, meta.getUsageSource().getFile());
       assertEquals(callerClass, meta.getUsageSource().getDeclaringClass());
+    }
+  }
+
+  @kotlin.Metadata
+  static class KotlinView {
+  }
+
+  @Test
+  @DisplayName("Should flag a component whose declaring class was compiled from Kotlin")
+  void shouldFlagKotlinDeclaringClass() {
+    Element element = newElement();
+    Frame frame = newFrame(element);
+    SourceParserService parserService = mock(SourceParserService.class);
+
+    SourcePoint creation = new SourcePoint(KotlinView.class.getName(), "KotlinView.kt", 10);
+
+    try (
+        MockedStatic<ComponentSourceRegistry> registryMock =
+            mockStatic(ComponentSourceRegistry.class);
+        MockedStatic<SourceFileResolver> resolverMock = mockStatic(SourceFileResolver.class)) {
+      registryMock.when(() -> ComponentSourceRegistry.getSourcePoint(element)).thenReturn(creation);
+      registryMock.when(() -> ComponentSourceRegistry.getSourceChain(element))
+          .thenReturn(List.of(creation));
+      resolverMock
+          .when(() -> SourceFileResolver.resolve(ComponentMapBuilderTest.class.getName(),
+              SourceFileResolver.ALL_EXTENSIONS))
+          .thenReturn("/project/src/main/kotlin/KotlinView.kt");
+
+      ComponentMeta meta = buildSingleComponentMeta(frame, element, parserService);
+
+      assertTrue(meta.isKotlin());
+    }
+  }
+
+  @Test
+  @DisplayName("Should leave a component declared in Java unflagged")
+  void shouldLeaveJavaDeclaringClassUnflagged() {
+    Element element = newElement();
+    Frame frame = newFrame(element);
+    SourceParserService parserService = mock(SourceParserService.class);
+
+    SourcePoint creation = new SourcePoint(ComponentMapBuilderTest.class.getName(), "X.java", 10);
+
+    try (
+        MockedStatic<ComponentSourceRegistry> registryMock =
+            mockStatic(ComponentSourceRegistry.class);
+        MockedStatic<SourceFileResolver> resolverMock = mockStatic(SourceFileResolver.class)) {
+      registryMock.when(() -> ComponentSourceRegistry.getSourcePoint(element)).thenReturn(creation);
+      registryMock.when(() -> ComponentSourceRegistry.getSourceChain(element))
+          .thenReturn(List.of(creation));
+      resolverMock.when(() -> SourceFileResolver.resolve(anyString(), any()))
+          .thenReturn(CREATION_FILE);
+      when(parserService.extractVariableName(any(), anyInt(), anySet())).thenReturn("view");
+
+      ComponentMeta meta = buildSingleComponentMeta(frame, element, parserService);
+
+      assertFalse(meta.isKotlin());
+    }
+  }
+
+  @Test
+  @DisplayName("Should skip a DSL frame that resolves to no project file and declare on the next frame")
+  void shouldDeclareOnFirstResolvableFrameBehindDsl() {
+    Element element = newElement();
+    Frame frame = newFrame(element);
+    SourceParserService parserService = mock(SourceParserService.class);
+
+    SourcePoint dsl = new SourcePoint("com.webforj.kotlin.dsl.ElementsKt", "Elements.kt", 5);
+    SourcePoint declaring = new SourcePoint("com.example.DrawerHeader", "DrawerHeader.kt", 18);
+    String declaringFile = "/project/src/main/kotlin/com/example/DrawerHeader.kt";
+
+    try (
+        MockedStatic<ComponentSourceRegistry> registryMock =
+            mockStatic(ComponentSourceRegistry.class);
+        MockedStatic<SourceFileResolver> resolverMock = mockStatic(SourceFileResolver.class)) {
+      registryMock.when(() -> ComponentSourceRegistry.getSourceChain(element))
+          .thenReturn(List.of(dsl, declaring));
+      resolverMock.when(() -> SourceFileResolver.resolve("com.example.DrawerHeader",
+          SourceFileResolver.ALL_EXTENSIONS)).thenReturn(declaringFile);
+
+      ComponentMeta meta = buildSingleComponentMeta(frame, element, parserService);
+
+      assertNotNull(meta.getSource());
+      assertEquals(declaringFile, meta.getSource().getFile());
+      assertEquals(18, meta.getSource().getLine());
+      assertEquals("com.example.DrawerHeader", meta.getSource().getDeclaringClass());
+      assertNull(meta.getUsageSource());
+    }
+  }
+
+  @Test
+  @DisplayName("Should resolve a lambda frame through its outer class")
+  void shouldResolveLambdaFrameThroughOuterClass() {
+    Element element = newElement();
+    Frame frame = newFrame(element);
+    SourceParserService parserService = mock(SourceParserService.class);
+
+    SourcePoint lambda = new SourcePoint("com.example.DrawerHeader$init$1", "DrawerHeader.kt", 21);
+    String declaringFile = "/project/src/main/kotlin/com/example/DrawerHeader.kt";
+
+    try (
+        MockedStatic<ComponentSourceRegistry> registryMock =
+            mockStatic(ComponentSourceRegistry.class);
+        MockedStatic<SourceFileResolver> resolverMock = mockStatic(SourceFileResolver.class)) {
+      registryMock.when(() -> ComponentSourceRegistry.getSourceChain(element))
+          .thenReturn(List.of(lambda));
+      resolverMock.when(() -> SourceFileResolver.resolve("com.example.DrawerHeader",
+          SourceFileResolver.ALL_EXTENSIONS)).thenReturn(declaringFile);
+
+      ComponentMeta meta = buildSingleComponentMeta(frame, element, parserService);
+
+      assertNotNull(meta.getSource());
+      assertEquals(declaringFile, meta.getSource().getFile());
+      assertEquals(21, meta.getSource().getLine());
+      assertEquals("com.example.DrawerHeader", meta.getSource().getDeclaringClass());
+    }
+  }
+
+  @Test
+  @DisplayName("Should leave source null when no frame resolves")
+  void shouldLeaveSourceNullWhenNoFrameResolves() {
+    Element element = newElement();
+    Frame frame = newFrame(element);
+    SourceParserService parserService = mock(SourceParserService.class);
+
+    try (
+        MockedStatic<ComponentSourceRegistry> registryMock =
+            mockStatic(ComponentSourceRegistry.class);
+        MockedStatic<SourceFileResolver> resolverMock = mockStatic(SourceFileResolver.class)) {
+      registryMock.when(() -> ComponentSourceRegistry.getSourceChain(element))
+          .thenReturn(List.of(new SourcePoint("com.webforj.kotlin.dsl.ElementsKt", "E.kt", 5)));
+
+      ComponentMeta meta = buildSingleComponentMeta(frame, element, parserService);
+
+      assertNull(meta.getSource());
+      assertNull(meta.getUsageSource());
     }
   }
 }

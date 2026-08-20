@@ -171,30 +171,64 @@ public class ComponentMapBuilder {
       }
     }
 
-    SourceLocation source = createSourceLocation(component);
-    SourceLocation usageSource = createUsageSourceLocation(component);
+    List<SourcePoint> chain = ComponentSourceRegistry.getSourceChain(component);
+    int declaringIndex = findDeclaringIndex(chain);
+    SourceLocation source = createSourceLocation(component, chain, declaringIndex);
+    SourceLocation usageSource = createUsageSourceLocation(chain, declaringIndex);
 
-    return new ComponentMeta(component.getComponentId(), component.getClass().getName(),
-        compositeComponentType, component.getClass().getSimpleName(), isComposite, source,
-        usageSource);
+    ComponentMeta meta = new ComponentMeta(component.getComponentId(),
+        component.getClass().getName(), compositeComponentType,
+        component.getClass().getSimpleName(), isComposite, source, usageSource);
+    meta.setKotlin(isKotlinDeclared(component, chain, declaringIndex));
+
+    return meta;
   }
 
-  private SourceLocation createSourceLocation(Component component) {
-    SourcePoint sourcePoint = ComponentSourceRegistry.getSourcePoint(component);
-    if (sourcePoint == null) {
+  /**
+   * Finds the first recorded frame that resolves to a project source file. Frame 0 is the creation
+   * site, but a Kotlin DSL call puts a library function there, so the declaring file sits deeper in
+   * the chain.
+   *
+   * @param chain the recorded source chain, creation frame first
+   * @return the index of the declaring frame, or -1 when no frame resolves
+   */
+  private int findDeclaringIndex(List<SourcePoint> chain) {
+    for (int i = 0; i < chain.size(); i++) {
+      if (resolveDeclaringFile(chain.get(i)) != null) {
+        return i;
+      }
+    }
+
+    return -1;
+  }
+
+  private String resolveDeclaringFile(SourcePoint point) {
+    return SourceFileResolver.resolve(getOuterClassName(point.className()),
+        SourceFileResolver.ALL_EXTENSIONS);
+  }
+
+  private boolean isKotlinDeclared(Component component, List<SourcePoint> chain,
+      int declaringIndex) {
+    if (declaringIndex >= 0) {
+      return KotlinClassDetector.isKotlin(chain.get(declaringIndex).className(),
+          component.getClass().getClassLoader());
+    }
+
+    return KotlinClassDetector.isKotlin(component.getClass());
+  }
+
+  private SourceLocation createSourceLocation(Component component, List<SourcePoint> chain,
+      int declaringIndex) {
+    if (declaringIndex < 0) {
       return null;
     }
 
-    String file =
-        SourceFileResolver.resolve(sourcePoint.className(), SourceFileResolver.ALL_EXTENSIONS);
-    if (file == null) {
-      return null;
-    }
-
+    SourcePoint point = chain.get(declaringIndex);
+    String file = resolveDeclaringFile(point);
     SourcePathRegistry.addPath(file);
 
-    int line = sourcePoint.lineNumber();
-    String declaringClass = sourcePoint.className();
+    int line = point.lineNumber();
+    String declaringClass = getOuterClassName(point.className());
     String componentType = component.getClass().getName();
     String variableName = parserService.extractVariableName(Path.of(file), line,
         ComponentTypeNames.of(component.getClass()));
@@ -203,24 +237,26 @@ public class ComponentMapBuilder {
   }
 
   /**
-   * Finds the nearest caller frame beyond the creation frame that resolves to a project source file
-   * different from the creation file, i.e. where the component's enclosing class was used.
+   * Finds the nearest caller frame beyond the declaring frame that resolves to a different project
+   * source file, which is where the component's enclosing class was used.
    *
-   * @param component the component
+   * @param chain the recorded source chain, creation frame first
+   * @param declaringIndex the index of the declaring frame, or -1 when none resolved
    * @return the usage source location, or null if not available
    */
-  private SourceLocation createUsageSourceLocation(Component component) {
-    List<SourcePoint> chain = ComponentSourceRegistry.getSourceChain(component);
-    if (chain.size() < 2) {
+  private SourceLocation createUsageSourceLocation(List<SourcePoint> chain, int declaringIndex) {
+    int start = Math.max(declaringIndex, 0);
+    if (chain.size() < start + 2) {
       return null;
     }
 
-    String creationFile =
-        SourceFileResolver.resolve(chain.get(0).className(), SourceFileResolver.JAVA_ONLY);
+    String creationFile = SourceFileResolver
+        .resolve(getOuterClassName(chain.get(start).className()), SourceFileResolver.JAVA_ONLY);
 
-    for (int i = 1; i < chain.size(); i++) {
+    for (int i = start + 1; i < chain.size(); i++) {
       SourcePoint point = chain.get(i);
-      String file = SourceFileResolver.resolve(point.className(), SourceFileResolver.JAVA_ONLY);
+      String file = SourceFileResolver.resolve(getOuterClassName(point.className()),
+          SourceFileResolver.JAVA_ONLY);
       if (file == null) {
         continue;
       }
@@ -235,6 +271,11 @@ public class ComponentMapBuilder {
     }
 
     return null;
+  }
+
+  private static String getOuterClassName(String className) {
+    int nested = className.indexOf('$');
+    return nested > 0 ? className.substring(0, nested) : className;
   }
 
   private boolean isSameFile(String file, String otherFile) {
