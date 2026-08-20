@@ -19,6 +19,7 @@ public class AppInfo {
   private String projectRoot;
   private String webforjVersion;
   private boolean bbjServices;
+  private boolean kotlin;
   private String javaVersion;
   private String javaVendor;
   private String javaVm;
@@ -133,6 +134,24 @@ public class AppInfo {
    */
   public void setBbjServices(boolean bbjServices) {
     this.bbjServices = bbjServices;
+  }
+
+  /**
+   * Returns whether the application class was compiled from Kotlin.
+   *
+   * @return {@code true} for a Kotlin application
+   */
+  public boolean isKotlin() {
+    return kotlin;
+  }
+
+  /**
+   * Sets whether the application class was compiled from Kotlin.
+   *
+   * @param kotlin {@code true} for a Kotlin application
+   */
+  public void setKotlin(boolean kotlin) {
+    this.kotlin = kotlin;
   }
 
   /**

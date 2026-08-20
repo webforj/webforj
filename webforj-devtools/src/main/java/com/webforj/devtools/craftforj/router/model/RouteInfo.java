@@ -30,6 +30,7 @@ public class RouteInfo {
   private boolean hasDidLeave;
   private boolean hasActivate;
   private String sourceFile;
+  private boolean kotlin;
   private boolean isActive;
   private List<RouteInfo> children = new ArrayList<>();
 
@@ -373,6 +374,24 @@ public class RouteInfo {
    */
   public void setSourceFile(String sourceFile) {
     this.sourceFile = sourceFile;
+  }
+
+  /**
+   * Checks whether the route class was compiled from Kotlin.
+   *
+   * @return {@code true} for a Kotlin route class.
+   */
+  public boolean isKotlin() {
+    return kotlin;
+  }
+
+  /**
+   * Sets whether the route class was compiled from Kotlin.
+   *
+   * @param kotlin {@code true} for a Kotlin route class
+   */
+  public void setKotlin(boolean kotlin) {
+    this.kotlin = kotlin;
   }
 
   /**

@@ -26,12 +26,11 @@ class AppInfoCollectorTest {
       envMock.when(Environment::getContextPath).thenReturn("/demo");
       envMock.when(Environment::isRunningWithBBjServices).thenReturn(false);
 
-      AppInfoCollector collector =
-          new AppInfoCollector("com.example.DemoApp", Path.of("/projects/demo"));
+      AppInfoCollector collector = new AppInfoCollector(DemoApp.class, Path.of("/projects/demo"));
       AppInfo info = collector.collect();
 
       assertEquals("Demo App", info.getAppName());
-      assertEquals("com.example.DemoApp", info.getAppClass());
+      assertEquals(DemoApp.class.getName(), info.getAppClass());
       assertEquals("/demo", info.getContextPath());
       assertEquals(Path.of("/projects/demo").toString(), info.getProjectRoot());
       assertFalse(info.isBbjServices());
@@ -52,7 +51,7 @@ class AppInfoCollectorTest {
         MockedStatic<Environment> envMock = mockStatic(Environment.class)) {
       envMock.when(Environment::isRunningWithBBjServices).thenReturn(true);
 
-      AppInfoCollector collector = new AppInfoCollector("com.example.DemoApp", null);
+      AppInfoCollector collector = new AppInfoCollector(DemoApp.class, null);
       AppInfo info = collector.collect();
 
       assertNotNull(info.getWebforjVersion());
@@ -65,10 +64,38 @@ class AppInfoCollectorTest {
   void shouldLeaveProjectRootNullWhenNotProvided() {
     try (MockedStatic<App> appMock = mockStatic(App.class);
         MockedStatic<Environment> envMock = mockStatic(Environment.class)) {
-      AppInfoCollector collector = new AppInfoCollector("com.example.DemoApp", null);
+      AppInfoCollector collector = new AppInfoCollector(DemoApp.class, null);
       AppInfo info = collector.collect();
 
       assertNull(info.getProjectRoot());
+    }
+  }
+
+  static class DemoApp {
+  }
+
+  @kotlin.Metadata
+  static class KotlinApp {
+  }
+
+  @Test
+  @DisplayName("Should flag an application class compiled from Kotlin")
+  void shouldFlagKotlinApplication() {
+    try (MockedStatic<App> appMock = mockStatic(App.class);
+        MockedStatic<Environment> envMock = mockStatic(Environment.class)) {
+      AppInfoCollector collector = new AppInfoCollector(KotlinApp.class, null);
+
+      assertTrue(collector.collect().isKotlin());
+    }
+  }
+
+  @Test
+  @DisplayName("Should leave a Java application class unflagged")
+  void shouldLeaveJavaApplicationUnflagged() {
+    try (MockedStatic<App> appMock = mockStatic(App.class);
+        MockedStatic<Environment> envMock = mockStatic(Environment.class)) {
+      assertFalse(new AppInfoCollector(AppInfoCollectorTest.class, null).collect().isKotlin());
+      assertFalse(new AppInfoCollector(DemoApp.class, null).collect().isKotlin());
     }
   }
 }

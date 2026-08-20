@@ -8,6 +8,7 @@ import com.webforj.devtools.craftforj.router.model.RouteAliasInfo;
 import com.webforj.devtools.craftforj.router.model.RouteInfo;
 import com.webforj.devtools.craftforj.router.model.RouteType;
 import com.webforj.devtools.craftforj.router.model.SecurityAccess;
+import com.webforj.devtools.craftforj.utilities.KotlinClassDetector;
 import com.webforj.router.RouteEntry;
 import com.webforj.router.RouteRegistry;
 import com.webforj.router.Router;
@@ -162,6 +163,7 @@ public class RouteCollector {
         SourceFileResolver.resolve(componentClass.getName(), SourceFileResolver.ALL_EXTENSIONS);
     SourcePathRegistry.addPath(sourceFile);
     info.setSourceFile(sourceFile);
+    info.setKotlin(KotlinClassDetector.isKotlin(componentClass));
     info.setActive(isActive(info.getId()));
 
     return info;

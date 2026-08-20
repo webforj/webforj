@@ -119,8 +119,8 @@ public class CraftforjLifecycleListener implements AppLifecycleListener {
 
     if (capabilitiesProvider.isLicensed()) {
       // App info action
-      actionRegistry.register(
-          new GetAppInfoAction(new AppInfoCollector(app.getClass().getName(), projectRoot)));
+      actionRegistry
+          .register(new GetAppInfoAction(new AppInfoCollector(app.getClass(), projectRoot)));
 
       // Inspector actions
       actionRegistry.register(new GetComponentMapAction());

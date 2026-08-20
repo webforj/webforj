@@ -25,6 +25,7 @@ public class ComponentMeta {
   private boolean isComposite;
   private SourceLocation source;
   private SourceLocation usageSource;
+  private boolean kotlin;
   private List<FeatureGroup> featureGroups;
 
   ComponentMeta() {}
@@ -115,6 +116,24 @@ public class ComponentMeta {
    */
   public SourceLocation getUsageSource() {
     return usageSource;
+  }
+
+  /**
+   * Checks whether the class declaring this component was compiled from Kotlin.
+   *
+   * @return {@code true} when the declaring class is Kotlin.
+   */
+  public boolean isKotlin() {
+    return kotlin;
+  }
+
+  /**
+   * Sets whether the class declaring this component was compiled from Kotlin.
+   *
+   * @param kotlin {@code true} for a Kotlin declaring class
+   */
+  public void setKotlin(boolean kotlin) {
+    this.kotlin = kotlin;
   }
 
   /**

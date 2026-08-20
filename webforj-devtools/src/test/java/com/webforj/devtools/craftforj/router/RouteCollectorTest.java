@@ -423,6 +423,11 @@ class RouteCollectorTest {
   static class SimpleView extends ElementCompositeContainer {
   }
 
+  @kotlin.Metadata
+  @NodeName("kotlin-view")
+  static class KotlinView extends ElementCompositeContainer {
+  }
+
   @NodeName("another-view")
   static class AnotherView extends ElementCompositeContainer {
   }
@@ -482,6 +487,35 @@ class RouteCollectorTest {
     @Override
     public void onDidEnter(DidEnterEvent event, ParametersBag parameters) {
       // No-op
+    }
+  }
+
+  @Nested
+  @DisplayName("kotlin")
+  class Kotlin {
+
+    @Test
+    @DisplayName("Should flag a route whose class was compiled from Kotlin")
+    void shouldFlagKotlinRoute() {
+      when(mockRegistry.getAvailableRouteEntires())
+          .thenReturn(List.of(createEntry("/kotlin", KotlinView.class)));
+
+      RouteCollector collector = new RouteCollector(mockRouter);
+      List<RouteInfo> routes = collector.collectRoutes();
+
+      assertTrue(routes.get(0).isKotlin());
+    }
+
+    @Test
+    @DisplayName("Should leave a Java route unflagged")
+    void shouldLeaveJavaRouteUnflagged() {
+      when(mockRegistry.getAvailableRouteEntires())
+          .thenReturn(List.of(createEntry("/home", SimpleView.class)));
+
+      RouteCollector collector = new RouteCollector(mockRouter);
+      List<RouteInfo> routes = collector.collectRoutes();
+
+      assertFalse(routes.get(0).isKotlin());
     }
   }
 }

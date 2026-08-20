@@ -4,6 +4,7 @@ import com.webforj.App;
 import com.webforj.Environment;
 import com.webforj.devtools.craftforj.appinfo.model.AppInfo;
 import com.webforj.devtools.craftforj.capabilities.VersionDetector;
+import com.webforj.devtools.craftforj.utilities.KotlinClassDetector;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
@@ -27,17 +28,19 @@ public class AppInfoCollector {
       "META-INF/maven/com.webforj/webforj-foundation/pom.properties";
 
   private final String appClass;
+  private final ClassLoader appLoader;
   private final String projectRoot;
   private final String webforjVersion;
 
   /**
    * Creates a new collector.
    *
-   * @param appClass the fully qualified app class name
+   * @param appClass the app class
    * @param projectRoot the project root directory
    */
-  public AppInfoCollector(String appClass, Path projectRoot) {
-    this.appClass = appClass;
+  public AppInfoCollector(Class<?> appClass, Path projectRoot) {
+    this.appClass = appClass.getName();
+    this.appLoader = appClass.getClassLoader();
     this.projectRoot = projectRoot == null ? null : projectRoot.toString();
     this.webforjVersion = detectWebforjVersion();
   }
@@ -55,6 +58,7 @@ public class AppInfoCollector {
     info.setProjectRoot(projectRoot);
     info.setWebforjVersion(webforjVersion);
     info.setBbjServices(Environment.isRunningWithBBjServices());
+    info.setKotlin(KotlinClassDetector.isKotlin(appClass, appLoader));
     info.setJavaVersion(System.getProperty("java.version"));
     info.setJavaVendor(System.getProperty("java.vendor"));
     info.setJavaVm(System.getProperty("java.vm.name"));
