@@ -5,6 +5,7 @@ import io.modelcontextprotocol.spec.McpSchema.ReadResourceResult;
 import io.modelcontextprotocol.spec.McpSchema.Resource;
 import io.modelcontextprotocol.spec.McpSchema.TextResourceContents;
 import java.io.IOException;
+import java.lang.System.Logger;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
@@ -33,6 +34,7 @@ public class McpAppResource {
    */
   static final String MIME_TYPE = "text/html;profile=mcp-app";
 
+  private static final Logger logger = System.getLogger(McpAppResource.class.getName());
   private static final String TEMPLATE = "/META-INF/mcp/app.min.html";
   private static final String ROOT_ROUTE = "/";
   private static final String ORIGIN_PLACEHOLDER = "__WEBFORJ_ORIGIN__";
@@ -106,11 +108,13 @@ public class McpAppResource {
     Resource resource = Resource.builder(uri, name).description("The webforJ application")
         .mimeType(MIME_TYPE).meta(resourceMeta()).build();
 
-    return new SyncResourceSpecification(resource,
-        (exchange,
-            request) -> ReadResourceResult.builder(List.of(TextResourceContents
-                .builder(request.uri(), render()).mimeType(MIME_TYPE).meta(resourceMeta()).build()))
-                .build());
+    return new SyncResourceSpecification(resource, (exchange, request) -> {
+      logger.log(Logger.Level.DEBUG, () -> "Serving the app page of the route '" + route
+          + "' to session " + exchange.sessionId() + " against the origin " + origin.resolve());
+      return ReadResourceResult.builder(List.of(TextResourceContents
+          .builder(request.uri(), render()).mimeType(MIME_TYPE).meta(resourceMeta()).build()))
+          .build();
+    });
   }
 
   /**

@@ -1,6 +1,7 @@
 package com.webforj.mcp;
 
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
+import java.lang.System.Logger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -19,6 +20,7 @@ import tools.jackson.databind.JsonNode;
 final class McpAppInstances {
 
   static final String INSTANCE_META_KEY = "webforj/instance";
+  private static final Logger logger = System.getLogger(McpAppInstances.class.getName());
   private static final SecureRandom RANDOM = new SecureRandom();
   private static final byte[] TOKEN_SALT = createTokenSalt();
   private static final Map<String, McpHost> instancesByToken = new ConcurrentHashMap<>();
@@ -45,6 +47,7 @@ final class McpAppInstances {
   static CallToolResult answerUpdateCall(String sessionId, String appToolName, JsonNode arguments) {
     McpHost host = instancesByToken.get(deriveToken(sessionId, appToolName));
     if (host == null) {
+      logNotOpen(sessionId, appToolName);
       return createNotOpenResponse(appToolName);
     }
 
@@ -55,10 +58,16 @@ final class McpAppInstances {
       McpAppActionDescriptor action, JsonNode input) {
     McpHost host = instancesByToken.get(deriveToken(sessionId, appToolName));
     if (host == null) {
+      logNotOpen(sessionId, appToolName);
       return createNotOpenResponse(appToolName);
     }
 
     return host.answerActionCall(appToolName, action, input);
+  }
+
+  private static void logNotOpen(String sessionId, String appToolName) {
+    logger.log(Logger.Level.DEBUG, () -> "The view '" + appToolName + "' is not open in session "
+        + sessionId + ", no running application bound to it, refusing the call");
   }
 
   private static CallToolResult createNotOpenResponse(String appToolName) {

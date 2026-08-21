@@ -90,8 +90,13 @@ public final class McpAppContribution {
     List<McpAppResource> resources = appRegistry.getDescriptors().stream()
         .map(descriptor -> new McpAppResource(normalized, origin, descriptor.getRoute())).toList();
 
-    return new McpAppContribution(appRegistry.getToolSpecifications(), resources, origin,
-        normalized);
+    List<SyncToolSpecification> tools = appRegistry.getToolSpecifications();
+    logger.log(Logger.Level.INFO,
+        () -> "webforJ MCP apps contribute " + tools.size() + " tools "
+            + tools.stream().map(tool -> tool.tool().name()).toList() + " and " + resources.size()
+            + " app resources under the servlet path '" + normalized + "'");
+
+    return new McpAppContribution(tools, resources, origin, normalized);
   }
 
   /**
@@ -142,6 +147,10 @@ public final class McpAppContribution {
    * @param options the options of the deployment
    */
   public void install(ServletContext context, McpAppOptions options) {
+    logger.log(Logger.Level.DEBUG,
+        () -> "Installing the MCP app support, configured origin: " + options.getOrigin()
+            + ", allowed origins: " + options.getAllowedOrigins() + ", resource domains: "
+            + options.getResourceDomains() + ", connect domains: " + options.getConnectDomains());
     declareDomains(options);
     deriveComponents(options);
     registerCorsFilter(context, options);
@@ -237,9 +246,15 @@ public final class McpAppContribution {
   private void configureSessionCookies(ServletContext context) {
     String resolved = origin.resolve();
     if (!supportsCrossSiteCookies(resolved)) {
+      logger.log(Logger.Level.DEBUG,
+          () -> "Session cookies keep their defaults, the origin " + resolved
+              + " is neither https nor a loopback address, so a cross site embed cannot"
+              + " carry them");
       return;
     }
 
+    logger.log(Logger.Level.DEBUG,
+        "Session cookies marked Secure, SameSite=None and Partitioned for the cross site embed");
     SessionCookieConfig cookies = context.getSessionCookieConfig();
     cookies.setSecure(true);
     cookies.setAttribute("SameSite", "None");
