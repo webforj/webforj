@@ -62,11 +62,7 @@ public class McpAppsAutoConfiguration {
    */
   @Bean
   List<SyncToolSpecification> webforjMcpTools(McpAppContribution contribution) {
-    List<SyncToolSpecification> tools = contribution.getToolSpecifications();
-    logger.log(Logger.Level.INFO,
-        () -> "webforJ published " + tools.size() + " tools into the Spring AI server");
-
-    return tools;
+    return contribution.getToolSpecifications();
   }
 
   /**

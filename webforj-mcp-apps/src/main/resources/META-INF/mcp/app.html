@@ -33,6 +33,7 @@
     attached.catch(function () {});
 
     function toApplication(message) {
+      console.debug("webforJ MCP channel: to application", message);
       if (applicationReady) {
         window.dispatchEvent(new CustomEvent("webforj-mcp-message", {
           detail: JSON.stringify(message)
@@ -76,6 +77,7 @@
         }
       },
       request: function (callId, method, params) {
+        console.debug("webforJ MCP channel: to host", callId, method, params);
         var call = requests[method];
         if (call === undefined) {
           toApplication({ type: "response", callId: callId, result: null,

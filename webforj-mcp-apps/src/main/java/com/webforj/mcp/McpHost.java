@@ -67,7 +67,7 @@ public final class McpHost {
   private final Page page;
   private final SessionRunner sessionRunner;
   private final EventDispatcher dispatcher = new EventDispatcher();
-  private final Map<String, PendingResult<JsonNode>> pendingResults = new ConcurrentHashMap<>();
+  private final Map<String, PendingRequest> pendingRequests = new ConcurrentHashMap<>();
   private final AtomicLong callIds = new AtomicLong();
   private final AtomicReference<JsonNode> hostInfo = new AtomicReference<>();
   private final AtomicReference<JsonNode> hostCapabilities = new AtomicReference<>();
@@ -372,6 +372,10 @@ public final class McpHost {
     String type = message.path("type").asString("");
     JsonNode payload =
         message.path("payload").isObject() ? message.path("payload") : mapper.createObjectNode();
+    if (!"response".equals(type)) {
+      // Answers are logged with the method they answer once the waiting request is found.
+      logger.log(Logger.Level.DEBUG, () -> "Host message received: " + message);
+    }
 
     switch (type) {
       case "initialized" -> handleInitialized(payload);
@@ -384,7 +388,8 @@ public final class McpHost {
           payload.path("reason").isString() ? payload.path("reason").asString() : null));
       case "host-context-changed" -> handleHostContextChanged(payload);
       case "teardown" -> logger.log(Logger.Level.DEBUG, "The host is tearing the application down");
-      default -> logger.log(Logger.Level.DEBUG, () -> "Unknown host message type: " + type);
+      default -> logger.log(Logger.Level.WARNING,
+          () -> "Discarding a host message of the unknown type '" + type + "'");
     }
   }
 
@@ -395,9 +400,14 @@ public final class McpHost {
   void destroy() {
     ObjectTable.put(OBJECT_TABLE_KEY, null);
     dispatcher.removeAllListeners();
-    pendingResults.values().forEach(pending -> pending.completeExceptionally(
+    if (!pendingRequests.isEmpty()) {
+      logger.log(Logger.Level.DEBUG,
+          () -> "The application terminates with " + pendingRequests.size()
+              + " host requests still unanswered: " + pendingRequests.keySet());
+    }
+    pendingRequests.values().forEach(pending -> pending.result().completeExceptionally(
         new IllegalStateException("The application terminated before the host answered")));
-    pendingResults.clear();
+    pendingRequests.clear();
 
     String token = instanceToken.getAndSet(null);
     if (token != null) {
@@ -455,11 +465,13 @@ public final class McpHost {
     try {
       CallToolResult result = answer.get();
       if (result == null) {
+        logger.log(Logger.Level.WARNING, () -> viewDescription + " answered nothing");
         return createRefusal(viewDescription + " answered nothing.");
       }
 
       return result;
     } catch (CancellationException e) {
+      logger.log(Logger.Level.DEBUG, () -> viewDescription + " terminated before answering");
       return createRefusal(viewDescription + " terminated before answering.");
     } catch (ExecutionException e) {
       Throwable cause = e.getCause() == null ? e : e.getCause();
@@ -467,6 +479,7 @@ public final class McpHost {
         cause = wrapped.getCause();
       }
       if (cause instanceof CancellationException) {
+        logger.log(Logger.Level.DEBUG, () -> viewDescription + " terminated before answering");
         return createRefusal(viewDescription + " terminated before answering.");
       }
 
@@ -475,12 +488,16 @@ public final class McpHost {
           + (cause.getMessage() == null ? cause.toString() : cause.getMessage()));
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
+      logger.log(Logger.Level.WARNING,
+          () -> viewDescription + " did not finish answering, the call was interrupted");
       return createRefusal(
           viewDescription + " did not finish answering, the call was interrupted.");
     }
   }
 
   private CallToolResult createNotOnScreenResponse(String appToolName) {
+    logger.log(Logger.Level.DEBUG,
+        () -> describeView(appToolName) + " is not on screen, refusing the server call");
     return createRefusal(describeView(appToolName) + " is not on screen. Call the tool '"
         + appToolName + "' to open it first.");
   }
@@ -492,7 +509,9 @@ public final class McpHost {
   private PendingResult<JsonNode> sendRequest(String method, Map<String, Object> params) {
     String callId = "call-" + callIds.incrementAndGet();
     PendingResult<JsonNode> result = new PendingResult<>();
-    pendingResults.put(callId, result);
+    pendingRequests.put(callId, new PendingRequest(method, result));
+    logger.log(Logger.Level.DEBUG, () -> "Host request sent: " + callId + " " + method + " "
+        + mapper.writeValueAsString(params));
 
     page.executeJsVoidAsync("window.__webforjMcpChannel && window.__webforjMcpChannel.request("
         + mapper.writeValueAsString(callId) + "," + mapper.writeValueAsString(method) + ","
@@ -520,20 +539,26 @@ public final class McpHost {
 
   private void handleResponse(JsonNode message) {
     String callId = message.path("callId").isString() ? message.path("callId").asString() : null;
-    PendingResult<JsonNode> pending = callId == null ? null : pendingResults.remove(callId);
+    PendingRequest pending = callId == null ? null : pendingRequests.remove(callId);
     if (pending == null) {
+      logger.log(Logger.Level.WARNING, () -> "Discarding a host answer to the unknown call '"
+          + callId + "', no request of this connection is waiting for it");
       return;
     }
 
     JsonNode error = message.path("error");
     if (!error.isMissingNode() && !error.isNull()) {
-      pending.completeExceptionally(
+      logger.log(Logger.Level.WARNING,
+          () -> "Host answered " + callId + " " + pending.method() + " with an error: " + error);
+      pending.result().completeExceptionally(
           new IllegalStateException("The host answered with an error: " + error));
       return;
     }
 
     JsonNode result = message.path("result");
-    pending.complete(result.isObject() ? result : mapper.createObjectNode());
+    logger.log(Logger.Level.DEBUG,
+        () -> "Host answered " + callId + " " + pending.method() + ": " + result);
+    pending.result().complete(result.isObject() ? result : mapper.createObjectNode());
   }
 
   private void handleToolResult(JsonNode payload) {
@@ -558,6 +583,8 @@ public final class McpHost {
   private void deliverOpeningInput(JsonNode arguments) {
     Router router = Router.getCurrent();
     if (router == null) {
+      logger.log(Logger.Level.DEBUG,
+          "No router is running, the tool input reaches the listeners only");
       return;
     }
 
@@ -566,6 +593,9 @@ public final class McpHost {
         return;
       }
     }
+
+    logger.log(Logger.Level.DEBUG,
+        "No active view declares an input method, the tool input reaches the listeners only");
   }
 
   private static boolean deliverOpeningInput(Router router, Class<? extends Component> viewType,
@@ -584,6 +614,8 @@ public final class McpHost {
       return false;
     }
 
+    logger.log(Logger.Level.DEBUG,
+        () -> "Delivering the tool input to the input method of " + viewType.getName());
     try {
       inputMethod.invoke(rendered.get(), arguments);
     } catch (RuntimeException e) {
@@ -609,6 +641,8 @@ public final class McpHost {
       McpAppInstances.unbindInstance(previous, this);
     }
 
+    logger.log(Logger.Level.DEBUG,
+        "Bound the host connection to the instance of the tool result, server calls reach it now");
     McpAppInstances.bindInstance(value, this);
   }
 
@@ -622,9 +656,13 @@ public final class McpHost {
     if (router == null) {
       // A deployment without the router published no view tools, so a route cannot arrive here
       // in practice, and without a router there is nothing to navigate.
+      logger.log(Logger.Level.WARNING, () -> "The tool result names the route '" + route.asString()
+          + "' but no router is running, the view stays where it is");
       return;
     }
 
+    logger.log(Logger.Level.DEBUG,
+        () -> "Navigating to the route '" + route.asString() + "' of the tool result");
     router.navigate(new Location(route.asString()));
   }
 
@@ -704,4 +742,6 @@ public final class McpHost {
 
     return McpAppDescriptor.resolveToolName(componentClass, entry.getPath()).equals(appToolName);
   }
+
+  private record PendingRequest(String method, PendingResult<JsonNode> result) {}
 }

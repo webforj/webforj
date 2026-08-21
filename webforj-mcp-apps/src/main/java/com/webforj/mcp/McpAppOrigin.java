@@ -1,6 +1,7 @@
 package com.webforj.mcp;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.lang.System.Logger;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -19,6 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public final class McpAppOrigin {
 
+  private static final Logger logger = System.getLogger(McpAppOrigin.class.getName());
   private final AtomicReference<String> configured = new AtomicReference<>();
   private final AtomicReference<String> observed = new AtomicReference<>();
 
@@ -58,7 +60,9 @@ public final class McpAppOrigin {
       return;
     }
 
-    configured.set(trimTrailingSlashes(origin.trim()));
+    String trimmed = trimTrailingSlashes(origin.trim());
+    configured.set(trimmed);
+    logger.log(Logger.Level.DEBUG, () -> "Origin configured: " + trimmed);
   }
 
   /**
@@ -80,7 +84,12 @@ public final class McpAppOrigin {
       origin.append(':').append(port);
     }
 
-    observed.set(origin.toString());
+    String previous = observed.getAndSet(origin.toString());
+    if (!origin.toString().equals(previous)) {
+      logger.log(Logger.Level.DEBUG,
+          () -> "Origin observed on the MCP endpoint: " + origin + (configured.get() == null ? ""
+              : ", the configured origin " + configured.get() + " still wins"));
+    }
   }
 
   private static String trimTrailingSlashes(String origin) {

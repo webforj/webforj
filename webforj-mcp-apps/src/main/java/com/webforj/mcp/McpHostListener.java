@@ -5,6 +5,7 @@ import com.webforj.AppLifecycleListener;
 import com.webforj.Page;
 import com.webforj.annotation.AppListenerPriority;
 import com.webforj.event.page.PageEventOptions;
+import java.lang.System.Logger;
 
 /**
  * Connects an embedded application to its {@link McpHost}.
@@ -15,6 +16,7 @@ import com.webforj.event.page.PageEventOptions;
 @AppListenerPriority(0)
 public class McpHostListener implements AppLifecycleListener {
 
+  private static final Logger logger = System.getLogger(McpHostListener.class.getName());
   private static final String MESSAGE_EVENT = "webforj-mcp-message";
 
   /**
@@ -28,6 +30,8 @@ public class McpHostListener implements AppLifecycleListener {
 
     Page page = Page.getCurrent();
     McpHost host = new McpHost(page);
+    logger.log(Logger.Level.DEBUG,
+        "The application runs embedded, its host connection is created and waits for messages");
 
     // The application renders in its own document, which no style of the embedding page reaches.
     // The window center scrolls, so a frame smaller than the view never clips it unreachably.

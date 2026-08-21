@@ -6,8 +6,10 @@ import com.webforj.mcp.observer.McpAppUpdateObserver;
 import com.webforj.router.RouteEntry;
 import com.webforj.router.RouteRegistry;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
+import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema.Tool;
+import java.lang.System.Logger;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,6 +27,7 @@ import tools.jackson.databind.json.JsonMapper;
  */
 public final class McpAppRegistry {
 
+  private static final Logger logger = System.getLogger(McpAppRegistry.class.getName());
   private static final Map<String, Object> NO_ARGUMENTS_SCHEMA =
       Map.of("type", "object", "properties", Map.of());
   private static final TypeReference<Map<String, Object>> SCHEMA_MAP = new TypeReference<>() {};
@@ -113,12 +116,20 @@ public final class McpAppRegistry {
     Tool tool = Tool.builder(descriptor.getToolName(), toSchemaMap(descriptor))
         .description(descriptor.getDescription()).meta(toolMeta(descriptor)).build();
 
-    return new SyncToolSpecification(tool,
-        (exchange, request) -> CallToolResult.builder().addTextContent(descriptor.getDescription())
-            .structuredContent(toStructuredContent(descriptor))
-            .meta(Map.of(McpAppInstances.INSTANCE_META_KEY,
-                McpAppInstances.deriveToken(exchange.sessionId(), descriptor.getToolName())))
-            .build());
+    return new SyncToolSpecification(tool, (exchange, request) -> {
+      logCall(exchange.sessionId(), request);
+      CallToolResult result =
+          CallToolResult.builder().addTextContent(descriptor.getDescription())
+              .structuredContent(toStructuredContent(descriptor))
+              .meta(Map.of(McpAppInstances.INSTANCE_META_KEY,
+                  McpAppInstances.deriveToken(exchange.sessionId(), descriptor.getToolName())))
+              .build();
+      logger.log(Logger.Level.DEBUG,
+          () -> "Tool '" + request.name() + "' opens the view at the" + " route '"
+              + descriptor.getRoute() + "' in " + descriptor.getDisplayMode().getValue()
+              + " mode, the host renders the resource " + tool.meta());
+      return result;
+    });
   }
 
   private static boolean canAnswerUpdates(McpAppDescriptor descriptor) {
@@ -134,9 +145,11 @@ public final class McpAppRegistry {
             + " rendering it again. Call '" + name + "' first when it is not open.")
         .build();
 
-    return new SyncToolSpecification(tool,
-        (exchange, request) -> McpAppInstances.answerUpdateCall(exchange.sessionId(), name,
-            JsonMapper.shared().valueToTree(request.arguments())));
+    return new SyncToolSpecification(tool, (exchange, request) -> {
+      logCall(exchange.sessionId(), request);
+      return logAnswer(request, McpAppInstances.answerUpdateCall(exchange.sessionId(), name,
+          JsonMapper.shared().valueToTree(request.arguments())));
+    });
   }
 
   private static SyncToolSpecification toActionSpecification(McpAppDescriptor viewDescriptor,
@@ -147,10 +160,31 @@ public final class McpAppRegistry {
     Tool tool = Tool.builder(actionDescriptor.getToolName(), inputSchema)
         .description(actionDescriptor.getDescription()).build();
 
-    return new SyncToolSpecification(tool,
-        (exchange, request) -> McpAppInstances.answerActionCall(exchange.sessionId(),
-            viewDescriptor.getToolName(), actionDescriptor,
-            JsonMapper.shared().valueToTree(request.arguments())));
+    return new SyncToolSpecification(tool, (exchange, request) -> {
+      logCall(exchange.sessionId(), request);
+      return logAnswer(request,
+          McpAppInstances.answerActionCall(exchange.sessionId(), viewDescriptor.getToolName(),
+              actionDescriptor, JsonMapper.shared().valueToTree(request.arguments())));
+    });
+  }
+
+  private static void logCall(String sessionId, CallToolRequest request) {
+    logger.log(Logger.Level.DEBUG,
+        () -> "Tool '" + request.name() + "' called by session " + sessionId + " with arguments "
+            + JsonMapper.shared()
+                .writeValueAsString(request.arguments() == null ? Map.of() : request.arguments()));
+  }
+
+  private static CallToolResult logAnswer(CallToolRequest request, CallToolResult result) {
+    if (Boolean.TRUE.equals(result.isError())) {
+      logger.log(Logger.Level.WARNING, () -> "Tool '" + request.name()
+          + "' answered with an error: " + JsonMapper.shared().writeValueAsString(result));
+    } else {
+      logger.log(Logger.Level.DEBUG, () -> "Tool '" + request.name() + "' answered: "
+          + JsonMapper.shared().writeValueAsString(result));
+    }
+
+    return result;
   }
 
   private static void requireUniqueToolNames(Iterable<McpAppDescriptor> descriptors) {

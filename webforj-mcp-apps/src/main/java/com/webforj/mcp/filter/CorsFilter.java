@@ -9,8 +9,11 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.System.Logger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Answers the cross origin requests an embedded application makes back to its own server.
@@ -27,6 +30,7 @@ import java.util.List;
  */
 public class CorsFilter implements Filter {
 
+  private static final Logger logger = System.getLogger(CorsFilter.class.getName());
   private static final String ORIGIN = "Origin";
   private static final String PREFLIGHT_METHOD = "OPTIONS";
   private static final String ALLOWED_METHODS = "GET, POST, DELETE, OPTIONS";
@@ -35,6 +39,7 @@ public class CorsFilter implements Filter {
       List.of("https://*.claudemcpcontent.com", "https://*.claudeusercontent.com",
           "https://*.oaiusercontent.com", "codex-sandbox://*.oaiusercontent.com");
   private final List<String> allowedOrigins;
+  private final Set<String> refusedOrigins = ConcurrentHashMap.newKeySet();
 
   /**
    * Creates a filter reading the allowed origins from the deployment configuration.
@@ -95,6 +100,14 @@ public class CorsFilter implements Filter {
     }
 
     if (!isAllowed(origin)) {
+      if (refusedOrigins.add(origin)) {
+        // Every request of the application itself carries its own origin, so the refusal is
+        // reported once per origin instead of once per request.
+        logger.log(Logger.Level.DEBUG,
+            () -> "The origin " + origin + " is not allowed to embed"
+                + " the application, its requests get no CORS headers. Add it to "
+                + McpAppOptions.KEY_ALLOWED_ORIGINS + " if it is a host of yours.");
+      }
       if (PREFLIGHT_METHOD.equalsIgnoreCase(httpRequest.getMethod())) {
         httpResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
         return;
