@@ -42,7 +42,7 @@ public final class BunRuntime {
    * The Bun version used when a runtime is built without an explicit version. This is the single
    * source of the default across the bundler and the build plugins.
    */
-  public static final String DEFAULT_VERSION = "1.3.14";
+  public static final String DEFAULT_VERSION = "1.4.0";
 
   // The reported os.arch differs across JVMs and platforms. These are the spellings
   // that mean a 64 bit Intel or 64 bit ARM CPU, the only two CPU families Bun ships.

@@ -67,6 +67,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-m2-
 
+      - name: Cache Bun binaries
+        uses: actions/cache@v4
+        with:
+          path: ~/.webforj/bun
+          key: ${{ runner.os }}-bun-${{ hashFiles('webforj-bundle/webforj-bundle-bun/src/main/java/com/webforj/bundle/bun/runtime/BunRuntime.java') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
       - name: Verify with Maven
         run: mvn -B install
 
