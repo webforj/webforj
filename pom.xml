@@ -221,8 +221,8 @@
           <configuration>
             <java>
               <includes>
-                <include>src/main/java/**/*.java</include>
-                <include>src/test/java/**/*.java</include>
+                <include>**/src/main/java/**/*.java</include>
+                <include>**/src/test/java/**/*.java</include>
               </includes>
               <googleJavaFormat>
                 <version>1.36.1</version>
@@ -231,8 +231,8 @@
             </java>
             <kotlin>
               <includes>
-                <include>src/main/kotlin/**/*.kt</include>
-                <include>src/test/kotlin/**/*.kt</include>
+                <include>**/src/main/kotlin/**/*.kt</include>
+                <include>**/src/test/kotlin/**/*.kt</include>
               </includes>
               <ktfmt>
                 <version>0.64</version>
