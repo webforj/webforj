@@ -229,6 +229,16 @@
                 <style>GOOGLE</style>
               </googleJavaFormat>
             </java>
+            <kotlin>
+              <includes>
+                <include>src/main/kotlin/**/*.kt</include>
+                <include>src/test/kotlin/**/*.kt</include>
+              </includes>
+              <ktfmt>
+                <version>0.64</version>
+                <style>KOTLINLANG</style>
+              </ktfmt>
+            </kotlin>
           </configuration>
         </plugin>
 
