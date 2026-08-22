@@ -236,7 +236,7 @@
               </includes>
               <ktfmt>
                 <version>0.64</version>
-                <style>KOTLINLANG</style>
+                <style>GOOGLE</style>
               </ktfmt>
             </kotlin>
           </configuration>
