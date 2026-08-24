@@ -224,10 +224,11 @@
                 <include>**/src/main/java/**/*.java</include>
                 <include>**/src/test/java/**/*.java</include>
               </includes>
-              <googleJavaFormat>
-                <version>1.36.1</version>
-                <style>GOOGLE</style>
-              </googleJavaFormat>
+              <eclipse>
+                <file>
+                  https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml
+                </file>
+              </eclipse>
             </java>
             <kotlin>
               <includes>
