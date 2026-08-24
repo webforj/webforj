@@ -238,20 +238,10 @@
                 <include>**/src/test/kotlin/**/*.kt</include>
               </includes>
               <ktfmt>
-                <version>0.64</version>
                 <style>GOOGLE</style>
               </ktfmt>
             </kotlin>
           </configuration>
-          <executions>
-            <execution>
-              <id>spotless-check</id>
-              <phase>verify</phase>
-              <goals>
-                <goal>check</goal>
-              </goals>
-            </execution>
-          </executions>
         </plugin>
 
         <plugin>
@@ -272,6 +262,20 @@
         <groupId>org.sonatype.central</groupId>
         <artifactId>central-publishing-maven-plugin</artifactId>
         <extensions>true</extensions>
+      </plugin>
+
+      <plugin>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>spotless-check</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
 
       <plugin>
