@@ -15,7 +15,7 @@
 
   <properties>
     <!-- The SDK version Spring AI 2.0.0 resolves -->
-    <mcp.sdk.version>2.0.0</mcp.sdk.version>
+    <mcp.sdk.version>2.0.1</mcp.sdk.version>
   </properties>
   <description>webforJ MCP integration and MCP apps</description>
 
