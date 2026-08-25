@@ -8,6 +8,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates a Feather `Icon`.
+ *
  * ```
  * ... {
  *  featherIcon(FeatherIcon.SAVE)
@@ -22,4 +23,7 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Icon`.
  * @see FeatherIcon
  */
-fun @WebforjDsl HasComponents.featherIcon(icon: FeatherIcon, block: @WebforjDsl Icon.() -> Unit = {}): Icon = init(icon.create(), block)
+fun @WebforjDsl HasComponents.featherIcon(
+  icon: FeatherIcon,
+  block: @WebforjDsl Icon.() -> Unit = {},
+): Icon = init(icon.create(), block)

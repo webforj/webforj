@@ -7,6 +7,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates an `Anchor` with an optional [href], [text] and / or [target].
+ *
  * ```
  * ... {
  *   Anchor() // Empty a element
@@ -29,21 +30,24 @@ import com.webforj.kotlin.dsl.init
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a">Html a Tag</a>
  */
 fun @WebforjDsl HasComponents.anchor(
-    href: String? = null,
-    text: String? = null,
-    target: String? = null,
-    block: @WebforjDsl Anchor.() -> Unit = {}
+  href: String? = null,
+  text: String? = null,
+  target: String? = null,
+  block: @WebforjDsl Anchor.() -> Unit = {},
 ): Anchor {
-    val anchor = when {
+  val anchor =
+    when {
       target != null && href != null && text != null -> Anchor(href, text, target)
       href != null && text != null -> Anchor(href, text)
-      text != null -> Anchor(text).apply {
-        target?.let { setTarget(it) }
-      }
-      else -> Anchor().apply {
-        href?.let { setHref(it) }
-        target?.let { setTarget(it) }
-      }
+      text != null ->
+        Anchor(text).apply {
+          target?.let { setTarget(it) }
+        }
+      else ->
+        Anchor().apply {
+          href?.let { setHref(it) }
+          target?.let { setTarget(it) }
+        }
     }
-    return init(anchor, block)
+  return init(anchor, block)
 }

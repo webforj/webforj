@@ -6,7 +6,9 @@ import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
 
 /**
- * Creates a `MarkdownViewer` component with optional [content] for displaying Markdown formatted text.
+ * Creates a `MarkdownViewer` component with optional [content] for displaying Markdown formatted
+ * text.
+ *
  * ```
  * ... {
  *   markdownViewer() // Empty MarkdownViewer component
@@ -27,7 +29,10 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `MarkdownViewer`.
  * @see MarkdownViewer
  */
-fun @WebforjDsl HasComponents.markdownViewer(content: String? = null, block: @WebforjDsl MarkdownViewer.() -> Unit = {}): MarkdownViewer {
+fun @WebforjDsl HasComponents.markdownViewer(
+  content: String? = null,
+  block: @WebforjDsl MarkdownViewer.() -> Unit = {},
+): MarkdownViewer {
   val viewer = content?.let { MarkdownViewer(it) } ?: MarkdownViewer()
   return init(viewer, block)
 }

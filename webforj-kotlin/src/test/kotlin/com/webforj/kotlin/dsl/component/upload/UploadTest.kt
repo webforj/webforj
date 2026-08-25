@@ -4,16 +4,15 @@ import com.webforj.component.html.elements.Div
 import com.webforj.component.optiondialog.FileChooserFilter
 import com.webforj.component.upload.Upload
 import com.webforj.concern.HasComponents
+import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertSame
 
 class UploadTest {
   lateinit var root: HasComponents

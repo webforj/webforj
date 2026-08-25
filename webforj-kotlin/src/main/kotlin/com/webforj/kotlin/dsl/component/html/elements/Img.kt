@@ -7,6 +7,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates an `Img` with an optional [src] and / or [alt] value.
+ *
  * ```
  * ... {
  *   img() // Empty img element
@@ -15,6 +16,7 @@ import com.webforj.kotlin.dsl.init
  *   img("src", "alt") // img with source and alt text
  * }
  * ```
+ *
  * @param src The source of the image.
  * @param alt The alt text of the image.
  * @param block The initialization steps for the `Img`.
@@ -22,13 +24,18 @@ import com.webforj.kotlin.dsl.init
  * @see Img
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img">HTML img Tag</a>
  */
-fun @WebforjDsl HasComponents.img(src: String? = null, alt: String? = null, block: @WebforjDsl Img.() -> Unit = {}): Img {
-    val img = if (alt != null && src != null) {
-        Img(src, alt)
+fun @WebforjDsl HasComponents.img(
+  src: String? = null,
+  alt: String? = null,
+  block: @WebforjDsl Img.() -> Unit = {},
+): Img {
+  val img =
+    if (alt != null && src != null) {
+      Img(src, alt)
     } else if (src != null) {
-        Img(src)
+      Img(src)
     } else {
-        Img().apply { alt?.let { setAlt(it) } }
+      Img().apply { alt?.let { setAlt(it) } }
     }
-    return init(img, block)
+  return init(img, block)
 }

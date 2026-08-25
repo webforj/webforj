@@ -7,10 +7,10 @@ import com.webforj.kotlin.extension.percent
 import com.webforj.kotlin.extension.set
 import com.webforj.kotlin.extension.size
 import com.webforj.kotlin.extension.styles
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class TerminalTest {
   lateinit var root: HasComponents
@@ -23,9 +23,9 @@ class TerminalTest {
   @Test
   fun shouldCreateExample() {
     val terminal = root.terminal {
-        isAutoFit = true
-        size = 95.percent to 95.percent
-        styles["margin"] = "var(--dwc-space-m)"
+      isAutoFit = true
+      size = 95.percent to 95.percent
+      styles["margin"] = "var(--dwc-space-m)"
     }
     assertTrue { root.hasComponent(terminal) }
     assertTrue { terminal.isAutoFit }

@@ -7,6 +7,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates an `Element` component with optional [node] and/or [html] content.
+ *
  * ```
  * ... {
  *   element() // Empty Element component
@@ -25,13 +26,19 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Element` instance.
  * @see Element
  */
-fun @WebforjDsl HasComponents.element(node: String? = null, html: String? = null, block: @WebforjDsl Element.() -> Unit = {}): Element {
-  val element = when {
-    node != null && html != null -> Element(node, html)
-    node != null -> Element(node)
-    else -> Element().apply {
-      html?.let { setHtml(it) }
+fun @WebforjDsl HasComponents.element(
+  node: String? = null,
+  html: String? = null,
+  block: @WebforjDsl Element.() -> Unit = {},
+): Element {
+  val element =
+    when {
+      node != null && html != null -> Element(node, html)
+      node != null -> Element(node)
+      else ->
+        Element().apply {
+          html?.let { setHtml(it) }
+        }
     }
-  }
   return init(element, block)
 }

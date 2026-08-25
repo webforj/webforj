@@ -9,6 +9,7 @@ import com.webforj.kotlin.extension.suffixSlot
 
 /**
  * Creates a `TextFieldSpinner` with an optional [label], [value] and [placeholder].
+ *
  * ```
  * ... {
  *   textField() // Empty TextFieldSpinner component
@@ -36,18 +37,22 @@ fun @WebforjDsl HasComponents.textFieldSpinner(
   label: String? = null,
   value: String? = null,
   placeholder: String? = null,
-  block: @WebforjDsl TextFieldSpinner.() -> Unit = {}
+  block: @WebforjDsl TextFieldSpinner.() -> Unit = {},
 ): TextFieldSpinner {
-  val textField = when {
-    placeholder != null && value != null && label != null -> TextFieldSpinner(label, value, placeholder)
-    value != null && label != null -> TextFieldSpinner(label, value)
-    label != null -> TextFieldSpinner(label).apply {
-      placeholder?.let { setPlaceholder(it) }
+  val textField =
+    when {
+      placeholder != null && value != null && label != null ->
+        TextFieldSpinner(label, value, placeholder)
+      value != null && label != null -> TextFieldSpinner(label, value)
+      label != null ->
+        TextFieldSpinner(label).apply {
+          placeholder?.let { setPlaceholder(it) }
+        }
+      else ->
+        TextFieldSpinner().apply {
+          value?.let { setValue(it) }
+          placeholder?.let { setPlaceholder(it) }
+        }
     }
-    else -> TextFieldSpinner().apply {
-      value?.let { setValue(it) }
-      placeholder?.let { setPlaceholder(it) }
-    }
-  }
   return init(textField, block)
 }

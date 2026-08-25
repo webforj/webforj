@@ -7,6 +7,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates an `Avatar` with an optional [label] and/or [initials].
+ *
  * ```
  * ... {
  *   avatar() // Empty Avatar component
@@ -26,14 +27,16 @@ import com.webforj.kotlin.dsl.init
 fun @WebforjDsl HasComponents.avatar(
   label: String? = null,
   initials: String? = null,
-  block: @WebforjDsl Avatar.() -> Unit = {}
+  block: @WebforjDsl Avatar.() -> Unit = {},
 ): Avatar {
-  val avatar = when {
-    initials != null && label != null -> Avatar(label, initials)
-    label != null -> Avatar(label)
-    else -> Avatar().apply {
-      initials?.let { setInitials(it) }
+  val avatar =
+    when {
+      initials != null && label != null -> Avatar(label, initials)
+      label != null -> Avatar(label)
+      else ->
+        Avatar().apply {
+          initials?.let { setInitials(it) }
+        }
     }
-  }
   return init(avatar, block)
 }

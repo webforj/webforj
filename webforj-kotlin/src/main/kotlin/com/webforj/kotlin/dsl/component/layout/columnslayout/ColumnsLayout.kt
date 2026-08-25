@@ -7,6 +7,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates a `ColumnsLayout` with optional responsive [breakpoints].
+ *
  * ```
  * columnsLayout(
  *   ColumnsLayout.Breakpoint("mobile", "30em", 1),
@@ -17,12 +18,12 @@ import com.webforj.kotlin.dsl.init
  *     label("Header Section")
  *     paragraph("Responsive layout with breakpoints")
  *   }
- *   
+ *
  *   div {
  *     textField("Search", placeholder = "Search items...")
  *     button("Search")
  *   }
- *   
+ *
  *   div {
  *     checkBox("Show advanced options")
  *     div {
@@ -39,12 +40,13 @@ import com.webforj.kotlin.dsl.init
  */
 fun @WebforjDsl HasComponents.columnsLayout(
   vararg breakpoints: ColumnsLayout.Breakpoint = emptyArray(),
-  block: @WebforjDsl ColumnsLayout.() -> Unit = {}
+  block: @WebforjDsl ColumnsLayout.() -> Unit = {},
 ): ColumnsLayout {
-  val layout = if (breakpoints.isNotEmpty()) {
-    ColumnsLayout(breakpoints.toList())
-  } else {
-    ColumnsLayout()
-  }
+  val layout =
+    if (breakpoints.isNotEmpty()) {
+      ColumnsLayout(breakpoints.toList())
+    } else {
+      ColumnsLayout()
+    }
   return init(layout, block)
 }

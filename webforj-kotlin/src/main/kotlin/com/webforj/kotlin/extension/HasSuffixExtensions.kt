@@ -6,9 +6,7 @@ import com.webforj.concern.HasSuffix
 import com.webforj.kotlin.dsl.SingleSlotSetter
 import com.webforj.kotlin.dsl.WebforjDsl
 
-/**
- * The currently set suffix [Component] or `null` if none is set yet.
- */
+/** The currently set suffix [Component] or `null` if none is set yet. */
 val HasSuffix<*>.suffix: Component?
   get() = suffixComponent
 

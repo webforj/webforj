@@ -7,6 +7,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates a `GoogleChart` with an optional [type].
+ *
  * ```
  * ... {
  *   googleChart(GoogleChart.Type.GEO) {
@@ -48,7 +49,10 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `GoogleChart`.
  * @see GoogleChart
  */
-fun @WebforjDsl HasComponents.googleChart(type: GoogleChart.Type? = null, block: @WebforjDsl GoogleChart.() -> Unit = {}): GoogleChart {
+fun @WebforjDsl HasComponents.googleChart(
+  type: GoogleChart.Type? = null,
+  block: @WebforjDsl GoogleChart.() -> Unit = {},
+): GoogleChart {
   val chart = type?.let { GoogleChart(it) } ?: GoogleChart()
   return init(chart, block)
 }

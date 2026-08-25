@@ -4,7 +4,7 @@ import com.webforj.component.Component
 import com.webforj.concern.HasComponents
 
 @WebforjDsl
-class SingleSlotSetter(block: @WebforjDsl HasComponents.() -> Component): HasComponents {
+class SingleSlotSetter(block: @WebforjDsl HasComponents.() -> Component) : HasComponents {
   val component: Component = block()
 
   fun <T> setSlot(instance: T, setter: @WebforjDsl T.(Component) -> Unit) {
@@ -41,5 +41,4 @@ class SingleSlotSetter(block: @WebforjDsl HasComponents.() -> Component): HasCom
   override fun getComponents() = listOf(component)
 
   override fun getComponent(id: String?) = component.takeIf { it.componentId == id }
-
 }

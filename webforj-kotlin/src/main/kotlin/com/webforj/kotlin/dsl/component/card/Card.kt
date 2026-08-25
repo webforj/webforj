@@ -13,6 +13,7 @@ import com.webforj.kotlin.dsl.init
  *
  * The components added directly inside the block make up the card's body. Every other region is
  * filled through its own slot and a region without content is not rendered at all.
+ *
  * ```
  * ... {
  *   card() // Empty Card component
@@ -67,15 +68,16 @@ fun @WebforjDsl HasComponents.card(
   orientation: Card.Orientation? = null,
   divided: Boolean? = null,
   borderless: Boolean? = null,
-  block: @WebforjDsl Card.() -> Unit = {}
+  block: @WebforjDsl Card.() -> Unit = {},
 ): Card {
-  val card = Card().apply {
-    shadow?.let { setShadow(it) }
-    expanse?.let { setExpanse(it) }
-    orientation?.let { setOrientation(it) }
-    divided?.let { setDivided(it) }
-    borderless?.let { setBorderless(it) }
-  }
+  val card =
+    Card().apply {
+      shadow?.let { setShadow(it) }
+      expanse?.let { setExpanse(it) }
+      orientation?.let { setOrientation(it) }
+      divided?.let { setDivided(it) }
+      borderless?.let { setBorderless(it) }
+    }
   return init(card, block)
 }
 
@@ -83,6 +85,7 @@ fun @WebforjDsl HasComponents.card(
  * Configures the components to add to the figure slot of a `Card`.
  *
  * The figure holds the card's illustration, for instance an image, a video or a chart.
+ *
  * ```
  * card {
  *   figureSlot {
@@ -101,6 +104,7 @@ fun @WebforjDsl Card.figureSlot(block: @WebforjDsl HasComponents.() -> Unit) {
  * Configures the components to add to the icon slot of a `Card`.
  *
  * The icon is the leading visual of the header row.
+ *
  * ```
  * card {
  *   iconSlot {
@@ -119,6 +123,7 @@ fun @WebforjDsl Card.iconSlot(block: @WebforjDsl HasComponents.() -> Unit) {
  * Configures the components to add to the title slot of a `Card`.
  *
  * The title names the card and is also used as the card's accessible name.
+ *
  * ```
  * card {
  *   titleSlot {
@@ -137,6 +142,7 @@ fun @WebforjDsl Card.titleSlot(block: @WebforjDsl HasComponents.() -> Unit) {
  * Configures the components to add to the caption slot of a `Card`.
  *
  * The caption is a short secondary line rendered under the title.
+ *
  * ```
  * card {
  *   captionSlot {
@@ -155,6 +161,7 @@ fun @WebforjDsl Card.captionSlot(block: @WebforjDsl HasComponents.() -> Unit) {
  * Configures the components to add to the header actions slot of a `Card`.
  *
  * The header actions sit at the end of the header row and typically hold buttons or a menu.
+ *
  * ```
  * card {
  *   headerActionsSlot {
@@ -174,6 +181,7 @@ fun @WebforjDsl Card.headerActionsSlot(block: @WebforjDsl HasComponents.() -> Un
  * Configures the components to add to the footer slot of a `Card`.
  *
  * The footer closes the card and typically holds actions or metadata.
+ *
  * ```
  * card {
  *   footerSlot {

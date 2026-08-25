@@ -2,11 +2,11 @@ package com.webforj.kotlin.dsl.component.element
 
 import com.webforj.component.html.elements.Div
 import com.webforj.concern.HasComponents
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class ElementTest {
   lateinit var root: HasComponents
@@ -50,13 +50,13 @@ class ElementTest {
 
   @Test
   fun shouldCreateElementWithNodeHtmlAndBlock() {
-    val element = root.element("node", "<span>Content</span>") {
-      name = "Element"
-    }
+    val element =
+      root.element("node", "<span>Content</span>") {
+        name = "Element"
+      }
     assertTrue { root.hasComponent(element) }
     assertEquals("node", element.nodeName)
     assertEquals("<span>Content</span>", element.html)
     assertEquals("Element", element.name)
   }
-
 }

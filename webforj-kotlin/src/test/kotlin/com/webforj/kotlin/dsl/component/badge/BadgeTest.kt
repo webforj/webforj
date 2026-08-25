@@ -3,11 +3,11 @@ package com.webforj.kotlin.dsl.component.badge
 import com.webforj.component.badge.BadgeTheme
 import com.webforj.component.html.elements.Div
 import com.webforj.concern.HasComponents
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class BadgeTest {
   lateinit var root: HasComponents
@@ -37,7 +37,7 @@ class BadgeTest {
   @MethodSource("provideBadges")
   fun shouldCreateBadgeWithoutBlock(
     text: String?,
-    theme: BadgeTheme?
+    theme: BadgeTheme?,
   ) {
     val badge = root.badge(text, theme)
     assertTrue { root.hasComponent(badge) }
@@ -49,11 +49,12 @@ class BadgeTest {
   @MethodSource("provideBadges")
   fun shouldCreateBadgeWithBlock(
     text: String?,
-    theme: BadgeTheme?
+    theme: BadgeTheme?,
   ) {
-    val badge = root.badge(text, theme) {
-      name = "Badge"
-    }
+    val badge =
+      root.badge(text, theme) {
+        name = "Badge"
+      }
     assertTrue { root.hasComponent(badge) }
     assertEquals(text ?: "", badge.label)
     assertEquals(theme ?: BadgeTheme.DEFAULT, badge.theme)

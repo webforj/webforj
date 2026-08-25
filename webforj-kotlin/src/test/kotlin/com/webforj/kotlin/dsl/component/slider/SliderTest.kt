@@ -3,12 +3,12 @@ package com.webforj.kotlin.dsl.component.slider
 import com.webforj.component.Theme
 import com.webforj.component.html.elements.Div
 import com.webforj.component.slider.Slider.Orientation
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class SliderTest {
 
@@ -60,9 +60,10 @@ class SliderTest {
     orientation: Orientation?,
   ) {
     val root = Div()
-    val slider = root.slider(value, min, max, orientation) {
-      name = "Slider"
-    }
+    val slider =
+      root.slider(value, min, max, orientation) {
+        name = "Slider"
+      }
     assertTrue { root.hasComponent(slider) }
     assertEquals(value ?: 50, slider.value)
     assertEquals(min ?: 0, slider.min)
@@ -74,39 +75,42 @@ class SliderTest {
   @Test
   @DisplayName("Create Slider example")
   fun shouldCreateSliderExample() {
-    val labelMap = mapOf(
-      0 to "Cold",
-      30 to "Cool",
-      50 to "Moderate",
-      75 to "Warm",
-      100 to "Hot"
-    )
-    val slider = Div().slider(50) {
-      isFilled = true
-      isTicksVisible = true
-      majorTickSpacing = 10
-      minorTickSpacing = 2
-      isAllowMajorLabelsOverlap = true
-      isTooltipVisible = true
-      theme = Theme.SUCCESS
-      labels = mapOf(
+    val labelMap =
+      mapOf(
         0 to "Cold",
         30 to "Cool",
         50 to "Moderate",
         75 to "Warm",
-        100 to "Hot"
+        100 to "Hot",
       )
-      isSnapToTicks = true
-      width = "500px"
-      onValueChange {
-        when(value) {
-          in 0..<30 -> theme = Theme.PRIMARY
-          in 30..<50 -> theme = Theme.SUCCESS
-          in 50..<75 -> theme = Theme.WARNING
-          in 75..100 -> theme = Theme.DANGER
+    val slider =
+      Div().slider(50) {
+        isFilled = true
+        isTicksVisible = true
+        majorTickSpacing = 10
+        minorTickSpacing = 2
+        isAllowMajorLabelsOverlap = true
+        isTooltipVisible = true
+        theme = Theme.SUCCESS
+        labels =
+          mapOf(
+            0 to "Cold",
+            30 to "Cool",
+            50 to "Moderate",
+            75 to "Warm",
+            100 to "Hot",
+          )
+        isSnapToTicks = true
+        width = "500px"
+        onValueChange {
+          when (value) {
+            in 0..<30 -> theme = Theme.PRIMARY
+            in 30..<50 -> theme = Theme.SUCCESS
+            in 50..<75 -> theme = Theme.WARNING
+            in 75..100 -> theme = Theme.DANGER
+          }
         }
       }
-    }
     assertEquals(50, slider.value)
     assertEquals(true, slider.isFilled)
     assertEquals(true, slider.isTicksVisible)
@@ -119,5 +123,4 @@ class SliderTest {
     assertEquals(true, slider.isSnapToTicks)
     assertEquals("500px", slider.width)
   }
-
 }

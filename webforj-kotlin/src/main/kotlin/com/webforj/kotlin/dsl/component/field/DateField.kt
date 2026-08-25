@@ -9,7 +9,8 @@ import com.webforj.kotlin.extension.suffixSlot
 import java.time.LocalDate
 
 /**
- * Creates a `DateField` with an optional [label] and/or  [value].
+ * Creates a `DateField` with an optional [label] and/or [value].
+ *
  * ```
  * ... {
  *   dateField() // Empty DateField component
@@ -33,13 +34,14 @@ import java.time.LocalDate
 fun @WebforjDsl HasComponents.dateField(
   label: String? = null,
   value: LocalDate? = null,
-  block: @WebforjDsl DateField.() -> Unit = {}
+  block: @WebforjDsl DateField.() -> Unit = {},
 ): DateField {
-  val dateField = when {
-    value != null && label != null -> DateField(label, value)
-    label != null -> DateField(label)
-    value != null -> DateField(value)
-    else -> DateField()
-  }
+  val dateField =
+    when {
+      value != null && label != null -> DateField(label, value)
+      label != null -> DateField(label)
+      value != null -> DateField(value)
+      else -> DateField()
+    }
   return init(dateField, block)
 }

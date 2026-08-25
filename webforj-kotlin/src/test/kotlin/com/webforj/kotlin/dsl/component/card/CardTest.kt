@@ -15,12 +15,12 @@ import com.webforj.kotlin.dsl.component.button.button
 import com.webforj.kotlin.dsl.component.html.elements.h3
 import com.webforj.kotlin.dsl.component.html.elements.img
 import com.webforj.kotlin.dsl.component.html.elements.paragraph
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class CardTest {
   lateinit var root: HasComponents
@@ -81,13 +81,14 @@ class CardTest {
 
   @Test
   fun shouldCreateCardWithAllSettings() {
-    val card = root.card(
-      shadow = Card.Shadow.NONE,
-      expanse = Expanse.LARGE,
-      orientation = Card.Orientation.HORIZONTAL,
-      divided = true,
-      borderless = true
-    )
+    val card =
+      root.card(
+        shadow = Card.Shadow.NONE,
+        expanse = Expanse.LARGE,
+        orientation = Card.Orientation.HORIZONTAL,
+        divided = true,
+        borderless = true,
+      )
 
     assertEquals(Card.Shadow.NONE, card.shadow)
     assertEquals(Expanse.LARGE, card.expanse)
@@ -215,7 +216,7 @@ class CardTest {
   @Test
   fun shouldAddClickListener() {
     val card = root.card {
-      onClick { }
+      onClick {}
     }
 
     assertEquals(1, card.getEventListeners(ElementClickEvent::class.java).size)
@@ -224,7 +225,7 @@ class CardTest {
   @Test
   fun shouldRemoveClickListener() {
     val card = root.card()
-    val registration = card.addClickListener { }
+    val registration = card.addClickListener {}
 
     assertEquals(1, card.getEventListeners(ElementClickEvent::class.java).size)
 
@@ -235,33 +236,34 @@ class CardTest {
 
   @Test
   fun shouldCreateExample() {
-    val card = root.card(
-      shadow = Card.Shadow.LARGE,
-      expanse = Expanse.MEDIUM,
-      orientation = Card.Orientation.HORIZONTAL,
-      divided = true
-    ) {
-      figureSlot {
-        img("cover.png", "A cover")
+    val card =
+      root.card(
+        shadow = Card.Shadow.LARGE,
+        expanse = Expanse.MEDIUM,
+        orientation = Card.Orientation.HORIZONTAL,
+        divided = true,
+      ) {
+        figureSlot {
+          img("cover.png", "A cover")
+        }
+        iconSlot {
+          avatar("Aang", "AA")
+        }
+        titleSlot {
+          h3("Card Title")
+        }
+        captionSlot {
+          paragraph("Card caption")
+        }
+        headerActionsSlot {
+          button("Share")
+        }
+        paragraph("Card body content")
+        footerSlot {
+          button("Read more")
+        }
+        onClick {}
       }
-      iconSlot {
-        avatar("Aang", "AA")
-      }
-      titleSlot {
-        h3("Card Title")
-      }
-      captionSlot {
-        paragraph("Card caption")
-      }
-      headerActionsSlot {
-        button("Share")
-      }
-      paragraph("Card body content")
-      footerSlot {
-        button("Read more")
-      }
-      onClick { }
-    }
 
     assertTrue { root.hasComponent(card) }
     assertEquals(7, card.componentCount)

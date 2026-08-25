@@ -7,6 +7,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates an `InfiniteScroll` component with optional [text] for loading infinite content.
+ *
  * ```
  * ... {
  *   infiniteScroll() // Empty InfiniteScroll component
@@ -25,7 +26,10 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `InfiniteScroll`.
  * @see InfiniteScroll
  */
-fun @WebforjDsl HasComponents.infiniteScroll(text: String? = null, block: @WebforjDsl InfiniteScroll.() -> Unit = {}): InfiniteScroll {
+fun @WebforjDsl HasComponents.infiniteScroll(
+  text: String? = null,
+  block: @WebforjDsl InfiniteScroll.() -> Unit = {},
+): InfiniteScroll {
   val scroll = text?.let { InfiniteScroll(it) } ?: InfiniteScroll()
   return init(scroll, block)
 }

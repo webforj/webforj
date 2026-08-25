@@ -10,6 +10,7 @@ import java.time.LocalTime
 
 /**
  * Creates a `TimeField` with an optional [label] and/or [value].
+ *
  * ```
  * ... {
  *   timeField() // Empty TimeField component
@@ -33,13 +34,14 @@ import java.time.LocalTime
 fun @WebforjDsl HasComponents.timeField(
   label: String? = null,
   value: LocalTime? = null,
-  block: @WebforjDsl TimeField.() -> Unit = {}
+  block: @WebforjDsl TimeField.() -> Unit = {},
 ): TimeField {
-  val timeField = when {
-    value != null && label != null -> TimeField(label, value)
-    label != null -> TimeField(label)
-    value != null -> TimeField(value)
-    else -> TimeField()
-  }
+  val timeField =
+    when {
+      value != null && label != null -> TimeField(label, value)
+      label != null -> TimeField(label)
+      value != null -> TimeField(value)
+      else -> TimeField()
+    }
   return init(timeField, block)
 }

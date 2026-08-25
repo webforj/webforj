@@ -4,15 +4,15 @@ import com.webforj.component.html.elements.Div
 import com.webforj.component.text.Label
 import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.component.text.label
+import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 
 class SplitterTest {
   lateinit var root: HasComponents
@@ -69,9 +69,10 @@ class SplitterTest {
     val id = "content-splitter"
     val blockExecuted = AtomicBoolean(false)
 
-    val splitter = root.splitter(id) {
-      blockExecuted.set(true)
-    }
+    val splitter =
+      root.splitter(id) {
+        blockExecuted.set(true)
+      }
 
     assertNotNull(splitter)
     assertTrue(root.hasComponent(splitter))
@@ -132,5 +133,4 @@ class SplitterTest {
     val detail = splitter.detail
     assertNotNull(detail)
   }
-
 }

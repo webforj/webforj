@@ -10,6 +10,7 @@ import java.awt.Color
 
 /**
  * Creates a `ColorField` with an optional [label] and/or [value].
+ *
  * ```
  * ... {
  *   colorField() // Empty ColorField component
@@ -31,15 +32,16 @@ import java.awt.Color
  * @see Color
  */
 fun @WebforjDsl HasComponents.colorField(
-    label: String? = null,
-    value: Color? = null,
-    block: @WebforjDsl ColorField.() -> Unit = {}
+  label: String? = null,
+  value: Color? = null,
+  block: @WebforjDsl ColorField.() -> Unit = {},
 ): ColorField {
-    val colorField = when {
+  val colorField =
+    when {
       value != null && label != null -> ColorField(label, value)
       value != null -> ColorField(value)
       label != null -> ColorField(label)
       else -> ColorField()
     }
-    return init(colorField, block)
+  return init(colorField, block)
 }

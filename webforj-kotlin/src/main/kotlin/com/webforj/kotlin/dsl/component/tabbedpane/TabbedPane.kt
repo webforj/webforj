@@ -10,6 +10,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates a `TabbedPane` with an optional [name].
+ *
  * ```
  * ... {
  *  tabbedPane() // Default TabbedPane component
@@ -30,19 +31,24 @@ import com.webforj.kotlin.dsl.init
  * @see TabbedPane
  * @see tab
  */
-fun @WebforjDsl HasComponents.tabbedPane(name: String? = null, block: @WebforjDsl TabbedPane.() -> Unit = {}): TabbedPane {
+fun @WebforjDsl HasComponents.tabbedPane(
+  name: String? = null,
+  block: @WebforjDsl TabbedPane.() -> Unit = {},
+): TabbedPane {
   val tabbedPane = name?.let { TabbedPane(it) } ?: TabbedPane()
   return init(tabbedPane, block)
 }
 
 /**
  * The backing [Map] to allow the content of a [Tab] to be configured.
+ *
  * @see contentSlot
  */
 private val tabContentMap: MutableMap<Tab, Component?> = hashMapOf()
 
 /**
  * Creates a `Tab` with a [text] to be added to a [TabbedPane].
+ *
  * ```
  * tabbedPane {
  *  tab("text") // Adds a Tab to the TabbedPane
@@ -68,11 +74,12 @@ fun @WebforjDsl TabbedPane.tab(text: String, block: @WebforjDsl Tab.() -> Unit =
   } else {
     addTab(tab)
   }
-  return tab;
+  return tab
 }
 
 /**
  * Sets a [Component] as the content of a [Tab].
+ *
  * ```
  * tab {
  *  contentSlot {
@@ -94,6 +101,7 @@ fun @WebforjDsl Tab.contentSlot(block: @WebforjDsl HasComponents.() -> Component
 
 /**
  * Sets a [Component] as the prefix of a [Tab].
+ *
  * ```
  * tab {
  *  prefixSlot {
@@ -113,6 +121,7 @@ fun @WebforjDsl Tab.prefixSlot(block: @WebforjDsl HasComponents.() -> Component)
 
 /**
  * Sets a [Component] as the suffix of a [Tab].
+ *
  * ```
  * tab {
  *  suffixSlot {

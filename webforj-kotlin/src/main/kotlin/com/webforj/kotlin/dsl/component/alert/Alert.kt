@@ -8,6 +8,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates an `Alert` component with optional [text], [theme], and/or [closable] settings.
+ *
  * ```
  * ... {
  *   alert() // Empty Alert component
@@ -29,18 +30,21 @@ fun @WebforjDsl HasComponents.alert(
   text: String? = null,
   theme: Theme? = null,
   closable: Boolean? = null,
-  block: @WebforjDsl Alert.() -> Unit = {}
+  block: @WebforjDsl Alert.() -> Unit = {},
 ): Alert {
-  val alert = when {
-    closable != null && theme != null && text != null -> Alert(text, theme, closable)
-    theme != null && text != null -> Alert(text, theme)
-    text != null -> Alert(text).apply {
-      closable?.let { setClosable(it) }
+  val alert =
+    when {
+      closable != null && theme != null && text != null -> Alert(text, theme, closable)
+      theme != null && text != null -> Alert(text, theme)
+      text != null ->
+        Alert(text).apply {
+          closable?.let { setClosable(it) }
+        }
+      else ->
+        Alert().apply {
+          theme?.let { setTheme(it) }
+          closable?.let { setClosable(it) }
+        }
     }
-    else -> Alert().apply {
-      theme?.let { setTheme(it) }
-      closable?.let { setClosable(it) }
-    }
-  }
   return init(alert, block)
 }

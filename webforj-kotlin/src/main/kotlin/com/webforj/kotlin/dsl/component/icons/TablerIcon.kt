@@ -8,6 +8,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates a Tabler `Icon` with the given [name] and optional [variate].
+ *
  * ```
  * ... {
  *   tablerIcon("bell") // Basic Tabler icon
@@ -16,8 +17,8 @@ import com.webforj.kotlin.dsl.init
  * }
  * ```
  *
- * Tabler icons provide a clean, consistent set of icons with different variants for various states and styles.
- * The variant controls the visual style (outline, filled, etc.) of the icon.
+ * Tabler icons provide a clean, consistent set of icons with different variants for various states
+ * and styles. The variant controls the visual style (outline, filled, etc.) of the icon.
  *
  * @param name The name of the Tabler icon.
  * @param variate The variant of the icon (e.g., FILLED, OUTLINE). If null, the default is used.
@@ -29,9 +30,11 @@ import com.webforj.kotlin.dsl.init
 fun @WebforjDsl HasComponents.tablerIcon(
   name: String,
   variate: TablerIcon.Variate? = null,
-  block: @WebforjDsl Icon.() -> Unit = {}
-): Icon = if (variate != null) {
-  TablerIcon.create(name, variate)
-} else {
-  TablerIcon.create(name)
-}.apply { init(this, block) }
+  block: @WebforjDsl Icon.() -> Unit = {},
+): Icon =
+  if (variate != null) {
+      TablerIcon.create(name, variate)
+    } else {
+      TablerIcon.create(name)
+    }
+    .apply { init(this, block) }

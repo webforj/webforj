@@ -9,6 +9,7 @@ import com.webforj.kotlin.extension.suffixSlot
 
 /**
  * Creates a `TextArea` with an optional [label], [value] and/or [placeholder].
+ *
  * ```
  * ... {
  *   textArea() // Empty TextArea component
@@ -36,18 +37,21 @@ fun @WebforjDsl HasComponents.textArea(
   label: String? = null,
   value: String? = null,
   placeholder: String? = null,
-  block: @WebforjDsl TextArea.() -> Unit = {}
+  block: @WebforjDsl TextArea.() -> Unit = {},
 ): TextArea {
-  val textArea = when {
-    placeholder != null && value != null && label != null -> TextArea(label, value, placeholder)
-    value != null && label != null -> TextArea(label, value)
-    label != null -> TextArea(label).apply {
-      placeholder?.let { setPlaceholder(it) }
+  val textArea =
+    when {
+      placeholder != null && value != null && label != null -> TextArea(label, value, placeholder)
+      value != null && label != null -> TextArea(label, value)
+      label != null ->
+        TextArea(label).apply {
+          placeholder?.let { setPlaceholder(it) }
+        }
+      else ->
+        TextArea().apply {
+          value?.let { setValue(it) }
+          placeholder?.let { setPlaceholder(it) }
+        }
     }
-    else -> TextArea().apply {
-      value?.let { setValue(it) }
-      placeholder?.let { setPlaceholder(it) }
-    }
-  }
   return init(textArea, block)
 }

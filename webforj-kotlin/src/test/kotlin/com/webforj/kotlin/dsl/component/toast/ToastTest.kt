@@ -5,14 +5,14 @@ import com.webforj.component.html.elements.Div
 import com.webforj.component.toast.Toast.Placement
 import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.component.text.label
+import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
-import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class Toast {
   lateinit var root: HasComponents
@@ -44,15 +44,17 @@ class Toast {
     }
   }
 
-  @ParameterizedTest(name = "Creates a Toast with text ({0}), duration ({1}), theme ({2}) and placement ({3}).")
+  @ParameterizedTest(
+    name = "Creates a Toast with text ({0}), duration ({1}), theme ({2}) and placement ({3})."
+  )
   @MethodSource("provideToasts")
   fun shouldCreateToastWithoutBlock(
     text: String?,
     duration: Int?,
     theme: Theme?,
-    placement: Placement?
+    placement: Placement?,
   ) {
-    val toast =  root.toast(text, duration, theme, placement)
+    val toast = root.toast(text, duration, theme, placement)
     assertTrue { root.hasComponent(toast) }
     assertEquals(text ?: "", toast.text)
     assertEquals(duration ?: 5000, toast.duration)
@@ -60,17 +62,21 @@ class Toast {
     assertEquals(placement ?: Placement.BOTTOM, toast.placement)
   }
 
-  @ParameterizedTest(name = "Creates a Toast with block, text ({0}), duration ({1}), theme ({2}) and placement ({3}).")
+  @ParameterizedTest(
+    name =
+      "Creates a Toast with block, text ({0}), duration ({1}), theme ({2}) and placement ({3})."
+  )
   @MethodSource("provideToasts")
   fun shouldCreateToastWithBlock(
     text: String?,
     duration: Int?,
     theme: Theme?,
-    placement: Placement?
+    placement: Placement?,
   ) {
-    val toast =  root.toast(text, duration, theme, placement) {
-      name = "Toast"
-    }
+    val toast =
+      root.toast(text, duration, theme, placement) {
+        name = "Toast"
+      }
     assertTrue { root.hasComponent(toast) }
     assertEquals(text ?: "", toast.text)
     assertEquals(duration ?: 5000, toast.duration)
@@ -82,11 +88,12 @@ class Toast {
   @Test
   @DisplayName("Create example from KDocs")
   fun shouldCreateExample() {
-    val toast = root.toast("File uploaded", 5000, Theme.SUCCESS) {
-      messageSlot {
-        label("Upload successful")
+    val toast =
+      root.toast("File uploaded", 5000, Theme.SUCCESS) {
+        messageSlot {
+          label("Upload successful")
+        }
       }
-    }
 
     assertTrue { root.hasComponent(toast) }
     assertEquals("File uploaded", toast.text)
@@ -99,17 +106,17 @@ class Toast {
   @DisplayName("Create Toast with messageSlot configuration")
   fun shouldCreateToastWithMessageConfiguration() {
     val blockExecuted = AtomicBoolean(false)
-    
-    val toast = root.toast("Test messageSlot") {
-      messageSlot {
-        blockExecuted.set(true)
-        label("Message content")
+
+    val toast =
+      root.toast("Test messageSlot") {
+        messageSlot {
+          blockExecuted.set(true)
+          label("Message content")
+        }
       }
-    }
 
     assertTrue { root.hasComponent(toast) }
     assertEquals("Test messageSlot", toast.text)
     assertTrue(blockExecuted.get())
   }
-
 }

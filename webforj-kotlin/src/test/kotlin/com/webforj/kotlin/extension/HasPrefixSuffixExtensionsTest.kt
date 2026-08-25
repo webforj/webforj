@@ -2,17 +2,16 @@ package com.webforj.kotlin.extension
 
 import com.webforj.component.Component
 import com.webforj.component.button.Button
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 class HasPrefixSuffixExtensionsTest {
-  @Mock
-  lateinit var component: Component
+  @Mock lateinit var component: Component
   lateinit var button: Button
   lateinit var cloneable: AutoCloseable
 
@@ -60,5 +59,4 @@ class HasPrefixSuffixExtensionsTest {
     button.suffixSlot { component }
     assertEquals(component, button.suffixComponent)
   }
-
 }

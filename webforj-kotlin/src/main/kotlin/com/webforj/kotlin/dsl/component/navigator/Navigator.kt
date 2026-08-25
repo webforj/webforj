@@ -9,6 +9,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates a `Navigator` with optional [text], [layout], [pageSize] and / or [totalItems].
+ *
  * ```
  * ... {
  *   navigator() // Empty Navigator component
@@ -30,33 +31,40 @@ fun @WebforjDsl HasComponents.navigator(
   layout: Navigator.Layout? = null,
   pageSize: Int? = null,
   totalItems: Int? = null,
-  block: @WebforjDsl Navigator.() -> Unit = {}
+  block: @WebforjDsl Navigator.() -> Unit = {},
 ): Navigator {
-  val navigator = when {
-    layout != null && pageSize != null && totalItems != null ->
-      Navigator(totalItems, pageSize, layout).apply {
-      text?.let { setText(it) }
+  val navigator =
+    when {
+      layout != null && pageSize != null && totalItems != null ->
+        Navigator(totalItems, pageSize, layout).apply {
+          text?.let { setText(it) }
+        }
+      layout != null && totalItems != null ->
+        Navigator(totalItems, layout).apply {
+          text?.let { setText(it) }
+        }
+      pageSize != null && totalItems != null ->
+        Navigator(totalItems, pageSize).apply {
+          text?.let { setText(it) }
+        }
+      totalItems != null ->
+        Navigator(totalItems).apply {
+          text?.let { setText(it) }
+        }
+      else ->
+        Navigator().apply {
+          pageSize?.let { paginator.size = it }
+          layout?.let { setLayout(it) }
+          text?.let { setText(it) }
+        }
     }
-    layout != null && totalItems != null -> Navigator(totalItems, layout).apply {
-      text?.let { setText(it) }
-    }
-    pageSize != null && totalItems != null -> Navigator(totalItems, pageSize).apply {
-      text?.let { setText(it) }
-    }
-    totalItems != null -> Navigator(totalItems).apply {
-      text?.let { setText(it) }
-    }
-    else -> Navigator().apply {
-      pageSize?.let { paginator.size = it }
-      layout?.let { setLayout(it) }
-      text?.let { setText(it) }
-    }
-  }
   return init(navigator, block)
 }
 
 /**
- * Creates a `Navigator` with optional [text], [layout], [pageSize] and / or a mandatory [repository].
+ * Creates a `Navigator` with optional [text], [layout], [pageSize] and / or a mandatory
+ * [repository].
+ *
  * ```
  * ... {
  *   navigator() // Empty Navigator component
@@ -79,29 +87,35 @@ fun @WebforjDsl HasComponents.navigator(
   text: String? = null,
   layout: Navigator.Layout? = null,
   pageSize: Int? = null,
-  block: @WebforjDsl Navigator.() -> Unit = {}
+  block: @WebforjDsl Navigator.() -> Unit = {},
 ): Navigator {
-  val navigator = when {
-    layout != null && pageSize != null -> Navigator(repository, pageSize, layout).apply {
-        text?.let { setText(it) }
-      }
-    layout != null -> Navigator(repository, layout).apply {
-      text?.let { setText(it) }
+  val navigator =
+    when {
+      layout != null && pageSize != null ->
+        Navigator(repository, pageSize, layout).apply {
+          text?.let { setText(it) }
+        }
+      layout != null ->
+        Navigator(repository, layout).apply {
+          text?.let { setText(it) }
+        }
+      pageSize != null ->
+        Navigator(repository, pageSize).apply {
+          text?.let { setText(it) }
+        }
+      else ->
+        Navigator(repository).apply {
+          pageSize?.let { paginator.size = it }
+          layout?.let { setLayout(it) }
+          text?.let { setText(it) }
+        }
     }
-    pageSize != null -> Navigator(repository, pageSize).apply {
-      text?.let { setText(it) }
-    }
-    else -> Navigator(repository).apply {
-      pageSize?.let { paginator.size = it }
-      layout?.let { setLayout(it) }
-      text?.let { setText(it) }
-    }
-  }
   return init(navigator, block)
 }
 
 /**
  * Creates the `Paginator` for a [Navigator] with an optional [pageSize] and / or [totalItems].
+ *
  * ```
  * navigator {
  *   paginator() // Empty Paginator component
@@ -121,15 +135,17 @@ fun @WebforjDsl HasComponents.navigator(
 fun @WebforjDsl Navigator.paginator(
   pageSize: Int? = null,
   totalItems: Int? = null,
-  block: @WebforjDsl Paginator.() -> Unit = {}
+  block: @WebforjDsl Paginator.() -> Unit = {},
 ): Paginator {
-  val paginator = when {
-    pageSize != null && totalItems != null -> Paginator(totalItems, pageSize)
-    totalItems != null -> Paginator(totalItems)
-    else -> paginator.apply {
-      pageSize?.let { size = it }
+  val paginator =
+    when {
+      pageSize != null && totalItems != null -> Paginator(totalItems, pageSize)
+      totalItems != null -> Paginator(totalItems)
+      else ->
+        paginator.apply {
+          pageSize?.let { size = it }
+        }
     }
-  }
   paginator.block()
   setPaginator(paginator)
   return paginator
@@ -137,6 +153,7 @@ fun @WebforjDsl Navigator.paginator(
 
 /**
  * Creates the `Paginator` for a [Navigator] with a [repository] and an optional [pageSize].
+ *
  * ```
  * navigator {
  *   paginator() // Empty Paginator component
@@ -155,7 +172,7 @@ fun @WebforjDsl Navigator.paginator(
 fun @WebforjDsl Navigator.paginator(
   repository: Repository<*>,
   pageSize: Int? = null,
-  block: @WebforjDsl Paginator.() -> Unit = {}
+  block: @WebforjDsl Paginator.() -> Unit = {},
 ): Paginator {
   val paginator = pageSize?.let { Paginator(repository, pageSize) } ?: Paginator(repository)
   paginator.block()

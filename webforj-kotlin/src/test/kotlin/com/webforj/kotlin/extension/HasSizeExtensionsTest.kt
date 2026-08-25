@@ -2,12 +2,12 @@ package com.webforj.kotlin.extension
 
 import com.webforj.component.html.elements.Div
 import com.webforj.concern.HasSize
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 
 class HasSizeExtensionsTest {
   val width = "100px"
@@ -46,7 +46,7 @@ class HasSizeExtensionsTest {
     val newWidth = "150px"
     val newHeight = "250px"
     component.size = newWidth to newHeight
-    
+
     assertEquals(newWidth, component.width)
     assertEquals(newHeight, component.height)
   }
@@ -66,7 +66,7 @@ class HasSizeExtensionsTest {
     val newMinWidth = "75px"
     val newMinHeight = "100px"
     component.minSize = newMinWidth to newMinHeight
-    
+
     assertEquals(newMinWidth, component.minWidth)
     assertEquals(newMinHeight, component.minHeight)
   }
@@ -86,7 +86,7 @@ class HasSizeExtensionsTest {
     val newMaxWidth = "350px"
     val newMaxHeight = "450px"
     component.maxSize = newMaxWidth to newMaxHeight
-    
+
     assertEquals(newMaxWidth, component.maxWidth)
     assertEquals(newMaxHeight, component.maxHeight)
   }
@@ -95,10 +95,10 @@ class HasSizeExtensionsTest {
   @DisplayName("size property with CSS units should work correctly")
   fun shouldHandleCssUnits() {
     component.size = "2.em" to "100.vh"
-    
+
     assertEquals("2.em", component.width)
     assertEquals("100.vh", component.height)
-    
+
     val size = component.size
     assertEquals("2.em", size.first)
     assertEquals("100.vh", size.second)
@@ -108,10 +108,10 @@ class HasSizeExtensionsTest {
   @DisplayName("minSize property with CSS units should work correctly")
   fun shouldHandleMinSizeWithCssUnits() {
     component.minSize = "1.5.rem" to "50%"
-    
+
     assertEquals("1.5.rem", component.minWidth)
     assertEquals("50%", component.minHeight)
-    
+
     val minSize = component.minSize
     assertEquals("1.5.rem", minSize.first)
     assertEquals("50%", minSize.second)
@@ -121,10 +121,10 @@ class HasSizeExtensionsTest {
   @DisplayName("maxSize property with CSS units should work correctly")
   fun shouldHandleMaxSizeWithCssUnits() {
     component.maxSize = "500.px" to "80.vh"
-    
+
     assertEquals("500.px", component.maxWidth)
     assertEquals("80.vh", component.maxHeight)
-    
+
     val maxSize = component.maxSize
     assertEquals("500.px", maxSize.first)
     assertEquals("80.vh", maxSize.second)

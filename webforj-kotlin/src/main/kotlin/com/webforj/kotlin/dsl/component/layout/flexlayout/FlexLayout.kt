@@ -8,6 +8,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates a `FlexLayout` with an optional [direction].
+ *
  * ```
  * ... {
  *   flexLayout() // Empty FlexLayout component
@@ -41,8 +42,8 @@ import com.webforj.kotlin.dsl.init
  *
  * The `FlexLayout` provides a flexible way to arrange components either horizontally or vertically,
  * following CSS Flexbox principles. Components added to the layout become flex items that can be
- * individually configured with properties like order, basis, grow, and shrink.
- * Nested `FlexLayout` containers can be used to create complex responsive layouts.
+ * individually configured with properties like order, basis, grow, and shrink. Nested `FlexLayout`
+ * containers can be used to create complex responsive layouts.
  *
  * @param direction The [FlexDirection] for the layout.
  * @param block The initialization steps for the `FlexLayout`.
@@ -51,15 +52,15 @@ import com.webforj.kotlin.dsl.init
  */
 fun @WebforjDsl HasComponents.flexLayout(
   direction: FlexDirection? = null,
-  block: @WebforjDsl FlexLayout.() -> Unit = {}
+  block: @WebforjDsl FlexLayout.() -> Unit = {},
 ): FlexLayout {
   val flexLayout = direction?.let { FlexLayout(direction) } ?: FlexLayout()
   return init(flexLayout, block)
 }
 
 /**
- * Sets the [FlexDirection] of a [FlexLayout] to [FlexDirection.ROW] and [FlexLayout.isInline]
- * ot the value of [inline].
+ * Sets the [FlexDirection] of a [FlexLayout] to [FlexDirection.ROW] and [FlexLayout.isInline] ot
+ * the value of [inline].
  *
  * @param inline The value to which [FlexLayout.isInline] should be set, default `false`.
  */
@@ -69,8 +70,8 @@ fun @WebforjDsl FlexLayout.horizontal(inline: Boolean = false) = apply {
 }
 
 /**
- * Sets the [FlexDirection] of a [FlexLayout] to [FlexDirection.ROW_REVERSE] and [FlexLayout.isInline]
- * ot the value of [inline].
+ * Sets the [FlexDirection] of a [FlexLayout] to [FlexDirection.ROW_REVERSE] and
+ * [FlexLayout.isInline] ot the value of [inline].
  *
  * @param inline The value to which [FlexLayout.isInline] should be set, default `false`.
  */
@@ -80,8 +81,8 @@ fun @WebforjDsl FlexLayout.horizontalReverse(inline: Boolean = false) = apply {
 }
 
 /**
- * Sets the [FlexDirection] of a [FlexLayout] to [FlexDirection.COLUMN] and [FlexLayout.isInline]
- * ot the value of [inline].
+ * Sets the [FlexDirection] of a [FlexLayout] to [FlexDirection.COLUMN] and [FlexLayout.isInline] ot
+ * the value of [inline].
  *
  * @param inline The value to which [FlexLayout.isInline] should be set, default `false`.
  */
@@ -91,8 +92,8 @@ fun @WebforjDsl FlexLayout.vertical(inline: Boolean = false) = apply {
 }
 
 /**
- * Sets the [FlexDirection] of a [FlexLayout] to [FlexDirection.COLUMN_REVERSE] and [FlexLayout.isInline]
- * ot the value of [inline].
+ * Sets the [FlexDirection] of a [FlexLayout] to [FlexDirection.COLUMN_REVERSE] and
+ * [FlexLayout.isInline] ot the value of [inline].
  *
  * @param inline The value to which [FlexLayout.isInline] should be set, default `false`.
  */

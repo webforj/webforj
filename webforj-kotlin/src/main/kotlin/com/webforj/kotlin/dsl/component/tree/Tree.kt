@@ -8,6 +8,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates a `Tree`.
+ *
  * ```
  * ... {
  *  tree() // Empty Tree component
@@ -49,6 +50,7 @@ fun @WebforjDsl HasComponents.tree(block: @WebforjDsl Tree.() -> Unit = {}): Tre
 
 /**
  * Creates a `TreeNode` with a [text] and/or an optional [key], adding it to the root of [Tree].
+ *
  * ```
  * ... {
  *  treeNode("text") // TreeNode component with text
@@ -59,13 +61,17 @@ fun @WebforjDsl HasComponents.tree(block: @WebforjDsl Tree.() -> Unit = {}): Tre
  * @param text The text of the `TreeNode`.
  * @param key The key of the `TreeNode`, if `null`, [text] is used.
  * @param block The initialization steps of the `TreeNode`.
- * @receiver The [Tree] to those root the `TreeNode` should be added to.
  * @return The configured `TreeNode`.
+ * @receiver The [Tree] to those root the `TreeNode` should be added to.
  * @see TreeNode
  * @see tree
  * @see treeNode
  */
-fun @WebforjDsl Tree.treeNode(text: String, key: Any? = null, block: @WebforjDsl TreeNode.() -> Unit = {}): TreeNode {
+fun @WebforjDsl Tree.treeNode(
+  text: String,
+  key: Any? = null,
+  block: @WebforjDsl TreeNode.() -> Unit = {},
+): TreeNode {
   val node = key?.let { TreeNode(key, text) } ?: TreeNode(text)
   node.block()
   add(node)
@@ -74,6 +80,7 @@ fun @WebforjDsl Tree.treeNode(text: String, key: Any? = null, block: @WebforjDsl
 
 /**
  * Creates a `TreeNode` with a [text] and/or an optional [key], adding it to a parent.
+ *
  * ```
  * ... {
  *  treeNode("text") // TreeNode component with text
@@ -84,13 +91,17 @@ fun @WebforjDsl Tree.treeNode(text: String, key: Any? = null, block: @WebforjDsl
  * @param text The text of the `TreeNode`.
  * @param key The key of the `TreeNode`, if `null`, [text] is used.
  * @param block The initialization steps of the `TreeNode`.
- * @receiver The [TreeNode] which is the parent of `this TreeNode`.
  * @return The configured `TreeNode`.
+ * @receiver The [TreeNode] which is the parent of `this TreeNode`.
  * @see TreeNode
  * @see tree
  * @see treeNode
  */
-fun @WebforjDsl TreeNode.treeNode(text: String, key: Any? = null, block: @WebforjDsl TreeNode.() -> Unit = {}): TreeNode {
+fun @WebforjDsl TreeNode.treeNode(
+  text: String,
+  key: Any? = null,
+  block: @WebforjDsl TreeNode.() -> Unit = {},
+): TreeNode {
   val node = key?.let { TreeNode(key, text) } ?: TreeNode(text)
   node.block()
   add(node)

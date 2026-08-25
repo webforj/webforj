@@ -4,8 +4,8 @@ import com.webforj.component.Theme
 import com.webforj.component.html.elements.Div
 import com.webforj.component.icons.DwcIcon
 import com.webforj.component.icons.FeatherIcon
-import com.webforj.component.icons.Icon
 import com.webforj.component.icons.FontAwesomeIcon
+import com.webforj.component.icons.Icon
 import com.webforj.component.icons.TablerIcon
 import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.component.icons.dwcIcon
@@ -14,11 +14,11 @@ import com.webforj.kotlin.dsl.component.icons.fontAwesomeIcon
 import com.webforj.kotlin.dsl.component.icons.icon
 import com.webforj.kotlin.dsl.component.icons.iconButton
 import com.webforj.kotlin.dsl.component.icons.tablerIcon
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.BeforeEach
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class IconsTest {
   lateinit var root: HasComponents
@@ -38,9 +38,10 @@ class IconsTest {
 
   @Test
   fun shouldCreateIconWithNamePoolAndBlock() {
-    val icon = root.icon("iconSlot", "pool") {
-      isVisible = false
-    }
+    val icon =
+      root.icon("iconSlot", "pool") {
+        isVisible = false
+      }
     assertTrue { root.hasComponent(icon) }
     assertEquals("iconSlot", icon.name)
     assertEquals("pool", icon.pool)
@@ -57,9 +58,10 @@ class IconsTest {
 
   @Test
   fun shouldCreateIconButtonWithNamePoolAndBlock() {
-    val icon = root.iconButton("iconSlot", "pool") {
-      isVisible = false
-    }
+    val icon =
+      root.iconButton("iconSlot", "pool") {
+        isVisible = false
+      }
     assertTrue { root.hasComponent(icon) }
     assertEquals("iconSlot", icon.name)
     assertEquals("pool", icon.pool)
@@ -92,9 +94,10 @@ class IconsTest {
 
   @Test
   fun shouldCreateFontAwesomeIconWithNameAndBlock() {
-    val icon = root.fontAwesomeIcon("heart") {
-      isVisible = false
-    }
+    val icon =
+      root.fontAwesomeIcon("heart") {
+        isVisible = false
+      }
     assertTrue { root.hasComponent(icon) }
     assertEquals("heart", icon.name)
     assertEquals("fa", icon.pool)
@@ -103,9 +106,10 @@ class IconsTest {
 
   @Test
   fun shouldCreateFontAwesomeIconWithNameVariantAndBlock() {
-    val icon = root.fontAwesomeIcon("star", FontAwesomeIcon.Variate.REGULAR) {
-      isVisible = true
-    }
+    val icon =
+      root.fontAwesomeIcon("star", FontAwesomeIcon.Variate.REGULAR) {
+        isVisible = true
+      }
     assertTrue { root.hasComponent(icon) }
     assertEquals("far-star", icon.name)
     assertEquals("fa", icon.pool)
@@ -122,9 +126,10 @@ class IconsTest {
 
   @Test
   fun shouldCreateTablerIconWithNameAndBlock() {
-    val icon = root.tablerIcon("settings") {
-      isVisible = false
-    }
+    val icon =
+      root.tablerIcon("settings") {
+        isVisible = false
+      }
     assertTrue { root.hasComponent(icon) }
     assertEquals("settings", icon.name)
     assertEquals("tabler", icon.pool)
@@ -141,9 +146,10 @@ class IconsTest {
 
   @Test
   fun shouldCreateTablerIconWithNameVariantAndBlock() {
-    val icon = root.tablerIcon("home", TablerIcon.Variate.OUTLINE) {
-      isVisible = true
-    }
+    val icon =
+      root.tablerIcon("home", TablerIcon.Variate.OUTLINE) {
+        isVisible = true
+      }
     assertTrue { root.hasComponent(icon) }
     assertEquals("outline-home", icon.name)
     assertEquals("tabler", icon.pool)
@@ -175,9 +181,10 @@ class IconsTest {
     assertEquals(DwcIcon.CHECK.toString(), checkIcon.name)
     assertEquals(DwcIcon.CHECK.pool, checkIcon.pool)
     assertEquals(Theme.DEFAULT, checkIcon.theme)
-    val plusIcon = root.dwcIcon(DwcIcon.PLUS) {
-      theme = Theme.SUCCESS
-    }
+    val plusIcon =
+      root.dwcIcon(DwcIcon.PLUS) {
+        theme = Theme.SUCCESS
+      }
     assertTrue { root.hasComponent(plusIcon) }
     assertEquals(DwcIcon.PLUS.toString(), plusIcon.name)
     assertEquals(DwcIcon.PLUS.pool, plusIcon.pool)
@@ -191,9 +198,10 @@ class IconsTest {
     assertEquals(FeatherIcon.SAVE.toString(), saveIcon.name)
     assertEquals(FeatherIcon.SAVE.pool, saveIcon.pool)
     assertEquals(Theme.DEFAULT, saveIcon.theme)
-    val phoneMissedIcon = root.featherIcon(FeatherIcon.PHONE_MISSED) {
-      theme = Theme.DANGER
-    }
+    val phoneMissedIcon =
+      root.featherIcon(FeatherIcon.PHONE_MISSED) {
+        theme = Theme.DANGER
+      }
     assertTrue { root.hasComponent(phoneMissedIcon) }
     assertEquals(FeatherIcon.PHONE_MISSED.toString(), phoneMissedIcon.name)
     assertEquals(FeatherIcon.PHONE_MISSED.pool, phoneMissedIcon.pool)

@@ -2,8 +2,8 @@ package com.webforj.kotlin.extension
 
 import com.webforj.component.html.elements.Div
 import com.webforj.kotlin.dsl.component.button.button
-import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
+import org.junit.jupiter.api.Test
 
 @OptIn(ExperimentalTextDsl::class)
 class HasTextExtensionTest {

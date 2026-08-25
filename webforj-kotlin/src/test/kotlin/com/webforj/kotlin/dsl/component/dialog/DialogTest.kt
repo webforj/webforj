@@ -11,11 +11,11 @@ import com.webforj.kotlin.dsl.component.html.elements.div
 import com.webforj.kotlin.dsl.component.html.elements.paragraph
 import com.webforj.kotlin.dsl.component.optioninput.checkBox
 import com.webforj.kotlin.dsl.component.text.label
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class DialogTest {
   lateinit var root: HasComponents
@@ -39,7 +39,7 @@ class DialogTest {
         paragraph("Dialog description")
       }
     }
-    
+
     assertNotNull(dialog)
     assertTrue { root.hasComponent(dialog) }
     assertEquals(2, dialog.componentCount)
@@ -55,7 +55,7 @@ class DialogTest {
         }
       }
     }
-    
+
     assertNotNull(dialog)
     assertTrue { root.hasComponent(dialog) }
     assertEquals(1, dialog.componentCount)
@@ -70,18 +70,18 @@ class DialogTest {
           paragraph("Please fill in the form below to create your account")
         }
       }
-      
+
       div {
-          textField("Name", placeholder = "Enter your full name")
-          textField("Email", placeholder = "Enter your email address", type = TextField.Type.EMAIL)
-          passwordField("Password", placeholder = "Enter a secure password")
+        textField("Name", placeholder = "Enter your full name")
+        textField("Email", placeholder = "Enter your email address", type = TextField.Type.EMAIL)
+        passwordField("Password", placeholder = "Enter a secure password")
       }
 
       div {
         checkBox("I agree to the terms and conditions")
         checkBox("Send me promotional emails", checked = false)
       }
-      
+
       footerSlot {
         div {
           button("Cancel", theme = ButtonTheme.DANGER)
@@ -89,10 +89,9 @@ class DialogTest {
         }
       }
     }
-    
+
     assertNotNull(dialog)
     assertTrue { root.hasComponent(dialog) }
     assertEquals(4, dialog.componentCount)
   }
-
 }

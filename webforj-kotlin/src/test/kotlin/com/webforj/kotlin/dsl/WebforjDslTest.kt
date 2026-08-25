@@ -1,10 +1,10 @@
 package com.webforj.kotlin.dsl
 
 import com.webforj.component.html.elements.Div
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
 
 class WebforjDslTest {
 
@@ -17,7 +17,6 @@ class WebforjDslTest {
     assertTrue { parent.hasComponent(child) }
   }
 
-
   @Test
   @DisplayName("The initialization block configures the component.")
   fun shouldConfigureComponentByBlock() {
@@ -29,5 +28,4 @@ class WebforjDslTest {
     }
     assertEquals(testName, child.name)
   }
-
 }

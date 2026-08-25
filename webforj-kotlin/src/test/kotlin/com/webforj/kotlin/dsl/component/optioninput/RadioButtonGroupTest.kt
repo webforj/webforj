@@ -4,11 +4,11 @@ import com.webforj.component.html.elements.Div
 import com.webforj.component.optioninput.RadioButton
 import com.webforj.component.optioninput.RadioButtonGroup
 import com.webforj.concern.HasComponents
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class RadioButtonGroupTest {
 
@@ -26,9 +26,17 @@ class RadioButtonGroupTest {
             for (activation in RadioButton.Activation.entries) {
               val root = Div()
               list.add(
-                arrayOf(text, checked, name, activation, root, root.radioButton(text, checked, name) {
-                  this.activation = activation
-                }) as Array<Any>
+                arrayOf(
+                  text,
+                  checked,
+                  name,
+                  activation,
+                  root,
+                  root.radioButton(text, checked, name) {
+                    this.activation = activation
+                  },
+                )
+                  as Array<Any>
               )
             }
           }
@@ -49,9 +57,17 @@ class RadioButtonGroupTest {
             for (activation in RadioButton.Activation.entries) {
               val root = Div()
               list.add(
-                arrayOf(text, checked, name, activation, root, root.switch(text, checked, name) {
-                  this.activation = activation
-                }) as Array<Any>
+                arrayOf(
+                  text,
+                  checked,
+                  name,
+                  activation,
+                  root,
+                  root.switch(text, checked, name) {
+                    this.activation = activation
+                  },
+                )
+                  as Array<Any>
               )
             }
           }
@@ -72,9 +88,17 @@ class RadioButtonGroupTest {
             for (activation in RadioButton.Activation.entries) {
               val root = RadioButtonGroup()
               list.add(
-                arrayOf(text, checked, name, activation, root, root.radioButton(text, checked, name) {
-                  this.activation = activation
-                }) as Array<Any>
+                arrayOf(
+                  text,
+                  checked,
+                  name,
+                  activation,
+                  root,
+                  root.radioButton(text, checked, name) {
+                    this.activation = activation
+                  },
+                )
+                  as Array<Any>
               )
             }
           }
@@ -95,9 +119,17 @@ class RadioButtonGroupTest {
             for (activation in RadioButton.Activation.entries) {
               val root = RadioButtonGroup()
               list.add(
-                arrayOf(text, checked, name, activation, root, root.switch(text, checked, name) {
-                  this.activation = activation
-                }) as Array<Any>
+                arrayOf(
+                  text,
+                  checked,
+                  name,
+                  activation,
+                  root,
+                  root.switch(text, checked, name) {
+                    this.activation = activation
+                  },
+                )
+                  as Array<Any>
               )
             }
           }
@@ -105,7 +137,6 @@ class RadioButtonGroupTest {
       }
       return list
     }
-
   }
 
   @Test
@@ -146,7 +177,9 @@ class RadioButtonGroupTest {
     assertEquals(expected, group.name)
   }
 
-  @ParameterizedTest(name = "Create RadioButton with text={0}, checked={1}, name={2} and activation={3}.")
+  @ParameterizedTest(
+    name = "Create RadioButton with text={0}, checked={1}, name={2} and activation={3}."
+  )
   @MethodSource("provideHasComponentsRadioButton")
   fun shouldCreateRadioButtonByHasComponents(
     text: String?,
@@ -154,7 +187,7 @@ class RadioButtonGroupTest {
     name: String?,
     activation: RadioButton.Activation,
     root: HasComponents,
-    radioButton: RadioButton
+    radioButton: RadioButton,
   ) {
     assertTrue { root.hasComponent(radioButton) }
     assertEquals(text ?: "", radioButton.text)
@@ -163,7 +196,9 @@ class RadioButtonGroupTest {
     assertEquals(activation, radioButton.activation)
   }
 
-  @ParameterizedTest(name = "Create Switch with text={0}, checked={1}, name={2} and activation={3}.")
+  @ParameterizedTest(
+    name = "Create Switch with text={0}, checked={1}, name={2} and activation={3}."
+  )
   @MethodSource("provideHasComponentsSwitch")
   fun shouldCreateSwitchByHasComponents(
     text: String?,
@@ -171,7 +206,7 @@ class RadioButtonGroupTest {
     name: String?,
     activation: RadioButton.Activation,
     root: HasComponents,
-    radioButton: RadioButton
+    radioButton: RadioButton,
   ) {
     assertTrue { root.hasComponent(radioButton) }
     assertEquals(text ?: "", radioButton.text)
@@ -180,7 +215,9 @@ class RadioButtonGroupTest {
     assertEquals(activation, radioButton.activation)
   }
 
-  @ParameterizedTest(name = "Create RadioButton with text={0}, checked={1}, name={2} and activation={3}.")
+  @ParameterizedTest(
+    name = "Create RadioButton with text={0}, checked={1}, name={2} and activation={3}."
+  )
   @MethodSource("provideGroupRadioButton")
   fun shouldCreateRadioButtonByRadioButtonGroup(
     text: String?,
@@ -188,7 +225,7 @@ class RadioButtonGroupTest {
     name: String?,
     activation: RadioButton.Activation,
     root: RadioButtonGroup,
-    radioButton: RadioButton
+    radioButton: RadioButton,
   ) {
     assertTrue { root.buttons.contains(radioButton) }
     assertEquals(text ?: "", radioButton.text)
@@ -197,7 +234,9 @@ class RadioButtonGroupTest {
     assertEquals(activation, radioButton.activation)
   }
 
-  @ParameterizedTest(name = "Create Switch with text={0}, checked={1}, name={2} and activation={3}.")
+  @ParameterizedTest(
+    name = "Create Switch with text={0}, checked={1}, name={2} and activation={3}."
+  )
   @MethodSource("provideGroupSwitch")
   fun shouldCreateSwitchByRadioButtonGroup(
     text: String?,
@@ -205,7 +244,7 @@ class RadioButtonGroupTest {
     name: String?,
     activation: RadioButton.Activation,
     root: RadioButtonGroup,
-    radioButton: RadioButton
+    radioButton: RadioButton,
   ) {
     assertTrue { root.buttons.contains(radioButton) }
     assertEquals(text ?: "", radioButton.text)
@@ -213,5 +252,4 @@ class RadioButtonGroupTest {
     assertEquals(name ?: text ?: "", radioButton.name)
     assertEquals(activation, radioButton.activation)
   }
-
 }

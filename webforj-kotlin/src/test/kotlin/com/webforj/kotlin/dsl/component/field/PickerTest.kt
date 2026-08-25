@@ -2,9 +2,9 @@ package com.webforj.kotlin.dsl.component.field
 
 import com.webforj.component.html.elements.Div
 import com.webforj.concern.HasComponents
+import kotlin.test.assertFalse
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import kotlin.test.assertFalse
 
 class PickerTest {
   lateinit var root: HasComponents

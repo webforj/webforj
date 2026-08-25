@@ -10,6 +10,7 @@ import com.webforj.kotlin.extension.suffixSlot
 
 /**
  * Creates a `TextField` with an optional [label], [value], [placeholder] and/or [type].
+ *
  * ```
  * ... {
  *   textField() // Empty TextField component
@@ -38,7 +39,7 @@ fun @WebforjDsl HasComponents.textField(
   value: String? = null,
   placeholder: String? = null,
   type: TextField.Type? = null,
-  block: @WebforjDsl TextField.() -> Unit = {}
+  block: @WebforjDsl TextField.() -> Unit = {},
 ): TextField {
   val textField = newTextField(label, value, placeholder, type)
   return init(textField, block)

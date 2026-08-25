@@ -10,6 +10,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates a `Login` component for user authentication forms.
+ *
  * ```
  * ... {
  *   login {
@@ -41,10 +42,12 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Login`.
  * @see Login
  */
-fun @WebforjDsl HasComponents.login(block: @WebforjDsl Login.() -> Unit = {}): Login = init(Login(), block)
+fun @WebforjDsl HasComponents.login(block: @WebforjDsl Login.() -> Unit = {}): Login =
+  init(Login(), block)
 
 /**
  * Configures the components to add to the before header slot of a `Login` component.
+ *
  * ```
  * login {
  *   beforeHeaderSlot {
@@ -62,6 +65,7 @@ fun @WebforjDsl Login.beforeHeaderSlot(block: @WebforjDsl HasComponents.() -> Un
 
 /**
  * Configures the components to add to the after header slot of a `Login` component.
+ *
  * ```
  * login {
  *   afterHeaderSlot {
@@ -79,6 +83,7 @@ fun @WebforjDsl Login.afterHeaderSlot(block: @WebforjDsl HasComponents.() -> Uni
 
 /**
  * Configures the components to add to the before content slot of a `Login` component.
+ *
  * ```
  * login {
  *   beforeContentSlot {
@@ -96,6 +101,7 @@ fun @WebforjDsl Login.beforeContentSlot(block: @WebforjDsl HasComponents.() -> U
 
 /**
  * Configures the components to add to the after content slot of a `Login` component.
+ *
  * ```
  * login {
  *   afterContentSlot {
@@ -113,6 +119,7 @@ fun @WebforjDsl Login.afterContentSlot(block: @WebforjDsl HasComponents.() -> Un
 
 /**
  * Configures the components to add to the before form slot of a `Login` component.
+ *
  * ```
  * login {
  *   beforeFormSlot {
@@ -130,6 +137,7 @@ fun @WebforjDsl Login.beforeFormSlot(block: @WebforjDsl HasComponents.() -> Unit
 
 /**
  * Configures the components to add to the after form slot of a `Login` component.
+ *
  * ```
  * login {
  *   afterFormSlot {
@@ -147,6 +155,7 @@ fun @WebforjDsl Login.afterFormSlot(block: @WebforjDsl HasComponents.() -> Unit)
 
 /**
  * Configures the components to add to the before footer slot of a `Login` component.
+ *
  * ```
  * login {
  *   beforeFooterSlot {
@@ -164,6 +173,7 @@ fun @WebforjDsl Login.beforeFooterSlot(block: @WebforjDsl HasComponents.() -> Un
 
 /**
  * Configures the components to add to the after footer slot of a `Login` component.
+ *
  * ```
  * login {
  *   afterFooterSlot {
@@ -181,6 +191,7 @@ fun @WebforjDsl Login.afterFooterSlot(block: @WebforjDsl HasComponents.() -> Uni
 
 /**
  * Configures internationalization for the `Login` component.
+ *
  * ```
  * login {
  *   loginI18n {
@@ -208,6 +219,7 @@ fun @WebforjDsl Login.loginI18n(block: @WebforjDsl LoginI18n.() -> Unit): LoginI
 
 /**
  * Configures error message internationalization for the `Login` component.
+ *
  * ```
  * loginI18n {
  *   loginErrorI18n {
@@ -223,4 +235,6 @@ fun @WebforjDsl Login.loginI18n(block: @WebforjDsl LoginI18n.() -> Unit): LoginI
  * @return The configured `LoginErrorI18n`.
  * @see LoginErrorI18n
  */
-fun @WebforjDsl LoginI18n.loginErrorI18n(block: @WebforjDsl LoginErrorI18n.() -> Unit): LoginErrorI18n = error.apply(block)
+fun @WebforjDsl LoginI18n.loginErrorI18n(
+  block: @WebforjDsl LoginErrorI18n.() -> Unit
+): LoginErrorI18n = error.apply(block)

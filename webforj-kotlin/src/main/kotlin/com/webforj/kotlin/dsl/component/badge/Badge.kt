@@ -8,6 +8,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates a `Badge` component with optional [text] and [theme].
+ *
  * ```
  * ... {
  *   badge() // Empty Badge component
@@ -19,21 +20,22 @@ import com.webforj.kotlin.dsl.init
  * @param text The text to display in the `Badge`.
  * @param theme The theme of the `Badge`.
  * @param block The initialization steps of the `Badge`.
- *
  * @return The configured `Badge`.
  * @see Badge
  */
 fun @WebforjDsl HasComponents.badge(
   text: String? = null,
   theme: BadgeTheme? = null,
-  block: @WebforjDsl Badge.() -> Unit = {}
+  block: @WebforjDsl Badge.() -> Unit = {},
 ): Badge {
-  val badge = when {
-    theme != null && text != null -> Badge(text, theme)
-    text != null -> Badge(text)
-    else -> Badge().apply {
-      theme?.let { setTheme(it) }
+  val badge =
+    when {
+      theme != null && text != null -> Badge(text, theme)
+      text != null -> Badge(text)
+      else ->
+        Badge().apply {
+          theme?.let { setTheme(it) }
+        }
     }
-  }
   return init(badge, block)
 }

@@ -1,9 +1,9 @@
 package com.webforj.kotlin.dsl.component.text
 
 import com.webforj.component.html.elements.Div
+import kotlin.test.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
 
 class LabelTest {
   lateinit var root: Div
@@ -49,12 +49,12 @@ class LabelTest {
   @Test
   fun shouldCreateLabelWithTextWrapAndBlock() {
     val text = "Label"
-    val label = root.label(text, false) {
-      name = text
-    }
+    val label =
+      root.label(text, false) {
+        name = text
+      }
     assertEquals(text, label.text)
     assertEquals(false, label.isWrap)
     assertEquals(text, label.name)
   }
-
 }

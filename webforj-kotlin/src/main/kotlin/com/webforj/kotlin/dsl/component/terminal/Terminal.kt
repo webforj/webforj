@@ -7,6 +7,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates a `Terminal`.
+ *
  * ```
  * ... {
  *   terminal {
@@ -22,7 +23,7 @@ import com.webforj.kotlin.dsl.init
  *
  * @param block The initialization steps of the `Terminal`.
  * @return The configured `Terminal`.
- *
  * @see Terminal
  */
-fun @WebforjDsl HasComponents.terminal(block: @WebforjDsl Terminal.() -> Unit = {}): Terminal = init(Terminal(), block)
+fun @WebforjDsl HasComponents.terminal(block: @WebforjDsl Terminal.() -> Unit = {}): Terminal =
+  init(Terminal(), block)

@@ -4,11 +4,11 @@ import com.google.gson.JsonObject
 import com.webforj.component.html.elements.Div
 import com.webforj.component.table.Column.PinDirection
 import com.webforj.component.table.Table.SelectionMode
-import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import org.junit.jupiter.api.Test
 
 class TableTest {
 
@@ -23,30 +23,31 @@ class TableTest {
   fun shouldCreateExample() {
     val columnsList = listOf("athlete", "age", "country", "year", "total")
     val root = Div()
-    val table = root.table<JsonObject> {
-      height = "400px"
-      selectionMode = SelectionMode.MULTIPLE
-      isHeaderCheckboxSelection = false
+    val table =
+      root.table<JsonObject> {
+        height = "400px"
+        selectionMode = SelectionMode.MULTIPLE
+        isHeaderCheckboxSelection = false
 
-      for(column in columnsList) {
-        addColumn(column) {
-          val element = it.get(column)
-          if (!element.isJsonNull) {
-            element.asString
+        for (column in columnsList) {
+          addColumn(column) {
+            val element = it.get(column)
+            if (!element.isJsonNull) {
+              element.asString
+            }
+            ""
           }
-          ""
+        }
+
+        columns.forEach { it.isSortable = true }
+        column("athlete") {
+          pinDirection = PinDirection.LEFT
+          minWidth = 200f
+        }
+        column("total") {
+          pinDirection = PinDirection.LEFT
         }
       }
-
-      columns.forEach { it.isSortable = true }
-      column("athlete") {
-        pinDirection = PinDirection.LEFT
-        minWidth = 200f
-      }
-      column("total") {
-        pinDirection = PinDirection.LEFT
-      }
-    }
 
     assertTrue { root.hasComponent(table) }
     assertEquals("400px", table.height)
@@ -63,5 +64,4 @@ class TableTest {
     assertNotNull(total)
     assertEquals(PinDirection.LEFT, total.pinDirection)
   }
-
 }

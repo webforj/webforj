@@ -9,11 +9,11 @@ import com.webforj.kotlin.dsl.component.html.elements.div
 import com.webforj.kotlin.dsl.component.html.elements.paragraph
 import com.webforj.kotlin.dsl.component.optioninput.checkBox
 import com.webforj.kotlin.dsl.component.text.label
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
-import kotlin.test.assertNotNull
 
 class ColumnsLayoutTest {
   lateinit var root: HasComponents
@@ -43,26 +43,27 @@ class ColumnsLayoutTest {
     val mobileBreakpoint = ColumnsLayout.Breakpoint("mobile", "30em", 1)
     val tabletBreakpoint = ColumnsLayout.Breakpoint("tablet", "60em", 2)
     val desktopBreakpoint = ColumnsLayout.Breakpoint("desktop", "90em", 3)
-    
-    val layout = root.columnsLayout(mobileBreakpoint, tabletBreakpoint, desktopBreakpoint) {
-      div {
-        label("Header Section")
-        paragraph("Responsive layout with breakpoints")
-      }
-      
-      div {
-        textField("Search", placeholder = "Search items...")
-        button("Search")
-      }
-      
-      div {
-        checkBox("Show advanced options")
+
+    val layout =
+      root.columnsLayout(mobileBreakpoint, tabletBreakpoint, desktopBreakpoint) {
         div {
-          paragraph("Advanced options will appear here")
+          label("Header Section")
+          paragraph("Responsive layout with breakpoints")
+        }
+
+        div {
+          textField("Search", placeholder = "Search items...")
+          button("Search")
+        }
+
+        div {
+          checkBox("Show advanced options")
+          div {
+            paragraph("Advanced options will appear here")
+          }
         }
       }
-    }
-    
+
     assertNotNull(layout)
     assertEquals(3, layout.breakpoints.size)
     assertEquals(mobileBreakpoint, layout.breakpoints[0])
@@ -70,5 +71,4 @@ class ColumnsLayoutTest {
     assertEquals(desktopBreakpoint, layout.breakpoints[2])
     assertTrue { layout.componentCount >= 3 }
   }
-
 }

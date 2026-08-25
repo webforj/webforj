@@ -8,6 +8,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates an `IconButton` with a [name] and [pool].
+ *
  * ```
  * ... {
  *   // Create with name and pool
@@ -24,11 +25,12 @@ import com.webforj.kotlin.dsl.init
 fun @WebforjDsl HasComponents.iconButton(
   name: String,
   pool: String,
-  block: @WebforjDsl IconButton.() -> Unit = {}
+  block: @WebforjDsl IconButton.() -> Unit = {},
 ): IconButton = init(IconButton(name, pool), block)
 
 /**
  * Creates an `IconButton` with an [icon].
+ *
  * ```
  * ... {
  *   // Create with existing icon
@@ -45,5 +47,5 @@ fun @WebforjDsl HasComponents.iconButton(
  */
 fun @WebforjDsl HasComponents.iconButton(
   icon: Icon,
-  block: @WebforjDsl IconButton.() -> Unit = {}
+  block: @WebforjDsl IconButton.() -> Unit = {},
 ): IconButton = init(IconButton(icon), block)

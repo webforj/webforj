@@ -7,6 +7,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates a `CheckBox` that can be initially [checked] or not with an optional [text].
+ *
  * ```
  * ... {
  *   checkBox() // Empty CheckBox component
@@ -25,13 +26,14 @@ import com.webforj.kotlin.dsl.init
 fun @WebforjDsl HasComponents.checkBox(
   text: String? = null,
   checked: Boolean? = null,
-  block: @WebforjDsl CheckBox.() -> Unit = {}
+  block: @WebforjDsl CheckBox.() -> Unit = {},
 ): CheckBox {
-  val checkBox = when {
-    checked != null && text != null -> CheckBox(text, checked)
-    checked != null -> CheckBox(checked)
-    text != null -> CheckBox(text)
-    else -> CheckBox()
-  }
+  val checkBox =
+    when {
+      checked != null && text != null -> CheckBox(text, checked)
+      checked != null -> CheckBox(checked)
+      text != null -> CheckBox(text)
+      else -> CheckBox()
+    }
   return init(checkBox, block)
 }

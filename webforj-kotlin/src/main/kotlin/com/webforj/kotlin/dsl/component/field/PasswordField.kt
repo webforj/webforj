@@ -9,6 +9,7 @@ import com.webforj.kotlin.extension.suffixSlot
 
 /**
  * Creates a `PasswordField` with an optional [label], [value] and/or [placeholder].
+ *
  * ```
  * ... {
  *   passwordField() // Empty PasswordField component
@@ -36,18 +37,22 @@ fun @WebforjDsl HasComponents.passwordField(
   label: String? = null,
   value: String? = null,
   placeholder: String? = null,
-  block: @WebforjDsl PasswordField.() -> Unit = {}
+  block: @WebforjDsl PasswordField.() -> Unit = {},
 ): PasswordField {
-  val passwordField = when {
-    placeholder != null && value != null && label != null -> PasswordField(label, value, placeholder)
-    value != null && label != null -> PasswordField(label, value)
-    label != null -> PasswordField(label).apply {
-      placeholder?.let { setPlaceholder(it) }
+  val passwordField =
+    when {
+      placeholder != null && value != null && label != null ->
+        PasswordField(label, value, placeholder)
+      value != null && label != null -> PasswordField(label, value)
+      label != null ->
+        PasswordField(label).apply {
+          placeholder?.let { setPlaceholder(it) }
+        }
+      else ->
+        PasswordField().apply {
+          value?.let { setValue(it) }
+          placeholder?.let { setPlaceholder(it) }
+        }
     }
-    else -> PasswordField().apply {
-      value?.let { setValue(it) }
-      placeholder?.let { setPlaceholder(it) }
-    }
-  }
   return init(passwordField, block)
 }

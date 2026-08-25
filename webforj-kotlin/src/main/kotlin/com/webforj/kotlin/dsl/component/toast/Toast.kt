@@ -9,6 +9,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates a `Toast` component with optional [text], [duration], [theme], and/or [placement].
+ *
  * ```
  * ... {
  *   toast() // Empty Toast component
@@ -41,29 +42,34 @@ fun @WebforjDsl HasComponents.toast(
   duration: Int? = null,
   theme: Theme? = null,
   placement: Toast.Placement? = null,
-  block: @WebforjDsl Toast.() -> Unit = {}
+  block: @WebforjDsl Toast.() -> Unit = {},
 ): Toast {
-  val toast = when {
-    placement != null && theme != null && duration != null && text != null -> Toast(text, duration, theme, placement)
-    placement != null && duration != null && text != null -> Toast(text, duration, placement)
-    placement != null && text != null -> Toast(text, placement).apply {
-      theme?.let { setTheme(it) }
+  val toast =
+    when {
+      placement != null && theme != null && duration != null && text != null ->
+        Toast(text, duration, theme, placement)
+      placement != null && duration != null && text != null -> Toast(text, duration, placement)
+      placement != null && text != null ->
+        Toast(text, placement).apply {
+          theme?.let { setTheme(it) }
+        }
+      theme != null && duration != null && text != null -> Toast(text, duration, theme)
+      theme != null && text != null -> Toast(text, theme)
+      duration != null && text != null -> Toast(text, duration)
+      text != null -> Toast(text)
+      else ->
+        Toast().apply {
+          duration?.let { setDuration(it) }
+          theme?.let { setTheme(it) }
+          placement?.let { setPlacement(it) }
+        }
     }
-    theme != null && duration != null && text != null -> Toast(text, duration, theme)
-    theme != null && text != null -> Toast(text, theme)
-    duration != null && text != null -> Toast(text, duration)
-    text != null -> Toast(text)
-    else -> Toast().apply {
-      duration?.let { setDuration(it) }
-      theme?.let { setTheme(it) }
-      placement?.let { setPlacement(it) }
-    }
-  }
   return init(toast, block)
 }
 
 /**
  * Configures the components to add to the message slot of a `Toast` component.
+ *
  * ```
  * toast("Success!") {
  *   messageSlot {

@@ -8,6 +8,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates an [Upload] component for selecting and uploading files inline.
+ *
  * ```
  * ... {
  *   upload() // Empty Upload component
@@ -51,10 +52,12 @@ import com.webforj.kotlin.dsl.init
  * @return The configured [Upload].
  * @see Upload
  */
-fun @WebforjDsl HasComponents.upload(block: @WebforjDsl Upload.() -> Unit = {}): Upload = init(Upload(), block)
+fun @WebforjDsl HasComponents.upload(block: @WebforjDsl Upload.() -> Unit = {}): Upload =
+  init(Upload(), block)
 
 /**
  * Configures the [FileUploadI18n] internationalization settings of this [Upload].
+ *
  * ```
  * upload {
  *   i18n {

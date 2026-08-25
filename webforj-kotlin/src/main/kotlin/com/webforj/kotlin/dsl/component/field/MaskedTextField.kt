@@ -2,12 +2,13 @@ package com.webforj.kotlin.dsl.component.field
 
 import com.webforj.component.field.MaskedTextField
 import com.webforj.concern.HasComponents
+import com.webforj.kotlin.KotlinFactory.newMaskedTextField
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
-import com.webforj.kotlin.KotlinFactory.newMaskedTextField
 
 /**
  * Creates a `MaskedTextField` with an optional [label], [value] and/or [placeholder].
+ *
  * ```
  * ... {
  *   maskedTextField() // Empty MaskedTextField component
@@ -29,18 +30,22 @@ fun @WebforjDsl HasComponents.maskedTextField(
   label: String? = null,
   value: String? = null,
   placeholder: String? = null,
-  block: @WebforjDsl MaskedTextField.() -> Unit = {}
+  block: @WebforjDsl MaskedTextField.() -> Unit = {},
 ): MaskedTextField {
-  val maskedTextField = when {
-    placeholder != null && value != null && label != null -> newMaskedTextField(label, value, placeholder)
-    value != null && label != null -> newMaskedTextField(label, value)
-    label != null -> newMaskedTextField(label).apply {
-      placeholder?.let { setPlaceholder(it) }
+  val maskedTextField =
+    when {
+      placeholder != null && value != null && label != null ->
+        newMaskedTextField(label, value, placeholder)
+      value != null && label != null -> newMaskedTextField(label, value)
+      label != null ->
+        newMaskedTextField(label).apply {
+          placeholder?.let { setPlaceholder(it) }
+        }
+      else ->
+        newMaskedTextField().apply {
+          value?.let { setValue(it) }
+          placeholder?.let { setPlaceholder(it) }
+        }
     }
-    else -> newMaskedTextField().apply {
-      value?.let { setValue(it) }
-      placeholder?.let { setPlaceholder(it) }
-    }
-  }
   return init(maskedTextField, block)
 }

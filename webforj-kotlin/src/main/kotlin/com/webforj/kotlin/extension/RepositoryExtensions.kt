@@ -4,8 +4,9 @@ import com.webforj.data.repository.Repository
 import java.util.Optional
 
 /**
- * Provides the get operator for [Repository] implementations so that the squared brackets (`[key]` ) can be used
- * to retrieve an entity from it.
+ * Provides the get operator for [Repository] implementations so that the squared brackets (`[key]`
+ * ) can be used to retrieve an entity from it.
+ *
  * ```
  * val repository = // Initialization
  * val result = repository[key]
@@ -17,8 +18,9 @@ import java.util.Optional
 operator fun <T> Repository<T>.get(key: Any?): Optional<T> = find(key)
 
 /**
- * Provides the contains operator for [Repository] implementations so the `in` and `!in` can be used to
- * check for the presence or absence of entities.
+ * Provides the contains operator for [Repository] implementations so the `in` and `!in` can be used
+ * to check for the presence or absence of entities.
+ *
  * ```
  * val repository = // Initialization
  * val present = entity in repository
@@ -26,16 +28,20 @@ operator fun <T> Repository<T>.get(key: Any?): Optional<T> = find(key)
  * ```
  *
  * @param entity The member of the [Repository] to check for presence or absence.
- * @return `true` if the [entity] is part of the [Repository], else false, for `in`, flipped for `!in`.
+ * @return `true` if the [entity] is part of the [Repository], else false, for `in`, flipped for
+ *   `!in`.
  */
 operator fun <T> Repository<T>.contains(entity: T): Boolean = has(entity)
 
 /**
- * Provides the plus operator for [Repository] implementations so that `+` can be used to add entities.
+ * Provides the plus operator for [Repository] implementations so that `+` can be used to add
+ * entities.
+ *
  * ```
  * val repository = // Initialization
  * repository + entity1 + entity2
  * ```
+ *
  * **Note**: This operator can be chained to add multiple entities one by one.
  *
  * @param entity The member to add to the [Repository].
@@ -44,7 +50,9 @@ operator fun <T> Repository<T>.contains(entity: T): Boolean = has(entity)
 operator fun <T> Repository<T>.plus(entity: T): Repository<T> = commit(entity)
 
 /**
- * Provides the plus assign operator for [Repository] implementations so that `+=` can be used to add entities.
+ * Provides the plus assign operator for [Repository] implementations so that `+=` can be used to
+ * add entities.
+ *
  * ```
  * val repository = // Initialization
  * repository += entity

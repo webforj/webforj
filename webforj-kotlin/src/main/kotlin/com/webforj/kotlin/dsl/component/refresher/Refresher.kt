@@ -8,6 +8,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates a `Refresher` component for pull-to-refresh functionality.
+ *
  * ```
  * ... {
  *   refresher() // Empty Refresher component
@@ -25,10 +26,12 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Refresher`.
  * @see Refresher
  */
-fun @WebforjDsl HasComponents.refresher(block: @WebforjDsl Refresher.() -> Unit = {}): Refresher = init(Refresher(), block)
+fun @WebforjDsl HasComponents.refresher(block: @WebforjDsl Refresher.() -> Unit = {}): Refresher =
+  init(Refresher(), block)
 
 /**
  * Configures the [RefresherI18n] internationalization settings of this `Refresher`.
+ *
  * ```
  * refresher {
  *   i18n {

@@ -2,10 +2,10 @@ package com.webforj.kotlin.dsl.component.avatar
 
 import com.webforj.component.html.elements.Div
 import com.webforj.concern.HasComponents
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class AvatarTest {
   lateinit var root: HasComponents
@@ -49,13 +49,13 @@ class AvatarTest {
 
   @Test
   fun shouldCreateAvatarWithLabelInitialsAndBlock() {
-    val avatar = root.avatar("Label", "La") {
-      name = "Avatar"
-    }
+    val avatar =
+      root.avatar("Label", "La") {
+        name = "Avatar"
+      }
     assertTrue { root.hasComponent(avatar) }
     assertEquals("Label", avatar.label)
     assertEquals("La", avatar.initials)
     assertEquals("Avatar", avatar.name)
   }
-
 }

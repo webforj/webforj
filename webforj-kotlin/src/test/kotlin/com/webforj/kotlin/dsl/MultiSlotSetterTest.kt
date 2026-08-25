@@ -1,21 +1,19 @@
 package com.webforj.kotlin.dsl
 
 import com.webforj.component.html.elements.Div
-import com.webforj.component.button.Button
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
+import kotlin.test.assertTrue
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
-import kotlin.test.assertTrue
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
 
 internal class MultiSlotSetterTest {
   lateinit var proxy: MultiSlotSetter
 
   @BeforeEach
   fun setup() {
-    proxy = MultiSlotSetter { }
+    proxy = MultiSlotSetter {}
   }
 
   @Test
@@ -110,5 +108,4 @@ internal class MultiSlotSetterTest {
     assertTrue { div.hasComponent(a) }
     assertTrue { div.hasComponent(b) }
   }
-
 }

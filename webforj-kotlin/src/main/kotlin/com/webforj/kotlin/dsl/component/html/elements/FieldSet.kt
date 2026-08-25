@@ -8,6 +8,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates a `FieldSet` with an optional [text].
+ *
  * ```
  * ... {
  *   Fieldset() // Empty fieldset element
@@ -20,15 +21,19 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Fieldset` instance.
  * @see Fieldset
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset">Html fieldset
- *       Tag</a>
+ *   Tag</a>
  */
-fun @WebforjDsl HasComponents.fieldset(text: String? = null, block: @WebforjDsl Fieldset.() -> Unit = {}): Fieldset {
-    val fieldSet = text?.let { Fieldset(text) } ?: Fieldset()
-    return init(fieldSet, block)
+fun @WebforjDsl HasComponents.fieldset(
+  text: String? = null,
+  block: @WebforjDsl Fieldset.() -> Unit = {},
+): Fieldset {
+  val fieldSet = text?.let { Fieldset(text) } ?: Fieldset()
+  return init(fieldSet, block)
 }
 
 /**
  * Creates a `Legend` with an optional [text].
+ *
  * ```
  * fieldset {
  *   legend() // Empty legend element
@@ -41,9 +46,12 @@ fun @WebforjDsl HasComponents.fieldset(text: String? = null, block: @WebforjDsl 
  * @return The configured `Legend` instance.
  * @see Legend
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/legend">HTML legend
- *      Tag</a>
+ *   Tag</a>
  */
-fun @WebforjDsl Fieldset.legend(text: String? = null, block: @WebforjDsl Legend.() -> Unit = {}): Legend {
-    val legend = text?.let { Legend(text) } ?: Legend()
-    return init(legend, block)
+fun @WebforjDsl Fieldset.legend(
+  text: String? = null,
+  block: @WebforjDsl Legend.() -> Unit = {},
+): Legend {
+  val legend = text?.let { Legend(text) } ?: Legend()
+  return init(legend, block)
 }

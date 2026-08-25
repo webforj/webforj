@@ -8,6 +8,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates a `Toolbar` component for application toolbars and navigation bars.
+ *
  * ```
  * ... {
  *   toolbar() // Empty Toolbar component
@@ -36,10 +37,12 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Toolbar`.
  * @see Toolbar
  */
-fun @WebforjDsl HasComponents.toolbar(block: @WebforjDsl Toolbar.() -> Unit = {}): Toolbar = init(Toolbar(), block)
+fun @WebforjDsl HasComponents.toolbar(block: @WebforjDsl Toolbar.() -> Unit = {}): Toolbar =
+  init(Toolbar(), block)
 
 /**
  * Configures the components to add to the start slot of a `Toolbar` component.
+ *
  * ```
  * toolbar {
  *   startSlot {
@@ -56,6 +59,7 @@ fun @WebforjDsl Toolbar.startSlot(block: @WebforjDsl HasComponents.() -> Unit) {
 
 /**
  * Configures the components to add to the title slot of a `Toolbar` component.
+ *
  * ```
  * toolbar {
  *   titleSlot {
@@ -72,6 +76,7 @@ fun @WebforjDsl Toolbar.titleSlot(block: @WebforjDsl HasComponents.() -> Unit) {
 
 /**
  * Configures the components to add to the end slot of a `Toolbar` component.
+ *
  * ```
  * toolbar {
  *   endSlot {

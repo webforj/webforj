@@ -1484,8 +1484,8 @@ public class SpringConfigurationProperties {
     }
 
     /**
-     * Gets the origins the embedding frame may connect to in addition to the application origin
-     * and framework domains.
+     * Gets the origins the embedding frame may connect to in addition to the application origin and
+     * framework domains.
      *
      * @return the additional connect origins
      */
@@ -1494,8 +1494,8 @@ public class SpringConfigurationProperties {
     }
 
     /**
-     * Sets the origins the embedding frame may connect to in addition to the application origin
-     * and framework domains.
+     * Sets the origins the embedding frame may connect to in addition to the application origin and
+     * framework domains.
      *
      * @param connectDomains the additional connect origins
      */

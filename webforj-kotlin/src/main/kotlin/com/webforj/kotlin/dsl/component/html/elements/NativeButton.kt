@@ -7,6 +7,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates a `NativeButton` with an optional [text].
+ *
  * ```
  * ... {
  *   nativeButton() // Empty button element
@@ -19,9 +20,12 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `NativeButton`.
  * @see NativeButton
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button">HTML button
- *       Tag</a>
+ *   Tag</a>
  */
-fun @WebforjDsl HasComponents.nativeButton(text: String? = null, block: @WebforjDsl NativeButton.() -> Unit = {}): NativeButton {
-    val button = text?.let { NativeButton(text) } ?: NativeButton()
-    return init(button, block)
+fun @WebforjDsl HasComponents.nativeButton(
+  text: String? = null,
+  block: @WebforjDsl NativeButton.() -> Unit = {},
+): NativeButton {
+  val button = text?.let { NativeButton(text) } ?: NativeButton()
+  return init(button, block)
 }

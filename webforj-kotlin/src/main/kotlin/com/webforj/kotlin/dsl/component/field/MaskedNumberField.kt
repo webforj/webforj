@@ -2,12 +2,13 @@ package com.webforj.kotlin.dsl.component.field
 
 import com.webforj.component.field.MaskedNumberField
 import com.webforj.concern.HasComponents
+import com.webforj.kotlin.KotlinFactory.newMaskedNumberField
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
-import com.webforj.kotlin.KotlinFactory.newMaskedNumberField
 
 /**
  * Creates a `MaskedNumberField` with an optional [label], [value] and/or [placeholder].
+ *
  * ```
  * ... {
  *   maskedNumberField() // Empty MaskedNumberField component
@@ -29,18 +30,22 @@ fun @WebforjDsl HasComponents.maskedNumberField(
   label: String? = null,
   value: Double? = null,
   placeholder: String? = null,
-  block: @WebforjDsl MaskedNumberField.() -> Unit = {}
+  block: @WebforjDsl MaskedNumberField.() -> Unit = {},
 ): MaskedNumberField {
-  val maskedNumberField = when {
-    placeholder != null && value != null && label != null -> newMaskedNumberField(label, value, placeholder)
-    value != null && label != null -> newMaskedNumberField(label, value)
-    label != null -> newMaskedNumberField(label).apply {
-      placeholder?.let { setPlaceholder(it) }
+  val maskedNumberField =
+    when {
+      placeholder != null && value != null && label != null ->
+        newMaskedNumberField(label, value, placeholder)
+      value != null && label != null -> newMaskedNumberField(label, value)
+      label != null ->
+        newMaskedNumberField(label).apply {
+          placeholder?.let { setPlaceholder(it) }
+        }
+      else ->
+        newMaskedNumberField().apply {
+          value?.let { setValue(it) }
+          placeholder?.let { setPlaceholder(it) }
+        }
     }
-    else -> newMaskedNumberField().apply {
-      value?.let { setValue(it) }
-      placeholder?.let { setPlaceholder(it) }
-    }
-  }
   return init(maskedNumberField, block)
 }

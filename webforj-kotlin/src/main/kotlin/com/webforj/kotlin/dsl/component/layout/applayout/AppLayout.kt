@@ -8,6 +8,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates an `AppLayout` component for building application layouts.
+ *
  * ```
  * ... {
  *   appLayout {
@@ -56,6 +57,7 @@ fun @WebforjDsl HasComponents.appLayout(block: @WebforjDsl AppLayout.() -> Unit 
 
 /**
  * Configures the components to add to the header slot of an `AppLayout`.
+ *
  * ```
  * appLayout {
  *   headerSlot {
@@ -73,6 +75,7 @@ fun @WebforjDsl AppLayout.headerSlot(block: @WebforjDsl HasComponents.() -> Unit
 
 /**
  * Configures the components to add to the footer slot of an `AppLayout`.
+ *
  * ```
  * appLayout {
  *   footerSlot {
@@ -90,6 +93,7 @@ fun @WebforjDsl AppLayout.footerSlot(block: @WebforjDsl HasComponents.() -> Unit
 
 /**
  * Configures the components to add to the drawer slot of an `AppLayout`.
+ *
  * ```
  * appLayout {
  *   drawerSlot {
@@ -108,6 +112,7 @@ fun @WebforjDsl AppLayout.drawerSlot(block: @WebforjDsl HasComponents.() -> Unit
 
 /**
  * Configures the components to add to the drawer title slot of an `AppLayout`.
+ *
  * ```
  * appLayout {
  *   drawerTitleSlot {
@@ -124,6 +129,7 @@ fun @WebforjDsl AppLayout.drawerTitleSlot(block: @WebforjDsl HasComponents.() ->
 
 /**
  * Configures the components to add to the drawer header actions slot of an `AppLayout`.
+ *
  * ```
  * appLayout {
  *   drawerHeaderActionsSlot {
@@ -141,6 +147,7 @@ fun @WebforjDsl AppLayout.drawerHeaderActionsSlot(block: @WebforjDsl HasComponen
 
 /**
  * Configures the components to add to the drawer footer slot of an `AppLayout`.
+ *
  * ```
  * appLayout {
  *   drawerFooterSlot {

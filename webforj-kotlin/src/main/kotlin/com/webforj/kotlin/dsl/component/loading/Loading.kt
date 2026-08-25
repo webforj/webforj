@@ -9,6 +9,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates a `Loading` component with optional [text] for displaying loading states.
+ *
  * ```
  * ... {
  *   loading() // Empty Loading component
@@ -24,13 +25,17 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Loading`.
  * @see Loading
  */
-fun @WebforjDsl HasComponents.loading(text: String? = null, block: @WebforjDsl Loading.() -> Unit = {}): Loading {
+fun @WebforjDsl HasComponents.loading(
+  text: String? = null,
+  block: @WebforjDsl Loading.() -> Unit = {},
+): Loading {
   val loading = text?.let { Loading(it) } ?: Loading()
   return init(loading, block)
 }
 
 /**
  * Configures the [LoadingSpinner] of this `Loading` component.
+ *
  * ```
  * loading {
  *   spinner {
@@ -44,5 +49,6 @@ fun @WebforjDsl HasComponents.loading(text: String? = null, block: @WebforjDsl L
  * @see LoadingSpinner
  * @see DwcSpinner
  */
-fun @WebforjDsl Loading.spinner(block: @WebforjDsl DwcSpinner<LoadingSpinner>.() -> Unit): LoadingSpinner =
-  spinner.apply(block) as LoadingSpinner
+fun @WebforjDsl Loading.spinner(
+  block: @WebforjDsl DwcSpinner<LoadingSpinner>.() -> Unit
+): LoadingSpinner = spinner.apply(block) as LoadingSpinner

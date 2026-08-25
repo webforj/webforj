@@ -9,6 +9,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates a `Splitter` component for creating resizable split-pane layouts with optional [id].
+ *
  * ```
  * splitter("content-splitter") {
  *   masterSlot {
@@ -37,7 +38,10 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Splitter`.
  * @see Splitter
  */
-fun @WebforjDsl HasComponents.splitter(id: String? = null, block: @WebforjDsl Splitter.() -> Unit = {}): Splitter {
+fun @WebforjDsl HasComponents.splitter(
+  id: String? = null,
+  block: @WebforjDsl Splitter.() -> Unit = {},
+): Splitter {
   val splitter = id?.let { Splitter(id) } ?: Splitter()
   return init(splitter, block)
 }
@@ -46,6 +50,7 @@ fun @WebforjDsl HasComponents.splitter(id: String? = null, block: @WebforjDsl Sp
  * Configures the component to add to the master slot of a `Splitter` component.
  *
  * **Note:** Only a single component is accepted. Use a container for multiple components.
+ *
  * ```
  * splitter {
  *   masterSlot {
@@ -68,6 +73,7 @@ fun @WebforjDsl Splitter.masterSlot(block: @WebforjDsl HasComponents.() -> Compo
  * Configures the component to add to the detail slot of a `Splitter` component.
  *
  * **Note:** Only a single component is accepted. Use a container for multiple components.
+ *
  * ```
  * splitter {
  *   detailSlot {

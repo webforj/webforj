@@ -14,6 +14,7 @@ import kotlin.reflect.KClass
 
 /**
  * Creates an `AppNav` component for application navigation menus.
+ *
  * ```
  * ... {
  *   appNav {
@@ -31,10 +32,12 @@ import kotlin.reflect.KClass
  * @return The configured `AppNav`.
  * @see AppNav
  */
-fun @WebforjDsl HasComponents.appNav(block: @WebforjDsl AppNav.() -> Unit = {}): AppNav = init(AppNav(), block)
+fun @WebforjDsl HasComponents.appNav(block: @WebforjDsl AppNav.() -> Unit = {}): AppNav =
+  init(AppNav(), block)
 
 /**
  * Adds an `AppNavItem` to the `AppNav` with optional [path], [view], and/or [routeParameters].
+ *
  * ```
  * appNav {
  *   appNavItem("Home", "/home") // Item with text and path
@@ -65,7 +68,7 @@ fun @WebforjDsl AppNav.appNavItem(
   path: String? = null,
   view: KClass<out Component>? = null,
   routeParameters: ParametersBag? = null,
-  block: @WebforjDsl AppNavItem.() -> Unit = {}
+  block: @WebforjDsl AppNavItem.() -> Unit = {},
 ): AppNavItem {
   val item = createAppNavItem(text, path, view, routeParameters, block)
   addItem(item)
@@ -74,6 +77,7 @@ fun @WebforjDsl AppNav.appNavItem(
 
 /**
  * Adds an `AppNavItem` to the `AppNavItem` with optional [path], [view], and/or [routeParameters].
+ *
  * ```
  * appNav {
  *   appNavItem("Profile", "/profile", ProfileView::class) {// Item with text, path, and view
@@ -102,7 +106,7 @@ fun @WebforjDsl AppNavItem.appNavItem(
   path: String? = null,
   view: KClass<out Component>? = null,
   routeParameters: ParametersBag? = null,
-  block: @WebforjDsl AppNavItem.() -> Unit = {}
+  block: @WebforjDsl AppNavItem.() -> Unit = {},
 ): AppNavItem {
   val item = createAppNavItem(text, path, view, routeParameters, block)
   addItem(item)
@@ -112,6 +116,7 @@ fun @WebforjDsl AppNavItem.appNavItem(
 /**
  * Adds an `AppNavLabel` to the `AppNav`, a non interactive section label that titles the run of
  * items that follow it, up to the next label or the end of the menu.
+ *
  * ```
  * appNav {
  *   appNavItem("Home", "/home")
@@ -134,11 +139,12 @@ fun @WebforjDsl AppNavItem.appNavItem(
  */
 fun @WebforjDsl AppNav.appNavLabel(
   text: String,
-  block: @WebforjDsl AppNavLabel.() -> Unit = {}
+  block: @WebforjDsl AppNavLabel.() -> Unit = {},
 ): AppNavLabel = init(AppNavLabel(text), block)
 
 /**
  * Configures the `AppNav`'s embedded search field.
+ *
  * ```
  * appNav {
  *   search {
@@ -158,6 +164,7 @@ fun @WebforjDsl AppNav.search(block: @WebforjDsl AppNav.Search.() -> Unit): AppN
 
 /**
  * Configures the `AppNav`'s pinning.
+ *
  * ```
  * appNav {
  *   pinning {
@@ -180,18 +187,23 @@ private fun createAppNavItem(
   path: String? = null,
   view: KClass<out Component>? = null,
   routeParameters: ParametersBag? = null,
-  block: @WebforjDsl AppNavItem.() -> Unit = {}
-) = when {
-  routeParameters != null && view != null -> AppNavItem(text, view.java, routeParameters).apply {
-    path?.let { setPath(it) }
-  }
-  view != null -> AppNavItem(text, view.java).apply {
-    path?.let { setPath(it) }
-  }
-  path != null -> AppNavItem(text, path).apply {
-    routeParameters?.let { queryParameters = it }
-  }
-  else -> AppNavItem(text).apply {
-    routeParameters?.let { queryParameters = it }
-  }
-}.apply(block)
+  block: @WebforjDsl AppNavItem.() -> Unit = {},
+) =
+  when {
+    routeParameters != null && view != null ->
+      AppNavItem(text, view.java, routeParameters).apply {
+        path?.let { setPath(it) }
+      }
+    view != null ->
+      AppNavItem(text, view.java).apply {
+        path?.let { setPath(it) }
+      }
+    path != null ->
+      AppNavItem(text, path).apply {
+        routeParameters?.let { queryParameters = it }
+      }
+    else ->
+      AppNavItem(text).apply {
+        routeParameters?.let { queryParameters = it }
+      }
+  }.apply(block)

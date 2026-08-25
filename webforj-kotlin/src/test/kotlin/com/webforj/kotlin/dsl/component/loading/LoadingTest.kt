@@ -2,11 +2,11 @@ package com.webforj.kotlin.dsl.component.loading
 
 import com.webforj.component.html.elements.Div
 import com.webforj.concern.HasComponents
+import kotlin.test.assertFalse
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import kotlin.test.assertFalse
 
 class LoadingTest {
   lateinit var root: HasComponents
@@ -48,5 +48,4 @@ class LoadingTest {
     }
     assertFalse { loading.spinner.isClockwise }
   }
-
 }

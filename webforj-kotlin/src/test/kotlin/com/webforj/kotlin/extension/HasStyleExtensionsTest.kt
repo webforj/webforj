@@ -2,12 +2,12 @@ package com.webforj.kotlin.extension
 
 import com.webforj.component.html.elements.Div
 import com.webforj.concern.HasStyle
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 class HasStyleExtensionsTest {
   val property = "property"
@@ -69,5 +69,4 @@ class HasStyleExtensionsTest {
     component.styles -= property
     assertNull(component.getStyle(property))
   }
-
 }

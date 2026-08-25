@@ -6,9 +6,7 @@ import com.webforj.concern.HasPrefix
 import com.webforj.kotlin.dsl.SingleSlotSetter
 import com.webforj.kotlin.dsl.WebforjDsl
 
-/**
- * The currently set prefix [Component] or `null` if none is set yet.
- */
+/** The currently set prefix [Component] or `null` if none is set yet. */
 val HasPrefix<*>.prefix: Component?
   get() = prefixComponent
 

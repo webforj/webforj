@@ -7,6 +7,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates an `H6` with an optional [text].
+ *
  * ```
  * ... {
  *   H6() // Empty h6 element
@@ -14,6 +15,6 @@ import com.webforj.kotlin.dsl.init
  * }
  */
 fun @WebforjDsl HasComponents.h6(text: String? = null, block: @WebforjDsl H6.() -> Unit = {}): H6 {
-    val h6 = text?.let { H6(text) } ?: H6()
-    return init(h6, block)
+  val h6 = text?.let { H6(text) } ?: H6()
+  return init(h6, block)
 }

@@ -6,6 +6,7 @@ import com.webforj.kotlin.dsl.WebforjDsl
 
 /**
  * Creates a `ListItem` with an optional [text].
+ *
  * ```
  * ... {
  *   listItem() // Empty ListItem component
@@ -22,7 +23,11 @@ import com.webforj.kotlin.dsl.WebforjDsl
  * @see comboBox
  * @see listBox
  */
-fun @WebforjDsl DwcList<*, *>.listItem(text: String, key: Any? = null, block: @WebforjDsl ListItem.() -> Unit = {}): ListItem {
+fun @WebforjDsl DwcList<*, *>.listItem(
+  text: String,
+  key: Any? = null,
+  block: @WebforjDsl ListItem.() -> Unit = {},
+): ListItem {
   val listItem = key?.let { ListItem(key, text) } ?: ListItem(text)
   listItem.block()
   add(listItem)

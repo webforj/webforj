@@ -8,6 +8,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates a `RadioButtonGroup` with an optional [name].
+ *
  * ```
  * ... {
  *   radioButtonGroup() // Empty RadioButtonGroup component
@@ -21,12 +22,18 @@ import com.webforj.kotlin.dsl.init
  * @see radioButton
  * @see switch
  */
-fun @WebforjDsl HasComponents.radioButtonGroup(name: String? = null, block: @WebforjDsl RadioButtonGroup.() -> Unit): RadioButtonGroup {
+fun @WebforjDsl HasComponents.radioButtonGroup(
+  name: String? = null,
+  block: @WebforjDsl RadioButtonGroup.() -> Unit,
+): RadioButtonGroup {
   val group = name?.let { RadioButtonGroup(it) } ?: RadioButtonGroup()
   return init(group, block)
 }
+
 /**
- * Creates a `RadioButton` that can be initially [checked] or not with an optional [text] and/or [name].
+ * Creates a `RadioButton` that can be initially [checked] or not with an optional [text] and/or
+ * [name].
+ *
  * ```
  * ... {
  *   radioButton() // Empty RadioButton component
@@ -48,7 +55,7 @@ fun @WebforjDsl RadioButtonGroup.radioButton(
   text: String? = null,
   checked: Boolean? = null,
   name: String? = null,
-  block: @WebforjDsl RadioButton.() -> Unit = {}
+  block: @WebforjDsl RadioButton.() -> Unit = {},
 ): RadioButton {
   val radioButton = createRadioButton(text, checked, name)
   radioButton.block()
@@ -58,6 +65,7 @@ fun @WebforjDsl RadioButtonGroup.radioButton(
 
 /**
  * Creates a `Switch` that can be initially [checked] or not with an optional [text] and/or [name].
+ *
  * ```
  * ... {
  *   switch() // Empty Switch
@@ -79,7 +87,7 @@ fun @WebforjDsl RadioButtonGroup.switch(
   text: String? = null,
   checked: Boolean? = null,
   name: String? = null,
-  block: @WebforjDsl RadioButton.() -> Unit = {}
+  block: @WebforjDsl RadioButton.() -> Unit = {},
 ): RadioButton {
   val switch = createSwitch(text, checked, name)
   switch.block()

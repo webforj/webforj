@@ -1,18 +1,18 @@
 package com.webforj.kotlin.extension
 
 import com.webforj.component.html.elements.Div
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
 
 class HasPropertyExtensionsTest {
   val stringProperty = "string-property"
-  val intProperty ="int-property"
+  val intProperty = "int-property"
   val stringValue = "string"
   val intValue = 5
   lateinit var component: Div
@@ -68,5 +68,4 @@ class HasPropertyExtensionsTest {
     component.properties[stringProperty] = newValue
     assertEquals(newValue, component.getProperty(stringProperty))
   }
-
 }

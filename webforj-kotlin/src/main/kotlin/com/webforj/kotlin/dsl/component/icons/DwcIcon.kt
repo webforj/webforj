@@ -8,6 +8,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates a DWC `Icon`.
+ *
  * ```
  * ... {
  *  dwcIcon(DwcIcon.CHECK)
@@ -22,4 +23,7 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Icon`.
  * @see DwcIcon
  */
-fun @WebforjDsl HasComponents.dwcIcon(icon: DwcIcon, block: @WebforjDsl Icon.() -> Unit = {}): Icon = init(icon.create(), block)
+fun @WebforjDsl HasComponents.dwcIcon(
+  icon: DwcIcon,
+  block: @WebforjDsl Icon.() -> Unit = {},
+): Icon = init(icon.create(), block)

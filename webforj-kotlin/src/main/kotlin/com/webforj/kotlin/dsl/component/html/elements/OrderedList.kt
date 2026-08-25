@@ -8,6 +8,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates an `OrderedList` with an optional [text].
+ *
  * ```
  * ... {
  *   orderedList() // Empty ol element
@@ -20,13 +21,17 @@ import com.webforj.kotlin.dsl.init
  * @see OrderedList
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol">HTML ol Tag</a>
  */
-fun @WebforjDsl HasComponents.orderedList(text: String? = null, block: @WebforjDsl OrderedList.() -> Unit = {}): OrderedList {
-    val ul = text?.let { OrderedList(text) } ?: OrderedList()
-    return init(ul, block)
+fun @WebforjDsl HasComponents.orderedList(
+  text: String? = null,
+  block: @WebforjDsl OrderedList.() -> Unit = {},
+): OrderedList {
+  val ul = text?.let { OrderedList(text) } ?: OrderedList()
+  return init(ul, block)
 }
 
 /**
  * Creates an `ListEntry` for an [OrderedList] with an optional [text].
+ *
  * ```
  * orderedList {
  *   listEntry() // Empty li element
@@ -40,7 +45,10 @@ fun @WebforjDsl HasComponents.orderedList(text: String? = null, block: @WebforjD
  * @see ListEntry
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/li">HTML li Tag</a>
  */
-fun @WebforjDsl OrderedList.listEntry(text: String? = null, block: @WebforjDsl ListEntry.() -> Unit = {}): ListEntry {
-    val li = text?.let { ListEntry(text) } ?: ListEntry()
-    return init(li, block)
+fun @WebforjDsl OrderedList.listEntry(
+  text: String? = null,
+  block: @WebforjDsl ListEntry.() -> Unit = {},
+): ListEntry {
+  val li = text?.let { ListEntry(text) } ?: ListEntry()
+  return init(li, block)
 }

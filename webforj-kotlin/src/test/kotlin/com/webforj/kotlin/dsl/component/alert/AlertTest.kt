@@ -3,11 +3,11 @@ package com.webforj.kotlin.dsl.component.alert
 import com.webforj.component.Theme
 import com.webforj.component.html.elements.Div
 import com.webforj.concern.HasComponents
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class AlertTest {
   lateinit var root: HasComponents
@@ -34,7 +34,6 @@ class AlertTest {
       }
       return cases
     }
-
   }
 
   @ParameterizedTest(name = "Create alert with text={0}, theme={1} and closable={2}.")
@@ -42,7 +41,7 @@ class AlertTest {
   fun shouldCreateAlertWithoutBlock(
     text: String?,
     theme: Theme?,
-    closable: Boolean?
+    closable: Boolean?,
   ) {
     val alert = root.alert(text, theme, closable)
     assertTrue { root.hasComponent(alert) }
@@ -56,16 +55,16 @@ class AlertTest {
   fun shouldCreateAlertWithBlock(
     text: String?,
     theme: Theme?,
-    closable: Boolean?
+    closable: Boolean?,
   ) {
-    val alert = root.alert(text, theme, closable) {
-      name = "Alert"
-    }
+    val alert =
+      root.alert(text, theme, closable) {
+        name = "Alert"
+      }
     assertTrue { root.hasComponent(alert) }
     assertEquals(text ?: "", alert.text)
     assertEquals(theme ?: Theme.DEFAULT, alert.theme)
     assertEquals(closable ?: false, alert.isClosable)
     assertEquals("Alert", alert.name)
   }
-
 }

@@ -1,15 +1,14 @@
 package com.webforj.kotlin.dsl.component.tree
 
-import com.basis.bbj.comm.al
 import com.webforj.component.html.elements.Div
 import com.webforj.component.tree.TreeNode
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
 
 class TreeTest {
   lateinit var root: Div
@@ -45,9 +44,10 @@ class TreeTest {
     var node: TreeNode? = null
     var grandchild: TreeNode? = null
     val tree = root.tree {
-      node = treeNode("child") {
-        grandchild = treeNode("grandchild")
-      }
+      node =
+        treeNode("child") {
+          grandchild = treeNode("grandchild")
+        }
     }
     assertTrue { root.hasComponent(tree) }
     assertFalse { tree.children.isEmpty() }
@@ -163,5 +163,4 @@ class TreeTest {
     assertNotNull(resourcesNode)
     assertEquals("Human Resources", resourcesNode.key)
   }
-
 }

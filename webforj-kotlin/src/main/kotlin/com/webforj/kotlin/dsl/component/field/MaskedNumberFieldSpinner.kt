@@ -9,6 +9,7 @@ import com.webforj.kotlin.extension.suffixSlot
 
 /**
  * Creates a `MaskedNumberFieldSpinner` with an optional [label], [value] and/or [placeholder].
+ *
  * ```
  * ... {
  *   maskedNumberFieldSpinner() // Empty MaskedNumberFieldSpinner component
@@ -34,18 +35,22 @@ fun @WebforjDsl HasComponents.maskedNumberFieldSpinner(
   label: String? = null,
   value: Double? = null,
   placeholder: String? = null,
-  block: @WebforjDsl MaskedNumberFieldSpinner.() -> Unit = {}
+  block: @WebforjDsl MaskedNumberFieldSpinner.() -> Unit = {},
 ): MaskedNumberFieldSpinner {
-  val maskedNumberFieldSpinner = when {
-    placeholder != null && value != null && label != null -> MaskedNumberFieldSpinner(label, value, placeholder)
-    value != null && label != null -> MaskedNumberFieldSpinner(label, value)
-    label != null -> MaskedNumberFieldSpinner(label).apply {
-      placeholder?.let { setPlaceholder(it) }
+  val maskedNumberFieldSpinner =
+    when {
+      placeholder != null && value != null && label != null ->
+        MaskedNumberFieldSpinner(label, value, placeholder)
+      value != null && label != null -> MaskedNumberFieldSpinner(label, value)
+      label != null ->
+        MaskedNumberFieldSpinner(label).apply {
+          placeholder?.let { setPlaceholder(it) }
+        }
+      else ->
+        MaskedNumberFieldSpinner().apply {
+          value?.let { setValue(it) }
+          placeholder?.let { setPlaceholder(it) }
+        }
     }
-    else -> MaskedNumberFieldSpinner().apply {
-      value?.let { setValue(it) }
-      placeholder?.let { setPlaceholder(it) }
-    }
-  }
   return init(maskedNumberFieldSpinner, block)
 }

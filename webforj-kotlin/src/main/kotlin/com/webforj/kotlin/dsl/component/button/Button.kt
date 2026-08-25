@@ -13,6 +13,7 @@ import com.webforj.kotlin.extension.suffixSlot
 
 /**
  * Creates a `Button` component with an optional [text] and [theme].
+ *
  * ```
  * ... {
  *   button() // Empty Button component
@@ -33,24 +34,26 @@ import com.webforj.kotlin.extension.suffixSlot
  * @see Button
  */
 fun @WebforjDsl HasComponents.button(
-    text: String? = null,
-    theme: ButtonTheme? = null,
-    block: @WebforjDsl Button.() -> Unit = {}
+  text: String? = null,
+  theme: ButtonTheme? = null,
+  block: @WebforjDsl Button.() -> Unit = {},
 ): Button {
-    val button = if (theme != null && text != null) {
-        Button(text, theme)
+  val button =
+    if (theme != null && text != null) {
+      Button(text, theme)
     } else if (text != null) {
-        Button(text)
+      Button(text)
     } else {
-        Button().apply {
-            theme?.let { setTheme(it) }
-        }
+      Button().apply {
+        theme?.let { setTheme(it) }
+      }
     }
-    return init(button, block)
+  return init(button, block)
 }
 
 /**
  * Configures the `Component` to set as the icon of a `Button`.
+ *
  * ```
  * button {
  *   iconSlot { }
@@ -65,6 +68,7 @@ fun @WebforjDsl Button.iconSlot(block: @WebforjDsl HasComponents.() -> Component
 
 /**
  * Configures the `Component` to set as the badge of a `Button`.
+ *
  * ```
  * button("Notifications") {
  *   badgeSlot {

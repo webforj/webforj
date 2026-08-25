@@ -9,12 +9,12 @@ import com.webforj.kotlin.dsl.component.html.elements.div
 import com.webforj.kotlin.dsl.component.html.elements.paragraph
 import com.webforj.kotlin.dsl.component.optioninput.checkBox
 import com.webforj.kotlin.dsl.component.text.label
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import kotlin.test.assertTrue
-import kotlin.test.assertNotNull
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class FlexLayoutTest {
   lateinit var root: HasComponents
@@ -44,31 +44,32 @@ class FlexLayoutTest {
 
   @Test
   fun shouldCreateExample() {
-    val flexLayout = root.flexLayout(FlexDirection.COLUMN) {
-      // Header section
-      div {
-        label("User Profile")
-        paragraph("Manage your personal information")
-      }
+    val flexLayout =
+      root.flexLayout(FlexDirection.COLUMN) {
+        // Header section
+        div {
+          label("User Profile")
+          paragraph("Manage your personal information")
+        }
 
-      // Form fields
-      div {
-        textField("Name", placeholder = "Enter your full name")
-        textField("Email", placeholder = "Enter your email address")
-      }
+        // Form fields
+        div {
+          textField("Name", placeholder = "Enter your full name")
+          textField("Email", placeholder = "Enter your email address")
+        }
 
-      // Options
-      div {
-        checkBox("Enable notifications", checked = true)
-        checkBox("Public profile", checked = false)
-      }
+        // Options
+        div {
+          checkBox("Enable notifications", checked = true)
+          checkBox("Public profile", checked = false)
+        }
 
-      // Action buttons
-      div {
-        button("Cancel")
-        button("Save", theme = com.webforj.component.button.ButtonTheme.PRIMARY)
+        // Action buttons
+        div {
+          button("Cancel")
+          button("Save", theme = com.webforj.component.button.ButtonTheme.PRIMARY)
+        }
       }
-    }
 
     assertNotNull(flexLayout)
     assertTrue { root.hasComponent(flexLayout) }
@@ -77,13 +78,14 @@ class FlexLayoutTest {
 
   @Test
   fun shouldCreateHorizontalLayoutExample() {
-    val flexLayout = root.flexLayout(FlexDirection.ROW) {
-      button("Previous")
-      div {
-        label("Step 2 of 5")
+    val flexLayout =
+      root.flexLayout(FlexDirection.ROW) {
+        button("Previous")
+        div {
+          label("Step 2 of 5")
+        }
+        button("Next", theme = com.webforj.component.button.ButtonTheme.PRIMARY)
       }
-      button("Next", theme = com.webforj.component.button.ButtonTheme.PRIMARY)
-    }
 
     assertNotNull(flexLayout)
     assertTrue { root.hasComponent(flexLayout) }
@@ -92,31 +94,32 @@ class FlexLayoutTest {
 
   @Test
   fun shouldCreateNestedFlexLayouts() {
-    val mainLayout = root.flexLayout(FlexDirection.COLUMN) {
-      // Header row
-      flexLayout(FlexDirection.ROW) {
-        div {
-          label("Navigation")
-        }
-        div {
-          button("Menu")
-          button("Search")
-        }
-      }
-
-      // Content row
-      flexLayout(FlexDirection.ROW) {
-        div {
-          paragraph("Main content area")
-          textField("Search", placeholder = "Search...")
+    val mainLayout =
+      root.flexLayout(FlexDirection.COLUMN) {
+        // Header row
+        flexLayout(FlexDirection.ROW) {
+          div {
+            label("Navigation")
+          }
+          div {
+            button("Menu")
+            button("Search")
+          }
         }
 
-        div {
-          checkBox("Filter results")
-          checkBox("Sort by date")
+        // Content row
+        flexLayout(FlexDirection.ROW) {
+          div {
+            paragraph("Main content area")
+            textField("Search", placeholder = "Search...")
+          }
+
+          div {
+            checkBox("Filter results")
+            checkBox("Sort by date")
+          }
         }
       }
-    }
 
     assertNotNull(mainLayout)
     assertTrue { root.hasComponent(mainLayout) }

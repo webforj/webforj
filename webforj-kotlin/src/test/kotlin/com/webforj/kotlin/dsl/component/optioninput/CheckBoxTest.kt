@@ -47,9 +47,10 @@ class CheckBoxTest {
   @DisplayName("Create CheckBox with block")
   fun shouldCreateCheckBoxWithBlock() {
     val expected = "CheckBox"
-    val checkBox = root.checkBox() {
-      name = expected
-    }
+    val checkBox =
+      root.checkBox() {
+        name = expected
+      }
     assertTrue { root.hasComponent(checkBox) }
     assertEquals("", checkBox.text)
     assertFalse { checkBox.isChecked }
@@ -71,13 +72,13 @@ class CheckBoxTest {
   fun shouldCreateCheckBoxWithTextCheckedAndBlock() {
     val text = "text"
     val expected = "CheckBox"
-    val checkBox = root.checkBox(text, true) {
-      name = expected
-    }
+    val checkBox =
+      root.checkBox(text, true) {
+        name = expected
+      }
     assertTrue { root.hasComponent(checkBox) }
     assertEquals("text", checkBox.text)
     assertTrue { checkBox.isChecked }
     assertEquals(expected, checkBox.name)
   }
-
 }

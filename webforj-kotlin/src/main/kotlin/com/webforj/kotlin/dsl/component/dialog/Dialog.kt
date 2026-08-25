@@ -8,6 +8,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates a `Dialog` with optional [headerSlot] and [footerSlot] slot sections.
+ *
  * ```
  * dialog {
  *   headerSlot {
@@ -50,6 +51,7 @@ fun @WebforjDsl HasComponents.dialog(block: @WebforjDsl Dialog.() -> Unit = {}):
 
 /**
  * Configures the components to add to the header section of a `Dialog`.
+ *
  * ```
  * dialog {
  *   headerSlot {
@@ -67,6 +69,7 @@ fun @WebforjDsl Dialog.headerSlot(block: @WebforjDsl HasComponents.() -> Unit) {
 
 /**
  * Configures the components to add to the footer section of a `Dialog`.
+ *
  * ```
  * dialog {
  *   footerSlot {
@@ -83,4 +86,3 @@ fun @WebforjDsl Dialog.headerSlot(block: @WebforjDsl HasComponents.() -> Unit) {
 fun @WebforjDsl Dialog.footerSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Dialog::addToFooter)
 }
-

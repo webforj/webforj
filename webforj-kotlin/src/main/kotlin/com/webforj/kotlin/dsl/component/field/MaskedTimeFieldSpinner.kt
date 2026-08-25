@@ -10,6 +10,7 @@ import java.time.LocalTime
 
 /**
  * Creates a `MaskedTimeFieldSpinner` with an optional [label], [value] and/or [placeholder].
+ *
  * ```
  * ... {
  *   maskedTimeFieldSpinner() // Empty MaskedTimeFieldSpinner component
@@ -36,18 +37,22 @@ fun @WebforjDsl HasComponents.maskedTimeFieldSpinner(
   label: String? = null,
   value: LocalTime? = null,
   placeholder: String? = null,
-  block: @WebforjDsl MaskedTimeFieldSpinner.() -> Unit = {}
+  block: @WebforjDsl MaskedTimeFieldSpinner.() -> Unit = {},
 ): MaskedTimeFieldSpinner {
-  val maskedTimeFieldSpinner = when {
-    placeholder != null && value != null && label != null -> MaskedTimeFieldSpinner(label, value, placeholder)
-    value != null && label != null -> MaskedTimeFieldSpinner(label, value)
-    label != null -> MaskedTimeFieldSpinner(label).apply {
-      placeholder?.let { setPlaceholder(it) }
+  val maskedTimeFieldSpinner =
+    when {
+      placeholder != null && value != null && label != null ->
+        MaskedTimeFieldSpinner(label, value, placeholder)
+      value != null && label != null -> MaskedTimeFieldSpinner(label, value)
+      label != null ->
+        MaskedTimeFieldSpinner(label).apply {
+          placeholder?.let { setPlaceholder(it) }
+        }
+      else ->
+        MaskedTimeFieldSpinner().apply {
+          value?.let { setValue(it) }
+          placeholder?.let { setPlaceholder(it) }
+        }
     }
-    else -> MaskedTimeFieldSpinner().apply {
-      value?.let { setValue(it) }
-      placeholder?.let { setPlaceholder(it) }
-    }
-  }
   return init(maskedTimeFieldSpinner, block)
 }

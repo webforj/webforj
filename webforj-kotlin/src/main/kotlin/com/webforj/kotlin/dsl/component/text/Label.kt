@@ -7,6 +7,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates a `Label` with an optional [text] and/or [wrap].
+ *
  * ```
  * ... {
  *  label() // Default Label component
@@ -19,11 +20,16 @@ import com.webforj.kotlin.dsl.init
  * @param block The initialization steps of the `Label`.
  * @return The configured `Label`.
  */
-fun @WebforjDsl HasComponents.label(text: String? = null, wrap: Boolean? = null, block: @WebforjDsl Label.() -> Unit = {}): Label {
-  val label = when {
-    wrap != null && text != null -> Label(text, wrap)
-    text != null -> Label(text)
-    else -> Label().apply { wrap?.let { setWrap(it) } }
-  }
+fun @WebforjDsl HasComponents.label(
+  text: String? = null,
+  wrap: Boolean? = null,
+  block: @WebforjDsl Label.() -> Unit = {},
+): Label {
+  val label =
+    when {
+      wrap != null && text != null -> Label(text, wrap)
+      text != null -> Label(text)
+      else -> Label().apply { wrap?.let { setWrap(it) } }
+    }
   return init(label, block)
 }

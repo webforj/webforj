@@ -7,6 +7,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates a `ChoiceBox` with an optional [label].
+ *
  * ```
  * ... {
  *   choiceBox() // Empty ChoiceBox component
@@ -20,7 +21,10 @@ import com.webforj.kotlin.dsl.init
  * @see ChoiceBox
  * @see listItem
  */
-fun @WebforjDsl HasComponents.choiceBox(label: String? = null, block: @WebforjDsl ChoiceBox.() -> Unit = {}): ChoiceBox {
+fun @WebforjDsl HasComponents.choiceBox(
+  label: String? = null,
+  block: @WebforjDsl ChoiceBox.() -> Unit = {},
+): ChoiceBox {
   val choiceBox = label?.let { ChoiceBox(it) } ?: ChoiceBox()
   return init(choiceBox, block)
 }

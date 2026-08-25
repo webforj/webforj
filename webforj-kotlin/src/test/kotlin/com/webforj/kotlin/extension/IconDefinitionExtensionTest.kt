@@ -8,9 +8,9 @@ import com.webforj.kotlin.dsl.build
 import com.webforj.kotlin.dsl.component.infiniitescroll.infiniteScroll
 import com.webforj.kotlin.dsl.component.refresher.refresher
 import com.webforj.kotlin.dsl.component.tree.tree
+import kotlin.test.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
 
 class IconDefinitionExtensionTest {
   lateinit var root: Div

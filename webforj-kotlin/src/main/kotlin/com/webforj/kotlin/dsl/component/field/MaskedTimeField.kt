@@ -3,13 +3,14 @@ package com.webforj.kotlin.dsl.component.field
 import com.webforj.component.field.MaskedTimeField
 import com.webforj.component.field.MaskedTimeField.TimePicker
 import com.webforj.concern.HasComponents
+import com.webforj.kotlin.KotlinFactory.newMaskedTimeField
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
-import com.webforj.kotlin.KotlinFactory.newMaskedTimeField
 import java.time.LocalTime
 
 /**
  * Creates a `MaskedTimeField` with an optional [label], [value] and/or [placeholder].
+ *
  * ```
  * ... {
  *   maskedTimeField() // Empty MaskedTimeField component
@@ -32,24 +33,29 @@ fun @WebforjDsl HasComponents.maskedTimeField(
   label: String? = null,
   value: LocalTime? = null,
   placeholder: String? = null,
-  block: @WebforjDsl MaskedTimeField.() -> Unit = {}
+  block: @WebforjDsl MaskedTimeField.() -> Unit = {},
 ): MaskedTimeField {
-  val maskedTimeField = when {
-    placeholder != null && value != null && label != null -> newMaskedTimeField(label, value, placeholder)
-    value != null && label != null -> newMaskedTimeField(label, value)
-    label != null -> newMaskedTimeField(label).apply {
-      placeholder?.let { setPlaceholder(it) }
+  val maskedTimeField =
+    when {
+      placeholder != null && value != null && label != null ->
+        newMaskedTimeField(label, value, placeholder)
+      value != null && label != null -> newMaskedTimeField(label, value)
+      label != null ->
+        newMaskedTimeField(label).apply {
+          placeholder?.let { setPlaceholder(it) }
+        }
+      else ->
+        newMaskedTimeField().apply {
+          value?.let { setValue(it) }
+          placeholder?.let { setPlaceholder(it) }
+        }
     }
-    else -> newMaskedTimeField().apply {
-      value?.let { setValue(it) }
-      placeholder?.let { setPlaceholder(it) }
-    }
-  }
   return init(maskedTimeField, block)
 }
 
 /**
  * Configures the [TimePicker] of this `MaskedTimeField`.
+ *
  * ```
  * maskedTimeField {
  *   picker {

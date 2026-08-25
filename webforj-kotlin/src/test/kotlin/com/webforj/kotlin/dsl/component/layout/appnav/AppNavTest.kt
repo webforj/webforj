@@ -9,11 +9,11 @@ import com.webforj.kotlin.extension.prefixSlot
 import com.webforj.kotlin.extension.suffix
 import com.webforj.kotlin.extension.suffixSlot
 import com.webforj.router.history.ParametersBag
+import kotlin.test.assertEquals
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
 
 class AppNavTest {
   lateinit var root: HasComponents
@@ -59,12 +59,13 @@ class AppNavTest {
 
   @Test
   fun shouldCreateAppNavItemWithAllParameters() {
-    val parameters = ParametersBag.of(
-      mapOf(
-        "id" to "123",
-        "action" to "edit"
+    val parameters =
+      ParametersBag.of(
+        mapOf(
+          "id" to "123",
+          "action" to "edit",
+        )
       )
-    )
     val appNav = root.appNav {
       val item = appNavItem("Edit", "/edit/123", routeParameters = parameters)
       assertEquals("Edit", item.text)
@@ -78,13 +79,14 @@ class AppNavTest {
   @Test
   fun shouldCreateAppNavItemWithPrefix() {
     val appNav = root.appNav {
-      val item = appNavItem("Settings") {
-        prefixSlot {
-          label("⚙️")
+      val item =
+        appNavItem("Settings") {
+          prefixSlot {
+            label("⚙️")
+          }
+          val prefixComponent = prefix as Label
+          assertEquals("⚙️", prefixComponent.text)
         }
-        val prefixComponent = prefix as Label
-        assertEquals("⚙️", prefixComponent.text)
-      }
       assertEquals("Settings", item.text)
     }
 
@@ -94,13 +96,14 @@ class AppNavTest {
   @Test
   fun shouldCreateAppNavItemWithSuffix() {
     val appNav = root.appNav {
-      val item = appNavItem("Notifications") {
-        suffixSlot {
-          label("5")
+      val item =
+        appNavItem("Notifications") {
+          suffixSlot {
+            label("5")
+          }
+          val suffixComponent = suffix as Label
+          assertEquals("5", suffixComponent.text)
         }
-        val suffixComponent = suffix as Label
-        assertEquals("5", suffixComponent.text)
-      }
       assertEquals("Notifications", item.text)
     }
 
@@ -113,18 +116,19 @@ class AppNavTest {
       val homeItem = appNavItem("Home", "/home")
       val profileItem = appNavItem("Profile", "/profile")
       val searchItem = appNavItem("Search")
-      val settingsItem = appNavItem("Settings", "/settings") {
-        prefixSlot {
-          label("⚙️")
+      val settingsItem =
+        appNavItem("Settings", "/settings") {
+          prefixSlot {
+            label("⚙️")
+          }
+          val prefixComponent = prefix as Label
+          assertEquals("⚙️", prefixComponent.text)
+          suffixSlot {
+            label("new")
+          }
+          val suffixComponent = suffix as Label
+          assertEquals("new", suffixComponent.text)
         }
-        val prefixComponent = prefix as Label
-        assertEquals("⚙️", prefixComponent.text)
-        suffixSlot {
-          label("new")
-        }
-        val suffixComponent = suffix as Label
-        assertEquals("new", suffixComponent.text)
-      }
 
       assertEquals("Home", homeItem.text)
       assertEquals("/home", homeItem.path)
@@ -167,9 +171,10 @@ class AppNavTest {
   @Test
   fun shouldCreateAppNavItemWithInitializationBlock() {
     val appNav = root.appNav {
-      val item = appNavItem("Custom Item") {
-        text = "Modified Item"
-      }
+      val item =
+        appNavItem("Custom Item") {
+          text = "Modified Item"
+        }
       assertEquals("Modified Item", item.text)
     }
 
@@ -199,18 +204,19 @@ class AppNavTest {
   @Test
   fun shouldCreateAppNavLabelWithPrefixAndSuffix() {
     val appNav = root.appNav {
-      val navLabel = appNavLabel("Analytics") {
-        prefixSlot {
-          label("pie")
+      val navLabel =
+        appNavLabel("Analytics") {
+          prefixSlot {
+            label("pie")
+          }
+          suffixSlot {
+            label("2")
+          }
+          val prefixComponent = prefix as Label
+          val suffixComponent = suffix as Label
+          assertEquals("pie", prefixComponent.text)
+          assertEquals("2", suffixComponent.text)
         }
-        suffixSlot {
-          label("2")
-        }
-        val prefixComponent = prefix as Label
-        val suffixComponent = suffix as Label
-        assertEquals("pie", prefixComponent.text)
-        assertEquals("2", suffixComponent.text)
-      }
       assertEquals("Analytics", navLabel.text)
     }
 

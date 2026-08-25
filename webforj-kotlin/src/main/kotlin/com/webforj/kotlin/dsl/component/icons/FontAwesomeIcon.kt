@@ -8,6 +8,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates a FontAwesome `Icon` with the given [name] and optional [variate].
+ *
  * ```
  * ... {
  *   fontAwesomeIcon("user") // Basic FontAwesome icon
@@ -16,11 +17,12 @@ import com.webforj.kotlin.dsl.init
  * }
  * ```
  *
- * FontAwesome icons provide a comprehensive set of icons in multiple variants (solid, regular, light, brands, etc.).
- * The variant controls the visual style and weight of the icon.
+ * FontAwesome icons provide a comprehensive set of icons in multiple variants (solid, regular,
+ * light, brands, etc.). The variant controls the visual style and weight of the icon.
  *
  * @param name The name of the FontAwesome icon.
- * @param variate The variant of the icon (e.g., SOLID, REGULAR, LIGHT, BRANDS). If null, the default is used.
+ * @param variate The variant of the icon (e.g., SOLID, REGULAR, LIGHT, BRANDS). If null, the
+ *   default is used.
  * @param block The initialization steps for the `Icon`.
  * @return The configured `Icon` instance.
  * @see FontAwesomeIcon
@@ -29,9 +31,11 @@ import com.webforj.kotlin.dsl.init
 fun @WebforjDsl HasComponents.fontAwesomeIcon(
   name: String,
   variate: FontAwesomeIcon.Variate? = null,
-  block: @WebforjDsl Icon.() -> Unit = {}
-): Icon = if (variate != null) {
-  FontAwesomeIcon.create(name, variate)
-} else {
-  FontAwesomeIcon.create(name)
-}.apply { init(this, block) }
+  block: @WebforjDsl Icon.() -> Unit = {},
+): Icon =
+  if (variate != null) {
+      FontAwesomeIcon.create(name, variate)
+    } else {
+      FontAwesomeIcon.create(name)
+    }
+    .apply { init(this, block) }

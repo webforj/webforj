@@ -7,16 +7,18 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates a `Break`.
+ *
  * ```
  * ... {
  *  Break() // Empty break
  * }
  * ```
+ *
  * @param block The initialization steps for the `Break`.
  * @return The configured `Break` instance.
  * @see Break
  */
-fun @WebforjDsl HasComponents.`break`(block:  @WebforjDsl Break.() -> Unit = {}): Break {
+fun @WebforjDsl HasComponents.`break`(block: @WebforjDsl Break.() -> Unit = {}): Break {
   val `break` = Break()
   return init(`break`, block)
 }

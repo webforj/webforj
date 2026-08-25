@@ -7,6 +7,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates a `ComboBox` with an optional [label].
+ *
  * ```
  * ... {
  *   comboBox() // Empty ComboBox component
@@ -20,7 +21,10 @@ import com.webforj.kotlin.dsl.init
  * @see ComboBox
  * @see listItem
  */
-fun @WebforjDsl HasComponents.comboBox(label: String? = null, block: @WebforjDsl ComboBox.() -> Unit = {}): ComboBox {
+fun @WebforjDsl HasComponents.comboBox(
+  label: String? = null,
+  block: @WebforjDsl ComboBox.() -> Unit = {},
+): ComboBox {
   val comboBox = label?.let { ComboBox(it) } ?: ComboBox()
   return init(comboBox, block)
 }

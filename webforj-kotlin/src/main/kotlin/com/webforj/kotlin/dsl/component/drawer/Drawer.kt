@@ -7,7 +7,9 @@ import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
 
 /**
- * Creates a `Drawer` with an optional [label] and configurable [titleSlot], [headerActionsSlot], and [footerSlot] sections.
+ * Creates a `Drawer` with an optional [label] and configurable [titleSlot], [headerActionsSlot],
+ * and [footerSlot] sections.
+ *
  * ```
  * drawer("Navigation Drawer") {
  *   titleSlot {
@@ -62,7 +64,7 @@ import com.webforj.kotlin.dsl.init
  */
 fun @WebforjDsl HasComponents.drawer(
   label: String? = null,
-  block: @WebforjDsl Drawer.() -> Unit = {}
+  block: @WebforjDsl Drawer.() -> Unit = {},
 ): Drawer {
   val drawer = label?.let { Drawer(it) } ?: Drawer()
   return init(drawer, block)
@@ -70,6 +72,7 @@ fun @WebforjDsl HasComponents.drawer(
 
 /**
  * Configures the components to add to the title section of a `Drawer`.
+ *
  * ```
  * drawer("Settings Drawer") {
  *   titleSlot {
@@ -87,6 +90,7 @@ fun @WebforjDsl Drawer.titleSlot(block: @WebforjDsl HasComponents.() -> Unit) {
 
 /**
  * Configures the components to add to the header actions section of a `Drawer`.
+ *
  * ```
  * drawer("Menu Drawer") {
  *   headerActionsSlot {
@@ -106,6 +110,7 @@ fun @WebforjDsl Drawer.headerActionsSlot(block: @WebforjDsl HasComponents.() -> 
 
 /**
  * Configures the components to add to the footer section of a `Drawer`.
+ *
  * ```
  * drawer("Info Drawer") {
  *   footerSlot {

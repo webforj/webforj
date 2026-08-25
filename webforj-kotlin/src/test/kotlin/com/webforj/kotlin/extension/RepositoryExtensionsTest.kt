@@ -2,12 +2,12 @@ package com.webforj.kotlin.extension
 
 import com.webforj.data.repository.CollectionRepository
 import com.webforj.data.repository.Repository
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
 import kotlin.random.Random
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
 
 class RepositoryExtensionsTest {
   lateinit var collection: MutableCollection<Int>
@@ -27,7 +27,7 @@ class RepositoryExtensionsTest {
   @Test
   @DisplayName("Retrieve the entity with get operator")
   fun shouldFindEntityWithGetOperator() {
-    val expected = collection.random();
+    val expected = collection.random()
     val result = repository[expected]
     assertTrue { result.filter { it == expected }.isPresent }
   }
@@ -69,7 +69,6 @@ class RepositoryExtensionsTest {
     assertTrue { Int.MAX_VALUE in repository }
   }
 
-
   @Test
   @DisplayName("Add entity to repository with plus assign operator")
   fun shouldAddEntityToRepositoryWithPlusAssignOperator() {
@@ -78,5 +77,4 @@ class RepositoryExtensionsTest {
     r += 0
     assertTrue { 0 in repository }
   }
-
 }

@@ -1,13 +1,12 @@
 package com.webforj.kotlin.dsl.component.field
 
-import com.webforj.component.DwcComponent
 import com.webforj.component.field.TextField
 import com.webforj.component.html.elements.Div
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class TextFieldTest {
   lateinit var root: Div
@@ -28,7 +27,6 @@ class TextFieldTest {
     assertEquals("", tf.placeholder)
     assertEquals(type, tf.type)
   }
-
 
   @Test
   @DisplayName("Create TextField with label and type")
@@ -134,9 +132,10 @@ class TextFieldTest {
     val placeholder = "placeholder"
     val type = TextField.Type.SEARCH
     val expected = "name"
-    val tf = root.textField(label, value, placeholder, type) {
-      name = expected
-    }
+    val tf =
+      root.textField(label, value, placeholder, type) {
+        name = expected
+      }
     assertTrue { root.hasComponent(tf) }
     assertEquals(label, tf.label)
     assertEquals(value, tf.value)

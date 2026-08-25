@@ -7,11 +7,11 @@ import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.component.html.elements.strong
 import com.webforj.kotlin.extension.prefixSlot
 import com.webforj.kotlin.extension.suffixSlot
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.MethodSource
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 
 class ListTest {
 
@@ -119,7 +119,7 @@ class ListTest {
             items(
               "key1" to "Item 1",
               "key2" to "Item 2",
-              "key3" to "Item 3"
+              "key3" to "Item 3",
             )
           }
         },
@@ -128,7 +128,7 @@ class ListTest {
             items(
               "key1" to "Item 1",
               "key2" to "Item 2",
-              "key3" to "Item 3"
+              "key3" to "Item 3",
             )
           }
         },
@@ -137,7 +137,7 @@ class ListTest {
             items(
               "key1" to "Item 1",
               "key2" to "Item 2",
-              "key3" to "Item 3"
+              "key3" to "Item 3",
             )
           }
         },
@@ -164,7 +164,6 @@ class ListTest {
         },
       )
     }
-
   }
 
   @ParameterizedTest(name = "Create empty {0}.")
@@ -253,5 +252,4 @@ class ListTest {
     assertEquals("Item 2", item.text)
     assertEquals("key2", item.key)
   }
-
 }

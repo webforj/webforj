@@ -15,7 +15,8 @@ import com.webforj.kotlin.dsl.WebforjDsl
  * )
  * ```
  *
- * @param items Variable number of pairs where the first element is the key and the second is the display text
+ * @param items Variable number of pairs where the first element is the key and the second is the
+ *   display text
  * @param index Optional position to insert the items. If null, items are appended to the end
  */
 fun @WebforjDsl DwcList<*, *>.items(vararg items: Pair<Any, String>, index: Int? = null) {

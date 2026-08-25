@@ -7,6 +7,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates a `Slider` with an optional [value], [min], [max] and/or [orientation].
+ *
  * ```
  * ... {
  *  slider() // Default Slider component
@@ -54,23 +55,24 @@ fun @WebforjDsl HasComponents.slider(
   min: Int? = null,
   max: Int? = null,
   orientation: Slider.Orientation? = null,
-  block: @WebforjDsl Slider.() -> Unit = {}
+  block: @WebforjDsl Slider.() -> Unit = {},
 ): Slider {
-  val slider = if (value != null) {
-    when {
-      orientation != null && min != null && max != null -> Slider(value, min, max, orientation)
-      min != null && max != null -> Slider(value, min, max)
-      orientation != null && max != null -> Slider(value, max, orientation)
-      max != null -> Slider(value, max)
-      orientation != null -> Slider(value, orientation).apply { min?.let { setMin(it) } }
-      else -> Slider(value).apply { min?.let { setMin(it) } }
+  val slider =
+    if (value != null) {
+      when {
+        orientation != null && min != null && max != null -> Slider(value, min, max, orientation)
+        min != null && max != null -> Slider(value, min, max)
+        orientation != null && max != null -> Slider(value, max, orientation)
+        max != null -> Slider(value, max)
+        orientation != null -> Slider(value, orientation).apply { min?.let { setMin(it) } }
+        else -> Slider(value).apply { min?.let { setMin(it) } }
+      }
+    } else {
+      Slider().apply {
+        min?.let { setMin(it) }
+        max?.let { setMax(it) }
+        orientation?.let { setOrientation(it) }
+      }
     }
-  } else {
-    Slider().apply {
-      min?.let { setMin(it) }
-      max?.let { setMax(it) }
-      orientation?.let { setOrientation(it) }
-    }
-  }
   return init(slider, block)
 }

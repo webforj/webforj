@@ -3,9 +3,9 @@ package com.webforj.kotlin.extension
 import com.webforj.concern.HasClassName
 
 /**
- * Provides [classNames] property to components that implement [HasClassName].
- * The use of the property allows to clarify that a component's class names are to be modified and
- * to avoid conflicts with other extension methods for other concern interfaces.
+ * Provides [classNames] property to components that implement [HasClassName]. The use of the
+ * property allows to clarify that a component's class names are to be modified and to avoid
+ * conflicts with other extension methods for other concern interfaces.
  *
  * The property provides the operators:
  * - [plus]
@@ -17,8 +17,8 @@ val HasClassName<*>.classNames: HasClassName<*>
   get() = this
 
 /**
- * Provides the plus operator for implementors of [HasClassName], allowing
- * the use of plus (`+`) to add CSS class names:
+ * Provides the plus operator for implementors of [HasClassName], allowing the use of plus (`+`) to
+ * add CSS class names:
  * ```
  * val component = ...
  * component.classNames + "new-class"
@@ -36,8 +36,8 @@ operator fun HasClassName<*>.plus(className: String): HasClassName<*> {
 }
 
 /**
- * Provides the plus assign operator for implementors of [HasClassName], allowing the use of
- * `+=` to add CSS class names:
+ * Provides the plus assign operator for implementors of [HasClassName], allowing the use of `+=` to
+ * add CSS class names:
  * ```
  * val component = ...
  * component.classNames += "new-class"
@@ -51,8 +51,8 @@ operator fun HasClassName<*>.plusAssign(className: String) {
 }
 
 /**
- * Provides the minus operator for implementors of [HasClassName], allowing
- * the use of minus (`-`) to remove CSS class names:
+ * Provides the minus operator for implementors of [HasClassName], allowing the use of minus (`-`)
+ * to remove CSS class names:
  * ```
  * val component = ...
  * component.classNames - "old-class"
@@ -70,8 +70,8 @@ operator fun HasClassName<*>.minus(className: String): HasClassName<*> {
 }
 
 /**
- * Provides the minus assign operator for implementors of [HasClassName], allowing the use of
- * `-=` to remove CSS class names:
+ * Provides the minus assign operator for implementors of [HasClassName], allowing the use of `-=`
+ * to remove CSS class names:
  * ```
  * val component = ...
  * component.classNames -= "old-class"

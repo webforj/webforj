@@ -9,6 +9,7 @@ import com.webforj.kotlin.extension.suffixSlot
 
 /**
  * Creates a `MaskedTextFieldSpinner` with an optional [label], [value] and/or [placeholder].
+ *
  * ```
  * ... {
  *   maskedTextFieldSpinner() // Empty MaskedTextFieldSpinner component
@@ -34,18 +35,22 @@ fun @WebforjDsl HasComponents.maskedTextFieldSpinner(
   label: String? = null,
   value: String? = null,
   placeholder: String? = null,
-  block: @WebforjDsl MaskedTextFieldSpinner.() -> Unit = {}
+  block: @WebforjDsl MaskedTextFieldSpinner.() -> Unit = {},
 ): MaskedTextFieldSpinner {
-  val maskedTextFieldSpinner = when {
-    placeholder != null && value != null && label != null -> MaskedTextFieldSpinner(label, value, placeholder)
-    value != null && label != null -> MaskedTextFieldSpinner(label, value)
-    label != null -> MaskedTextFieldSpinner(label).apply {
-      placeholder?.let { setPlaceholder(it) }
+  val maskedTextFieldSpinner =
+    when {
+      placeholder != null && value != null && label != null ->
+        MaskedTextFieldSpinner(label, value, placeholder)
+      value != null && label != null -> MaskedTextFieldSpinner(label, value)
+      label != null ->
+        MaskedTextFieldSpinner(label).apply {
+          placeholder?.let { setPlaceholder(it) }
+        }
+      else ->
+        MaskedTextFieldSpinner().apply {
+          value?.let { setValue(it) }
+          placeholder?.let { setPlaceholder(it) }
+        }
     }
-    else -> MaskedTextFieldSpinner().apply {
-      value?.let { setValue(it) }
-      placeholder?.let { setPlaceholder(it) }
-    }
-  }
   return init(maskedTextFieldSpinner, block)
 }

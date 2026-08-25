@@ -7,6 +7,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates an `Accordion` group that coordinates its child panels.
+ *
  * ```
  * ... {
  *   accordion {
@@ -22,13 +23,10 @@ import com.webforj.kotlin.dsl.init
  *
  * @param block The initialization steps of the `Accordion`.
  * @return The configured `Accordion`.
- *
  * @see Accordion
  * @see accordionPanel
  */
-fun @WebforjDsl HasComponents.accordion(
-  block: @WebforjDsl Accordion.() -> Unit = {}
-): Accordion {
+fun @WebforjDsl HasComponents.accordion(block: @WebforjDsl Accordion.() -> Unit = {}): Accordion {
   val accordion = Accordion()
   return init(accordion, block)
 }

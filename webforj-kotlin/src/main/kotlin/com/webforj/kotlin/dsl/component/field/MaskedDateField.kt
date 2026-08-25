@@ -3,13 +3,14 @@ package com.webforj.kotlin.dsl.component.field
 import com.webforj.component.field.MaskedDateField
 import com.webforj.component.field.MaskedDateField.DatePicker
 import com.webforj.concern.HasComponents
+import com.webforj.kotlin.KotlinFactory.newMaskedDateField
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
-import com.webforj.kotlin.KotlinFactory.newMaskedDateField
 import java.time.LocalDate
 
 /**
  * Creates a `MaskedDateField` with an optional [label], [value] and/or [placeholder].
+ *
  * ```
  * ... {
  *   maskedDateField() // Empty MaskedDateField component
@@ -32,24 +33,29 @@ fun @WebforjDsl HasComponents.maskedDateField(
   label: String? = null,
   value: LocalDate? = null,
   placeholder: String? = null,
-  block: @WebforjDsl MaskedDateField.() -> Unit = {}
+  block: @WebforjDsl MaskedDateField.() -> Unit = {},
 ): MaskedDateField {
-  val maskedDateField = when {
-    placeholder != null && value != null && label != null -> newMaskedDateField(label, value, placeholder)
-    value != null && label != null -> newMaskedDateField(label, value)
-    label != null -> newMaskedDateField(label).apply {
-      placeholder?.let { setPlaceholder(it) }
+  val maskedDateField =
+    when {
+      placeholder != null && value != null && label != null ->
+        newMaskedDateField(label, value, placeholder)
+      value != null && label != null -> newMaskedDateField(label, value)
+      label != null ->
+        newMaskedDateField(label).apply {
+          placeholder?.let { setPlaceholder(it) }
+        }
+      else ->
+        newMaskedDateField().apply {
+          value?.let { setValue(it) }
+          placeholder?.let { setPlaceholder(it) }
+        }
     }
-    else -> newMaskedDateField().apply {
-      value?.let { setValue(it) }
-      placeholder?.let { setPlaceholder(it) }
-    }
-  }
   return init(maskedDateField, block)
 }
 
 /**
  * Configures the [DatePicker] of this `MaskedDateField`.
+ *
  * ```
  * maskedDateField {
  *   picker {

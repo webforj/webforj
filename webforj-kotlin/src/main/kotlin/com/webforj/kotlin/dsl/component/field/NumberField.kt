@@ -9,6 +9,7 @@ import com.webforj.kotlin.extension.suffixSlot
 
 /**
  * Creates a `NumberField` with an optional [label], [value] and/or [placeholder].
+ *
  * ```
  * ... {
  *   numberField() // Empty NumberField component
@@ -37,18 +38,22 @@ fun @WebforjDsl HasComponents.numberField(
   label: String? = null,
   value: Double? = null,
   placeholder: String? = null,
-  block: @WebforjDsl NumberField.() -> Unit = {}
+  block: @WebforjDsl NumberField.() -> Unit = {},
 ): NumberField {
-  val numberField = when {
-    placeholder != null && value != null && label != null -> NumberField(label, value, placeholder)
-    value != null && label != null -> NumberField(label, value)
-    label != null -> NumberField(label).apply {
-      placeholder?.let { setPlaceholder(it) }
+  val numberField =
+    when {
+      placeholder != null && value != null && label != null ->
+        NumberField(label, value, placeholder)
+      value != null && label != null -> NumberField(label, value)
+      label != null ->
+        NumberField(label).apply {
+          placeholder?.let { setPlaceholder(it) }
+        }
+      else ->
+        NumberField().apply {
+          value?.let { setValue(it) }
+          placeholder?.let { setPlaceholder(it) }
+        }
     }
-    else -> NumberField().apply {
-      value?.let { setValue(it) }
-      placeholder?.let { setPlaceholder(it) }
-    }
-  }
   return init(numberField, block)
 }

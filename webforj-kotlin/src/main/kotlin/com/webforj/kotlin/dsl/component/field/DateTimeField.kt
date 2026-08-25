@@ -10,6 +10,7 @@ import java.time.LocalDateTime
 
 /**
  * Creates a `DateTimeField` with an optional [label] and/or [value].
+ *
  * ```
  * ... {
  *   dateTimeField() // Empty DateTimeField component
@@ -33,13 +34,14 @@ import java.time.LocalDateTime
 fun @WebforjDsl HasComponents.dateTimeField(
   label: String? = null,
   value: LocalDateTime? = null,
-  block: @WebforjDsl DateTimeField.() -> Unit = {}
+  block: @WebforjDsl DateTimeField.() -> Unit = {},
 ): DateTimeField {
-  val dateTimeField = when {
-    value != null && label != null -> DateTimeField(label, value)
-    label != null -> DateTimeField(label)
-    value != null -> DateTimeField(value)
-    else -> DateTimeField()
-  }
+  val dateTimeField =
+    when {
+      value != null && label != null -> DateTimeField(label, value)
+      label != null -> DateTimeField(label)
+      value != null -> DateTimeField(value)
+      else -> DateTimeField()
+    }
   return init(dateTimeField, block)
 }

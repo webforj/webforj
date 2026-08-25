@@ -9,6 +9,7 @@ import com.webforj.kotlin.dsl.init
 
 /**
  * Creates a `Spinner` component with optional [theme] and/or [spinnerExpanse].
+ *
  * ```
  * ... {
  *   spinner() // Empty Spinner component
@@ -23,7 +24,8 @@ import com.webforj.kotlin.dsl.init
  * ```
  *
  * @param theme The theme/style of the `Spinner` (e.g., Theme.PRIMARY, Theme.SUCCESS).
- * @param spinnerExpanse The size expanse of the `Spinner` (e.g., SpinnerExpanse.SMALL, SpinnerExpanse.LARGE).
+ * @param spinnerExpanse The size expanse of the `Spinner` (e.g., SpinnerExpanse.SMALL,
+ *   SpinnerExpanse.LARGE).
  * @param block The initialization steps of the `Spinner`.
  * @return The configured `Spinner`.
  * @see Spinner
@@ -31,13 +33,14 @@ import com.webforj.kotlin.dsl.init
 fun @WebforjDsl HasComponents.spinner(
   theme: Theme? = null,
   spinnerExpanse: SpinnerExpanse? = null,
-  block: @WebforjDsl Spinner.() -> Unit = {}
+  block: @WebforjDsl Spinner.() -> Unit = {},
 ): Spinner {
-  val spinner = when {
-    theme != null && spinnerExpanse != null -> Spinner(theme, spinnerExpanse)
-    theme != null -> Spinner(theme)
-    spinnerExpanse != null -> Spinner(spinnerExpanse)
-    else -> Spinner()
-  }
+  val spinner =
+    when {
+      theme != null && spinnerExpanse != null -> Spinner(theme, spinnerExpanse)
+      theme != null -> Spinner(theme)
+      spinnerExpanse != null -> Spinner(spinnerExpanse)
+      else -> Spinner()
+    }
   return init(spinner, block)
 }
