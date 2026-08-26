@@ -25,6 +25,10 @@
       <artifactId>webforj-plugin-foundation</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.interaso</groupId>
+      <artifactId>webpush</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-bundle-bun</artifactId>
       <version>${project.version}</version>

@@ -61,6 +61,13 @@
       <version>${project.version}</version>
     </dependency>
 
+    <!-- webforj push -->
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-push</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
     <!-- webforj jbang -->
     <dependency>
       <groupId>com.webforj</groupId>

@@ -42,6 +42,7 @@ repositories {
 
 dependencies {
   implementation("com.webforj:webforj-plugin-foundation:$version")
+  implementation("com.interaso:webpush:1.3.0")
   implementation("com.webforj:webforj-bundle-bun:$version")
   implementation("org.slf4j:slf4j-api:1.7.36")
 

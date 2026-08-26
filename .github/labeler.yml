@@ -34,6 +34,10 @@
 - changed-files:
   - any-glob-to-any-file: 'webforj-plugins/**'
 
+"module: push":
+- changed-files:
+  - any-glob-to-any-file: 'webforj-push/**'
+
 "module: framework":
 - changed-files:
   - any-glob-to-any-file: 'webforj/**'

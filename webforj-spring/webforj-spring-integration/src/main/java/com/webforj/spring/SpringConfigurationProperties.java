@@ -264,6 +264,11 @@ public class SpringConfigurationProperties {
   private Mcp mcp = new Mcp();
 
   /**
+   * Push configuration.
+   */
+  private Push push = new Push();
+
+  /**
    * The public origin the deployment is reached at.
    *
    * @since 26.02
@@ -710,6 +715,26 @@ public class SpringConfigurationProperties {
    */
   public void setMcp(Mcp mcp) {
     this.mcp = mcp;
+  }
+
+  /**
+   * Gets the push configuration.
+   *
+   * @return the push configuration
+   * @since 26.02
+   */
+  public Push getPush() {
+    return push;
+  }
+
+  /**
+   * Sets the push configuration.
+   *
+   * @param push the push configuration
+   * @since 26.02
+   */
+  public void setPush(Push push) {
+    this.push = push;
   }
 
   /**
@@ -1501,6 +1526,84 @@ public class SpringConfigurationProperties {
      */
     public void setConnectDomains(List<String> connectDomains) {
       this.connectDomains = connectDomains;
+    }
+  }
+
+  /**
+   * Push configuration.
+   *
+   * @since 26.02
+   */
+  public static class Push {
+
+    /**
+     * The public key the deployment signs its pushes with, as printed by the webforJ build plugin.
+     */
+    private String publicKey;
+
+    /**
+     * The private key the deployment signs its pushes with, as printed by the webforJ build plugin.
+     */
+    private String privateKey;
+
+    /**
+     * The contact of the deployment, a mailto: or https:// address the push services may reach the
+     * operator on.
+     */
+    private String subject;
+
+    /**
+     * Gets the public key.
+     *
+     * @return the public key
+     */
+    public String getPublicKey() {
+      return publicKey;
+    }
+
+    /**
+     * Sets the public key.
+     *
+     * @param publicKey the public key
+     */
+    public void setPublicKey(String publicKey) {
+      this.publicKey = publicKey;
+    }
+
+    /**
+     * Gets the private key.
+     *
+     * @return the private key
+     */
+    public String getPrivateKey() {
+      return privateKey;
+    }
+
+    /**
+     * Sets the private key.
+     *
+     * @param privateKey the private key
+     */
+    public void setPrivateKey(String privateKey) {
+      this.privateKey = privateKey;
+    }
+
+    /**
+     * Gets the contact of the deployment.
+     *
+     * @return the subject
+     */
+    public String getSubject() {
+      return subject;
+    }
+
+    /**
+     * Sets the contact of the deployment.
+     *
+     * @param subject the subject
+     */
+    public void setSubject(String subject) {
+      this.subject = subject;
     }
   }
 }

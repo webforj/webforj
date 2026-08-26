@@ -37,6 +37,7 @@ public class WebforjPlugin implements Plugin<Project> {
   private static final String TEST_TASK = "webforjTest";
   private static final String WATCH_TASK = "webforjWatch";
   private static final String CLEAN_TASK = "webforjCleanFrontend";
+  private static final String PUSH_KEYS_TASK = "webforjPushKeys";
   private static final String SPRING_BOOT_PLUGIN_ID = "org.springframework.boot";
 
   /**
@@ -82,6 +83,11 @@ public class WebforjPlugin implements Plugin<Project> {
           task.setGroup(GROUP);
           task.setDescription("Removes the generated frontend the bundler writes.");
         });
+
+    project.getTasks().register(PUSH_KEYS_TASK, PushKeysTask.class, task -> {
+      task.setGroup(GROUP);
+      task.setDescription("Generates a push key pair and prints the configuration lines.");
+    });
 
     project.getPlugins().withType(JavaPlugin.class,
         plugin -> wireJavaLifecycle(project, bundle, frontendTest, watch));
