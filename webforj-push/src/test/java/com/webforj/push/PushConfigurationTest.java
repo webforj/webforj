@@ -43,8 +43,9 @@ class PushConfigurationTest {
 
     @Test
     void shouldNameEveryMissingKeyWhenPartiallyConfigured() {
-      WebforjPushException e = assertThrows(WebforjPushException.class,
-          () -> PushConfiguration.fromConfig(config(Map.of(PushConfiguration.PUBLIC_KEY, "pub"))));
+      Config partial = config(Map.of(PushConfiguration.PUBLIC_KEY, "pub"));
+      WebforjPushException e =
+          assertThrows(WebforjPushException.class, () -> PushConfiguration.fromConfig(partial));
 
       assertEquals(PushStatus.NOT_CONFIGURED, e.getStatus());
       assertTrue(e.getMessage().contains(PushConfiguration.PRIVATE_KEY), e.getMessage());
@@ -65,10 +66,10 @@ class PushConfigurationTest {
 
     @Test
     void shouldRejectTheSubjectThatIsNotMailtoOrHttps() {
-      WebforjPushException e = assertThrows(WebforjPushException.class,
-          () -> PushConfiguration.fromConfig(
-              config(Map.of(PushConfiguration.PUBLIC_KEY, "pub", PushConfiguration.PRIVATE_KEY,
-                  "priv", PushConfiguration.SUBJECT, "ops@example.com"))));
+      Config badSubject = config(Map.of(PushConfiguration.PUBLIC_KEY, "pub",
+          PushConfiguration.PRIVATE_KEY, "priv", PushConfiguration.SUBJECT, "ops@example.com"));
+      WebforjPushException e =
+          assertThrows(WebforjPushException.class, () -> PushConfiguration.fromConfig(badSubject));
 
       assertTrue(e.getMessage().contains(PushConfiguration.SUBJECT), e.getMessage());
     }
@@ -93,8 +94,9 @@ class PushConfigurationTest {
 
     @Test
     void shouldFailNamingTheKeysWhenNotConfigured() {
-      WebforjPushException e = assertThrows(WebforjPushException.class,
-          () -> PushConfiguration.require(config(Map.of())));
+      Config empty = config(Map.of());
+      WebforjPushException e =
+          assertThrows(WebforjPushException.class, () -> PushConfiguration.require(empty));
 
       assertTrue(e.getMessage().contains(PushConfiguration.PUBLIC_KEY), e.getMessage());
       assertTrue(e.getMessage().contains(PushConfiguration.PRIVATE_KEY), e.getMessage());

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -167,7 +168,7 @@ class PushTest {
 
       instance.destroy();
 
-      assertFalse(Push.getCurrent() == instance, "a fresh instance follows destroy");
+      assertNotSame(instance, Push.getCurrent(), "a fresh instance follows destroy");
       assertTrue(instance.isDestroyed());
       assertFalse(Push.getCurrent().isDestroyed());
     }
@@ -202,8 +203,8 @@ class PushTest {
     void shouldRefuseTheHostedRuntime() {
       mockedEnvironment.when(Environment::isRunningWithBBjServices).thenReturn(true);
 
-      WebforjPushException e =
-          assertThrows(WebforjPushException.class, () -> Push.getCurrent().getPermission());
+      Push push = Push.getCurrent();
+      WebforjPushException e = assertThrows(WebforjPushException.class, push::getPermission);
 
       assertEquals(PushStatus.UNSUPPORTED, e.getStatus());
       verify(page, never()).executeJsAsync(anyString());
@@ -332,8 +333,8 @@ class PushTest {
     void shouldFailBeforeCallingTheBrowserWhenNotConfigured() {
       when(environment.getConfig()).thenReturn(ConfigFactory.empty());
 
-      WebforjPushException e =
-          assertThrows(WebforjPushException.class, () -> Push.getCurrent().subscribe());
+      Push push = Push.getCurrent();
+      WebforjPushException e = assertThrows(WebforjPushException.class, push::subscribe);
 
       assertEquals(PushStatus.NOT_CONFIGURED, e.getStatus());
       assertTrue(e.getMessage().contains(PushConfiguration.PUBLIC_KEY), e.getMessage());

@@ -39,8 +39,9 @@ class VapidKeyAdapterTest {
 
   @Test
   void shouldFailNamingTheCommandWhenTheKeysAreMalformed() {
-    WebforjPushException e = assertThrows(WebforjPushException.class,
-        () -> VapidKeyAdapter.toVapidKeys(new PushKeys("not-a-key", "not-a-key")));
+    PushKeys malformed = new PushKeys("not-a-key", "not-a-key");
+    WebforjPushException e =
+        assertThrows(WebforjPushException.class, () -> VapidKeyAdapter.toVapidKeys(malformed));
 
     assertTrue(e.getMessage().contains("webforj:push-keys"), e.getMessage());
     assertEquals(PushStatus.NOT_CONFIGURED, e.getStatus());
@@ -51,7 +52,7 @@ class VapidKeyAdapterTest {
     VapidKeys first = VapidKeys.generate();
     VapidKeys second = VapidKeys.generate();
 
-    assertThrows(WebforjPushException.class, () -> VapidKeyAdapter
-        .toVapidKeys(new PushKeys(first.getX509PublicKey(), second.getPkcs8PrivateKey())));
+    PushKeys mismatched = new PushKeys(first.getX509PublicKey(), second.getPkcs8PrivateKey());
+    assertThrows(WebforjPushException.class, () -> VapidKeyAdapter.toVapidKeys(mismatched));
   }
 }

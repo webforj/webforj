@@ -1,7 +1,9 @@
 package com.webforj.plugin.maven;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import com.webforj.plugin.foundation.push.PushKeyCommand;
 import java.util.ArrayList;
@@ -9,7 +11,6 @@ import java.util.List;
 import org.apache.maven.plugin.logging.Log;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 
 class PushKeysMojoTest {
 
@@ -22,7 +23,7 @@ class PushKeysMojoTest {
     mojo.execute();
 
     ArgumentCaptor<CharSequence> captor = ArgumentCaptor.forClass(CharSequence.class);
-    Mockito.verify(log, Mockito.atLeastOnce()).info(captor.capture());
+    verify(log, atLeastOnce()).info(captor.capture());
     List<String> lines = new ArrayList<>();
     captor.getAllValues().forEach(line -> lines.add(line.toString()));
 

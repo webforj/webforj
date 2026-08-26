@@ -2,11 +2,12 @@
 
 const NAVIGATE_MESSAGE = 'webforj-push-navigate';
 const params = new URL(self.location.href).searchParams;
-const root = new URL((params.get('root') || '/').replace(/\/*$/, '/'), self.location.origin);
+const withSlash = (value) => (value.endsWith('/') ? value : `${value}/`);
+const root = new URL(withSlash(params.get('root') || '/'), self.location.origin);
 const assets = new URL('../../', self.location.href);
 const icons = params.get('icons') ? new URL(params.get('icons'), self.location.origin) : null;
 
-const join = (base, path) => new URL(path.replace(/^\/+/, ''), base.href.replace(/\/*$/, '/')).href;
+const join = (base, path) => new URL(path.replace(/^\/+/, ''), withSlash(base.href)).href;
 
 const PROTOCOLS = [
   { prefix: 'icons://', base: () => icons },
@@ -84,7 +85,7 @@ self.addEventListener('push', (event) => {
     message = null;
   }
 
-  if (!message || !message.title) {
+  if (!message?.title) {
     return;
   }
 
@@ -95,13 +96,13 @@ self.addEventListener('notificationclick', (event) => {
   event.notification.close();
 
   const data = event.notification.data || {};
-  const target = (event.action && data.actions && data.actions[event.action]) || data.url || root.href;
+  const target = (event.action && data.actions?.[event.action]) || data.url || root.href;
   event.waitUntil(open(target));
 });
 
 self.addEventListener('pushsubscriptionchange', (event) => {
   const previous = event.oldSubscription;
-  if (!previous || !previous.options) {
+  if (!previous?.options) {
     return;
   }
 

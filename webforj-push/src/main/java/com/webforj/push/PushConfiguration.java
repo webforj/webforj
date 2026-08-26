@@ -32,7 +32,7 @@ public final class PushConfiguration {
   private static final String KEYS_COMMAND = "webforj:push-keys";
 
   private final PushKeys keys;
-  private final String subject;
+  private final String contact;
 
   /**
    * Creates a configuration.
@@ -56,7 +56,7 @@ public final class PushConfiguration {
     }
 
     this.keys = keys;
-    this.subject = subject;
+    this.contact = subject;
   }
 
   /**
@@ -74,7 +74,7 @@ public final class PushConfiguration {
    * @return the subject, a {@code mailto:} or {@code https://} address
    */
   public String getSubject() {
-    return subject;
+    return contact;
   }
 
   /**

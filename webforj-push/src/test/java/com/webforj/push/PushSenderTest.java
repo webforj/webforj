@@ -168,13 +168,15 @@ class PushSenderTest {
 
     @Test
     void shouldRejectMalformedKeys() {
+      PushKeys malformed = new PushKeys("x", "y");
       assertThrows(WebforjPushException.class,
-          () -> new PushSender(new PushKeys("x", "y"), "mailto:ops@example.com"));
+          () -> new PushSender(malformed, "mailto:ops@example.com"));
     }
 
     @Test
     void shouldRejectTheBadSubject() {
-      assertThrows(WebforjPushException.class, () -> new PushSender(keys(), "ops@example.com"));
+      PushKeys keys = keys();
+      assertThrows(WebforjPushException.class, () -> new PushSender(keys, "ops@example.com"));
     }
 
     @Test
@@ -329,8 +331,8 @@ class PushSenderTest {
 
     @Test
     void shouldRequireSubscriptionAndMessage() {
-      assertThrows(NullPointerException.class,
-          () -> sender.send(null, PushMessage.create("Title").build()));
+      PushMessage message = PushMessage.create("Title").build();
+      assertThrows(NullPointerException.class, () -> sender.send(null, message));
       assertThrows(NullPointerException.class, () -> sender.send(subscription, null));
     }
   }
@@ -374,7 +376,7 @@ class PushSenderTest {
     }
 
     @Test
-    void shouldDropTheCompletionWhenTheSessionEndedBeforeTheAnswer() throws Exception {
+    void shouldDropTheCompletionWhenTheSessionEndedBeforeTheAnswer() {
       Environment environment = mock(Environment.class);
       AtomicReference<Environment> dispatchedTo = new AtomicReference<>();
       PushSender routed = recording(dispatchedTo);

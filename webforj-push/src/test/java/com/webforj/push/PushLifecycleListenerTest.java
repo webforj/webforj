@@ -2,6 +2,8 @@ package com.webforj.push;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -155,14 +157,14 @@ class PushLifecycleListenerTest {
 
     listener.onWillTerminate(app);
 
-    assertTrue(Push.getCurrent() != instance, "the instance was released");
+    assertNotSame(instance, Push.getCurrent(), "the instance was released");
   }
 
   @Test
   void shouldTerminateQuietlyWithoutAnEnvironment() {
     mockedEnvironment.when(Environment::isPresent).thenReturn(false);
 
-    listener.onWillTerminate(app);
+    assertDoesNotThrow(() -> listener.onWillTerminate(app));
   }
 
   private void configure() {

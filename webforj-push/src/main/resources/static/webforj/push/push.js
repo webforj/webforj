@@ -2,7 +2,7 @@
   'use strict';
 
   const NAVIGATE_MESSAGE = 'webforj-push-navigate';
-  const queued = (window.__webforjPush && window.__webforjPush._q) || [];
+  const queued = window.__webforjPush?._q || [];
   const registrations = {};
 
   const failure = (code, message) => {
@@ -16,13 +16,13 @@
 
   const toApplicationServerKey = (key) => {
     const padding = '='.repeat((4 - (key.length % 4)) % 4);
-    const base64 = (key + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const base64 = (key + padding).replaceAll('-', '+').replaceAll('_', '/');
     const raw = window.atob(base64);
-    return Uint8Array.from(raw, (char) => char.charCodeAt(0));
+    return Uint8Array.from(raw, (char) => char.codePointAt(0));
   };
 
   const isSignedWith = (subscription, applicationServerKey) => {
-    const current = subscription.options && subscription.options.applicationServerKey;
+    const current = subscription.options?.applicationServerKey;
     if (!current) {
       return true;
     }

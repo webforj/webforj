@@ -39,7 +39,8 @@ class PushMessageTest {
     actions.clear();
 
     assertEquals(1, message.getActions().size());
-    assertThrows(UnsupportedOperationException.class, () -> message.getActions().clear());
+    List<PushAction> exposed = message.getActions();
+    assertThrows(UnsupportedOperationException.class, exposed::clear);
   }
 
   @Nested
