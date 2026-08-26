@@ -3,8 +3,8 @@ package com.webforj.push;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -262,7 +262,7 @@ class PushTest {
 
     @Test
     void shouldSendTheApplicationServerKeyAndResolveTheSubscription() {
-      PendingResult<PushSubscription> result = Push.getCurrent().subscribe();
+      final PendingResult<PushSubscription> result = Push.getCurrent().subscribe();
 
       String script = lastCall();
       assertTrue(script.contains("\"command\":\"subscribe\""), script);
