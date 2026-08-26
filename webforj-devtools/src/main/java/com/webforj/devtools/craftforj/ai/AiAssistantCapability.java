@@ -1,8 +1,6 @@
 package com.webforj.devtools.craftforj.ai;
 
-import com.typesafe.config.Config;
 import com.webforj.App;
-import com.webforj.Environment;
 import com.webforj.devtools.craftforj.capabilities.CraftforjCapability;
 
 /**
@@ -36,9 +34,6 @@ public class AiAssistantCapability implements CraftforjCapability {
    */
   @Override
   public boolean isSupported(App app) {
-    Environment environment = Environment.getCurrent();
-    Config config = environment == null ? null : environment.getConfig();
-
-    return config == null || !config.hasPath(CONFIG_KEY) || config.getBoolean(CONFIG_KEY);
+    return isEnabled(CONFIG_KEY);
   }
 }
