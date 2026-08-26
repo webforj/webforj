@@ -47,6 +47,16 @@ const files = [
     module: 'webforj-devtools',
     input: 'META-INF/resources/webforj/livereload-client.js',
     output: 'META-INF/resources/webforj/livereload-client.min.js'
+  },
+  {
+    module: 'webforj-push',
+    input: 'static/webforj/push/push.js',
+    output: 'static/webforj/push/push.min.js'
+  },
+  {
+    module: 'webforj-push',
+    input: 'static/webforj/push/push-worker.js',
+    output: 'static/webforj/push/push-worker.min.js'
   }
 ];
 

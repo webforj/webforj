@@ -667,4 +667,29 @@ class WebforjConfigBuilderTest {
       assertFalse(config.hasPath("webforj.mcp.allowed-origins"));
     }
   }
+
+  @Nested
+  class PushProperties {
+
+    @Test
+    void shouldMapPushKeys() {
+      properties.getPush().setPublicKey("pub");
+      properties.getPush().setPrivateKey("priv");
+      properties.getPush().setSubject("mailto:ops@example.com");
+      Config config = WebforjConfigBuilder.buildConfig(properties);
+
+      assertEquals("pub", config.getString("webforj.push.public-key"));
+      assertEquals("priv", config.getString("webforj.push.private-key"));
+      assertEquals("mailto:ops@example.com", config.getString("webforj.push.subject"));
+    }
+
+    @Test
+    void shouldOmitUnsetPushKeys() {
+      Config config = WebforjConfigBuilder.buildConfig(properties);
+
+      assertFalse(config.hasPath("webforj.push.public-key"));
+      assertFalse(config.hasPath("webforj.push.private-key"));
+      assertFalse(config.hasPath("webforj.push.subject"));
+    }
+  }
 }

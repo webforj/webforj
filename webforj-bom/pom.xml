@@ -63,6 +63,12 @@
         <artifactId>webforj-mcp-apps</artifactId>
         <version>${project.version}</version>
       </dependency>
+      
+      <dependency>
+        <groupId>com.webforj</groupId>
+        <artifactId>webforj-push</artifactId>
+        <version>${project.version}</version>
+      </dependency>
 
       <!-- Start Spring -->
       <dependency>

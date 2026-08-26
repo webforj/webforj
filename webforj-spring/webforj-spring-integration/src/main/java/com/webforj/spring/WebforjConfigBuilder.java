@@ -120,6 +120,13 @@ class WebforjConfigBuilder {
       builder.addList("webforj.mcp.allowed-origins", mcp::getAllowedOrigins);
     });
 
+    // Push configuration
+    builder.addNested(properties::getPush, push -> {
+      builder.add("webforj.push.public-key", push::getPublicKey);
+      builder.add("webforj.push.private-key", push::getPrivateKey);
+      builder.add("webforj.push.subject", push::getSubject);
+    });
+
     // Servlet configurations
     builder.add("webforj.servlets", () -> {
       if (properties.getServlets() == null || properties.getServlets().isEmpty()) {
