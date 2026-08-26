@@ -3,193 +3,317 @@ package com.webforj.devtools.craftforj.capabilities;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
+import com.typesafe.config.ConfigFactory;
+import com.webforj.App;
+import com.webforj.Environment;
+import com.webforj.devtools.craftforj.ai.AiAssistantCapability;
+import com.webforj.devtools.craftforj.inspector.source.SourceChangesCapability;
+import com.webforj.devtools.craftforj.inspector.source.SourceFreeformChangesCapability;
+import com.webforj.devtools.craftforj.styles.StylesheetChangesCapability;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.MockedStatic;
 
+@DisplayName("CapabilitiesProvider")
 class CapabilitiesProviderTest {
 
-  private static CapabilitiesProvider provider(String frameworkVersion, boolean licensed) {
-    return provider(frameworkVersion, licensed, FeatureFlags.builder().build());
-  }
-
-  private static CapabilitiesProvider provider(String frameworkVersion, boolean licensed,
-      FeatureFlags features) {
-    return new CapabilitiesProvider(new VersionDetector("26.02"),
-        new FrameworkVersionDetector(frameworkVersion), features, licensed);
-  }
-
   @Nested
-  @DisplayName("sourceCodeChanges")
-  class SourceCodeChanges {
+  @DisplayName("license gate")
+  class LicenseGate {
 
     @Test
-    @DisplayName("Should be supported when licensed")
-    void shouldBeSupported() {
-      CapabilitiesProvider provider = provider("26.02", true);
-      assertTrue(provider.isSupported(CapabilitiesProvider.CAPABILITY_SOURCE_CODE_CHANGES));
-      assertTrue(provider.isSupported(CapabilitiesProvider.CAPABILITY_SOURCE_FREEFORM_CHANGES));
-    }
+    @DisplayName("Should announce nothing when unlicensed")
+    void shouldAnnounceNothingWhenUnlicensed() {
+      App app = mock(App.class);
+      List<App> seen = new ArrayList<>();
 
-    @Test
-    @DisplayName("Should not depend on the framework version, since craftforJ ships with it")
-    void shouldNotDependOnFrameworkVersion() {
-      CapabilitiesProvider provider = provider("26.01", true);
-      assertTrue(provider.isSupported(CapabilitiesProvider.CAPABILITY_SOURCE_CODE_CHANGES));
-      assertTrue(provider.isSupported(CapabilitiesProvider.CAPABILITY_SOURCE_FREEFORM_CHANGES));
-    }
-  }
-
-  @Nested
-  @DisplayName("stylesheetChanges")
-  class StylesheetChanges {
-
-    @Test
-    @DisplayName("Should be supported on any framework version when licensed")
-    void shouldBeSupportedWhenLicensed() {
-      CapabilitiesProvider provider = provider("26.01", true);
-      assertTrue(provider.isSupported(CapabilitiesProvider.CAPABILITY_STYLESHEET_CHANGES));
-    }
-
-    @Test
-    @DisplayName("Should not be supported when unlicensed")
-    void shouldNotBeSupportedWhenUnlicensed() {
-      CapabilitiesProvider provider = provider("26.02", false);
-      assertFalse(provider.isSupported(CapabilitiesProvider.CAPABILITY_STYLESHEET_CHANGES));
-    }
-  }
-
-  @Nested
-  @DisplayName("feature flags")
-  class Features {
-
-    @Test
-    @DisplayName("Should drop source capabilities when source changes are switched off")
-    void shouldDropSourceCapabilities() {
       CapabilitiesProvider provider =
-          provider("26.02", true, FeatureFlags.builder().sourceChanges(false).build());
-      assertFalse(provider.isSupported(CapabilitiesProvider.CAPABILITY_SOURCE_CODE_CHANGES));
-      assertFalse(provider.isSupported(CapabilitiesProvider.CAPABILITY_SOURCE_FREEFORM_CHANGES));
-      assertTrue(provider.isSupported(CapabilitiesProvider.CAPABILITY_STYLESHEET_CHANGES));
-    }
+          buildProvider(app, false, List.of(createRecordingFake("alpha", seen, true)));
 
-    @Test
-    @DisplayName("Should drop only free form changes when the AI flag is switched off")
-    void shouldDropFreeformOnly() {
-      CapabilitiesProvider provider =
-          provider("26.02", true, FeatureFlags.builder().aiFreeformChanges(false).build());
-      assertTrue(provider.isSupported(CapabilitiesProvider.CAPABILITY_SOURCE_CODE_CHANGES));
-      assertFalse(provider.isSupported(CapabilitiesProvider.CAPABILITY_SOURCE_FREEFORM_CHANGES));
-    }
-
-    @Test
-    @DisplayName("Should announce the assistant when licensed")
-    void shouldAnnounceAssistant() {
-      CapabilitiesProvider provider = provider("26.02", true);
-      assertTrue(provider.isSupported(CapabilitiesProvider.CAPABILITY_AI_ASSISTANT));
-    }
-
-    @Test
-    @DisplayName("Should drop the assistant and its free form edits when the AI is switched off")
-    void shouldDropAssistant() {
-      CapabilitiesProvider provider =
-          provider("26.02", true, FeatureFlags.builder().aiEnabled(false).build());
-      assertFalse(provider.isSupported(CapabilitiesProvider.CAPABILITY_AI_ASSISTANT));
-      assertFalse(provider.isSupported(CapabilitiesProvider.CAPABILITY_SOURCE_FREEFORM_CHANGES));
-
-      // The deterministic tooling keeps working without the assistant
-      assertTrue(provider.isSupported(CapabilitiesProvider.CAPABILITY_SOURCE_CODE_CHANGES));
-      assertTrue(provider.isSupported(CapabilitiesProvider.CAPABILITY_STYLESHEET_CHANGES));
-    }
-
-    @Test
-    @DisplayName("Should drop stylesheet changes when switched off")
-    void shouldDropStylesheetChanges() {
-      CapabilitiesProvider provider =
-          provider("26.02", true, FeatureFlags.builder().stylesheetChanges(false).build());
-      assertFalse(provider.isSupported(CapabilitiesProvider.CAPABILITY_STYLESHEET_CHANGES));
-      assertTrue(provider.isSupported(CapabilitiesProvider.CAPABILITY_SOURCE_CODE_CHANGES));
-    }
-  }
-
-  @Nested
-  @DisplayName("isFrameworkAtLeast")
-  class IsAtLeast {
-
-    @Test
-    @DisplayName("Should report the framework version comparison")
-    void shouldReportVersionComparison() {
-      CapabilitiesProvider provider = provider("26.01", true);
-      assertTrue(provider.isFrameworkAtLeast(26, 1));
-      assertFalse(provider.isFrameworkAtLeast(26, 2));
-    }
-  }
-
-  @Nested
-  @DisplayName("license")
-  class License {
-
-    @ParameterizedTest
-    @DisplayName("Should report license status matching input")
-    @ValueSource(booleans = {true, false})
-    void shouldReportLicenseStatus(boolean licensed) {
-      CapabilitiesProvider provider = provider("26.02", licensed);
-      assertEquals(licensed, provider.isLicensed());
-    }
-
-    @Test
-    @DisplayName("Should return empty capabilities when unlicensed")
-    void shouldReturnEmptyCapabilitiesWhenUnlicensed() {
-      CapabilitiesProvider provider = provider("26.02", false);
       assertTrue(provider.getCapabilities().isEmpty());
+      assertFalse(provider.isSupported("alpha"));
+      assertTrue(seen.isEmpty());
     }
 
     @Test
-    @DisplayName("Should return capabilities when licensed")
-    void shouldReturnCapabilitiesWhenLicensed() {
-      CapabilitiesProvider provider = provider("26.02", true);
-      assertFalse(provider.getCapabilities().isEmpty());
-    }
-  }
+    @DisplayName("Should hand out an unmodifiable list when unlicensed")
+    void shouldHandOutUnmodifiableListWhenUnlicensed() {
+      CapabilitiesProvider provider =
+          buildProvider(mock(App.class), false, List.of(createFake("alpha", true)));
 
-  @Test
-  @DisplayName("Should return unmodifiable capabilities list")
-  void shouldReturnUnmodifiableList() {
-    CapabilitiesProvider provider = provider("26.02", true);
-    assertThrows(UnsupportedOperationException.class, () -> provider.getCapabilities().add("test"));
+      assertThrows(UnsupportedOperationException.class,
+          () -> provider.getCapabilities().add("alpha"));
+    }
+
+    @Test
+    @DisplayName("Should announce the supported keys in declaration order when licensed")
+    void shouldAnnounceSupportedKeysInDeclarationOrder() {
+      List<CraftforjCapability> declared =
+          List.of(createFake("alpha", true), createFake("beta", false), createFake("gamma", true));
+
+      CapabilitiesProvider provider = buildProvider(mock(App.class), true, declared);
+
+      assertEquals(List.of("alpha", "gamma"), provider.getCapabilities());
+      assertTrue(provider.isSupported("alpha"));
+      assertFalse(provider.isSupported("beta"));
+      assertTrue(provider.isSupported("gamma"));
+    }
+
+    @Test
+    @DisplayName("Should hand out an unmodifiable list when licensed")
+    void shouldHandOutUnmodifiableListWhenLicensed() {
+      CapabilitiesProvider provider =
+          buildProvider(mock(App.class), true, List.of(createFake("alpha", true)));
+
+      assertThrows(UnsupportedOperationException.class,
+          () -> provider.getCapabilities().add("beta"));
+    }
+
+    @Test
+    @DisplayName("Should pass the same application to every check")
+    void shouldPassSameApplicationToEveryCheck() {
+      App app = mock(App.class);
+      List<App> seen = new ArrayList<>();
+      List<CraftforjCapability> declared = List.of(createRecordingFake("alpha", seen, true),
+          createRecordingFake("beta", seen, false));
+
+      buildProvider(app, true, declared);
+
+      assertEquals(2, seen.size());
+      assertSame(app, seen.get(0));
+      assertSame(app, seen.get(1));
+    }
+
+    @Test
+    @DisplayName("Should reject a key declared twice, naming the key")
+    void shouldRejectKeyDeclaredTwice() {
+      List<CraftforjCapability> declared =
+          List.of(createFake("alpha", true), createFake("alpha", false));
+
+      IllegalStateException thrown = assertThrows(IllegalStateException.class,
+          () -> buildProvider(mock(App.class), true, declared));
+
+      assertTrue(thrown.getMessage().contains("alpha"));
+    }
   }
 
   @Nested
-  @DisplayName("hotswap")
-  class Hotswap {
+  @DisplayName("runtime facts")
+  class RuntimeFacts {
 
     @Test
-    @DisplayName("Should report the state the build plugin declared for the run")
-    void shouldReportTheDeclaredState() {
-      System.setProperty(CapabilitiesProvider.HOTSWAP_TOOL_PROPERTY, "hotswapAgent");
-      System.setProperty(CapabilitiesProvider.HOTSWAP_LEVEL_PROPERTY, "limited");
+    @DisplayName("Should report the craftforJ version and the license flag")
+    void shouldReportVersionAndLicenseFlag() {
+      assertEquals("26.02", buildProvider(mock(App.class), true, List.of()).getVersion());
+      assertTrue(buildProvider(mock(App.class), true, List.of()).isLicensed());
+      assertFalse(buildProvider(mock(App.class), false, List.of()).isLicensed());
+    }
+
+    @Test
+    @DisplayName("Should compare the framework version against the requirement")
+    void shouldCompareFrameworkVersion() {
+      CapabilitiesProvider provider = buildProvider(mock(App.class), true, List.of());
+
+      assertTrue(provider.isFrameworkAtLeast(26, 1));
+      assertFalse(provider.isFrameworkAtLeast(26, 3));
+    }
+
+    @Test
+    @DisplayName("Should report a full compile gate on a runtime carrying a compiler")
+    void shouldReportFullCompileGate() {
+      assertEquals(CapabilitiesProvider.COMPILE_GATE_FULL,
+          buildProvider(mock(App.class), true, List.of()).getCompileGate());
+    }
+
+    @Test
+    @DisplayName("Should read the hotswap tool from the system property")
+    void shouldReadHotswapTool() {
+      CapabilitiesProvider provider = buildProvider(mock(App.class), true, List.of());
+      String previous = System.getProperty(CapabilitiesProvider.HOTSWAP_TOOL_PROPERTY);
 
       try {
-        CapabilitiesProvider provider = provider("26.02", true);
-        assertEquals("hotswapAgent", provider.getHotswapTool());
-        assertEquals("limited", provider.getHotswapLevel());
-      } finally {
         System.clearProperty(CapabilitiesProvider.HOTSWAP_TOOL_PROPERTY);
-        System.clearProperty(CapabilitiesProvider.HOTSWAP_LEVEL_PROPERTY);
+        assertNull(provider.getHotswapTool());
+
+        System.setProperty(CapabilitiesProvider.HOTSWAP_TOOL_PROPERTY, "hotswapAgent");
+        assertEquals("hotswapAgent", provider.getHotswapTool());
+      } finally {
+        setOrClearProperty(CapabilitiesProvider.HOTSWAP_TOOL_PROPERTY, previous);
       }
     }
 
     @Test
-    @DisplayName("Should report nothing when no tool is attached")
-    void shouldReportNothingWithoutTheDeclaration() {
-      CapabilitiesProvider provider = provider("26.02", true);
-      assertNull(provider.getHotswapTool());
-      assertNull(provider.getHotswapLevel());
+    @DisplayName("Should read the hotswap level from the system property")
+    void shouldReadHotswapLevel() {
+      CapabilitiesProvider provider = buildProvider(mock(App.class), true, List.of());
+      String previous = System.getProperty(CapabilitiesProvider.HOTSWAP_LEVEL_PROPERTY);
+
+      try {
+        System.clearProperty(CapabilitiesProvider.HOTSWAP_LEVEL_PROPERTY);
+        assertNull(provider.getHotswapLevel());
+
+        System.setProperty(CapabilitiesProvider.HOTSWAP_LEVEL_PROPERTY, "limited");
+        assertEquals("limited", provider.getHotswapLevel());
+      } finally {
+        setOrClearProperty(CapabilitiesProvider.HOTSWAP_LEVEL_PROPERTY, previous);
+      }
     }
+  }
+
+  @Nested
+  @DisplayName("declared capabilities")
+  class DeclaredCapabilities {
+
+    @Test
+    @DisplayName("Should load the declared services in file order")
+    void shouldLoadDeclaredServicesInFileOrder() {
+      List<CraftforjCapability> declared = CapabilitiesProvider.loadCapabilities();
+
+      assertEquals(4, declared.size());
+      assertEquals(SourceChangesCapability.class, declared.get(0).getClass());
+      assertEquals(StylesheetChangesCapability.class, declared.get(1).getClass());
+      assertEquals(AiAssistantCapability.class, declared.get(2).getClass());
+      assertEquals(SourceFreeformChangesCapability.class, declared.get(3).getClass());
+    }
+
+    @Test
+    @DisplayName("Should announce every declared capability on an empty configuration")
+    void shouldAnnounceEveryCapabilityOnEmptyConfiguration() {
+      assertEquals(
+          List.of(SourceChangesCapability.KEY, StylesheetChangesCapability.KEY,
+              AiAssistantCapability.KEY, SourceFreeformChangesCapability.KEY),
+          getAnnouncedFor(mock(App.class), ""));
+    }
+
+    @Test
+    @DisplayName("Should announce every declared capability without an environment")
+    void shouldAnnounceEveryCapabilityWithoutEnvironment() {
+      try (MockedStatic<Environment> mocked = mockStatic(Environment.class)) {
+        mocked.when(Environment::getCurrent).thenReturn(null);
+
+        assertEquals(
+            List.of(SourceChangesCapability.KEY, StylesheetChangesCapability.KEY,
+                AiAssistantCapability.KEY, SourceFreeformChangesCapability.KEY),
+            new CapabilitiesProvider(mock(App.class), true).getCapabilities());
+      }
+    }
+
+    @Test
+    @DisplayName("Should drop the assistant and the freeform changes when the assistant is off")
+    void shouldDropAssistantAndFreeformWhenAssistantOff() {
+      String hocon = AiAssistantCapability.CONFIG_KEY + " = false";
+
+      assertEquals(List.of(SourceChangesCapability.KEY, StylesheetChangesCapability.KEY),
+          getAnnouncedFor(mock(App.class), hocon));
+    }
+
+    @Test
+    @DisplayName("Should drop the source and the freeform changes when source changes are off")
+    void shouldDropSourceAndFreeformWhenSourceChangesOff() {
+      String hocon = SourceChangesCapability.CONFIG_KEY + " = false";
+
+      assertEquals(List.of(StylesheetChangesCapability.KEY, AiAssistantCapability.KEY),
+          getAnnouncedFor(mock(App.class), hocon));
+    }
+
+    @Test
+    @DisplayName("Should drop only the freeform changes when the freeform switch is off")
+    void shouldDropOnlyFreeformWhenFreeformSwitchOff() {
+      String hocon = SourceFreeformChangesCapability.CONFIG_KEY + " = false";
+
+      assertEquals(List.of(SourceChangesCapability.KEY, StylesheetChangesCapability.KEY,
+          AiAssistantCapability.KEY), getAnnouncedFor(mock(App.class), hocon));
+    }
+
+    @Test
+    @DisplayName("Should drop the source and the freeform changes for a Kotlin application")
+    void shouldDropSourceAndFreeformForKotlinApplication() {
+      String hocon = """
+          webforj.devtools.craftforj {
+            source-changes = true
+            stylesheet-changes = true
+            ai.enabled = true
+            ai.freeform-changes = true
+          }
+          """;
+
+      assertEquals(List.of(StylesheetChangesCapability.KEY, AiAssistantCapability.KEY),
+          getAnnouncedFor(new KotlinApp(), hocon));
+    }
+  }
+
+  private static CapabilitiesProvider buildProvider(App app, boolean licensed,
+      List<CraftforjCapability> capabilities) {
+    return CapabilitiesProvider.create(app, licensed)
+        .setVersionDetector(new VersionDetector("26.02"))
+        .setFrameworkVersionDetector(new FrameworkVersionDetector("26.02"))
+        .setCapabilities(capabilities).build();
+  }
+
+  private static List<String> getAnnouncedFor(App app, String hocon) {
+    Environment environment = mock(Environment.class);
+    when(environment.getConfig()).thenReturn(ConfigFactory.parseString(hocon));
+
+    try (MockedStatic<Environment> mocked = mockStatic(Environment.class)) {
+      mocked.when(Environment::getCurrent).thenReturn(environment);
+
+      return new CapabilitiesProvider(app, true).getCapabilities();
+    }
+  }
+
+  private static CraftforjCapability createFake(String key, boolean supported) {
+    return new FakeCapability(key, app -> supported);
+  }
+
+  private static CraftforjCapability createRecordingFake(String key, List<App> seen,
+      boolean supported) {
+    return new FakeCapability(key, app -> {
+      seen.add(app);
+      return supported;
+    });
+  }
+
+  private static void setOrClearProperty(String key, String value) {
+    if (value == null) {
+      System.clearProperty(key);
+    } else {
+      System.setProperty(key, value);
+    }
+  }
+
+  private static final class FakeCapability implements CraftforjCapability {
+
+    private final String key;
+    private final Predicate<App> check;
+
+    private FakeCapability(String key, Predicate<App> check) {
+      this.key = key;
+      this.check = check;
+    }
+
+    @Override
+    public String getKey() {
+      return key;
+    }
+
+    @Override
+    public boolean isSupported(App app) {
+      return check.test(app);
+    }
+  }
+
+  @kotlin.Metadata
+  private static final class KotlinApp extends App {
   }
 }

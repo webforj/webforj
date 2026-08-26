@@ -1,0 +1,4 @@
+com.webforj.devtools.craftforj.inspector.source.SourceChangesCapability
+com.webforj.devtools.craftforj.styles.StylesheetChangesCapability
+com.webforj.devtools.craftforj.ai.AiAssistantCapability
+com.webforj.devtools.craftforj.inspector.source.SourceFreeformChangesCapability
