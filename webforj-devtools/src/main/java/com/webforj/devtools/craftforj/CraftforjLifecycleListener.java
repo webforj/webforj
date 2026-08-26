@@ -27,6 +27,8 @@ import com.webforj.devtools.craftforj.inspector.action.GetTranslationsAction;
 import com.webforj.devtools.craftforj.inspector.action.PreviewPatchAction;
 import com.webforj.devtools.craftforj.inspector.action.SetFeaturePropertyAction;
 import com.webforj.devtools.craftforj.inspector.action.StageSourceAction;
+import com.webforj.devtools.craftforj.inspector.source.SourceChangesCapability;
+import com.webforj.devtools.craftforj.inspector.source.SourceFreeformChangesCapability;
 import com.webforj.devtools.craftforj.inspector.source.staging.CompileValidator;
 import com.webforj.devtools.craftforj.inspector.source.staging.SourceStagingArea;
 import com.webforj.devtools.craftforj.keys.CraftforjKeyStore;
@@ -43,6 +45,7 @@ import com.webforj.devtools.craftforj.router.action.NavigateToRouteAction;
 import com.webforj.devtools.craftforj.router.action.SetRouteSecurityAction;
 import com.webforj.devtools.craftforj.security.ChannelCredentials;
 import com.webforj.devtools.craftforj.security.CraftforjAccessPolicy;
+import com.webforj.devtools.craftforj.styles.StylesheetChangesCapability;
 import com.webforj.devtools.craftforj.styles.StylesheetModifier;
 import com.webforj.devtools.craftforj.styles.StylesheetResolver;
 import com.webforj.devtools.craftforj.styles.action.ReadStylesheetAction;
@@ -104,6 +107,65 @@ public class CraftforjLifecycleListener implements AppLifecycleListener {
   }
 
   /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void onWillRun(App app) {
+    // Only enable craftforJ when debug mode is active
+    Environment env = Environment.getCurrent();
+    if (env == null || !env.isDebug()) {
+      return;
+    }
+
+    String clientAddress = resolveClientAddress();
+    if (!CraftforjAccessPolicy.isAllowed(env.getConfig(), clientAddress)) {
+      LOGGER.log(System.Logger.Level.INFO,
+          "craftforJ is not available for client address {0}. Set {1} to allow it.", clientAddress,
+          CraftforjAccessPolicy.KEY_HOSTS_ALLOWED);
+
+      return;
+    }
+
+    ChannelCredentials credentials = ChannelCredentials.create();
+    if (actionRegistry == null) {
+      actionRegistry = new CraftforjActionRegistry(credentials);
+    }
+
+    boolean licensed = checkLicense(env);
+    CapabilitiesProvider capabilitiesProvider = new CapabilitiesProvider(app, licensed);
+    registerDefaultActions(capabilitiesProvider, app);
+
+    Page page = Page.getCurrent();
+
+    // Unlicensed pages get an empty manifest so the channel still opens but no module loads.
+    page.addInlineJavaScript(renderBootScript(credentials, licensed), true);
+
+    // Listen for craftforJ requests
+    PageEventOptions options =
+        new PageEventOptions().addData("request", "JSON.stringify(event.detail)");
+
+    page.addEventListener("webforj-devtools-request", event -> {
+      actionRegistry.dispatch(page, event);
+    }, options);
+
+    // Only attach the route tracker if licensed
+    if (licensed) {
+      Router router = Router.getCurrent();
+      if (router != null) {
+        activeRouteTracker.attach(router);
+      }
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void onWillTerminate(App app) {
+    activeRouteTracker.detach();
+  }
+
+  /**
    * Registers the default action handlers.
    *
    * <p>
@@ -132,13 +194,12 @@ public class CraftforjLifecycleListener implements AppLifecycleListener {
       actionRegistry.register(new GetSourceAction());
       actionRegistry.register(new GetBeanInfoAction());
 
-      if (capabilitiesProvider.isSupported(CapabilitiesProvider.CAPABILITY_SOURCE_CODE_CHANGES)) {
+      if (capabilitiesProvider.isSupported(SourceChangesCapability.KEY)) {
         actionRegistry.register(new ApplyChangesAction());
         actionRegistry.register(new PreviewPatchAction());
       }
 
-      if (capabilitiesProvider
-          .isSupported(CapabilitiesProvider.CAPABILITY_SOURCE_FREEFORM_CHANGES)) {
+      if (capabilitiesProvider.isSupported(SourceFreeformChangesCapability.KEY)) {
         SourceStagingArea stagingArea = new SourceStagingArea();
         actionRegistry
             .register(new StageSourceAction(stagingArea, new CompileValidator(), projectRoot));
@@ -168,7 +229,7 @@ public class CraftforjLifecycleListener implements AppLifecycleListener {
       StylesheetModifier stylesheetModifier = new StylesheetModifier();
       actionRegistry.register(new ReadStylesheetAction(stylesheetResolver, stylesheetModifier));
 
-      if (capabilitiesProvider.isSupported(CapabilitiesProvider.CAPABILITY_STYLESHEET_CHANGES)) {
+      if (capabilitiesProvider.isSupported(StylesheetChangesCapability.KEY)) {
         actionRegistry.register(new WriteStylesheetAction(stylesheetResolver, stylesheetModifier));
       }
 
@@ -177,7 +238,7 @@ public class CraftforjLifecycleListener implements AppLifecycleListener {
       actionRegistry.register(new GetActiveStateAction(activeRouteTracker));
       actionRegistry.register(new NavigateToRouteAction());
 
-      if (capabilitiesProvider.isSupported(CapabilitiesProvider.CAPABILITY_SOURCE_CODE_CHANGES)) {
+      if (capabilitiesProvider.isSupported(SourceChangesCapability.KEY)) {
         actionRegistry.register(new SetRouteSecurityAction());
       }
     }
@@ -187,57 +248,6 @@ public class CraftforjLifecycleListener implements AppLifecycleListener {
         capabilitiesProvider.isLicensed(), capabilitiesProvider.getCapabilities(),
         capabilitiesProvider.getCompileGate(), capabilitiesProvider.getHotswapTool(),
         capabilitiesProvider.getHotswapLevel()));
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void onWillRun(App app) {
-    // Only enable craftforJ when debug mode is active
-    Environment env = Environment.getCurrent();
-    if (env == null || !env.isDebug()) {
-      return;
-    }
-
-    String clientAddress = resolveClientAddress();
-    if (!CraftforjAccessPolicy.isAllowed(env.getConfig(), clientAddress)) {
-      LOGGER.log(System.Logger.Level.INFO,
-          "craftforJ is not available for client address {0}. Set {1} to allow it.", clientAddress,
-          CraftforjAccessPolicy.KEY_HOSTS_ALLOWED);
-
-      return;
-    }
-
-    ChannelCredentials credentials = ChannelCredentials.create();
-    if (actionRegistry == null) {
-      actionRegistry = new CraftforjActionRegistry(credentials);
-    }
-
-    boolean licensed = checkLicense(env);
-    CapabilitiesProvider capabilitiesProvider = new CapabilitiesProvider(env.getConfig(), licensed);
-    registerDefaultActions(capabilitiesProvider, app);
-
-    Page page = Page.getCurrent();
-
-    // Unlicensed pages get an empty manifest so the channel still opens but no module loads.
-    page.addInlineJavaScript(renderBootScript(credentials, licensed), true);
-
-    // Listen for craftforJ requests
-    PageEventOptions options =
-        new PageEventOptions().addData("request", "JSON.stringify(event.detail)");
-
-    page.addEventListener("webforj-devtools-request", event -> {
-      actionRegistry.dispatch(page, event);
-    }, options);
-
-    // Only attach the route tracker if licensed
-    if (licensed) {
-      Router router = Router.getCurrent();
-      if (router != null) {
-        activeRouteTracker.attach(router);
-      }
-    }
   }
 
   /**
@@ -266,14 +276,6 @@ public class CraftforjLifecycleListener implements AppLifecycleListener {
     return loadScript(ModuleStore.BOOT_RESOURCE).replace(NONCE_PLACEHOLDER, credentials.getNonce())
         .replace(SINK_PLACEHOLDER, credentials.getSinkId())
         .replace(MANIFEST_PLACEHOLDER, licensed ? moduleStore.getManifest() : EMPTY_MANIFEST);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void onWillTerminate(App app) {
-    activeRouteTracker.detach();
   }
 
   /**
