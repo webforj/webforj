@@ -113,8 +113,7 @@ class TabbedPaneTest {
         ComponentAccessor accessor = mock(ComponentAccessor.class);
         BBjControl prefixControl = mock(BBjControl.class);
         BBjControl suffixControl = mock(BBjControl.class);
-        componentAccessor.when(ComponentAccessor::getDefault)
-            .thenReturn(accessor);
+        componentAccessor.when(ComponentAccessor::getDefault).thenReturn(accessor);
         componentAccessor.when(() -> ComponentAccessor.getDefault().getControl(spy))
             .thenReturn(control);
         componentAccessor.when(() -> ComponentAccessor.getDefault().getControl(prefix))
@@ -186,8 +185,7 @@ class TabbedPaneTest {
       try (
           MockedStatic<ComponentAccessor> componentAccessor = mockStatic(ComponentAccessor.class)) {
         ComponentAccessor accessor = mock(ComponentAccessor.class);
-        componentAccessor.when(ComponentAccessor::getDefault)
-            .thenReturn(accessor);
+        componentAccessor.when(ComponentAccessor::getDefault).thenReturn(accessor);
         componentAccessor.when(() -> ComponentAccessor.getDefault().getControl(spy))
             .thenReturn(control);
 
