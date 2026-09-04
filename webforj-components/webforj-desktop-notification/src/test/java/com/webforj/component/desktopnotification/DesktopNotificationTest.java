@@ -37,7 +37,8 @@ class DesktopNotificationTest {
   @BeforeEach
   void setUp() {
     notification = new DesktopNotification("Test Title", "Test Body");
-    mockedPage.when(Page::getCurrent).thenReturn(mock(Page.class));
+    Page page = mock(Page.class);
+    mockedPage.when(Page::getCurrent).thenReturn(page);
   }
 
   @Test
