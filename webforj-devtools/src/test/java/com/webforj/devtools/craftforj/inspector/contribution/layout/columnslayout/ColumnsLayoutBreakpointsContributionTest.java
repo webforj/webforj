@@ -69,6 +69,17 @@ class ColumnsLayoutBreakpointsContributionTest {
   }
 
   @Test
+  void shouldReturnEmptyBreakpointsWhenGetterReturnsNull() {
+    ColumnsLayout layout = mock(ColumnsLayout.class);
+    when(layout.getBreakpoints()).thenReturn(null);
+
+    var result = contribution.get(layout);
+
+    assertTrue(result.isPresent());
+    assertEquals(List.of(), result.get().getValue());
+  }
+
+  @Test
   void shouldSetBreakpointsFromListOfMaps() {
     ColumnsLayout layout = mock(ColumnsLayout.class);
     List<Map<String, Object>> value =
