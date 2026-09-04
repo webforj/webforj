@@ -59,9 +59,14 @@ public class ColumnsLayoutBreakpointsContribution extends ConcernContribution<Co
   }
 
   private static List<Map<String, Object>> readBreakpoints(ColumnsLayout layout) {
+    List<Breakpoint> breakpoints = layout.getBreakpoints();
+    if (breakpoints == null) {
+      return List.of();
+    }
+
     List<Map<String, Object>> result = new ArrayList<>();
 
-    for (Breakpoint breakpoint : layout.getBreakpoints()) {
+    for (Breakpoint breakpoint : breakpoints) {
       Map<String, Object> entry = new LinkedHashMap<>();
       entry.put(KEY_NAME, breakpoint.name());
       entry.put(KEY_MIN_WIDTH, breakpoint.minWidth());
