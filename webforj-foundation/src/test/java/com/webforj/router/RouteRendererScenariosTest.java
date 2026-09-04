@@ -47,7 +47,8 @@ class RouteRendererScenariosTest {
     routeRenderer = spy(new RouteRenderer(routeRegistry));
 
     mockedEnvironment = mockStatic(Environment.class);
-    mockedEnvironment.when(Environment::getCurrent).thenReturn(mock(Environment.class));
+    Environment environment = mock(Environment.class);
+    mockedEnvironment.when(Environment::getCurrent).thenReturn(environment);
     BBjSysGui sysGui = mock(BBjSysGui.class);
     when(Environment.getCurrent().getSysGui()).thenReturn(sysGui);
 
