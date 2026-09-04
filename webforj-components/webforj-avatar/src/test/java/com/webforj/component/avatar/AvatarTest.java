@@ -1,7 +1,7 @@
 package com.webforj.component.avatar;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 
 import com.webforj.component.Component;
@@ -81,11 +81,9 @@ class AvatarTest {
 
     @Test
     void shouldSetGetProperties() {
-      try {
+      assertDoesNotThrow(() -> {
         PropertyDescriptorTester.run(Avatar.class, component);
-      } catch (Exception e) {
-        fail("PropertyDescriptor test failed: " + e.getMessage());
-      }
+      });
     }
   }
 }

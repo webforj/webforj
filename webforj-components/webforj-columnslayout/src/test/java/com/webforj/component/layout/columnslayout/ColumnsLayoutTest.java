@@ -1,7 +1,7 @@
 package com.webforj.component.layout.columnslayout;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -28,11 +28,9 @@ class ColumnsLayoutTest {
 
     @Test
     void shouldSetGetProperties() {
-      try {
+      assertDoesNotThrow(() -> {
         PropertyDescriptorTester.run(ColumnsLayout.class, component);
-      } catch (Exception e) {
-        fail("PropertyDescriptor test failed: " + e.getMessage());
-      }
+      });
     }
   }
 

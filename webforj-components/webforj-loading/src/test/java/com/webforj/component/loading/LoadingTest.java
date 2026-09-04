@@ -1,8 +1,8 @@
 package com.webforj.component.loading;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 
 import com.webforj.component.Component;
@@ -44,11 +44,9 @@ class LoadingTest {
 
     @Test
     void shouldSetGetProperties() {
-      try {
+      assertDoesNotThrow(() -> {
         PropertyDescriptorTester.run(Loading.class, component);
-      } catch (Exception e) {
-        fail("PropertyDescriptor test failed: " + e.getMessage());
-      }
+      });
     }
 
     @Test
