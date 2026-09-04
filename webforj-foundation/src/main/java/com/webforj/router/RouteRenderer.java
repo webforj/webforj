@@ -329,14 +329,10 @@ public class RouteRenderer {
    */
   protected void detachNode(Class<? extends Component> componentClass,
       Component componentInstance) {
-    Optional<Class<? extends Component>> outletClass = registry.getOutlet(componentClass);
-    if (!outletClass.isPresent()) {
-      outletClass = Optional.ofNullable(Frame.class);
-    }
-
-    boolean isFrame = Frame.class.isAssignableFrom(outletClass.get());
+    Class<? extends Component> outletClass = registry.getOutlet(componentClass).orElse(Frame.class);
+    boolean isFrame = Frame.class.isAssignableFrom(outletClass);
     Component outletInstance =
-        isFrame ? getFrameComponent(componentClass) : componentsCache.get(outletClass.get());
+        isFrame ? getFrameComponent(componentClass) : componentsCache.get(outletClass);
 
     if (isFrame) {
       context.setActiveFrame((Frame) outletInstance);
@@ -420,12 +416,8 @@ public class RouteRenderer {
   protected void attachNode(Class<? extends Component> componentClass, Component componentInstance,
       Consumer<Boolean> onComplete) {
 
-    Optional<Class<? extends Component>> outletClass = registry.getOutlet(componentClass);
-    if (!outletClass.isPresent()) {
-      outletClass = Optional.of(Frame.class);
-    }
-
-    final Class<? extends Component> outletClassFinal = outletClass.get();
+    Class<? extends Component> outletClassFinal =
+        registry.getOutlet(componentClass).orElse(Frame.class);
     boolean isFrame = Frame.class.isAssignableFrom(outletClassFinal);
 
     if (isFrame) {

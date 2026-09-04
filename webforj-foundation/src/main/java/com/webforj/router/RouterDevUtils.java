@@ -78,7 +78,7 @@ public final class RouterDevUtils {
     }
 
     Location location = context.getLocation();
-    NavigationOptions options = context.getOptions().get();
+    NavigationOptions options = context.getOptions().orElseGet(NavigationOptions::new);
     ParametersBag routeParameters = context.getRouteParameters();
 
     StringBuilder js = new StringBuilder();
