@@ -15,8 +15,8 @@ import com.webforj.dispatcher.EventListener;
  * <p>
  * The control's user interface varies from browser to browser. The value of the time field is
  * always in 24-hour format that includes leading zeros: HH:mm, regardless of the field format,
- * which is likely to be selected based on the user's locale (or by the user agent). If the time
- * includes seconds, the format is always HH:mm:ss
+ * which is likely to be selected based on the user's locale (or by the user agent). Seconds in
+ * input are truncated; the stored value is always minute based.
  * </p>
  *
  * @author Hyyan Abo Fakher
@@ -180,7 +180,8 @@ public final class TimeField extends DwcFieldInitializer<TimeField, LocalTime>
   @Override
   public TimeField setText(String text) {
     if (text != null && !text.isEmpty() && !TimeField.isValidTime(text)) {
-      throw new IllegalArgumentException("Text must be a valid time in HH:mm:ss format");
+      throw new IllegalArgumentException(
+          "Text must be a valid time in HH:mm format (seconds are truncated)");
     }
 
     if (min != null && text != null && compareTime(min, LocalTime.parse(text)) > 0) {
@@ -215,10 +216,14 @@ public final class TimeField extends DwcFieldInitializer<TimeField, LocalTime>
   }
 
   /**
-   * Convert a time string in HH:mm:ss format to a LocalTime.
+   * Convert a time string to a LocalTime truncated to minutes.
    *
-   * @param timeAsString the time string in HH:mm:ss format
-   * @return the LocalTime
+   * <p>
+   * Seconds in the input are accepted and then dropped. The effective format is {@code HH:mm}.
+   * </p>
+   *
+   * @param timeAsString the time string, optionally including seconds
+   * @return the LocalTime truncated to minutes
    */
   public static LocalTime fromTime(String timeAsString) {
     return LocalTime.parse(timeAsString).truncatedTo(ChronoUnit.MINUTES);
@@ -235,7 +240,12 @@ public final class TimeField extends DwcFieldInitializer<TimeField, LocalTime>
   }
 
   /**
-   * Check if the given string is a valid HH:mm:ss time.
+   * Check if the given string is a valid time.
+   *
+   * <p>
+   * Seconds are accepted; {@link #fromTime(String)} and {@link #toTime(LocalTime)} truncate them so
+   * the stored value is minute based ({@code HH:mm}).
+   * </p>
    *
    * @param timeAsString the time string
    * @return true if the string is a valid time, false otherwise

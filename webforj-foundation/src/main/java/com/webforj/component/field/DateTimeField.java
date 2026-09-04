@@ -211,7 +211,7 @@ public final class DateTimeField extends DwcFieldInitializer<DateTimeField, Loca
   public DateTimeField setText(String text) {
     if (text != null && !text.isEmpty() && !DateTimeField.isValidDateTime(text)) {
       throw new IllegalArgumentException(
-          "Text must be a valid date and time in yyyy-MM-ddTHH:mm:ss format");
+          "Text must be a valid date and time in yyyy-MM-ddTHH:mm format (seconds are truncated)");
     }
 
     if (min != null && text != null && compareDateTime(LocalDateTime.parse(text), min) < 0) {
@@ -249,20 +249,29 @@ public final class DateTimeField extends DwcFieldInitializer<DateTimeField, Loca
   }
 
   /**
-   * Convert a date and time string in yyyy-MM-ddTHH:mm:ss format to a LocalDateTime.
+   * Convert a date and time string to a LocalDateTime truncated to minutes.
    *
-   * @param dateTimeAsString the date and time string in yyyy-MM-ddTHH:mm:ss format
-   * @return the LocalDateTime
+   * <p>
+   * Seconds in the input are accepted and then dropped. The effective format is
+   * {@code yyyy-MM-ddTHH:mm}.
+   * </p>
+   *
+   * @param dateTimeAsString the date and time string, optionally including seconds
+   * @return the LocalDateTime truncated to minutes
    */
   public static LocalDateTime fromDateTime(String dateTimeAsString) {
     return LocalDateTime.parse(dateTimeAsString).truncatedTo(ChronoUnit.MINUTES);
   }
 
   /**
-   * Convert a LocalDateTime to a date and time string in yyyy-MM-ddTHH:mm:ss format.
+   * Convert a LocalDateTime to a date and time string in {@code yyyy-MM-ddTHH:mm} format.
+   *
+   * <p>
+   * Seconds are dropped. The returned string is minute based.
+   * </p>
    *
    * @param dateTime the LocalDateTime
-   * @return the date and time string in yyyy-MM-ddTHH:mm:ss format
+   * @return the date and time string in yyyy-MM-ddTHH:mm format
    */
   public static String toDateTime(LocalDateTime dateTime) {
     return dateTime.truncatedTo(ChronoUnit.MINUTES)
@@ -270,7 +279,12 @@ public final class DateTimeField extends DwcFieldInitializer<DateTimeField, Loca
   }
 
   /**
-   * Check if the given string is a valid yyyy-MM-ddTHH:mm:ss date and time.
+   * Check if the given string is a valid date and time.
+   *
+   * <p>
+   * Seconds are accepted; {@link #fromDateTime(String)} and {@link #toDateTime(LocalDateTime)}
+   * truncate them so the stored value is minute based ({@code yyyy-MM-ddTHH:mm}).
+   * </p>
    *
    * @param dateTimeAsString the date and time string
    * @return true if the string is a valid date and time, false otherwise
