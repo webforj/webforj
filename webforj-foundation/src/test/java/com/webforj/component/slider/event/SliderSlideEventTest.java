@@ -1,8 +1,9 @@
 package com.webforj.component.slider.event;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import com.basis.bbj.proxies.event.BBjControlScrollEvent;
@@ -10,13 +11,12 @@ import com.webforj.component.slider.Slider;
 import com.webforj.component.slider.sink.SliderSlideEventSink;
 import com.webforj.dispatcher.EventDispatcher;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 class SliderSlideEventTest {
 
   @Test
   void payload() {
-    BBjControlScrollEvent eventMock = Mockito.mock(BBjControlScrollEvent.class);
+    BBjControlScrollEvent eventMock = mock(BBjControlScrollEvent.class);
     EventDispatcher dispatcher = new EventDispatcher();
 
     // Capture the dispatched event
@@ -31,7 +31,7 @@ class SliderSlideEventTest {
       dispatchedEvent[0] = e;
     });
 
-    Slider componentMock = Mockito.spy(Slider.class);
+    Slider componentMock = spy(Slider.class);
     SliderSlideEventSink sink = new SliderSlideEventSink(componentMock, dispatcher);
     // Invoke the event handler
     sink.handleEvent(eventMock);

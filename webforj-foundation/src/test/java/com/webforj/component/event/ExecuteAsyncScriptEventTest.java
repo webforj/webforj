@@ -1,7 +1,7 @@
 package com.webforj.component.event;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.basis.bbj.proxies.event.BBjExecuteScriptEvent;
@@ -11,14 +11,13 @@ import com.webforj.component.event.sink.ExecuteAsyncScriptEventSink;
 import com.webforj.dispatcher.EventDispatcher;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 class ExecuteAsyncScriptEventTest {
 
   @Test
   @DisplayName("Test the payload of the event")
   void payload() throws BBjException {
-    BBjExecuteScriptEvent eventMock = Mockito.mock(BBjExecuteScriptEvent.class);
+    BBjExecuteScriptEvent eventMock = mock(BBjExecuteScriptEvent.class);
     EventDispatcher dispatcher = new EventDispatcher();
 
     // Capture the dispatched event

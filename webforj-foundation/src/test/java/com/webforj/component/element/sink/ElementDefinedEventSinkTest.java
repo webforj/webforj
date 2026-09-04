@@ -10,14 +10,13 @@ import com.webforj.component.element.event.ElementDefinedEvent;
 import com.webforj.dispatcher.EventDispatcher;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 class ElementDefinedEventSinkTest {
 
   @Test
   @DisplayName("Test the payload of the event")
   void payload() throws BBjException {
-    BBjWebComponentDefinedEvent eventMock = Mockito.mock(BBjWebComponentDefinedEvent.class);
+    BBjWebComponentDefinedEvent eventMock = mock(BBjWebComponentDefinedEvent.class);
     EventDispatcher dispatcher = new EventDispatcher();
 
     // Capture the dispatched event

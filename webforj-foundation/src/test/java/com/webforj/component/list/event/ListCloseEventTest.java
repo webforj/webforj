@@ -1,8 +1,9 @@
 package com.webforj.component.list.event;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import com.basis.bbj.proxies.event.BBjListCloseEvent;
@@ -13,14 +14,13 @@ import com.webforj.dispatcher.EventDispatcher;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 class ListCloseEventTest {
 
   @Test
   @DisplayName("Test the payload of the event")
   void payload() {
-    BBjListCloseEvent eventMock = Mockito.mock(BBjListCloseEvent.class);
+    BBjListCloseEvent eventMock = mock(BBjListCloseEvent.class);
     EventDispatcher dispatcher = new EventDispatcher();
 
     // Capture the dispatched event
@@ -35,7 +35,7 @@ class ListCloseEventTest {
       dispatchedEvent[0] = e;
     });
 
-    ComboBox componentMock = Mockito.spy(ComboBox.class);
+    ComboBox componentMock = spy(ComboBox.class);
     componentMock.insert("Item 1", "Item 2", "Item 3");
     ListCloseEventSink sink = new ListCloseEventSink(componentMock, dispatcher);
     // Invoke the event handler

@@ -1,6 +1,7 @@
 package com.webforj.component.button.event;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.basis.bbj.proxies.event.BBjButtonPushEvent;
@@ -9,14 +10,13 @@ import com.webforj.component.button.sink.ButtonClickEventSink;
 import com.webforj.dispatcher.EventDispatcher;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 class ButtonClickEventTest {
 
   @Test
   @DisplayName("Test the payload of the event")
   void payload() {
-    BBjButtonPushEvent eventMock = Mockito.mock(BBjButtonPushEvent.class);
+    BBjButtonPushEvent eventMock = mock(BBjButtonPushEvent.class);
     EventDispatcher dispatcher = new EventDispatcher();
 
     // Capture the dispatched event
@@ -31,7 +31,7 @@ class ButtonClickEventTest {
       dispatchedEvent[0] = e;
     });
 
-    Button componentMock = Mockito.mock(Button.class);
+    Button componentMock = mock(Button.class);
     ButtonClickEventSink sink = new ButtonClickEventSink(componentMock, dispatcher);
     // Invoke the event handler
     sink.handleEvent(eventMock);

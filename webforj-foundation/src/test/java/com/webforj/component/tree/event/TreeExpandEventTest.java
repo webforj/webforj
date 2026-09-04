@@ -1,6 +1,7 @@
 package com.webforj.component.tree.event;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.basis.bbj.proxies.event.BBjTreeNodeExpandedEvent;
@@ -9,13 +10,12 @@ import com.webforj.component.tree.TreeNode;
 import com.webforj.component.tree.sink.TreeExpandEventSink;
 import com.webforj.dispatcher.EventDispatcher;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 class TreeExpandEventTest {
 
   @Test
   void payload() {
-    BBjTreeNodeExpandedEvent eventMock = Mockito.mock(BBjTreeNodeExpandedEvent.class);
+    BBjTreeNodeExpandedEvent eventMock = mock(BBjTreeNodeExpandedEvent.class);
     EventDispatcher dispatcher = new EventDispatcher();
 
     // Capture the dispatched event

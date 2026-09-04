@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Random;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -35,9 +34,9 @@ class ElementEventSinkTest {
   @Test
   @DisplayName("Test the payload of the event")
   void payload() throws BBjException {
-    BBjWebEvent event = Mockito.mock(BBjWebEvent.class);
+    BBjWebEvent event = mock(BBjWebEvent.class);
     EventDispatcher dispatcher = new EventDispatcher();
-    Element component = Mockito.mock(Element.class);
+    Element component = mock(Element.class);
     ElementEvent[] dispatchedEvent = new ElementEvent[1];
 
     String eventType = "click";

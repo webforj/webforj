@@ -30,7 +30,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -93,7 +92,7 @@ class PageEventSinkTest {
       BBjWebEventOptions optionsMock = mock(BBjWebEventOptions.class);
       when(webManager.newEventOptions()).thenReturn(optionsMock);
 
-      BBjWebEvent event = Mockito.mock(BBjWebEvent.class);
+      BBjWebEvent event = mock(BBjWebEvent.class);
       PageEvent[] dispatchedEvent = new PageEvent[1];
 
       String eventType = "click";
