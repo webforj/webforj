@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -15,7 +16,6 @@ import org.apache.maven.model.PluginExecution;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 class WebforjLifecycleParticipantTest {
 
@@ -100,7 +100,7 @@ class WebforjLifecycleParticipantTest {
   }
 
   private void runParticipant(MavenProject project) {
-    MavenSession session = Mockito.mock(MavenSession.class);
+    MavenSession session = mock(MavenSession.class);
     when(session.getProjects()).thenReturn(List.of(project));
     new WebforjLifecycleParticipant().afterProjectsRead(session);
   }
