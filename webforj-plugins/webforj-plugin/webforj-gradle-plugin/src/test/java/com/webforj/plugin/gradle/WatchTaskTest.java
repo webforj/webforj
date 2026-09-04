@@ -71,7 +71,8 @@ class WatchTaskTest {
   @Test
   void shouldOpenTheSocketAndWriteThePortFile(@TempDir Path tmp) throws Exception {
     BundlerExecution execution = mock(BundlerExecution.class);
-    when(execution.watch(any(), any(), any())).thenReturn(mock(WatchSession.class));
+    WatchSession session = mock(WatchSession.class);
+    when(execution.watch(any(), any(), any())).thenReturn(session);
     Project project = ProjectBuilder.builder().withProjectDir(tmp.toFile()).build();
     TestableWatchTask task = task(project, tmp, tmp.toFile());
     task.setExecution(execution);

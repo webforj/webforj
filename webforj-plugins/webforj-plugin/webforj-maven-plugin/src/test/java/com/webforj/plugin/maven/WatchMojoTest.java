@@ -36,7 +36,8 @@ class WatchMojoTest {
   @Test
   void shouldOpenTheSocketAndWriteThePortFile(@TempDir Path tmp) throws Exception {
     BundlerExecution execution = mock(BundlerExecution.class);
-    when(execution.watch(any(), any(), any())).thenReturn(mock(WatchSession.class));
+    WatchSession session = mock(WatchSession.class);
+    when(execution.watch(any(), any(), any())).thenReturn(session);
     WatchMojo mojo = newMojo(execution, tmp);
     Path portFile = WatchPortFile.resolve(tmp.toAbsolutePath().toString());
 
