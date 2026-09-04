@@ -97,7 +97,8 @@ class McpAppContributionTest {
     @Test
     @DisplayName("Should declare the configured domains on every resource")
     void shouldDeclareDomainsOnResources() {
-      when(context.getSessionCookieConfig()).thenReturn(mock(SessionCookieConfig.class));
+      SessionCookieConfig cookies = mock(SessionCookieConfig.class);
+      when(context.getSessionCookieConfig()).thenReturn(cookies);
       contribution.getOrigin().configure("https://app.example.com");
 
       contribution.install(context,
