@@ -67,7 +67,8 @@ class ClassUpdateListenerTest {
     mockedPage.when(Page::getCurrent).thenReturn(page);
 
     mockedEnvironment = mockStatic(Environment.class);
-    mockedEnvironment.when(Environment::getCurrent).thenReturn(mock(Environment.class));
+    Environment current = mock(Environment.class);
+    mockedEnvironment.when(Environment::getCurrent).thenReturn(current);
     BBjSysGui sysGui = mock(BBjSysGui.class);
     when(Environment.getCurrent().getSysGui()).thenReturn(sysGui);
 
