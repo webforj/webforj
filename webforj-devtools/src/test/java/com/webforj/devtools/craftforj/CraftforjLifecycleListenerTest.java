@@ -165,7 +165,8 @@ class CraftforjLifecycleListenerTest {
       when(env.getBBjAPI()).thenReturn(mock(BBjAPI.class));
       envMock.when(Environment::getCurrent).thenReturn(env);
       allowLoopback(requestMock);
-      pageMock.when(Page::getCurrent).thenReturn(mock(Page.class));
+      Page page = mock(Page.class);
+      pageMock.when(Page::getCurrent).thenReturn(page);
       routerMock.when(Router::getCurrent).thenReturn(null);
 
       listener.onWillRun(mock(App.class));
@@ -197,7 +198,8 @@ class CraftforjLifecycleListenerTest {
       when(env.getBBjAPI()).thenReturn(mock(BBjAPI.class));
       envMock.when(Environment::getCurrent).thenReturn(env);
       allowLoopback(requestMock);
-      pageMock.when(Page::getCurrent).thenReturn(mock(Page.class));
+      Page page = mock(Page.class);
+      pageMock.when(Page::getCurrent).thenReturn(page);
       routerMock.when(Router::getCurrent).thenReturn(null);
 
       listener.onWillRun(mock(App.class));
@@ -258,7 +260,8 @@ class CraftforjLifecycleListenerTest {
       envMock.when(Environment::getCurrent).thenReturn(env);
       allowLoopback(requestMock);
 
-      pageMock.when(Page::getCurrent).thenReturn(mock(Page.class));
+      Page page = mock(Page.class);
+      pageMock.when(Page::getCurrent).thenReturn(page);
       routerMock.when(Router::getCurrent).thenReturn(null);
 
       listener.onWillRun(mock(App.class));
@@ -343,7 +346,8 @@ class CraftforjLifecycleListenerTest {
 
       Page page = mock(Page.class);
       pageMock.when(Page::getCurrent).thenReturn(page);
-      routerMock.when(Router::getCurrent).thenReturn(mock(Router.class));
+      Router router = mock(Router.class);
+      routerMock.when(Router::getCurrent).thenReturn(router);
 
       listener.onWillRun(mock(App.class));
 

@@ -19,8 +19,9 @@ class LiveReloadServletContainerInitializerTest {
   @Test
   void shouldRegisterTheContextListenerOnStartup() {
     ServletContext context = mock(ServletContext.class);
+    FilterRegistration.Dynamic registration = mock(FilterRegistration.Dynamic.class);
     when(context.addFilter(anyString(), any(LiveReloadRestartFilter.class)))
-        .thenReturn(mock(FilterRegistration.Dynamic.class));
+        .thenReturn(registration);
 
     new LiveReloadServletContainerInitializer().onStartup(Set.of(), context);
 

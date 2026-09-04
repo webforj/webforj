@@ -29,7 +29,8 @@ class GetModuleActionTest {
   @BeforeEach
   void setUp() {
     environment = mockStatic(Environment.class);
-    environment.when(Environment::getCurrent).thenReturn(mock(Environment.class));
+    Environment current = mock(Environment.class);
+    environment.when(Environment::getCurrent).thenReturn(current);
   }
 
   @AfterEach
