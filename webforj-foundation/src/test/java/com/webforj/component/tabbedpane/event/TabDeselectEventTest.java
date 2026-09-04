@@ -1,6 +1,8 @@
 package com.webforj.component.tabbedpane.event;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import com.basis.bbj.proxies.event.BBjTabDeselectedEvent;
@@ -10,14 +12,13 @@ import com.webforj.component.tabbedpane.sink.TabDeselectEventSink;
 import com.webforj.dispatcher.EventDispatcher;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 class TabDeselectEventTest {
 
   @Test
   @DisplayName("Test the payload of the event")
   void payload() {
-    BBjTabDeselectedEvent eventMock = Mockito.mock(BBjTabDeselectedEvent.class);
+    BBjTabDeselectedEvent eventMock = mock(BBjTabDeselectedEvent.class);
     EventDispatcher dispatcher = new EventDispatcher();
 
     // Capture the dispatched event
@@ -31,7 +32,7 @@ class TabDeselectEventTest {
       dispatchedEvent[0] = e;
     });
 
-    TabbedPane componentMock = Mockito.spy(TabbedPane.class);
+    TabbedPane componentMock = spy(TabbedPane.class);
     componentMock.addTab("Tab0");
     componentMock.addTab("Tab1");
     Tab tab2 = componentMock.addTab("Tab2");

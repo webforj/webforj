@@ -1,6 +1,7 @@
 package com.webforj.component.navigator.event;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.basis.bbj.proxies.event.BBjNavigatorMoveFirstEvent;
@@ -10,14 +11,13 @@ import com.webforj.dispatcher.EventDispatcher;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 class NavigatorMoveFirstEventTest {
 
   @Test
   @DisplayName("Test the payload of the event")
   void payload() {
-    BBjNavigatorMoveFirstEvent eventMock = Mockito.mock(BBjNavigatorMoveFirstEvent.class);
+    BBjNavigatorMoveFirstEvent eventMock = mock(BBjNavigatorMoveFirstEvent.class);
     EventDispatcher dispatcher = new EventDispatcher();
 
     // Capture the dispatched event
@@ -38,7 +38,7 @@ class NavigatorMoveFirstEventTest {
       dispatchedEvent[0] = e;
     });
 
-    Navigator componentMock = Mockito.mock(Navigator.class);
+    Navigator componentMock = mock(Navigator.class);
     NavigatorMoveFirstEventSink sink = new NavigatorMoveFirstEventSink(componentMock, dispatcher);
     // Invoke the event handler
     sink.handleEvent(eventMock);

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -19,7 +20,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.mockito.Mockito;
 
 class BusyIndicatorTest {
 
@@ -28,7 +28,7 @@ class BusyIndicatorTest {
 
   @BeforeEach
   void setUp() {
-    mockIndicator = Mockito.mock(BBjBusyIndicator.class);
+    mockIndicator = mock(BBjBusyIndicator.class);
     busyIndicator = new BusyIndicator(mockIndicator);
   }
 
