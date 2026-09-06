@@ -1,5 +1,6 @@
 package com.webforj.component.googlecharts;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -8,7 +9,9 @@ import com.webforj.component.element.PropertyDescriptorTester;
 import com.webforj.component.googlecharts.events.GoogleChartReadyEvent;
 import com.webforj.component.googlecharts.events.GoogleChartSelectedEvent;
 import com.webforj.dispatcher.EventListener;
+import com.webforj.dispatcher.ListenerRegistration;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -70,5 +73,20 @@ class GoogleChartTest {
   void shouldReturnEmptyImageUriWhenNoDataAvailable() {
     String blank = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
     assertEquals(blank, component.getImageUri());
+  }
+
+  @Test
+  void shouldHandleReadyEventDuringListenerRegistration() {
+    assertDoesNotThrow(SynchronouslyReadyGoogleChart::new);
+  }
+
+  private static final class SynchronouslyReadyGoogleChart extends GoogleChart {
+
+    @Override
+    public ListenerRegistration<GoogleChartReadyEvent> addReadyListener(
+        EventListener<GoogleChartReadyEvent> listener) {
+      listener.onEvent(new GoogleChartReadyEvent(this, Map.of()));
+      return super.addReadyListener(listener);
+    }
   }
 }
