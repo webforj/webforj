@@ -1,7 +1,7 @@
 package com.webforj.component.badge;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import com.webforj.component.element.PropertyDescriptorTester;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,11 +67,9 @@ class BadgeTest {
 
     @Test
     void shouldSetGetProperties() {
-      try {
+      assertDoesNotThrow(() -> {
         PropertyDescriptorTester.run(Badge.class, component);
-      } catch (Exception e) {
-        fail("PropertyDescriptor test failed: " + e.getMessage());
-      }
+      });
     }
   }
 }

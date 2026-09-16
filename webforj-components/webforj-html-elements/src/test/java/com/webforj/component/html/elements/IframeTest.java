@@ -1,9 +1,9 @@
 package com.webforj.component.html.elements;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import com.webforj.component.element.PropertyDescriptorTester;
 import java.util.List;
@@ -15,11 +15,9 @@ class IframeTest {
   void shouldSetGetProperties() {
     Iframe component = new Iframe();
 
-    try {
+    assertDoesNotThrow(() -> {
       PropertyDescriptorTester.run(Iframe.class, component);
-    } catch (Exception e) {
-      fail("PropertyDescriptor test failed: " + e.getMessage());
-    }
+    });
   }
 
   @Test

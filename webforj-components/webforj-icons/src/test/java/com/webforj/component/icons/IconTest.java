@@ -1,6 +1,6 @@
 package com.webforj.component.icons;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import com.webforj.component.element.PropertyDescriptorTester;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,11 +23,9 @@ class IconTest {
 
     @Test
     void shouldSetGetProperties() {
-      try {
+      assertDoesNotThrow(() -> {
         PropertyDescriptorTester.run(Icon.class, component);
-      } catch (Exception e) {
-        fail("PropertyDescriptor test failed: " + e.getMessage());
-      }
+      });
     }
   }
 }

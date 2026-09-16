@@ -1,8 +1,8 @@
 package com.webforj.component.login;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 
 import com.webforj.component.Component;
@@ -35,13 +35,11 @@ class LoginTest {
 
     @Test
     void shouldSetGetProperties() {
-      try {
+      assertDoesNotThrow(() -> {
         PropertyDescriptorTester.run(Login.class, component, descriptor -> {
           return !Arrays.asList("opened", "disabled").contains(descriptor.getName());
         });
-      } catch (Exception e) {
-        fail("PropertyDescriptor test failed: " + e.getMessage());
-      }
+      });
     }
 
     @Test
