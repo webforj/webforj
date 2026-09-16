@@ -8,6 +8,8 @@ import com.webforj.devtools.livereload.LiveReloadLifecycle;
 import java.io.File;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.devtools.filewatch.ChangedFile;
 import org.springframework.boot.devtools.filewatch.ChangedFiles;
@@ -44,32 +46,14 @@ class LiveReloadResourceChangeListenerTest {
     verify(lifecycle).sendResourceUpdate("other", "data.json");
   }
 
-  @Test
-  void shouldIgnoreTheBundlerOutput() {
+  @ParameterizedTest
+  @ValueSource(strings = {"static/frontend/app.css", "static/webforj/frontend-entries.json",
+      "com/example/Application.class"})
+  void shouldIgnoreExcludedResourceChanges(String relativePath) {
     LiveReloadLifecycle lifecycle = mock(LiveReloadLifecycle.class);
 
     new LiveReloadResourceChangeListener(lifecycle)
-        .onApplicationEvent(event("static/frontend/app.css", ChangedFile.Type.MODIFY));
-
-    verifyNoInteractions(lifecycle);
-  }
-
-  @Test
-  void shouldIgnoreTheBundleIndex() {
-    LiveReloadLifecycle lifecycle = mock(LiveReloadLifecycle.class);
-
-    new LiveReloadResourceChangeListener(lifecycle)
-        .onApplicationEvent(event("static/webforj/frontend-entries.json", ChangedFile.Type.MODIFY));
-
-    verifyNoInteractions(lifecycle);
-  }
-
-  @Test
-  void shouldIgnoreFilesOutsideTheStaticDirectory() {
-    LiveReloadLifecycle lifecycle = mock(LiveReloadLifecycle.class);
-
-    new LiveReloadResourceChangeListener(lifecycle)
-        .onApplicationEvent(event("com/example/Application.class", ChangedFile.Type.MODIFY));
+        .onApplicationEvent(event(relativePath, ChangedFile.Type.MODIFY));
 
     verifyNoInteractions(lifecycle);
   }
