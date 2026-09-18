@@ -1,7 +1,7 @@
 package com.webforj.devtools.craftforj.inspector.source.model;
 
 import com.webforj.devtools.craftforj.inspector.model.FeatureProperty;
-import com.webforj.devtools.craftforj.inspector.model.SourceLocation;
+import com.webforj.devtools.craftforj.source.model.SourceLocation;
 
 /**
  * Request to change a component property in source code.

@@ -15,7 +15,7 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.webforj.component.layout.flexlayout.FlexLayout;
 import com.webforj.devtools.craftforj.inspector.model.FeatureProperty;
 import com.webforj.devtools.craftforj.inspector.model.PropertyType;
-import com.webforj.devtools.craftforj.inspector.source.generator.SourceChange;
+import com.webforj.devtools.craftforj.source.model.SourceChange;
 import org.junit.jupiter.api.Test;
 
 class FlexItemShrinkContributionTest {

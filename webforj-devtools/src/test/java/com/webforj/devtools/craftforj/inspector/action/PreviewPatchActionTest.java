@@ -12,7 +12,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.webforj.devtools.craftforj.inspector.source.SourceCodeModifier;
 import com.webforj.devtools.craftforj.inspector.source.model.ChangeRequest;
-import com.webforj.devtools.craftforj.inspector.source.model.FilePatch;
+import com.webforj.devtools.craftforj.source.model.FilePatch;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;

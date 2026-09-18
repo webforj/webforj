@@ -18,9 +18,9 @@ import com.webforj.component.ComponentSourceRegistry;
 import com.webforj.component.ComponentSourceRegistry.SourcePoint;
 import com.webforj.component.element.Element;
 import com.webforj.component.window.Frame;
-import com.webforj.devtools.craftforj.inspector.source.parser.SourceParserService;
-import com.webforj.devtools.craftforj.inspector.source.resolver.SourceFileResolver;
 import com.webforj.devtools.craftforj.model.ComponentMeta;
+import com.webforj.devtools.craftforj.source.parser.SourceParserService;
+import com.webforj.devtools.craftforj.source.resolver.SourceFileResolver;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
@@ -264,7 +264,7 @@ class ComponentMapBuilderTest {
   }
 
   @Test
-  @DisplayName("Should skip a DSL frame that resolves to no project file and declare on the next frame")
+  @DisplayName("Should skip a DSL frame resolving to no project file and declare on the next frame")
   void shouldDeclareOnFirstResolvableFrameBehindDsl() {
     Element element = newElement();
     Frame frame = newFrame(element);

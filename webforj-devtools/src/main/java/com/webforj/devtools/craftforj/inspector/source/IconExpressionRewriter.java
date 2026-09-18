@@ -7,8 +7,9 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.webforj.devtools.craftforj.inspector.source.generator.IconExpressionGenerator;
 import com.webforj.devtools.craftforj.inspector.source.generator.IconExpressionGenerator.IconExpression;
 import com.webforj.devtools.craftforj.inspector.source.generator.IconExpressionGenerator.IconValue;
-import com.webforj.devtools.craftforj.inspector.source.model.TargetContext;
-import com.webforj.devtools.craftforj.inspector.source.parser.AstFinder;
+import com.webforj.devtools.craftforj.source.SourceModificationException;
+import com.webforj.devtools.craftforj.source.model.TargetContext;
+import com.webforj.devtools.craftforj.source.parser.AstFinder;
 import java.util.List;
 
 /**

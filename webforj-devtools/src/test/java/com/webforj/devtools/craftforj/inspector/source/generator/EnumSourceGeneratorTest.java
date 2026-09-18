@@ -6,8 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.webforj.devtools.craftforj.inspector.model.FeatureProperty;
-import com.webforj.devtools.craftforj.inspector.source.SourceModificationException;
 import com.webforj.devtools.craftforj.inspector.source.generator.SourceGenerator.GeneratorContext;
+import com.webforj.devtools.craftforj.source.SourceModificationException;
+import com.webforj.devtools.craftforj.source.model.SourceChange;
 import org.junit.jupiter.api.Test;
 
 class EnumSourceGeneratorTest {

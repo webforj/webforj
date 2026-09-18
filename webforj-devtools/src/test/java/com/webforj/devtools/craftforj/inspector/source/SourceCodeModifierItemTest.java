@@ -15,11 +15,11 @@ import com.webforj.devtools.craftforj.inspector.contribution.layout.columnslayou
 import com.webforj.devtools.craftforj.inspector.contribution.layout.flexlayout.item.FlexItemAlignmentContribution;
 import com.webforj.devtools.craftforj.inspector.contribution.layout.flexlayout.item.FlexItemGrowContribution;
 import com.webforj.devtools.craftforj.inspector.model.FeatureProperty;
-import com.webforj.devtools.craftforj.inspector.model.SourceLocation;
 import com.webforj.devtools.craftforj.inspector.source.model.ChangeRequest;
 import com.webforj.devtools.craftforj.inspector.source.model.ChangeResult;
-import com.webforj.devtools.craftforj.inspector.source.parser.SourceParserService;
-import com.webforj.devtools.craftforj.inspector.source.resolver.SourcePathRegistry;
+import com.webforj.devtools.craftforj.source.model.SourceLocation;
+import com.webforj.devtools.craftforj.source.parser.SourceParserService;
+import com.webforj.devtools.craftforj.source.resolver.SourcePathRegistry;
 import com.webforj.devtools.craftforj.utilities.ComponentLocator;
 import java.io.IOException;
 import java.nio.file.Files;

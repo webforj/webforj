@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.gson.JsonObject;
-import com.webforj.devtools.craftforj.inspector.source.staging.SourceStagingArea;
-import com.webforj.devtools.craftforj.inspector.source.staging.model.StagedFile;
+import com.webforj.devtools.craftforj.source.staging.SourceStagingArea;
+import com.webforj.devtools.craftforj.source.staging.model.StagedFile;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;

@@ -2,8 +2,8 @@ package com.webforj.devtools.craftforj.inspector.action;
 
 import com.google.gson.JsonObject;
 import com.webforj.devtools.craftforj.action.CraftforjActionHandler;
-import com.webforj.devtools.craftforj.inspector.source.parser.SourceParserService;
 import com.webforj.devtools.craftforj.model.ComponentMeta;
+import com.webforj.devtools.craftforj.source.parser.SourceParserService;
 import com.webforj.devtools.craftforj.utilities.ComponentMapBuilder;
 import java.util.List;
 import java.util.Map;

@@ -2,7 +2,7 @@ package com.webforj.devtools.craftforj.inspector.action;
 
 import com.google.gson.JsonObject;
 import com.webforj.devtools.craftforj.action.CraftforjActionHandler;
-import com.webforj.devtools.craftforj.inspector.source.staging.SourceStagingArea;
+import com.webforj.devtools.craftforj.source.staging.SourceStagingArea;
 
 /**
  * Drops one staged free form file, or the whole staging area when no path is given.

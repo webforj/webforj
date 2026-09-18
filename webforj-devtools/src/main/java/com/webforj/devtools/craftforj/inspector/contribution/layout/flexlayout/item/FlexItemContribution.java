@@ -4,7 +4,7 @@ import com.webforj.component.Component;
 import com.webforj.component.layout.flexlayout.FlexLayout;
 import com.webforj.concern.HasStyle;
 import com.webforj.devtools.craftforj.inspector.contribution.LayoutItemContribution;
-import com.webforj.devtools.craftforj.inspector.source.generator.SourceChange;
+import com.webforj.devtools.craftforj.source.model.SourceChange;
 
 /**
  * Base contribution for flex item properties.

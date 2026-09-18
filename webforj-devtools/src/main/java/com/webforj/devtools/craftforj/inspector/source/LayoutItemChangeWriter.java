@@ -6,14 +6,16 @@ import com.webforj.component.Component;
 import com.webforj.devtools.craftforj.inspector.contribution.FeatureHandler;
 import com.webforj.devtools.craftforj.inspector.contribution.FeatureHandlerRegistry;
 import com.webforj.devtools.craftforj.inspector.contribution.LayoutItemContribution;
-import com.webforj.devtools.craftforj.inspector.model.SourceLocation;
-import com.webforj.devtools.craftforj.inspector.source.generator.SourceChange;
 import com.webforj.devtools.craftforj.inspector.source.model.ChangeRequest;
-import com.webforj.devtools.craftforj.inspector.source.model.ModificationContext;
-import com.webforj.devtools.craftforj.inspector.source.model.TargetContext;
-import com.webforj.devtools.craftforj.inspector.source.parser.AstFinder;
-import com.webforj.devtools.craftforj.inspector.source.parser.AstModifier;
-import com.webforj.devtools.craftforj.inspector.source.strategy.ModificationStrategy;
+import com.webforj.devtools.craftforj.source.SourceModificationException;
+import com.webforj.devtools.craftforj.source.TargetResolver;
+import com.webforj.devtools.craftforj.source.model.ModificationContext;
+import com.webforj.devtools.craftforj.source.model.SourceChange;
+import com.webforj.devtools.craftforj.source.model.SourceLocation;
+import com.webforj.devtools.craftforj.source.model.TargetContext;
+import com.webforj.devtools.craftforj.source.parser.AstFinder;
+import com.webforj.devtools.craftforj.source.parser.AstModifier;
+import com.webforj.devtools.craftforj.source.strategy.ModificationStrategy;
 import com.webforj.devtools.craftforj.utilities.ComponentLocator;
 import com.webforj.devtools.craftforj.utilities.ComponentTypeNames;
 import java.nio.file.Path;
@@ -56,12 +58,13 @@ class LayoutItemChangeWriter implements ChangeWriter {
     ChangeRequest first = changes.get(0);
 
     // The parent layout's source location decides where the calls are written
-    SourceLocation parentLocation = targetResolver.resolveParent(first);
+    Component parentComponent = targetResolver.resolveParentComponent(first.getParentId());
+    SourceLocation parentLocation =
+        targetResolver.resolve(parentComponent, first.getParentSource());
     if (parentLocation == null || !parentLocation.hasBasicInfo()) {
       throw new SourceModificationException("Parent layout source location not found");
     }
 
-    Component parentComponent = targetResolver.resolveParentComponent(first);
     if (parentComponent == null) {
       parentLocation = targetResolver.reanchorDestroyedLocation(cu, parentLocation);
     }

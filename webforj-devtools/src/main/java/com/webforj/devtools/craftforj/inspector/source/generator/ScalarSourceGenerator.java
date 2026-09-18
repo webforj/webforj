@@ -7,7 +7,8 @@ import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.expr.TextBlockLiteralExpr;
-import com.webforj.devtools.craftforj.inspector.source.SourceModificationException;
+import com.webforj.devtools.craftforj.source.SourceModificationException;
+import com.webforj.devtools.craftforj.source.model.SourceChange;
 
 /**
  * Source generator for scalar values (String, Boolean, Integer, etc.).

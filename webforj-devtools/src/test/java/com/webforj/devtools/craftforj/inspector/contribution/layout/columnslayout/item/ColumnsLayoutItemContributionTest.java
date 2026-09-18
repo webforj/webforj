@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 import com.webforj.component.layout.columnslayout.ColumnsLayout;
 import com.webforj.concern.HasStyle;
 import com.webforj.devtools.craftforj.inspector.model.FeatureProperty;
-import com.webforj.devtools.craftforj.inspector.source.generator.SourceChange;
+import com.webforj.devtools.craftforj.source.model.SourceChange;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 

@@ -1,6 +1,7 @@
 package com.webforj.devtools.craftforj.inspector.source.generator;
 
 import com.webforj.devtools.craftforj.inspector.model.FeatureProperty;
+import com.webforj.devtools.craftforj.source.model.SourceChange;
 
 /**
  * Contract for source code generators.

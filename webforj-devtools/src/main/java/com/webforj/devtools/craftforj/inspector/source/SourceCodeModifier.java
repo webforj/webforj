@@ -3,29 +3,27 @@ package com.webforj.devtools.craftforj.inspector.source;
 import com.github.javaparser.ast.CompilationUnit;
 import com.webforj.component.Component;
 import com.webforj.devtools.craftforj.inspector.contribution.FeatureHandlerRegistry;
-import com.webforj.devtools.craftforj.inspector.model.SourceLocation;
 import com.webforj.devtools.craftforj.inspector.source.model.ChangeRequest;
 import com.webforj.devtools.craftforj.inspector.source.model.ChangeResult;
-import com.webforj.devtools.craftforj.inspector.source.model.FilePatch;
-import com.webforj.devtools.craftforj.inspector.source.parser.ImportWriter;
-import com.webforj.devtools.craftforj.inspector.source.parser.SourceParserService;
-import com.webforj.devtools.craftforj.inspector.source.parser.StatementWrapper;
-import com.webforj.devtools.craftforj.inspector.source.strategy.BoundComponentStrategy;
-import com.webforj.devtools.craftforj.inspector.source.strategy.FactoryMethodStrategy;
-import com.webforj.devtools.craftforj.inspector.source.strategy.FieldDeclarationStrategy;
-import com.webforj.devtools.craftforj.inspector.source.strategy.InlineCreationStrategy;
-import com.webforj.devtools.craftforj.inspector.source.strategy.LocalVariableStrategy;
-import com.webforj.devtools.craftforj.inspector.source.strategy.ModificationStrategy;
+import com.webforj.devtools.craftforj.source.SourceFileEditor;
+import com.webforj.devtools.craftforj.source.SourceImports;
+import com.webforj.devtools.craftforj.source.TargetResolver;
+import com.webforj.devtools.craftforj.source.model.FilePatch;
+import com.webforj.devtools.craftforj.source.model.SourceLocation;
+import com.webforj.devtools.craftforj.source.parser.SourceParserService;
+import com.webforj.devtools.craftforj.source.strategy.BoundComponentStrategy;
+import com.webforj.devtools.craftforj.source.strategy.FactoryMethodStrategy;
+import com.webforj.devtools.craftforj.source.strategy.FieldDeclarationStrategy;
+import com.webforj.devtools.craftforj.source.strategy.InlineCreationStrategy;
+import com.webforj.devtools.craftforj.source.strategy.LocalVariableStrategy;
+import com.webforj.devtools.craftforj.source.strategy.ModificationStrategy;
 import com.webforj.devtools.craftforj.utilities.ComponentLocator;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -44,9 +42,9 @@ public class SourceCodeModifier {
   private static final System.Logger LOGGER = System.getLogger(SourceCodeModifier.class.getName());
 
   private final FeatureHandlerRegistry registry;
-  private final SourceParserService parserService;
   private final TargetResolver targetResolver;
   private final UsagePlanner usagePlanner;
+  private final SourceFileEditor fileEditor;
   private final List<ChangeWriter> writers;
 
   private static class GroupResult {
@@ -85,15 +83,13 @@ public class SourceCodeModifier {
   private static class FileOutcome {
 
     private final Map<String, String> errors;
-    private final String original;
-    private final String modified;
+    private final FilePatch patch;
     private final Map<ChangeRequest, String> replacedExpressions;
 
-    FileOutcome(Map<String, String> errors, String original, String modified,
+    FileOutcome(Map<String, String> errors, FilePatch patch,
         Map<ChangeRequest, String> replacedExpressions) {
       this.errors = errors;
-      this.original = original;
-      this.modified = modified;
+      this.patch = patch;
       this.replacedExpressions = replacedExpressions;
     }
 
@@ -101,12 +97,8 @@ public class SourceCodeModifier {
       return errors;
     }
 
-    String getOriginal() {
-      return original;
-    }
-
-    String getModified() {
-      return modified;
+    FilePatch getPatch() {
+      return patch;
     }
 
     Map<ChangeRequest, String> getReplacedExpressions() {
@@ -122,9 +114,9 @@ public class SourceCodeModifier {
    */
   public SourceCodeModifier(FeatureHandlerRegistry registry, SourceParserService parserService) {
     this.registry = registry;
-    this.parserService = parserService;
     this.targetResolver = new TargetResolver(parserService);
     this.usagePlanner = new UsagePlanner(registry, parserService, targetResolver);
+    this.fileEditor = new SourceFileEditor(parserService);
     this.writers = createWriters();
   }
 
@@ -167,8 +159,8 @@ public class SourceCodeModifier {
       Path file = entry.getKey();
       try {
         FileOutcome outcome = processFile(file, entry.getValue(), groupResult.getPlans(), true);
-        if (outcome.getModified() != null) {
-          patches.add(new FilePatch(file.toString(), outcome.getOriginal(), outcome.getModified()));
+        if (outcome.getPatch().getPatched() != null) {
+          patches.add(outcome.getPatch());
         }
       } catch (Exception e) {
         LOGGER.log(System.Logger.Level.DEBUG, () -> "Failed to preview patch for file: " + file, e);
@@ -271,7 +263,8 @@ public class SourceCodeModifier {
         SourceLocation sourceLocation;
         if (ChangeWriter.isParentScoped(registry, change)) {
           // Parent-scoped changes are written into the parent layout's source file
-          sourceLocation = targetResolver.resolveParent(change);
+          sourceLocation =
+              targetResolver.resolveParent(change.getParentId(), change.getParentSource());
           if (sourceLocation == null || sourceLocation.getFile() == null) {
             failures.put(change, "Parent layout source file not found");
             continue;
@@ -299,17 +292,22 @@ public class SourceCodeModifier {
 
   private FileOutcome processFile(Path file, List<ChangeRequest> changes,
       Map<ChangeRequest, UsagePlanner.UsagePlan> plans, boolean dryRun) throws IOException {
-    String originalContent = Files.readString(file);
-    CompilationUnit cu = parserService.parseWithLexicalPreservation(originalContent)
-        .orElseThrow(() -> new SourceModificationException("Failed to parse source file: " + file));
-
     // Group changes by componentId to process all changes for a component together
     Map<String, List<ChangeRequest>> byComponent = changes.stream().collect(Collectors
         .groupingBy(ChangeRequest::getComponentId, LinkedHashMap::new, Collectors.toList()));
 
     Map<String, String> errors = new LinkedHashMap<>();
-    Set<String> requiredImports = new LinkedHashSet<>();
-    WriteContext context = new WriteContext(plans, requiredImports);
+    SourceImports imports = new SourceImports();
+    WriteContext context = new WriteContext(plans, imports.getRequired());
+
+    FilePatch patch = fileEditor.edit(file, imports, dryRun,
+        cu -> writeComponents(cu, byComponent, context, errors));
+
+    return new FileOutcome(errors, patch, context.getReplacedExpressions());
+  }
+
+  private boolean writeComponents(CompilationUnit cu, Map<String, List<ChangeRequest>> byComponent,
+      WriteContext context, Map<String, String> errors) {
     boolean anySucceeded = false;
 
     for (Map.Entry<String, List<ChangeRequest>> entry : byComponent.entrySet()) {
@@ -331,17 +329,7 @@ public class SourceCodeModifier {
       }
     }
 
-    if (!anySucceeded) {
-      return new FileOutcome(errors, originalContent, null, context.getReplacedExpressions());
-    }
-
-    String modified = StatementWrapper.wrap(originalContent,
-        ImportWriter.sync(parserService.print(cu), requiredImports, requiredImports));
-    if (!dryRun) {
-      Files.writeString(file, modified);
-    }
-
-    return new FileOutcome(errors, originalContent, modified, context.getReplacedExpressions());
+    return anySucceeded;
   }
 
   private static String errorMessage(Exception e) {

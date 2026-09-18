@@ -3,9 +3,9 @@ package com.webforj.devtools.craftforj.inspector.source.generator;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.webforj.devtools.craftforj.inspector.source.SourceModificationException;
 import com.webforj.devtools.craftforj.inspector.source.generator.IconExpressionGenerator.IconExpression;
 import com.webforj.devtools.craftforj.inspector.source.generator.IconExpressionGenerator.IconValue;
+import com.webforj.devtools.craftforj.source.SourceModificationException;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

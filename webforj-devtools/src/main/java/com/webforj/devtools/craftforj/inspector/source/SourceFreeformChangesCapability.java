@@ -3,6 +3,7 @@ package com.webforj.devtools.craftforj.inspector.source;
 import com.webforj.App;
 import com.webforj.devtools.craftforj.ai.AiAssistantCapability;
 import com.webforj.devtools.craftforj.capabilities.CraftforjCapability;
+import com.webforj.devtools.craftforj.source.SourceChangesCapability;
 
 /**
  * The assistant writing Java of its own behind the compile gate, which needs both source changes

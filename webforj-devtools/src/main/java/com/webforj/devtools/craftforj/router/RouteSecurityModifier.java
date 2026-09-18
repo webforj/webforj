@@ -10,11 +10,12 @@ import com.github.javaparser.ast.expr.Name;
 import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.webforj.devtools.craftforj.action.CraftforjActionException;
-import com.webforj.devtools.craftforj.inspector.source.parser.ImportWriter;
-import com.webforj.devtools.craftforj.inspector.source.parser.SourceParserService;
 import com.webforj.devtools.craftforj.router.model.SecurityAccess;
+import com.webforj.devtools.craftforj.source.SourceFileEditor;
+import com.webforj.devtools.craftforj.source.SourceImports;
+import com.webforj.devtools.craftforj.source.SourceModificationException;
+import com.webforj.devtools.craftforj.source.parser.SourceParserService;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -37,7 +38,7 @@ public final class RouteSecurityModifier {
 
   private static final Map<SecurityAccess, String> ANNOTATIONS = createAnnotationMap();
 
-  private final SourceParserService parserService;
+  private final SourceFileEditor fileEditor;
 
   /** Creates a modifier with a default parser service. */
   public RouteSecurityModifier() {
@@ -50,7 +51,7 @@ public final class RouteSecurityModifier {
    * @param parserService the parser service to use
    */
   public RouteSecurityModifier(SourceParserService parserService) {
-    this.parserService = parserService;
+    this.fileEditor = new SourceFileEditor(parserService);
   }
 
   /**
@@ -67,24 +68,21 @@ public final class RouteSecurityModifier {
       throw new CraftforjActionException("At least one role is required for ROLES_ALLOWED");
     }
 
-    CompilationUnit cu = parse(file);
-    TypeDeclaration<?> type = findType(cu, className);
-
-    removeSecurityAnnotations(type);
-    if (access != SecurityAccess.NONE) {
-      type.addAnnotation(createAnnotation(access, roles));
-    }
-
-    write(file,
-        ImportWriter.sync(parserService.print(cu), ANNOTATIONS.values(), usedAnnotations(cu)));
-  }
-
-  private CompilationUnit parse(Path file) {
+    SourceImports imports = new SourceImports();
     try {
-      return parserService.parseWithLexicalPreservation(file)
-          .orElseThrow(() -> new CraftforjActionException("Failed to parse source file: " + file));
-    } catch (IOException e) {
-      throw new CraftforjActionException("Failed to read source file: " + file, e);
+      fileEditor.edit(file, imports, false, cu -> {
+        TypeDeclaration<?> type = findType(cu, className);
+
+        removeSecurityAnnotations(type);
+        if (access != SecurityAccess.NONE) {
+          type.addAnnotation(createAnnotation(access, roles));
+        }
+        imports.setTracked(ANNOTATIONS.values(), usedAnnotations(cu));
+
+        return true;
+      });
+    } catch (SourceModificationException | IOException e) {
+      throw new CraftforjActionException(e.getMessage(), e);
     }
   }
 
@@ -140,14 +138,6 @@ public final class RouteSecurityModifier {
   private StringLiteralExpr roleLiteral(String role) {
     // setString escapes quotes and backslashes; the constructor writes them verbatim
     return new StringLiteralExpr().setString(role);
-  }
-
-  private void write(Path file, String content) {
-    try {
-      Files.writeString(file, content);
-    } catch (IOException e) {
-      throw new CraftforjActionException("Failed to write source file: " + file, e);
-    }
   }
 
   private static Map<SecurityAccess, String> createAnnotationMap() {

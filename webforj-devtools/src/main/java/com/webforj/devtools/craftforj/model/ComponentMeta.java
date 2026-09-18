@@ -1,7 +1,7 @@
 package com.webforj.devtools.craftforj.model;
 
 import com.webforj.devtools.craftforj.inspector.model.FeatureGroup;
-import com.webforj.devtools.craftforj.inspector.model.SourceLocation;
+import com.webforj.devtools.craftforj.source.model.SourceLocation;
 import java.util.List;
 
 /**

@@ -8,8 +8,8 @@ import static org.mockito.Mockito.mockStatic;
 
 import com.google.gson.JsonObject;
 import com.webforj.devtools.craftforj.action.CraftforjActionException;
-import com.webforj.devtools.craftforj.inspector.source.resolver.SourcePathRegistry;
-import com.webforj.devtools.craftforj.inspector.source.staging.SourceHasher;
+import com.webforj.devtools.craftforj.source.resolver.SourcePathRegistry;
+import com.webforj.devtools.craftforj.source.staging.SourceHasher;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
