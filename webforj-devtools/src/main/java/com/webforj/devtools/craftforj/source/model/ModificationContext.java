@@ -1,6 +1,5 @@
 package com.webforj.devtools.craftforj.source.model;
 
-import com.webforj.devtools.craftforj.source.model.SourceChange;
 import java.util.ArrayList;
 import java.util.List;
 
