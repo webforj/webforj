@@ -10,7 +10,7 @@ import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.webforj.component.icons.DwcIcon;
 import com.webforj.component.icons.FeatherIcon;
-import com.webforj.devtools.craftforj.inspector.source.SourceModificationException;
+import com.webforj.devtools.craftforj.source.SourceModificationException;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Predicate;

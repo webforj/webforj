@@ -6,10 +6,10 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mockStatic;
 
 import com.google.gson.JsonObject;
-import com.webforj.devtools.craftforj.inspector.source.resolver.SourcePathRegistry;
-import com.webforj.devtools.craftforj.inspector.source.staging.SourceHasher;
-import com.webforj.devtools.craftforj.inspector.source.staging.SourceStagingArea;
-import com.webforj.devtools.craftforj.inspector.source.staging.model.StagedFile;
+import com.webforj.devtools.craftforj.source.resolver.SourcePathRegistry;
+import com.webforj.devtools.craftforj.source.staging.SourceHasher;
+import com.webforj.devtools.craftforj.source.staging.SourceStagingArea;
+import com.webforj.devtools.craftforj.source.staging.model.StagedFile;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;

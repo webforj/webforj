@@ -2,9 +2,9 @@ package com.webforj.devtools.craftforj.inspector.action;
 
 import com.google.gson.JsonObject;
 import com.webforj.devtools.craftforj.action.CraftforjActionHandler;
-import com.webforj.devtools.craftforj.inspector.source.resolver.SourcePathRegistry;
-import com.webforj.devtools.craftforj.inspector.source.staging.SourceStagingArea;
-import com.webforj.devtools.craftforj.inspector.source.staging.StagingException;
+import com.webforj.devtools.craftforj.source.resolver.SourcePathRegistry;
+import com.webforj.devtools.craftforj.source.staging.SourceStagingArea;
+import com.webforj.devtools.craftforj.source.staging.StagingException;
 import java.util.List;
 
 /**

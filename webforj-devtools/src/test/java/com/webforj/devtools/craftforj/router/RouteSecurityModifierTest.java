@@ -4,13 +4,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.webforj.devtools.craftforj.action.CraftforjActionException;
 import com.webforj.devtools.craftforj.router.model.SecurityAccess;
+import com.webforj.devtools.craftforj.source.parser.SourceParserService;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
+import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -209,6 +216,65 @@ class RouteSecurityModifierTest {
 
       assertThrows(CraftforjActionException.class,
           () -> modifier.apply(file, "Missing", SecurityAccess.PERMIT_ALL, List.of()));
+    }
+
+    @Test
+    @DisplayName("Should throw when the parser yields no result")
+    void shouldThrowWhenUnparseable() throws IOException {
+      Path file = writeSource(plainSource());
+      SourceParserService parserService = mock(SourceParserService.class);
+      when(parserService.parseWithLexicalPreservation(anyString())).thenReturn(Optional.empty());
+      RouteSecurityModifier failing = new RouteSecurityModifier(parserService);
+      List<String> roles = List.of();
+
+      assertThrows(CraftforjActionException.class,
+          () -> failing.apply(file, "DashboardView", SecurityAccess.PERMIT_ALL, roles));
+      assertEquals(plainSource(), Files.readString(file));
+    }
+
+    @Test
+    @DisplayName("Should leave the file untouched when nothing changes")
+    void shouldNotRewriteWhenNothingChanges() throws IOException {
+      Path file = writeSource(plainSource());
+      FileTime before = FileTime.from(Instant.parse("2020-01-01T00:00:00Z"));
+      Files.setLastModifiedTime(file, before);
+
+      modifier.apply(file, "DashboardView", SecurityAccess.NONE, List.of());
+
+      assertEquals(before, Files.getLastModifiedTime(file));
+    }
+
+    @Test
+    @DisplayName("Should say the write failed when the file is read only")
+    void shouldNameWriteFailure() throws IOException {
+      Path file = writeSource(plainSource());
+      List<String> roles = List.of();
+      assertTrue(file.toFile().setWritable(false));
+
+      try {
+        CraftforjActionException error = assertThrows(CraftforjActionException.class,
+            () -> modifier.apply(file, "DashboardView", SecurityAccess.PERMIT_ALL, roles));
+
+        assertEquals("Failed to write source file: " + file, error.getMessage());
+      } finally {
+        file.toFile().setWritable(true);
+      }
+    }
+
+    @Test
+    @DisplayName("Should leave an existing long statement as written")
+    void shouldLeaveLongStatementAsWritten() throws IOException {
+      String longLine = "    layout.setSomething(\"" + "a".repeat(40) + "\", \"" + "b".repeat(40)
+          + "\", \"" + "c".repeat(20) + "\");";
+      Path file = writeSource("package com.example;\n\npublic class DashboardView {\n\n"
+          + "  public DashboardView() {\n" + longLine + "\n  }\n}\n");
+
+      modifier.apply(file, "DashboardView", SecurityAccess.PERMIT_ALL, List.of());
+
+      String result = Files.readString(file);
+      assertTrue(longLine.length() > 100);
+      assertTrue(result.contains(longLine));
+      assertTrue(result.contains("@PermitAll"));
     }
 
     @Test

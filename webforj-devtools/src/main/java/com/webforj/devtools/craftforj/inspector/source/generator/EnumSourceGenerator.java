@@ -2,7 +2,8 @@ package com.webforj.devtools.craftforj.inspector.source.generator;
 
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.NameExpr;
-import com.webforj.devtools.craftforj.inspector.source.SourceModificationException;
+import com.webforj.devtools.craftforj.source.SourceModificationException;
+import com.webforj.devtools.craftforj.source.model.SourceChange;
 
 /**
  * Source generator for enum values.

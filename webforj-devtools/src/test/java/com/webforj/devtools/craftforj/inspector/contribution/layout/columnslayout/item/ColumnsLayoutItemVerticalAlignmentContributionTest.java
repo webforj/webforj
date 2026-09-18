@@ -18,8 +18,8 @@ import com.webforj.component.layout.columnslayout.ColumnsLayout.Alignment;
 import com.webforj.devtools.craftforj.inspector.model.FeatureProperty;
 import com.webforj.devtools.craftforj.inspector.model.PropertyType;
 import com.webforj.devtools.craftforj.inspector.model.SelectOption;
-import com.webforj.devtools.craftforj.inspector.source.SourceModificationException;
-import com.webforj.devtools.craftforj.inspector.source.generator.SourceChange;
+import com.webforj.devtools.craftforj.source.SourceModificationException;
+import com.webforj.devtools.craftforj.source.model.SourceChange;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 

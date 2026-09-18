@@ -1,13 +1,13 @@
 package com.webforj.devtools.craftforj.router;
 
 import com.webforj.component.Component;
-import com.webforj.devtools.craftforj.inspector.source.resolver.SourceFileResolver;
-import com.webforj.devtools.craftforj.inspector.source.resolver.SourcePathRegistry;
 import com.webforj.devtools.craftforj.router.model.ActiveRouteState;
 import com.webforj.devtools.craftforj.router.model.RouteAliasInfo;
 import com.webforj.devtools.craftforj.router.model.RouteInfo;
 import com.webforj.devtools.craftforj.router.model.RouteType;
 import com.webforj.devtools.craftforj.router.model.SecurityAccess;
+import com.webforj.devtools.craftforj.source.resolver.SourceFileResolver;
+import com.webforj.devtools.craftforj.source.resolver.SourcePathRegistry;
 import com.webforj.devtools.craftforj.utilities.KotlinClassDetector;
 import com.webforj.router.RouteEntry;
 import com.webforj.router.RouteRegistry;

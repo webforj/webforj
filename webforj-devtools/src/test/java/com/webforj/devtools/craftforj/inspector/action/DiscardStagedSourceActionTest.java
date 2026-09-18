@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.gson.JsonObject;
-import com.webforj.devtools.craftforj.inspector.source.staging.SourceStagingArea;
-import com.webforj.devtools.craftforj.inspector.source.staging.model.StagedFile;
+import com.webforj.devtools.craftforj.source.staging.SourceStagingArea;
+import com.webforj.devtools.craftforj.source.staging.model.StagedFile;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;

@@ -2,7 +2,6 @@ package com.webforj.devtools.craftforj.inspector.source;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.webforj.devtools.craftforj.inspector.source.model.ChangeRequest;
-import com.webforj.devtools.craftforj.inspector.source.parser.UsageSiteRewriter;
 import java.util.List;
 
 /**

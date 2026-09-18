@@ -1,7 +1,8 @@
 package com.webforj.devtools.craftforj.inspector.source.generator;
 
 import com.github.javaparser.ast.expr.Expression;
-import com.webforj.devtools.craftforj.inspector.source.SourceModificationException;
+import com.webforj.devtools.craftforj.source.SourceModificationException;
+import com.webforj.devtools.craftforj.source.model.SourceChange;
 import java.util.List;
 import java.util.Map;
 

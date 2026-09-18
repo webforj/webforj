@@ -6,8 +6,8 @@ import com.webforj.devtools.craftforj.action.CraftforjActionHandler;
 import com.webforj.devtools.craftforj.inspector.contribution.FeatureHandlerRegistry;
 import com.webforj.devtools.craftforj.inspector.source.SourceCodeModifier;
 import com.webforj.devtools.craftforj.inspector.source.model.ChangeRequest;
-import com.webforj.devtools.craftforj.inspector.source.model.FilePatch;
-import com.webforj.devtools.craftforj.inspector.source.parser.SourceParserService;
+import com.webforj.devtools.craftforj.source.model.FilePatch;
+import com.webforj.devtools.craftforj.source.parser.SourceParserService;
 import java.util.Arrays;
 import java.util.List;
 
