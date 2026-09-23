@@ -141,11 +141,16 @@ function parseMarkdownFile(filePath, docsBasePath, javaMapping) {
   // Extract title and description from frontmatter
   let title = null;
   let description = '';
+  let slug = null;
   const frontmatterMatch = content.match(/^---\s*\n([\s\S]*?)\n---/);
   if (frontmatterMatch) {
     const titleMatch = frontmatterMatch[1].match(/title:\s*(.+)/);
     if (titleMatch) {
       title = titleMatch[1].trim().replace(/^["']|["']$/g, '');
+    }
+    const slugMatch = frontmatterMatch[1].match(/^slug:\s*(.+)$/m);
+    if (slugMatch) {
+      slug = slugMatch[1].trim().replace(/^["']|["']$/g, '');
     }
     const descriptionMatch = frontmatterMatch[1].match(/description:\s*(.+)/);
     if (descriptionMatch) {
@@ -166,7 +171,9 @@ function parseMarkdownFile(filePath, docsBasePath, javaMapping) {
 
   // Compute docs URL
   const relativePath = path.relative(docsBasePath, filePath).replace(/\\/g, '/');
-  const docsUrl = `https://docs.webforj.com/docs/components/${relativePath.replace(/\.md$/, '')}`;
+  const docsPath = relativePath.replace(/\.md$/, '');
+  const docsUrlPath = slug ? docsPath.replace(/[^/]+$/, slug) : docsPath;
+  const docsUrl = `https://docs.webforj.com/docs/components/${docsUrlPath}`;
 
   // Find the actual Java class from @NodeName mapping by DWC tag
   const primaryDwcTag = dwcMatches[0] || null;

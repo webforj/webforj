@@ -72,7 +72,7 @@
     "title": "ColorField",
     "since": "23.02",
     "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/field/ColorField.html",
-    "docs": "https://docs.webforj.com/docs/components/fields/color-field",
+    "docs": "https://docs.webforj.com/docs/components/fields/colorfield",
     "clientComponent": "dwc-color-chooser",
     "content": "A component that provides a default browser-based color picker, allowing users to select a color from an input field."
   },
@@ -80,7 +80,7 @@
     "title": "DateField",
     "since": "23.02",
     "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/field/DateField.html",
-    "docs": "https://docs.webforj.com/docs/components/fields/date-field",
+    "docs": "https://docs.webforj.com/docs/components/fields/datefield",
     "clientComponent": "dwc-field",
     "content": "A component that provides a default browser-based date picker for selecting a date through an input field."
   },
@@ -88,7 +88,7 @@
     "title": "DateTimeField",
     "since": "23.02",
     "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/field/DateTimeField.html",
-    "docs": "https://docs.webforj.com/docs/components/fields/date-time-field",
+    "docs": "https://docs.webforj.com/docs/components/fields/datetimefield",
     "clientComponent": "dwc-field",
     "content": "A component that provides a default browser-based date and time picker for selecting both date and time through a single input field."
   },
@@ -128,7 +128,7 @@
     "title": "NumberField",
     "since": "23.02",
     "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/field/NumberField.html",
-    "docs": "https://docs.webforj.com/docs/components/fields/number-field",
+    "docs": "https://docs.webforj.com/docs/components/fields/numberfield",
     "clientComponent": "dwc-field",
     "content": "A component that provides a default browser-based input field for entering numeric values, with built-in controls for incrementing or decrementing the value."
   },
@@ -136,7 +136,7 @@
     "title": "PasswordField",
     "since": "23.02",
     "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/field/PasswordField.html",
-    "docs": "https://docs.webforj.com/docs/components/fields/password-field",
+    "docs": "https://docs.webforj.com/docs/components/fields/passwordfield",
     "clientComponent": "dwc-field",
     "content": "A single-line input component for securely entering and masking password data."
   },
@@ -152,7 +152,7 @@
     "title": "TextField",
     "since": "23.02",
     "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/field/TextField.html",
-    "docs": "https://docs.webforj.com/docs/components/fields/text-field",
+    "docs": "https://docs.webforj.com/docs/components/fields/textfield",
     "clientComponent": "dwc-field",
     "content": "A single-line input component for entering and editing text data."
   },
@@ -160,7 +160,7 @@
     "title": "TimeField",
     "since": "23.02",
     "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/field/TimeField.html",
-    "docs": "https://docs.webforj.com/docs/components/fields/time-field",
+    "docs": "https://docs.webforj.com/docs/components/fields/timefield",
     "clientComponent": "dwc-field",
     "content": "A component that provides a default browser-based time picker for selecting a time value through an input field."
   },
@@ -430,7 +430,7 @@
     "title": "ChoiceBox",
     "since": "23.05",
     "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/list/ChoiceBox.html",
-    "docs": "https://docs.webforj.com/docs/components/lists/choice-box",
+    "docs": "https://docs.webforj.com/docs/components/lists/choicebox",
     "clientComponent": "dwc-choicebox",
     "content": "Pick a single value from a fixed set with the ChoiceBox dropdown, including dropdown type styling, max row count, and keyboard navigation."
   },
@@ -438,7 +438,7 @@
     "title": "ComboBox",
     "since": "23.05",
     "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/list/ComboBox.html",
-    "docs": "https://docs.webforj.com/docs/components/lists/combo-box",
+    "docs": "https://docs.webforj.com/docs/components/lists/combobox",
     "clientComponent": "dwc-combobox",
     "content": "Combine a dropdown list with a text input in the ComboBox to let users select preset items or type custom values with placeholder support."
   },
@@ -446,7 +446,7 @@
     "title": "ListBox",
     "since": "23.05",
     "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/list/ListBox.html",
-    "docs": "https://docs.webforj.com/docs/components/lists/list-box",
+    "docs": "https://docs.webforj.com/docs/components/lists/listbox",
     "clientComponent": "dwc-listbox",
     "content": "Show a scrollable, always-visible list with the ListBox component, supporting single or multiple selection and keyboard navigation."
   },
@@ -536,7 +536,7 @@
     "title": "RadioButton",
     "since": "23.01",
     "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/optioninput/RadioButton.html",
-    "docs": "https://docs.webforj.com/docs/components/radio-button",
+    "docs": "https://docs.webforj.com/docs/components/radiobutton",
     "clientComponent": "dwc-radio",
     "content": "Add a single-choice RadioButton with text positioning, activation modes, and grouping for mutually exclusive selections."
   },
@@ -544,7 +544,7 @@
     "title": "RadioButtonGroup",
     "since": "23.01",
     "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/optioninput/RadioButtonGroup.html",
-    "docs": "https://docs.webforj.com/docs/components/radio-group",
+    "docs": "https://docs.webforj.com/docs/components/radiobuttongroup",
     "content": "Coordinate mutually exclusive RadioButton selections with RadioButtonGroup, including nested containers and dynamic membership."
   },
   "com.webforj.component.refresher.Refresher": {
@@ -575,7 +575,7 @@
     "title": "TabbedPane",
     "since": "23.06",
     "javadoc": "https://javadoc.io/doc/com.webforj/webforj-foundation/latest/com/webforj/component/tabbedpane/TabbedPane.html",
-    "docs": "https://docs.webforj.com/docs/components/tabbed-pane",
+    "docs": "https://docs.webforj.com/docs/components/tabbedpane",
     "clientComponent": "dwc-tabbed-pane",
     "content": "Organize content into switchable Tab sections with the TabbedPane component, supporting icons, keys, and customizable tab properties."
   },
@@ -583,7 +583,7 @@
     "title": "Columns",
     "since": "24.00",
     "javadoc": "https://javadoc.io/doc/com.webforj/webforj-table/latest/com/webforj/component/table/Column.html",
-    "docs": "https://docs.webforj.com/docs/components/table/table_columns",
+    "docs": "https://docs.webforj.com/docs/components/table/columns",
     "content": "Define Table columns with labels, value providers, visibility, navigability, sizing, and user-interaction events."
   },
   "com.webforj.component.table.Table": {
@@ -674,7 +674,7 @@
     "title": "Rendering",
     "since": "24.00",
     "javadoc": "https://javadoc.io/doc/com.webforj/webforj-table/latest/com/webforj/component/table/renderer/Renderer.html",
-    "docs": "https://docs.webforj.com/docs/components/table/table_rendering",
+    "docs": "https://docs.webforj.com/docs/components/table/rendering",
     "content": "Transform Table cells into text, badges, icons, links, or custom HTML with built-in renderers and the setRenderer method."
   },
   "com.webforj.component.table.renderer.TextRenderer": {
