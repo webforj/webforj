@@ -7,7 +7,6 @@ import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.matchmedia.event.MediaQueryChangeEvent;
-
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;

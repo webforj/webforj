@@ -1,9 +1,8 @@
 package com.webforj.matchmedia.event;
 
+import com.webforj.matchmedia.MediaQueryList;
 import java.util.EventObject;
 import java.util.Objects;
-
-import com.webforj.matchmedia.MediaQueryList;
 
 /**
  * A snapshot of a media query's match state reported by the browser.

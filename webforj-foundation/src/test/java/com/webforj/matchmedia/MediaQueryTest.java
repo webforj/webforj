@@ -103,6 +103,7 @@ class MediaQueryTest {
     pages.when(Page::getCurrent).thenReturn(page);
     environments = mockStatic(Environment.class);
     environments.when(Environment::isPresent).thenReturn(true);
+    environments.when(Environment::getCurrent).thenReturn(mock(Environment.class));
   }
 
   @AfterEach
