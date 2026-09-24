@@ -35,7 +35,6 @@ import com.webforj.event.page.PageEvent;
 import com.webforj.event.page.PageEventOptions;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.matchmedia.event.MediaQueryChangeEvent;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -166,7 +165,7 @@ class MediaQueryTest {
   void readsFreshValuesAndCorrelatesOutOfOrderResponses() {
     MediaQueryList query = create(QUERY);
     PendingResult<Boolean> first = query.getMatches();
-    Call firstCall = lastCall();
+    final Call firstCall = lastCall();
     PendingResult<Boolean> second = query.getMatches();
 
     answer(lastCall(), false);
@@ -181,7 +180,7 @@ class MediaQueryTest {
     MediaQueryList query = create(QUERY);
     List<MediaQueryChangeEvent> events = new ArrayList<>();
     MediaQueryListenerRegistration registration = query.onChange(events::add);
-    String listenerId = listenerId();
+    final String listenerId = listenerId();
 
     assertFalse(lastCall().request().get("initial").getAsBoolean());
     assertFalse(registration.whenReady().isDone());
@@ -202,7 +201,7 @@ class MediaQueryTest {
     MediaQueryList query = create(QUERY);
     List<MediaQueryChangeEvent> first = new ArrayList<>();
     query.onChange(first::add);
-    String firstId = listenerId();
+    final String firstId = listenerId();
     List<MediaQueryChangeEvent> second = new ArrayList<>();
     query.onChange(second::add, true);
     String secondId = listenerId();
@@ -229,7 +228,7 @@ class MediaQueryTest {
     first.onChange(firstEvents::add);
     String firstId = listenerId();
     second.onChange(secondEvents::add);
-    String secondId = listenerId();
+    final String secondId = listenerId();
 
     notify(first, List.of(firstId), true, false);
     assertEquals(1, firstEvents.size());
@@ -244,7 +243,7 @@ class MediaQueryTest {
     MediaQueryList query = create(QUERY);
     List<MediaQueryChangeEvent> events = new ArrayList<>();
     EventListener<MediaQueryChangeEvent> listener = events::add;
-    MediaQueryListenerRegistration first = query.onChange(listener);
+    final MediaQueryListenerRegistration first = query.onChange(listener);
     String firstId = listenerId();
     query.onChange(listener);
     String secondId = listenerId();
@@ -261,11 +260,11 @@ class MediaQueryTest {
     MediaQueryList query = create(QUERY);
     List<MediaQueryChangeEvent> events = new ArrayList<>();
     MediaQueryListenerRegistration old = query.onChange(events::add, true);
-    String oldId = listenerId();
+    final String oldId = listenerId();
     old.remove();
     assertInstanceOf(IllegalStateException.class, failureOf(old.whenReady()));
     query.onChange(events::add);
-    String newId = listenerId();
+    final String newId = listenerId();
     old.remove();
 
     notify(query, List.of(oldId), false, true);
@@ -332,13 +331,13 @@ class MediaQueryTest {
   }
 
   @Test
-  void destroyingAQueryCancelsOutstandingRequestsAndIgnoresLateEvents() {
+  void destroyingQueryCancelsOutstandingRequestsAndIgnoresLateEvents() {
     MediaQueryList query = create(QUERY);
     List<MediaQueryChangeEvent> events = new ArrayList<>();
     MediaQueryListenerRegistration registration = query.onChange(events::add, true);
-    String listenerId = listenerId();
-    PendingResult<Boolean> result = query.getMatches();
-    Call outstanding = lastCall();
+    final String listenerId = listenerId();
+    final PendingResult<Boolean> result = query.getMatches();
+    final Call outstanding = lastCall();
 
     query.destroy();
     query.destroy();
@@ -357,8 +356,8 @@ class MediaQueryTest {
   @Test
   void terminationCancelsCreationAndReleasesThePageListener() {
     MediaQuery service = MediaQuery.getCurrent();
-    PendingResult<MediaQueryList> result = service.matchMedia(QUERY);
-    Call pending = lastCall();
+    final PendingResult<MediaQueryList> result = service.matchMedia(QUERY);
+    final Call pending = lastCall();
 
     new MediaQueryLifecycleListener().onWillTerminate(null);
     service.destroy();
@@ -399,7 +398,7 @@ class MediaQueryTest {
 
   @Test
   void shutdownReleasesServerResourcesEvenWhenBrowserCleanupFails() {
-    MediaQueryList query = create(QUERY);
+    final MediaQueryList query = create(QUERY);
     doThrow(new IllegalStateException("Disconnected")).when(page).executeJsVoidAsync(anyString());
 
     assertThrows(IllegalStateException.class, () -> MediaQuery.getCurrent().destroy());
