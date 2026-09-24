@@ -94,7 +94,7 @@ public final class MediaQueryList {
   public MediaQueryListenerRegistration addChangeListener(
       EventListener<MediaQueryChangeEvent> listener, boolean notifyImmediately) {
     requireActive();
-    Objects.requireNonNull(listener, "listener");
+    Objects.requireNonNull(listener, "listener must not be null");
     String listenerId = UUID.randomUUID().toString();
     MediaQueryListenerRegistration registration =
         new MediaQueryListenerRegistration(this, listenerId, listener);

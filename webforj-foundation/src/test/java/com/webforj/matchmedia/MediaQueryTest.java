@@ -102,7 +102,8 @@ class MediaQueryTest {
     pages.when(Page::getCurrent).thenReturn(page);
     environments = mockStatic(Environment.class);
     environments.when(Environment::isPresent).thenReturn(true);
-    environments.when(Environment::getCurrent).thenReturn(mock(Environment.class));
+    Environment environment = mock(Environment.class);
+    environments.when(Environment::getCurrent).thenReturn(environment);
   }
 
   @AfterEach
@@ -154,11 +155,12 @@ class MediaQueryTest {
   @Test
   void serializesInputAndLeavesQueryParsingToTheBrowser() {
     String input = "screen and (width > 1px)\"\\\n'";
-    MediaQuery.getCurrent().matchMedia(input);
+    MediaQuery service = MediaQuery.getCurrent();
+    service.matchMedia(input);
     assertEquals(input, lastCall().request().get("query").getAsString());
-    MediaQuery.getCurrent().matchMedia("");
+    service.matchMedia("");
     assertEquals("", lastCall().request().get("query").getAsString());
-    assertThrows(NullPointerException.class, () -> MediaQuery.getCurrent().matchMedia(null));
+    assertThrows(NullPointerException.class, () -> service.matchMedia(null));
   }
 
   @Test
@@ -401,7 +403,8 @@ class MediaQueryTest {
     final MediaQueryList query = create(QUERY);
     doThrow(new IllegalStateException("Disconnected")).when(page).executeJsVoidAsync(anyString());
 
-    assertThrows(IllegalStateException.class, () -> MediaQuery.getCurrent().destroy());
+    MediaQuery service = MediaQuery.getCurrent();
+    assertThrows(IllegalStateException.class, service::destroy);
     assertFalse(MediaQuery.isPresent());
     verify(pageRegistration).remove();
     assertThrows(IllegalStateException.class, query::getMatches);
