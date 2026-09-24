@@ -43,25 +43,21 @@
       if (request.initial) {
         emit(id, entry.media.media, entry.media.matches, [request.listener], true);
       }
-      return null;
     },
     unsubscribe(request) {
       const entry = queries.get(request.id);
-      if (!entry) return null;
+      if (!entry) return;
       entry.listeners.delete(request.listener);
       if (!entry.listeners.size && entry.handler) {
         entry.media.removeEventListener('change', entry.handler);
         entry.handler = null;
       }
-      return null;
     },
     destroy(request) {
       destroy(request.id);
-      return null;
     },
     destroyAll(request) {
       request.ids.forEach(destroy);
-      return null;
     }
   };
   window.__webforjMatchMedia = {
@@ -70,7 +66,7 @@
         if (!Object.hasOwn(commands, request.command)) {
           throw new Error('Unknown media query command');
         }
-        const value = commands[request.command](request);
+        const value = commands[request.command](request) ?? null;
         return JSON.stringify({ok: true, value});
       } catch (error) {
         return JSON.stringify({ok: false, message: String(error.message || error)});
