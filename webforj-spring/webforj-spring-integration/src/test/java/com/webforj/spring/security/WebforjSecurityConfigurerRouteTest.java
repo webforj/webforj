@@ -10,16 +10,18 @@ class WebforjSecurityConfigurerRouteTest {
 
   @Test
   void shouldRejectNullLoginPageComponent() {
+    var configurer = WebforjSecurityConfigurer.webforj();
     var error = assertThrows(IllegalArgumentException.class,
-        () -> WebforjSecurityConfigurer.webforj().loginPage((Class<? extends Component>) null));
+        () -> configurer.loginPage((Class<? extends Component>) null));
 
     assertEquals("Login page component must not be null", error.getMessage());
   }
 
   @Test
   void shouldRejectNullAccessDeniedPageComponent() {
-    var error = assertThrows(IllegalArgumentException.class, () -> WebforjSecurityConfigurer.webforj()
-        .accessDeniedPage((Class<? extends Component>) null));
+    var configurer = WebforjSecurityConfigurer.webforj();
+    var error = assertThrows(IllegalArgumentException.class,
+        () -> configurer.accessDeniedPage((Class<? extends Component>) null));
 
     assertEquals("Access denied page component must not be null", error.getMessage());
   }

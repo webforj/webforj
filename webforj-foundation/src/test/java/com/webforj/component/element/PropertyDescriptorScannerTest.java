@@ -10,8 +10,8 @@ class PropertyDescriptorScannerTest {
   @Test
   void shouldFindAccessorsForDescriptorWithNullDefault() throws Exception {
     NullableProperties instance = new NullableProperties();
-    var properties = PropertyDescriptorScanner.scan(NullableProperties.class, instance,
-        descriptor -> true);
+    var properties =
+        PropertyDescriptorScanner.scan(NullableProperties.class, instance, descriptor -> true);
 
     assertEquals(2, properties.size());
     assertEquals(NullableProperties.class.getMethod("getText"), properties.get(0).getGetter());
