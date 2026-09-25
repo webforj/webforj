@@ -37,8 +37,9 @@ class PropertyDescriptorScannerTest {
   void shouldRejectNonBooleanIsGetterForDescriptorWithNullDefault() {
     InvalidNullableProperties instance = new InvalidNullableProperties();
 
-    WebforjRuntimeException exception = assertThrows(WebforjRuntimeException.class, () -> PropertyDescriptorScanner
-        .scan(InvalidNullableProperties.class, instance, descriptor -> true));
+    WebforjRuntimeException exception =
+        assertThrows(WebforjRuntimeException.class, () -> PropertyDescriptorScanner
+            .scan(InvalidNullableProperties.class, instance, descriptor -> true));
     assertEquals("Getter method for property 'text' not found in class "
         + InvalidNullableProperties.class.getName(), exception.getMessage());
   }
@@ -81,11 +82,14 @@ class PropertyDescriptorScannerTest {
 
   static class InvalidNullableProperties {
     final PropertyDescriptor<String> textProp = PropertyDescriptor.property("text", null);
+    private String text;
 
     public String isText() {
       return "invalid";
     }
 
-    public void setText(String text) {}
+    public void setText(String text) {
+      this.text = text;
+    }
   }
 }
