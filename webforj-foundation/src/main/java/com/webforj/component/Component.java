@@ -35,6 +35,7 @@ public abstract class Component {
   private final List<ComponentLifecycleObserver> lifecycleObservers = new ArrayList<>();
   private String uuid = "";
   private String name = "";
+  private int bbjId = -1;
   private boolean attached = false;
   private boolean destroyed = false;
   private Window window;
@@ -121,6 +122,42 @@ public abstract class Component {
    */
   public String getName() {
     return this.name;
+  }
+
+  /**
+   * Sets the BBj control ID for this component.
+   *
+   * <p>
+   * The ID must be set before the component is added to a window. Once the component is attached,
+   * the ID cannot be changed.
+   * </p>
+   *
+   * @param bbjId the BBj control ID to set, must be non-negative
+   *
+   * @return the component itself
+   * @throws IllegalStateException if the component is already attached
+   * @throws IllegalArgumentException if the ID is negative
+   */
+  public Component setBBjId(int bbjId) {
+    if (isAttached()) {
+      throw new IllegalStateException("Cannot set BBj ID after the component is attached");
+    }
+
+    if (bbjId < 0) {
+      throw new IllegalArgumentException("BBj ID must be non-negative, got: " + bbjId);
+    }
+
+    this.bbjId = bbjId;
+    return this;
+  }
+
+  /**
+   * Gets the BBj control ID for this component.
+   *
+   * @return the BBj control ID, or {@code -1} if not set
+   */
+  public int getBBjId() {
+    return bbjId;
   }
 
   /**

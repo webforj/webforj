@@ -64,6 +64,23 @@ public abstract class Composite<T extends Component> extends Component {
    * {@inheritDoc}
    */
   @Override
+  public Component setBBjId(int bbjId) {
+    getBoundComponent().setBBjId(bbjId);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public int getBBjId() {
+    return getBoundComponent().getBBjId();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   public String getName() {
     return getBoundComponent().getName();
   }

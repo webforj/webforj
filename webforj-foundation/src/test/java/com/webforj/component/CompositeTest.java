@@ -68,6 +68,14 @@ class CompositeTest {
     assertEquals(name, component.getName());
   }
 
+  @Test
+  void shouldSetBbjIdOnBoundComponent() {
+    component.setBBjId(5000);
+
+    verify(component.getBoundComponent(), times(1)).setBBjId(5000);
+    assertEquals(5000, component.getBBjId());
+  }
+
   public static class CompositeMock extends Composite<Element> {
     private Element el;
 
