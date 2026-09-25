@@ -1214,10 +1214,13 @@ public final class TabbedPane extends DwcFocusableComponent<TabbedPane> implemen
 
     if (tabCtrl != null) {
       try {
-        if (component != null) {
-          tabCtrl.addTab(tab.getText(), inferComponentControl(component));
-        } else {
+        if (component == null) {
           tabCtrl.addTab(tab.getText(), -1);
+        } else if (component.getBBjId() >= 0) {
+          tabCtrl.addTab(tab.getText(), component.getBBjId());
+          inferComponentControl(component);
+        } else {
+          tabCtrl.addTab(tab.getText(), inferComponentControl(component));
         }
 
         processTabMeta(tabCtrl, tab);
@@ -1232,10 +1235,13 @@ public final class TabbedPane extends DwcFocusableComponent<TabbedPane> implemen
 
     if (tabCtrl != null) {
       try {
-        if (component != null) {
-          tabCtrl.insertTab(index, tab.getText(), inferComponentControl(component));
-        } else {
+        if (component == null) {
           tabCtrl.insertTab(index, tab.getText(), -1);
+        } else if (component.getBBjId() >= 0) {
+          tabCtrl.insertTab(index, tab.getText(), component.getBBjId());
+          inferComponentControl(component);
+        } else {
+          tabCtrl.insertTab(index, tab.getText(), inferComponentControl(component));
         }
 
         processTabMeta(tabCtrl, tab);
