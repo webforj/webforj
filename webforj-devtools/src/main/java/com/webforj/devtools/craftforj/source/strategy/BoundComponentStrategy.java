@@ -53,6 +53,6 @@ public class BoundComponentStrategy implements ModificationStrategy {
       return;
     }
 
-    AstModifier.addSettersForBoundComponent(cu, classDecl.get(), context.getSourceChanges());
+    AstModifier.addSettersForBoundComponent(classDecl.get(), context.getSourceChanges());
   }
 }

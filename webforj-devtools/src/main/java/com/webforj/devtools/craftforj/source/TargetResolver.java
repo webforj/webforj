@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Resolves where in the source tree a change must be written.
@@ -40,6 +41,8 @@ import java.util.Set;
  * @since 26.02
  */
 public class TargetResolver {
+
+  private static final Pattern UNSTABLE_OWNER = Pattern.compile("\\$\\d");
 
   private final SourceParserService parserService;
   private final List<ReanchorRule> reanchorRules;
@@ -173,7 +176,7 @@ public class TargetResolver {
    */
   public SourceLocation reanchorDestroyedLocation(CompilationUnit cu, SourceLocation location) {
     String owner = location.getDeclaringClass();
-    if (owner != null && owner.matches(".*\\$\\d.*")) {
+    if (isUnstableOwner(owner)) {
       throw new SourceModificationException("This component was removed and its class '" + owner
           + "' has no stable name, so its declaration cannot be found. "
           + "Reload the application before saving.");
@@ -189,7 +192,7 @@ public class TargetResolver {
   }
 
   private void requireLiveOwner(Path file, int line, String owner, Class<?> componentType) {
-    if (owner == null || owner.matches(".*\\$\\d.*")) {
+    if (owner == null || isUnstableOwner(owner)) {
       return;
     }
     try {
@@ -290,8 +293,8 @@ public class TargetResolver {
 
     final List<Range> matches = new ArrayList<>();
     String declaringClass = location.getDeclaringClass();
-    boolean namedOwner = declaringClass != null && !declaringClass.isBlank()
-        && !declaringClass.matches(".*\\$\\d.*");
+    boolean namedOwner =
+        declaringClass != null && !declaringClass.isBlank() && !isUnstableOwner(declaringClass);
     for (VariableDeclarator varDecl : cu.findAll(VariableDeclarator.class)) {
       if (variableName.equals(varDecl.getNameAsString()) && AstFinder.matchesType(varDecl.getType(),
           varDecl.getInitializer().orElse(null), typeName)
@@ -328,5 +331,9 @@ public class TargetResolver {
       owner = owner.getParentNode().orElse(null);
     }
     return false;
+  }
+
+  private static boolean isUnstableOwner(String owner) {
+    return owner != null && UNSTABLE_OWNER.matcher(owner).find();
   }
 }

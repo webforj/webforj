@@ -58,16 +58,7 @@ public class FieldDeclarationStrategy implements ModificationStrategy {
     }
 
     Node owner = field.get().getParentNode().orElse(null);
-    NodeList<BodyDeclaration<?>> members;
-    if (owner instanceof ObjectCreationExpr creation) {
-      members = creation.getAnonymousClassBody().orElseThrow();
-    } else if (owner instanceof ClassOrInterfaceDeclaration classDecl) {
-      members = classDecl.getMembers();
-    } else {
-      throw new SourceModificationException("Cannot determine the owning class for field '"
-          + actualVarName + "' at line " + context.getLineNumber());
-    }
-
+    NodeList<BodyDeclaration<?>> members = getMembers(owner, actualVarName, context);
     List<BlockStmt> initializers = new ArrayList<>();
     List<ConstructorDeclaration> constructors = new ArrayList<>();
     for (BodyDeclaration<?> member : members) {
@@ -80,24 +71,50 @@ public class FieldDeclarationStrategy implements ModificationStrategy {
 
     for (SourceChange change : context.getSourceChanges()) {
       boolean found = AstModifier.updateInitializerSetter(variable, change);
-      for (BlockStmt block : initializers) {
-        if (AstModifier.hasSetterForDeclaration(block, variable, change)) {
-          AstModifier.addSettersForDeclaration(cu, block, variable, List.of(change));
-          found = true;
-        }
-      }
-      for (ConstructorDeclaration constructor : constructors) {
-        BlockStmt block = constructor.getBody();
-        if (AstModifier.hasSetterForDeclaration(block, variable, change)
-            || !found && !change.isRemoval() && !AstFinder.isDelegatingConstructor(constructor)) {
-          AstModifier.addSettersForDeclaration(cu, block, variable, List.of(change));
-        }
-      }
+      found |= applyToInitializers(cu, initializers, variable, change);
+      applyToConstructors(cu, constructors, variable, change, found);
       if (constructors.isEmpty() && !found && !change.isRemoval()) {
         BlockStmt block =
             owner instanceof ClassOrInterfaceDeclaration classDecl ? getConstructorBody(classDecl)
                 : getAnonymousInitializer((ObjectCreationExpr) owner, field.get());
-        AstModifier.addSettersForDeclaration(cu, block, variable, List.of(change));
+        AstModifier.addSettersForDeclaration(block, variable, List.of(change));
+      }
+    }
+  }
+
+  private static NodeList<BodyDeclaration<?>> getMembers(Node owner, String variableName,
+      ModificationContext context) {
+    if (owner instanceof ObjectCreationExpr creation) {
+      return creation.getAnonymousClassBody().orElseThrow();
+    }
+    if (owner instanceof ClassOrInterfaceDeclaration classDecl) {
+      return classDecl.getMembers();
+    }
+    throw new SourceModificationException("Cannot determine the owning class for field '"
+        + variableName + "' at line " + context.getLineNumber());
+  }
+
+  private static boolean applyToInitializers(CompilationUnit cu, List<BlockStmt> initializers,
+      VariableDeclarator variable, SourceChange change) {
+    boolean found = false;
+    for (BlockStmt block : initializers) {
+      if (AstModifier.hasSetterForDeclaration(block, variable, change)) {
+        AstModifier.addSettersForDeclaration(block, variable, List.of(change));
+        found = true;
+      }
+    }
+
+    return found;
+  }
+
+  private static void applyToConstructors(CompilationUnit cu,
+      List<ConstructorDeclaration> constructors, VariableDeclarator variable, SourceChange change,
+      boolean found) {
+    for (ConstructorDeclaration constructor : constructors) {
+      BlockStmt block = constructor.getBody();
+      if (AstModifier.hasSetterForDeclaration(block, variable, change)
+          || !found && !change.isRemoval() && !AstFinder.isDelegatingConstructor(constructor)) {
+        AstModifier.addSettersForDeclaration(block, variable, List.of(change));
       }
     }
   }

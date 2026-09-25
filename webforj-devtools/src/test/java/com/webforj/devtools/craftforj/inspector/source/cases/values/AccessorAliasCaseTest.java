@@ -238,7 +238,8 @@ class AccessorAliasCaseTest {
     AppNav navigation = fixture.addComponent("navigation", AppNav.class,
         List.of(new SourcePoint("com.devtoolsapplayoutspring.views.AccessorCasesView",
             "AccessorCasesView.java", 15)));
-    when(navigation.getSearch()).thenReturn(mock(AppNav.Search.class));
+    AppNav.Search search = mock(AppNav.Search.class);
+    when(navigation.getSearch()).thenReturn(search);
     return file;
   }
 }

@@ -538,6 +538,7 @@ class AstModifierTest {
       assertTrue(output.contains("add(icon)"));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     void shouldGenerateUniqueVariableName() {
       String code = """

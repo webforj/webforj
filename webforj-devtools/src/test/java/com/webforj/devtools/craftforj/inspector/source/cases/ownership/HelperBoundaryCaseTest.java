@@ -287,7 +287,8 @@ class HelperBoundaryCaseTest {
       final Path file = fixture.addSource(owner, ACCESSOR);
       AppNav navigation = fixture.addComponent("navigation", AppNav.class,
           List.of(new SourcePoint(owner, "AccessorCasesView.java", 15)));
-      when(navigation.getSearch()).thenReturn(mock(AppNav.Search.class));
+      AppNav.Search search = mock(AppNav.Search.class);
+      when(navigation.getSearch()).thenReturn(search);
       List<ChangeRequest> edits =
           List.of(fixture.createChange("navigation", "AppNavSearchPlaceholder", value));
       final String expected = value.isEmpty() ? ACCESSOR : ACCESSOR_SAVED;

@@ -75,6 +75,7 @@ public final class UsageSiteRewriter {
    *
    * @return the traces, or an empty list when the value does not flow from a constructor parameter
    */
+  @SuppressWarnings("unchecked")
   public static List<Trace> trace(CompilationUnit creationCu, TargetContext target,
       String setterMethodName) {
     ObjectCreationExpr creation = findCreationAt(creationCu, target).orElse(null);
@@ -301,6 +302,7 @@ public final class UsageSiteRewriter {
     return null;
   }
 
+  @SuppressWarnings("unchecked")
   private static String componentVariable(ObjectCreationExpr creation) {
     Optional<VariableDeclarator> declarator = creation.findAncestor(VariableDeclarator.class);
     if (declarator.isPresent()) {

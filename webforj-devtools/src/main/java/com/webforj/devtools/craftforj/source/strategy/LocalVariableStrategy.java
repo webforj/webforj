@@ -1,7 +1,6 @@
 package com.webforj.devtools.craftforj.source.strategy;
 
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
@@ -12,7 +11,6 @@ import com.webforj.devtools.craftforj.source.model.TargetContext;
 import com.webforj.devtools.craftforj.source.parser.AstFinder;
 import com.webforj.devtools.craftforj.source.parser.AstModifier;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Strategy for components declared as local variables.
@@ -42,7 +40,6 @@ public class LocalVariableStrategy implements ModificationStrategy {
   /**
    * {@inheritDoc}
    */
-  @SuppressWarnings("unchecked")
   @Override
   public void apply(CompilationUnit cu, ModificationContext context) {
     String actualVarName = AstFinder.extractVariableNameAt(cu, context.getTarget());
@@ -57,38 +54,40 @@ public class LocalVariableStrategy implements ModificationStrategy {
               + "' but found '" + actualVarName + "'. The source code may have changed.");
     }
 
-    Optional<Node> nodeAtLine = AstFinder.findNodeAt(cu, context.getTarget());
-    BlockStmt block = null;
-
-    if (nodeAtLine.isPresent()) {
-      Optional<BlockStmt> parentBlock = nodeAtLine.get().findAncestor(BlockStmt.class);
-      if (parentBlock.isPresent()) {
-        block = parentBlock.get();
-      }
-    }
-
+    BlockStmt block = findBlock(cu, context.getTarget());
     if (block == null) {
-      Optional<ClassOrInterfaceDeclaration> classDecl =
-          cu.findFirst(ClassOrInterfaceDeclaration.class);
-      if (classDecl.isPresent()) {
-        List<ConstructorDeclaration> constructors = classDecl.get().getConstructors();
-        if (constructors.isEmpty()) {
-          ConstructorDeclaration ctor = classDecl.get().addConstructor();
-          ctor.setBody(new BlockStmt());
-          block = ctor.getBody();
-        } else {
-          block = constructors.get(0).getBody();
-        }
-      }
+      return;
+    }
+    VariableDeclarator variable = AstFinder.findVariableAt(cu, context.getTarget()).orElse(null);
+    if (variable != null) {
+      AstModifier.addSettersForDeclaration(block, variable, context.getSourceChanges());
+    } else {
+      AstModifier.addSettersForVariable(block, actualVarName, context.getSourceChanges());
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private static BlockStmt findBlock(CompilationUnit cu, TargetContext target) {
+    BlockStmt enclosing = AstFinder.findNodeAt(cu, target)
+        .flatMap(node -> node.findAncestor(BlockStmt.class)).orElse(null);
+    if (enclosing != null) {
+      return enclosing;
     }
 
-    if (block != null) {
-      VariableDeclarator variable = AstFinder.findVariableAt(cu, context.getTarget()).orElse(null);
-      if (variable != null) {
-        AstModifier.addSettersForDeclaration(cu, block, variable, context.getSourceChanges());
-      } else {
-        AstModifier.addSettersForVariable(cu, block, actualVarName, context.getSourceChanges());
-      }
+    ClassOrInterfaceDeclaration classDecl =
+        cu.findFirst(ClassOrInterfaceDeclaration.class).orElse(null);
+    if (classDecl == null) {
+      return null;
     }
+
+    List<ConstructorDeclaration> constructors = classDecl.getConstructors();
+    if (!constructors.isEmpty()) {
+      return constructors.get(0).getBody();
+    }
+
+    ConstructorDeclaration ctor = classDecl.addConstructor();
+    ctor.setBody(new BlockStmt());
+
+    return ctor.getBody();
   }
 }

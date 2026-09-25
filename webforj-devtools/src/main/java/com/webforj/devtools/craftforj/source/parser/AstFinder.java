@@ -608,6 +608,7 @@ public final class AstFinder {
    * @param target the component type and source line
    * @return the owning composite, when its bound-component pattern matches the target
    */
+  @SuppressWarnings("unchecked")
   public static Optional<ClassOrInterfaceDeclaration> findBoundComponentClass(CompilationUnit cu,
       TargetContext target) {
     Optional<ClassOrInterfaceDeclaration> owner =
@@ -698,6 +699,7 @@ public final class AstFinder {
 
 
   // name resolving elsewhere (a constant, an enum) is a stable reference and stays silent
+  @SuppressWarnings("unchecked")
   private static boolean isCallableScopedReference(Expression expression) {
     if (!(expression instanceof NameExpr name)) {
       return false;

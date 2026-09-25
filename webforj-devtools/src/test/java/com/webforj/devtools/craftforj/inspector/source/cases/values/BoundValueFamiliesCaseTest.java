@@ -233,7 +233,8 @@ class BoundValueFamiliesCaseTest {
     fixture.addSourceClass(owner + "$SearchNavigation", file);
     AppNav navigation = fixture.addComponent("navigation", AppNav.class,
         List.of(new SourcePoint(owner + "$SearchNavigation", "BoundValueCasesView.java", 38)));
-    when(navigation.getSearch()).thenReturn(mock(AppNav.Search.class));
+    AppNav.Search search = mock(AppNav.Search.class);
+    when(navigation.getSearch()).thenReturn(search);
     return file;
   }
 

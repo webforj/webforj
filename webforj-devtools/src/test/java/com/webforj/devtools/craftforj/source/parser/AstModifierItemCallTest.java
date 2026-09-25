@@ -327,7 +327,7 @@ class AstModifierItemCallTest {
       CompilationUnit cu = fixture();
       BlockStmt block = methodBody(cu);
 
-      AstModifier.addSettersForVariable(cu, block, "layout", List.of(growChange(1.0, "btn")));
+      AstModifier.addSettersForVariable(block, "layout", List.of(growChange(1.0, "btn")));
 
       String output = cu.toString();
       int addIndex = output.indexOf("layout.add(btn)");
@@ -342,8 +342,8 @@ class AstModifierItemCallTest {
       CompilationUnit cu = fixture();
       BlockStmt block = methodBody(cu);
 
-      AstModifier.addSettersForVariable(cu, block, "layout", List.of(growChange(1.0, "btn")));
-      AstModifier.addSettersForVariable(cu, block, "layout", List.of(growChange(2.0, "btn")));
+      AstModifier.addSettersForVariable(block, "layout", List.of(growChange(1.0, "btn")));
+      AstModifier.addSettersForVariable(block, "layout", List.of(growChange(2.0, "btn")));
 
       String output = cu.toString();
       assertTrue(output.contains("layout.setItemGrow(2.0, btn)"));

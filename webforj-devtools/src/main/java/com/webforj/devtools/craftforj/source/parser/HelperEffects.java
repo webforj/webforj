@@ -1,6 +1,7 @@
 package com.webforj.devtools.craftforj.source.parser;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
@@ -23,6 +24,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 
 /** Locates synchronous helper writes that run after the selected component's own initialization. */
@@ -69,62 +71,19 @@ final class HelperEffects {
 
   private boolean writesProperty(MethodCallExpr invocation, BlockStmt block,
       Predicate<Expression> receiver, Predicate<Expression> accessorReceiver, SourceChange change) {
-    Node owner = block.getParentNode().orElse(null);
-    while (owner != null && !(owner instanceof TypeDeclaration<?>)
-        && !(owner instanceof ObjectCreationExpr creation
-            && creation.getAnonymousClassBody().isPresent())) {
-      owner = owner.getParentNode().orElse(null);
-    }
+    Node owner = findOwner(block);
     if (owner == null) {
       return false;
     }
-    List<MethodDeclaration> methods = findMethods(invocation, owner);
-    if (methods == null) {
-      if (invocation.getArguments().stream()
-          .anyMatch(argument -> receiver.test(argument) || accessorReceiver.test(argument))) {
-        throw new SourceModificationException(change.getPropertyName()
-            + " cannot be written: the source of '" + invocation.getNameAsString()
-            + "', which receives this component, is not available");
-      }
-      return false;
-    }
-    for (MethodDeclaration method : methods) {
-      if (!method.getNameAsString().equals(invocation.getNameAsString())
-          || method.getParameters().size() != invocation.getArguments().size()
+    BooleanSupplier passesComponent = () -> invocation.getArguments().stream()
+        .anyMatch(argument -> receiver.test(argument) || accessorReceiver.test(argument));
+    for (MethodDeclaration method : findHelperMethods(invocation, owner, passesComponent, change)) {
+      if (method.getParameters().size() != invocation.getArguments().size()
           || method.getBody().isEmpty() || !path.add(method)) {
         continue;
       }
-      List<Node> parameters = new ArrayList<>();
-      List<Node> accessorParameters = new ArrayList<>();
-      for (int index = 0; index < invocation.getArguments().size(); index++) {
-        Expression argument = invocation.getArgument(index);
-        if (accessorReceiver.test(argument)
-            || receiver.test(argument) && change.getAccessor() != null
-                && change.getAccessor().equals(VariableReferences.getAccessor(argument))) {
-          accessorParameters.add(method.getParameter(index));
-        } else if (receiver.test(argument)) {
-          parameters.add(method.getParameter(index));
-        }
-      }
-      Predicate<Expression> helperReceiver =
-          expression -> receiver.test(expression) || parameters.stream().anyMatch(
-              parameter -> VariableReferences.isScopeOnDeclaration(expression, parameter));
-      Predicate<Expression> helperAccessor =
-          expression -> accessorReceiver.test(expression) || accessorParameters.stream().anyMatch(
-              parameter -> VariableReferences.isScopeOnDeclaration(expression, parameter));
-      BlockStmt body = method.getBody().orElseThrow();
-      boolean writes = false;
-      for (MethodCallExpr call : body.findAll(MethodCallExpr.class)) {
-        if (!AstModifier.isInExecutionScope(call, body)) {
-          continue;
-        }
-        if ((helperReceiver.test(call) || helperAccessor.test(call))
-            && isPropertyWrite(call, change, helperAccessor.test(call))
-            || writesProperty(call, body, helperReceiver, helperAccessor, change)) {
-          writes = true;
-          break;
-        }
-      }
+      HelperScope scope = new HelperScope(invocation, method, receiver, accessorReceiver, change);
+      boolean writes = bodyWrites(method.getBody().orElseThrow(), scope, change);
       path.remove(method);
       if (writes) {
         return true;
@@ -132,6 +91,24 @@ final class HelperEffects {
     }
 
     return false;
+  }
+
+  private boolean bodyWrites(BlockStmt body, HelperScope scope, SourceChange change) {
+    return body.findAll(MethodCallExpr.class).stream()
+        .filter(call -> AstModifier.isInExecutionScope(call, body))
+        .anyMatch(call -> scope.isWrite(call, change)
+            || writesProperty(call, body, scope.getReceiver(), scope.getAccessor(), change));
+  }
+
+  private static Node findOwner(BlockStmt block) {
+    Node owner = block.getParentNode().orElse(null);
+    while (owner != null && !(owner instanceof TypeDeclaration<?>)
+        && !(owner instanceof ObjectCreationExpr creation
+            && creation.getAnonymousClassBody().isPresent())) {
+      owner = owner.getParentNode().orElse(null);
+    }
+
+    return owner;
   }
 
   private static Statement enclosingStatement(Node node, BlockStmt block) {
@@ -143,83 +120,112 @@ final class HelperEffects {
     return (Statement) current;
   }
 
-  private List<MethodDeclaration> findMethods(MethodCallExpr invocation, Node owner) {
-    CompilationUnit cu = invocation.findCompilationUnit().orElseThrow();
-    Node target = owner;
-    if (!isOwnerCall(invocation, owner)) {
-      Expression scope = invocation.getScope().orElseThrow();
-      if (VariableReferences.isScopeOnBoundComponent(scope)) {
-        return List.of();
-      }
-      String type = declaredTypeName(VariableReferences.resolveReceiver(scope), scope);
-      if (type == null) {
-        return null;
-      }
-      int generic = type.indexOf('<');
-      if (generic >= 0) {
-        type = type.substring(0, generic);
-      }
-      final String simpleType = type.substring(type.lastIndexOf('.') + 1);
-      target = cu.findAll(TypeDeclaration.class).stream()
-          .filter(candidate -> candidate.getNameAsString().equals(simpleType)).findFirst()
-          .orElse(null);
-      if (target == null) {
-        final String requestedType = type;
-        String imported = cu.getImports().stream()
-            .filter(candidate -> !candidate.isStatic() && !candidate.isAsterisk()
-                && candidate.getName().getIdentifier().equals(requestedType))
-            .map(candidate -> candidate.getNameAsString()).findFirst().orElse(null);
-        String qualified = imported != null ? imported : type;
-        if (qualified.startsWith("com.webforj.") || qualified.startsWith("java.")
-            || qualified.startsWith("System.")) {
-          return List.of();
-        }
-        if (!qualified.contains(".")) {
-          qualified = cu.getPackageDeclaration().map(pkg -> pkg.getNameAsString() + ".").orElse("")
-              + qualified;
-        }
-        String file = SourceFileResolver.resolve(qualified, SourceFileResolver.JAVA_ONLY);
-        if (file == null) {
-          // An explicitly imported type without project source is a library type, and a library
-          // cannot hold one of the application's helpers. A same-package type without source stays
-          // unresolved.
-          return imported != null ? List.of() : null;
-        }
-        CompilationUnit external;
-        try {
-          external = SourceParserService.getCurrent().parse(Path.of(file)).orElse(null);
-        } catch (IOException | RuntimeException e) {
-          return null;
-        }
-        if (external == null) {
-          return null;
-        }
-        target = external.findAll(TypeDeclaration.class).stream()
-            .filter(candidate -> candidate.getNameAsString().equals(simpleType)).findFirst()
-            .orElse(null);
-      }
+  private static List<MethodDeclaration> findHelperMethods(MethodCallExpr invocation, Node owner,
+      BooleanSupplier passesComponent, SourceChange change) {
+    if (isOwnerCall(invocation, owner)) {
+      return methodsNamed(owner, invocation.getNameAsString());
     }
-    return target == null ? null
-        : target.getChildNodes().stream().filter(MethodDeclaration.class::isInstance)
-            .map(MethodDeclaration.class::cast)
-            .filter(method -> method.getNameAsString().equals(invocation.getNameAsString()))
-            .toList();
+    Expression scope = invocation.getScope().orElseThrow();
+    if (VariableReferences.isScopeOnBoundComponent(scope)) {
+      return List.of();
+    }
+    String type = declaredTypeName(VariableReferences.resolveReceiver(scope), scope);
+    if (type == null) {
+      return unresolved(invocation, passesComponent, change);
+    }
+    int generic = type.indexOf('<');
+    if (generic >= 0) {
+      type = type.substring(0, generic);
+    }
+    CompilationUnit cu = invocation.findCompilationUnit().orElseThrow();
+    String simpleType = type.substring(type.lastIndexOf('.') + 1);
+    Node target = findType(cu, simpleType);
+    if (target != null) {
+      return methodsNamed(target, invocation.getNameAsString());
+    }
+    String imported = importedName(cu, type);
+    String qualified = imported != null ? imported : type;
+    if (qualified.startsWith("com.webforj.") || qualified.startsWith("java.")
+        || qualified.startsWith("System.")) {
+      return List.of();
+    }
+    if (!qualified.contains(".")) {
+      qualified =
+          cu.getPackageDeclaration().map(pkg -> pkg.getNameAsString() + ".").orElse("") + qualified;
+    }
+    String file = SourceFileResolver.resolve(qualified, SourceFileResolver.JAVA_ONLY);
+    if (file == null && imported != null) {
+      // An explicitly imported type without project source is a library type, and a library
+      // cannot hold one of the application's helpers.
+      return List.of();
+    }
+    target = file == null ? null : findType(parseExternal(file), simpleType);
+
+    return target == null ? unresolved(invocation, passesComponent, change)
+        : methodsNamed(target, invocation.getNameAsString());
+  }
+
+  private static List<MethodDeclaration> unresolved(MethodCallExpr invocation,
+      BooleanSupplier passesComponent, SourceChange change) {
+    if (passesComponent.getAsBoolean()) {
+      throw new SourceModificationException(change.getPropertyName()
+          + " cannot be written: the source of '" + invocation.getNameAsString()
+          + "', which receives this component, is not available");
+    }
+
+    return List.of();
+  }
+
+  private static List<MethodDeclaration> methodsNamed(Node target, String name) {
+    return target.getChildNodes().stream().filter(MethodDeclaration.class::isInstance)
+        .map(MethodDeclaration.class::cast).filter(method -> method.getNameAsString().equals(name))
+        .toList();
+  }
+
+  private static Node findType(CompilationUnit cu, String simpleType) {
+    if (cu == null) {
+      return null;
+    }
+
+    return cu.findAll(TypeDeclaration.class).stream()
+        .filter(candidate -> candidate.getNameAsString().equals(simpleType)).findFirst()
+        .orElse(null);
+  }
+
+  private static String importedName(CompilationUnit cu, String type) {
+    return cu.getImports().stream()
+        .filter(candidate -> !candidate.isStatic() && !candidate.isAsterisk()
+            && candidate.getName().getIdentifier().equals(type))
+        .map(ImportDeclaration::getNameAsString).findFirst().orElse(null);
+  }
+
+  private static CompilationUnit parseExternal(String file) {
+    try {
+      return SourceParserService.getCurrent().parse(Path.of(file)).orElse(null);
+    } catch (IOException | RuntimeException e) {
+      return null;
+    }
   }
 
   private static String declaredTypeName(Node declaration, Expression scope) {
-    Type declared = declaration instanceof VariableDeclarator variable ? variable.getType()
-        : declaration instanceof Parameter parameter ? parameter.getType() : null;
+    Type declared = null;
+    if (declaration instanceof VariableDeclarator variable) {
+      declared = variable.getType();
+    } else if (declaration instanceof Parameter parameter) {
+      declared = parameter.getType();
+    }
     if (declared == null) {
       return scope.toString();
     }
     if (!declared.isVarType()) {
       return declared.asString();
     }
-    Expression initializer =
-        declaration instanceof VariableDeclarator variable ? variable.getInitializer().orElse(null)
-            : null;
-    return initializer instanceof ObjectCreationExpr creation ? creation.getType().getNameAsString()
-        : null;
+    if (declaration instanceof VariableDeclarator variable
+        && variable.getInitializer().orElse(null) instanceof ObjectCreationExpr creation) {
+      return creation.getType().getNameAsString();
+    }
+
+    return null;
   }
 
   private static boolean isOwnerCall(MethodCallExpr call, Node owner) {
@@ -232,19 +238,59 @@ final class HelperEffects {
         && scope.asNameExpr().getNameAsString().equals(type.getNameAsString());
   }
 
-  private static boolean isPropertyWrite(MethodCallExpr call, SourceChange change,
-      boolean accessorTarget) {
-    boolean methodMatches =
-        call.getNameAsString().equals(change.getMethodName()) || change.getMethodExpansions()
-            .getOrDefault(call.getNameAsString(), List.of()).contains(change.getMethodName());
-    if (!methodMatches || !Objects.equals(VariableReferences.getAccessor(call),
-        accessorTarget ? null : change.getAccessor())) {
-      return false;
+  /** The expressions inside a helper body that denote the selected component or its accessor. */
+  private static final class HelperScope {
+
+    private final Predicate<Expression> receiver;
+    private final Predicate<Expression> accessor;
+
+    HelperScope(MethodCallExpr invocation, MethodDeclaration method, Predicate<Expression> receiver,
+        Predicate<Expression> accessorReceiver, SourceChange change) {
+      List<Node> parameters = new ArrayList<>();
+      List<Node> accessorParameters = new ArrayList<>();
+      for (int index = 0; index < invocation.getArguments().size(); index++) {
+        Expression argument = invocation.getArgument(index);
+        if (accessorReceiver.test(argument)
+            || receiver.test(argument) && change.getAccessor() != null
+                && change.getAccessor().equals(VariableReferences.getAccessor(argument))) {
+          accessorParameters.add(method.getParameter(index));
+        } else if (receiver.test(argument)) {
+          parameters.add(method.getParameter(index));
+        }
+      }
+      this.receiver = expression -> receiver.test(expression) || parameters.stream()
+          .anyMatch(parameter -> VariableReferences.isScopeOnDeclaration(expression, parameter));
+      this.accessor = expression -> accessorReceiver.test(expression) || accessorParameters.stream()
+          .anyMatch(parameter -> VariableReferences.isScopeOnDeclaration(expression, parameter));
     }
-    if (change.getMatchKey() == null) {
-      return true;
+
+    Predicate<Expression> getReceiver() {
+      return receiver;
     }
-    return !call.getArguments().isEmpty() && (!call.getArgument(0).isStringLiteralExpr()
-        || call.getArgument(0).asStringLiteralExpr().asString().equals(change.getMatchKey()));
+
+    Predicate<Expression> getAccessor() {
+      return accessor;
+    }
+
+    boolean isWrite(MethodCallExpr call, SourceChange change) {
+      return (receiver.test(call) || accessor.test(call))
+          && isPropertyWrite(call, change, accessor.test(call));
+    }
+
+    private static boolean isPropertyWrite(MethodCallExpr call, SourceChange change,
+        boolean accessorTarget) {
+      boolean methodMatches =
+          call.getNameAsString().equals(change.getMethodName()) || change.getMethodExpansions()
+              .getOrDefault(call.getNameAsString(), List.of()).contains(change.getMethodName());
+      if (!methodMatches || !Objects.equals(VariableReferences.getAccessor(call),
+          accessorTarget ? null : change.getAccessor())) {
+        return false;
+      }
+      if (change.getMatchKey() == null) {
+        return true;
+      }
+      return !call.getArguments().isEmpty() && (!call.getArgument(0).isStringLiteralExpr()
+          || call.getArgument(0).asStringLiteralExpr().asString().equals(change.getMatchKey()));
+    }
   }
 }

@@ -100,6 +100,7 @@ class AccessorReceiverCaseTest {
   @TempDir
   Path temporaryDirectory;
 
+  @SuppressWarnings("unchecked")
   @Test
   @DisplayName("Direct placeholder edits and nested search resets keep their own receivers")
   void preserveDistinctReceivers() throws IOException {
@@ -109,7 +110,8 @@ class AccessorReceiverCaseTest {
       ComboBox choice = fixture.addComponent("choice", ComboBox.class,
           List.of(new SourcePoint("com.devtoolsapplayoutspring.views.ListAccessorCasesView",
               "ListAccessorCasesView.java", 15)));
-      when(choice.getSearch()).thenReturn(mock(DwcList.Search.class));
+      DwcList<ComboBox, Object>.Search search = mock(DwcList.Search.class);
+      when(choice.getSearch()).thenReturn(search);
       SourceCodeModifier modifier = fixture.getModifier();
       ChangeRequest edit = fixture.createChange("choice", "HasPlaceholder", "Choose destination");
 

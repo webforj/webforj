@@ -120,8 +120,10 @@ class AccessorPropertyCaseTest {
       AppNav navigation = fixture.addComponent("navigation", AppNav.class,
           List.of(new SourcePoint("com.devtoolsapplayoutspring.views.AccessorCasesView",
               "AccessorCasesView.java", 15)));
-      when(navigation.getSearch()).thenReturn(mock(AppNav.Search.class));
-      when(navigation.getPinning()).thenReturn(mock(AppNav.Pinning.class));
+      AppNav.Search search = mock(AppNav.Search.class);
+      when(navigation.getSearch()).thenReturn(search);
+      AppNav.Pinning pinning = mock(AppNav.Pinning.class);
+      when(navigation.getPinning()).thenReturn(pinning);
       SourceCodeModifier modifier = fixture.getModifier();
       List<ChangeRequest> changes =
           List.of(fixture.createChange("navigation", "AppNavSearchPlaceholder", "Find examples"),
