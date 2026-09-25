@@ -82,13 +82,18 @@ final class PropertyDescriptorScanner {
     }
 
     Class<?> propType = descriptor.getType();
+    Method setter;
     if (propType == null) {
       propType = getter.getReturnType();
-    }
-    Method setter = findMethod(targetClass, methodName, getPrimitiveType(propType));
-
-    if (setter == null) {
       setter = findMethod(targetClass, methodName, propType);
+      if (setter == null) {
+        setter = findMethod(targetClass, methodName, getPrimitiveType(propType));
+      }
+    } else {
+      setter = findMethod(targetClass, methodName, getPrimitiveType(propType));
+      if (setter == null) {
+        setter = findMethod(targetClass, methodName, propType);
+      }
     }
 
     if (setter == null) {

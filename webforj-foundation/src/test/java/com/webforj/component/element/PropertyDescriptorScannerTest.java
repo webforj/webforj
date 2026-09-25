@@ -27,6 +27,8 @@ class PropertyDescriptorScannerTest {
     assertEquals(NullableProperties.class.getMethod("setText", String.class),
         textProperty.getSetter());
     assertEquals(NullableProperties.class.getMethod("isEnabled"), enabledProperty.getGetter());
+    assertEquals(NullableProperties.class.getMethod("setEnabled", Boolean.class),
+        enabledProperty.getSetter());
 
     PropertyDescriptorTester.run(NullableProperties.class, instance);
     assertNull(instance.getText());
@@ -77,6 +79,10 @@ class PropertyDescriptorScannerTest {
 
     public void setEnabled(Boolean enabled) {
       this.enabled = enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+      throw new AssertionError("The nullable default must select the boxed overload");
     }
   }
 
