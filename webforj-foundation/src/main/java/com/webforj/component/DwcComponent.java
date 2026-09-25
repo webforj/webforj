@@ -90,7 +90,6 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
           RightMouseDownEvent.class);
 
   private BBjControl control;
-  private int bbjId = -1;
   private boolean readOnly = false;
   private boolean visible = true;
   private String text = "";
@@ -145,38 +144,12 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   }
 
   /**
-   * Sets the BBj control ID for this component.
-   *
-   * <p>
-   * The ID must be set before the component is added to a window. Once the component is attached,
-   * the ID cannot be changed.
-   * </p>
-   *
-   * @param bbjId the BBj control ID to set, must be non-negative
-   * @return the component itself
-   * @throws IllegalStateException if the component is already attached
-   * @throws IllegalArgumentException if the ID is negative
+   * {@inheritDoc}
    */
+  @Override
   public T setBBjId(int bbjId) {
-    if (isAttached()) {
-      throw new IllegalStateException("Cannot set BBj ID after the component is attached");
-    }
-
-    if (bbjId < 0) {
-      throw new IllegalArgumentException("BBj ID must be non-negative, got: " + bbjId);
-    }
-
-    this.bbjId = bbjId;
+    super.setBBjId(bbjId);
     return getSelf();
-  }
-
-  /**
-   * Gets the BBj control ID for this component.
-   *
-   * @return the BBj control ID, or {@code -1} if not set
-   */
-  public int getBBjId() {
-    return bbjId;
   }
 
   /**
@@ -192,6 +165,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    * @throws BBjException if an error occurs while getting the available control ID
    */
   protected int resolveControlId(BBjWindow w) throws BBjException {
+    int bbjId = getBBjId();
     if (bbjId >= 0) {
       if (logger.isLoggable(Level.TRACE)) {
         logger.log(Level.TRACE, "Using explicit BBj ID {0} for {1}", bbjId, getClass().getName());

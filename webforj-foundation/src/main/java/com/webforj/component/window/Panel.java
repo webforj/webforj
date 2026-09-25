@@ -15,6 +15,15 @@ import com.webforj.exceptions.WebforjRuntimeException;
 public final class Panel extends Window {
 
   /**
+   * Constructs an empty Panel window.
+   *
+   * @since 26.03
+   */
+  public Panel() {
+    super();
+  }
+
+  /**
    * Constructs a new Panel window.
    *
    * @param components The components to be added to the Panel.
@@ -40,8 +49,8 @@ public final class Panel extends Window {
       }
 
       byte[] flags = new byte[] {(byte) 0x10, (byte) 0x10, (byte) 0x88, finalFlag};
-      BBjWindow wnd = topLevelWindow.addChildWindow(topLevelWindow.getAvailableControlID(), "",
-          flags, Environment.getCurrent().getSysGui().getAvailableContext());
+      BBjWindow wnd = topLevelWindow.addChildWindow(resolveControlId(topLevelWindow), "", flags,
+          Environment.getCurrent().getSysGui().getAvailableContext());
       setBbjWindow(wnd);
       setStyle("overflow", "unset");
     } catch (BBjException e) {
