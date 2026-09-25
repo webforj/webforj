@@ -354,7 +354,8 @@ class SourceCodeModifierTest {
 
       assertEquals(0, successful(results).size());
       assertEquals(1, failed(results).size());
-      assertEquals("Source file not found", failed(results).get(0).getError());
+      assertEquals("The source file for this component was not found",
+          failed(results).get(0).getError());
     }
 
     @Test

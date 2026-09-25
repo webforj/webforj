@@ -6,6 +6,8 @@ import com.webforj.devtools.craftforj.inspector.contribution.ConcernContribution
 import com.webforj.devtools.craftforj.inspector.contribution.FeatureHandler;
 import com.webforj.devtools.craftforj.inspector.model.FeatureCategory;
 import com.webforj.devtools.craftforj.inspector.model.FeatureProperty;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Contribution for Anchor href property.
@@ -26,4 +28,9 @@ public class AnchorHrefContribution extends ConcernContribution<Anchor> {
     setSetter((c, v) -> c.setHref(v != null ? v.toString() : ""));
   }
 
+  /** {@inheritDoc} */
+  @Override
+  public Map<String, List<String>> getSourceMethodExpansions() {
+    return Map.of("setUrl", List.of("setHref"));
+  }
 }

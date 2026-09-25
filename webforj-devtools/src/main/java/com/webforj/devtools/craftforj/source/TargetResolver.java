@@ -2,7 +2,9 @@ package com.webforj.devtools.craftforj.source;
 
 import com.github.javaparser.Range;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.webforj.component.Component;
 import com.webforj.component.ComponentSourceRegistry;
@@ -11,16 +13,20 @@ import com.webforj.component.ComponentUtil;
 import com.webforj.component.Composite;
 import com.webforj.component.element.ElementComposite;
 import com.webforj.devtools.craftforj.source.model.SourceLocation;
+import com.webforj.devtools.craftforj.source.model.TargetContext;
 import com.webforj.devtools.craftforj.source.parser.AstFinder;
 import com.webforj.devtools.craftforj.source.parser.SourceParserService;
 import com.webforj.devtools.craftforj.source.resolver.SourceFileResolver;
 import com.webforj.devtools.craftforj.source.resolver.SourcePathRegistry;
 import com.webforj.devtools.craftforj.utilities.ComponentLocator;
 import com.webforj.devtools.craftforj.utilities.ComponentTypeNames;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Resolves where in the source tree a change must be written.
@@ -35,6 +41,8 @@ import java.util.Set;
  * @since 26.02
  */
 public class TargetResolver {
+
+  private static final Pattern UNSTABLE_OWNER = Pattern.compile("\\$\\d");
 
   private final SourceParserService parserService;
   private final List<ReanchorRule> reanchorRules;
@@ -81,7 +89,7 @@ public class TargetResolver {
         return null;
       }
 
-      String file = resolveSourceFile(sourcePoint.className());
+      String file = resolveSourcePointFile(sourcePoint);
       if (file == null) {
         return null;
       }
@@ -89,8 +97,19 @@ public class TargetResolver {
       int line = sourcePoint.lineNumber();
       String declaringClass = sourcePoint.className();
       String componentType = component.getClass().getName();
+      requireLiveOwner(Path.of(file), line, declaringClass, component.getClass());
       String variableName = parserService.extractVariableName(Path.of(file), line,
           ComponentTypeNames.of(component.getClass()));
+
+      if (fallback != null && fallback.getVariableName() != null
+          && !fallback.getVariableName().isBlank() && fallback.getFile() != null
+          && Path.of(file).normalize().equals(Path.of(fallback.getFile()).normalize())
+          && Objects.equals(declaringClass, fallback.getDeclaringClass())
+          && !Objects.equals(variableName, fallback.getVariableName())) {
+        throw new SourceModificationException("Stored declaration '" + fallback.getVariableName()
+            + "' no longer matches the runtime source location. "
+            + "Reload the application before saving.");
+      }
 
       return new SourceLocation(file, line, declaringClass, variableName, componentType);
     }
@@ -156,6 +175,12 @@ public class TargetResolver {
    * @return the re-anchored location, or the input when no rule improved it
    */
   public SourceLocation reanchorDestroyedLocation(CompilationUnit cu, SourceLocation location) {
+    String owner = location.getDeclaringClass();
+    if (isUnstableOwner(owner)) {
+      throw new SourceModificationException("This component was removed and its class '" + owner
+          + "' has no stable name, so its declaration cannot be found. "
+          + "Reload the application before saving.");
+    }
     for (ReanchorRule rule : reanchorRules) {
       SourceLocation reanchored = rule.reanchor(cu, location);
       if (reanchored != null) {
@@ -164,6 +189,27 @@ public class TargetResolver {
     }
 
     return location;
+  }
+
+  private void requireLiveOwner(Path file, int line, String owner, Class<?> componentType) {
+    if (owner == null || isUnstableOwner(owner)) {
+      return;
+    }
+    try {
+      CompilationUnit cu = parserService.parse(file).orElse(null);
+      if (cu == null || cu.getPackageDeclaration().isEmpty()) {
+        return;
+      }
+      TargetContext target = new TargetContext(line, componentType.getSimpleName());
+      target.setAcceptableTypes(ComponentTypeNames.of(componentType));
+      VariableDeclarator variable = AstFinder.findVariableAt(cu, target).orElse(null);
+      if (variable != null && !isDeclaredIn(variable, owner)) {
+        throw new SourceModificationException("Runtime source location no longer belongs to '"
+            + owner + "'. Reload the application before saving.");
+      }
+    } catch (IOException e) {
+      throw new SourceModificationException("Cannot read runtime source file: " + file);
+    }
   }
 
   /**
@@ -176,6 +222,22 @@ public class TargetResolver {
     String file = SourceFileResolver.resolve(className, SourceFileResolver.JAVA_ONLY);
     SourcePathRegistry.addPath(file);
 
+    return file;
+  }
+
+  /**
+   * Resolves a recorded creation or usage point, retaining its actual source filename.
+   *
+   * @param point the runtime source point
+   * @return the resolved file, or null when neither class nor filename identifies a source file
+   */
+  public String resolveSourcePointFile(SourcePoint point) {
+    String file = resolveSourceFile(point.className());
+    if (file == null) {
+      file = SourceFileResolver.resolve(point.className(), point.fileName(),
+          SourceFileResolver.JAVA_ONLY);
+      SourcePathRegistry.addPath(file);
+    }
     return file;
   }
 
@@ -229,12 +291,21 @@ public class TargetResolver {
       return location;
     }
 
-    List<Range> matches = new ArrayList<>();
+    final List<Range> matches = new ArrayList<>();
+    String declaringClass = location.getDeclaringClass();
+    boolean namedOwner =
+        declaringClass != null && !declaringClass.isBlank() && !isUnstableOwner(declaringClass);
     for (VariableDeclarator varDecl : cu.findAll(VariableDeclarator.class)) {
       if (variableName.equals(varDecl.getNameAsString()) && AstFinder.matchesType(varDecl.getType(),
-          varDecl.getInitializer().orElse(null), typeName)) {
+          varDecl.getInitializer().orElse(null), typeName)
+          && (!namedOwner || isDeclaredIn(varDecl, declaringClass))) {
         varDecl.getRange().ifPresent(matches::add);
       }
+    }
+
+    if (namedOwner && matches.isEmpty()) {
+      throw new SourceModificationException(
+          "Cannot find stored declaration '" + variableName + "' in " + declaringClass);
     }
 
     // The stored line still hitting the declaration means nothing moved; more than one candidate
@@ -248,5 +319,21 @@ public class TargetResolver {
 
     return new SourceLocation(location.getFile(), matches.get(0).begin.line,
         location.getDeclaringClass(), variableName, location.getComponentType());
+  }
+
+  private boolean isDeclaredIn(VariableDeclarator variable, String declaringClass) {
+    Node owner = variable.getParentNode().orElse(null);
+    while (owner != null) {
+      if (owner instanceof TypeDeclaration<?> type) {
+        return type.getFullyQualifiedName()
+            .map(name -> name.equals(declaringClass.replace('$', '.'))).orElse(false);
+      }
+      owner = owner.getParentNode().orElse(null);
+    }
+    return false;
+  }
+
+  private static boolean isUnstableOwner(String owner) {
+    return owner != null && UNSTABLE_OWNER.matcher(owner).find();
   }
 }

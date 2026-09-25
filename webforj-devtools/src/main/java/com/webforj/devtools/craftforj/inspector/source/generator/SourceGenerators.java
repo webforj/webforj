@@ -30,7 +30,7 @@ public final class SourceGenerators {
     }
 
     if (handler instanceof ListConcernContribution<?>) {
-      return new ListSourceGenerator();
+      return new ListSourceGenerator(String.class, true);
     }
     if (handler instanceof KeyValueConcernContribution<?>) {
       return new KeyValueSourceGenerator();

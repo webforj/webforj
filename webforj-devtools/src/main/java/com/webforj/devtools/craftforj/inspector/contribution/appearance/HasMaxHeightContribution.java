@@ -7,6 +7,8 @@ import com.webforj.devtools.craftforj.inspector.contribution.FeatureHandler;
 import com.webforj.devtools.craftforj.inspector.contribution.utilities.DimensionSetter;
 import com.webforj.devtools.craftforj.inspector.model.FeatureCategory;
 import com.webforj.devtools.craftforj.inspector.model.FeatureProperty;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Contribution for the HasMaxHeight concern.
@@ -26,5 +28,17 @@ public class HasMaxHeightContribution extends ConcernContribution<HasMaxHeight<?
     setGetter(HasMaxHeight::getMaxHeight);
     setSetter((c, v) -> DimensionSetter.set(c, v, (comp, d) -> comp.setMaxHeight((float) d),
         c::setMaxHeight));
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public Map<String, List<String>> getSourceMethodExpansions() {
+    return Map.of("setMaxSize", List.of("setMaxWidth", "setMaxHeight"));
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public Object getSourceValue(FeatureProperty property) {
+    return DimensionSetter.getSourceValue(property.getValue());
   }
 }

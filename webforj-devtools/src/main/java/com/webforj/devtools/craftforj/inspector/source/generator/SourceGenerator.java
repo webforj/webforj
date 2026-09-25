@@ -25,6 +25,16 @@ public interface SourceGenerator {
   SourceChange generate(GeneratorContext context);
 
   /**
+   * Creates the removal intent when {@link #generate} returns {@code null}.
+   *
+   * @param context the generator context, including any key needed to match existing calls
+   * @return the removal with this generator's matching constraints
+   */
+  default SourceChange createRemoval(GeneratorContext context) {
+    return SourceChange.builder().removeMethodCall(context.getMethodName()).build();
+  }
+
+  /**
    * Context for source generation.
    *
    * <p>

@@ -47,6 +47,7 @@ public abstract class ConcernContribution<T> implements FeatureHandler {
   private UnaryOperator<FeatureProperty.Builder> builderConfig = FeatureProperty.Builder::text;
   private Function<T, Object> getter;
   private BiConsumer<T, Object> setter;
+  private String sourceTypeGetter;
 
   /**
    * Creates a new contribution for the given concern interface.
@@ -93,6 +94,9 @@ public abstract class ConcernContribution<T> implements FeatureHandler {
       Object value = getter.apply((T) target);
       FeatureProperty.Builder builder = FeatureProperty.builder(propertyName, getFeatureType());
       builder = builderConfig.apply(builder);
+      if (sourceTypeGetter != null) {
+        builder.javaType(target.getClass().getMethod(sourceTypeGetter).getReturnType());
+      }
       builder.value(value);
       return Optional.of(builder.build());
     } catch (Exception e) {
@@ -139,6 +143,15 @@ public abstract class ConcernContribution<T> implements FeatureHandler {
    */
   protected void setBuilderConfig(UnaryOperator<FeatureProperty.Builder> config) {
     this.builderConfig = config;
+  }
+
+  /**
+   * Uses the concrete getter's return type for source literals independently of the editor type.
+   *
+   * @param getterName the public getter declaring the property's Java value type
+   */
+  protected void setSourceTypeGetter(String getterName) {
+    this.sourceTypeGetter = getterName;
   }
 
   /**

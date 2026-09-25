@@ -1,9 +1,11 @@
 package com.webforj.devtools.craftforj.source.model;
 
+import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.Expression;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a source code change to be applied.
@@ -45,6 +47,12 @@ public class SourceChange {
   private final String accessor;
   private final String itemRef;
   private final ItemPosition itemPosition;
+  private final int itemArgumentCount;
+  private final boolean removal;
+  private final boolean replaceAllCalls;
+  private final Map<String, List<String>> methodExpansions;
+  private final String propertyName;
+  private VariableDeclarator itemDeclaration;
   private String replacedComputedExpression;
 
   private SourceChange(Builder builder) {
@@ -55,6 +63,12 @@ public class SourceChange {
     this.accessor = builder.accessor;
     this.itemRef = builder.itemRef;
     this.itemPosition = builder.itemPosition;
+    this.itemArgumentCount =
+        builder.itemArgumentCount < 0 ? builder.arguments.size() : builder.itemArgumentCount;
+    this.removal = builder.removal;
+    this.replaceAllCalls = builder.replaceAllCalls;
+    this.methodExpansions = Map.copyOf(builder.methodExpansions);
+    this.propertyName = builder.propertyName;
   }
 
   /**
@@ -76,6 +90,24 @@ public class SourceChange {
   }
 
   /**
+   * Indicates that existing calls should be removed from the selected component's scope.
+   *
+   * @return true for a removal
+   */
+  public boolean isRemoval() {
+    return removal;
+  }
+
+  /**
+   * Indicates that the supplied values replace all accumulating calls in the selected scope.
+   *
+   * @return true when earlier matching calls must be removed
+   */
+  public boolean isReplaceAllCalls() {
+    return replaceAllCalls;
+  }
+
+  /**
    * Gets the argument expressions for the method call.
    *
    * @return unmodifiable list of JavaParser expressions for the arguments
@@ -91,6 +123,15 @@ public class SourceChange {
    */
   public Expression getArgument() {
     return arguments.isEmpty() ? null : arguments.get(0);
+  }
+
+  /**
+   * Gets the name the inspector shows for the property, used in messages to the developer.
+   *
+   * @return the property name, or the setter name when no property name was attached
+   */
+  public String getPropertyName() {
+    return propertyName != null ? propertyName : methodName;
   }
 
   /**
@@ -115,7 +156,7 @@ public class SourceChange {
    * Gets the variable name of the item referenced by a parent-scoped item call.
    *
    * <p>
-   * When set, the arguments already contain a {@code NameExpr} for this variable at the position
+   * For writes, the arguments contain a {@code NameExpr} for this variable at the position
    * indicated by {@link #getItemPosition()}. The item reference drives matching of existing calls:
    * only calls that reference the same item variable are updated or removed.
    * </p>
@@ -133,6 +174,33 @@ public class SourceChange {
    */
   public ItemPosition getItemPosition() {
     return itemPosition;
+  }
+
+  /**
+   * Gets the argument count of a single-item call, including value arguments.
+   *
+   * @return the argument count used to distinguish item overloads, including for removals
+   */
+  public int getItemArgumentCount() {
+    return itemArgumentCount;
+  }
+
+  /**
+   * Gets the selected child declaration in the compilation unit being edited.
+   *
+   * @return the bound declaration, or null for legacy name-only item matching
+   */
+  public VariableDeclarator getItemDeclaration() {
+    return itemDeclaration;
+  }
+
+  /**
+   * Binds item matching and inserted references to a declaration in this edit's compilation unit.
+   *
+   * @param itemDeclaration the selected child declaration
+   */
+  public void setItemDeclaration(VariableDeclarator itemDeclaration) {
+    this.itemDeclaration = itemDeclaration;
   }
 
   /**
@@ -165,11 +233,57 @@ public class SourceChange {
    * @return a new SourceChange scoped by the accessor
    */
   public SourceChange withAccessor(String accessor) {
-    Builder builder = builder().methodCall(methodName, arguments).matchKey(matchKey)
-        .accessor(accessor).itemRef(itemRef, itemPosition);
-    imports.forEach(builder::addImport);
+    Builder builder = copyBuilder().accessor(accessor);
+    SourceChange change = builder.build();
+    change.itemDeclaration = itemDeclaration;
+    return change;
+  }
 
-    return builder.build();
+  /**
+   * Gets the ordered argument setters of equivalent combined calls.
+   *
+   * @return immutable method expansions supplied by the property handler
+   */
+  public Map<String, List<String>> getMethodExpansions() {
+    return methodExpansions;
+  }
+
+  /**
+   * Attaches the property name the inspector shows for this change.
+   *
+   * @param propertyName the property name
+   * @return a copy carrying the property name
+   */
+  public SourceChange withPropertyName(String propertyName) {
+    Builder builder = copyBuilder().propertyName(propertyName);
+    SourceChange change = builder.build();
+    change.itemDeclaration = itemDeclaration;
+    return change;
+  }
+
+  /**
+   * Attaches combined-call semantics without changing the requested operation.
+   *
+   * @param expansions combined methods mapped to one setter per argument
+   * @return a copy carrying the supplied expansions
+   */
+  public SourceChange withMethodExpansions(Map<String, List<String>> expansions) {
+    Builder builder = copyBuilder();
+    builder.methodExpansions = expansions.entrySet().stream().collect(java.util.stream.Collectors
+        .toUnmodifiableMap(Map.Entry::getKey, entry -> List.copyOf(entry.getValue())));
+    SourceChange change = builder.build();
+    change.itemDeclaration = itemDeclaration;
+    return change;
+  }
+
+  private Builder copyBuilder() {
+    Builder builder = removal ? builder().removeMethodCall(methodName)
+        : builder().methodCall(methodName, arguments);
+    builder.matchKey(matchKey).accessor(accessor).itemRef(itemRef, itemPosition, itemArgumentCount)
+        .replaceAllCalls(replaceAllCalls).propertyName(propertyName);
+    imports.forEach(builder::addImport);
+    builder.methodExpansions = methodExpansions;
+    return builder;
   }
 
   /**
@@ -193,8 +307,35 @@ public class SourceChange {
     private String accessor;
     private String itemRef;
     private ItemPosition itemPosition;
+    private int itemArgumentCount = -1;
+    private boolean removal;
+    private boolean replaceAllCalls;
+    private String propertyName;
+    private Map<String, List<String>> methodExpansions = Map.of();
 
     Builder() {}
+
+    /**
+     * Sets whether earlier accumulating calls must be removed.
+     *
+     * @param replaceAllCalls true to replace the complete accumulated value
+     * @return this builder
+     */
+    public Builder replaceAllCalls(boolean replaceAllCalls) {
+      this.replaceAllCalls = replaceAllCalls;
+      return this;
+    }
+
+    /**
+     * Sets the name the inspector shows for the property.
+     *
+     * @param propertyName the property name
+     * @return this builder
+     */
+    public Builder propertyName(String propertyName) {
+      this.propertyName = propertyName;
+      return this;
+    }
 
     /**
      * Adds an import to include in the source file.
@@ -220,6 +361,7 @@ public class SourceChange {
      */
     public Builder methodCall(String methodName, List<Expression> arguments) {
       this.methodName = methodName;
+      this.removal = false;
       this.arguments.clear();
       this.arguments.addAll(arguments);
 
@@ -235,6 +377,19 @@ public class SourceChange {
      */
     public Builder methodCall(String methodName, Expression argument) {
       return methodCall(methodName, List.of(argument));
+    }
+
+    /**
+     * Removes existing calls instead of inserting or replacing arguments.
+     *
+     * @param methodName the method name to remove
+     * @return this builder
+     */
+    public Builder removeMethodCall(String methodName) {
+      this.methodName = methodName;
+      this.removal = true;
+      this.arguments.clear();
+      return this;
     }
 
     /**
@@ -277,8 +432,21 @@ public class SourceChange {
      * @return this builder
      */
     public Builder itemRef(String itemRef, ItemPosition itemPosition) {
+      return itemRef(itemRef, itemPosition, -1);
+    }
+
+    /**
+     * Marks an item call with an explicit arity so removals can match without value arguments.
+     *
+     * @param itemRef the item variable name
+     * @param itemPosition the position of the item argument
+     * @param itemArgumentCount the single-item argument count, or -1 to derive it from arguments
+     * @return this builder
+     */
+    public Builder itemRef(String itemRef, ItemPosition itemPosition, int itemArgumentCount) {
       this.itemRef = itemRef;
       this.itemPosition = itemPosition;
+      this.itemArgumentCount = itemArgumentCount;
 
       return this;
     }
@@ -287,14 +455,14 @@ public class SourceChange {
      * Builds the SourceChange.
      *
      * @return the built SourceChange
-     * @throws IllegalStateException if methodName is not set or arguments is empty
+     * @throws IllegalStateException if methodName is not set or a write has no arguments
      */
     public SourceChange build() {
       if (methodName == null || methodName.isBlank()) {
         throw new IllegalStateException("Method name is required");
       }
 
-      if (arguments.isEmpty()) {
+      if (!removal && arguments.isEmpty()) {
         throw new IllegalStateException("At least one argument is required");
       }
 

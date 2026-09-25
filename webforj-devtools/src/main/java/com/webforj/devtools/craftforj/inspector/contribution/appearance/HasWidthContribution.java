@@ -7,6 +7,8 @@ import com.webforj.devtools.craftforj.inspector.contribution.FeatureHandler;
 import com.webforj.devtools.craftforj.inspector.contribution.utilities.DimensionSetter;
 import com.webforj.devtools.craftforj.inspector.model.FeatureCategory;
 import com.webforj.devtools.craftforj.inspector.model.FeatureProperty;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Contribution for the HasWidth concern.
@@ -26,5 +28,17 @@ public class HasWidthContribution extends ConcernContribution<HasWidth<?>> {
     setGetter(HasWidth::getWidth);
     setSetter(
         (c, v) -> DimensionSetter.set(c, v, (comp, d) -> comp.setWidth((float) d), c::setWidth));
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public Map<String, List<String>> getSourceMethodExpansions() {
+    return Map.of("setSize", List.of("setWidth", "setHeight"));
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public Object getSourceValue(FeatureProperty property) {
+    return DimensionSetter.getSourceValue(property.getValue());
   }
 }

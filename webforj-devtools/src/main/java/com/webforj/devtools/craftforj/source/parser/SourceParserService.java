@@ -4,15 +4,20 @@ import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseResult;
 import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.DataKey;
+import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
+import com.webforj.devtools.craftforj.source.SourceModificationException;
 import com.webforj.devtools.craftforj.source.model.TargetContext;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -35,6 +40,7 @@ import java.util.function.Supplier;
 public final class SourceParserService {
 
   private static final int CACHE_CAPACITY = 32;
+  private static final DataKey<Map<BlockStmt, String>> BLOCK_INDENTS = new DataKey<>() {};
 
   private final JavaParser parser;
   private final JavaParser lexicalParser;
@@ -150,6 +156,18 @@ public final class SourceParserService {
 
     return result.getResult().map(cu -> {
       LexicalPreservingPrinter.setup(cu);
+      Map<BlockStmt, String> indents = new IdentityHashMap<>();
+      String[] lines = content.split("\n", -1);
+      for (BlockStmt block : cu.findAll(BlockStmt.class)) {
+        if (!block.getStatements().isEmpty() && block.getEnd().isPresent()) {
+          String line = lines[block.getEnd().get().line - 1];
+          String stripped = line.stripLeading();
+          if (stripped.startsWith("}")) {
+            indents.put(block, line.substring(0, line.length() - stripped.length()));
+          }
+        }
+      }
+      cu.setData(BLOCK_INDENTS, indents);
       return cu;
     });
   }
@@ -158,7 +176,8 @@ public final class SourceParserService {
    * Prints a compilation unit preserving formatting.
    */
   public String print(CompilationUnit cu) {
-    return LexicalPreservingPrinter.print(cu);
+    String printed = LexicalPreservingPrinter.print(cu);
+    return preserveEmptiedBlockIndentation(cu, printed);
   }
 
   /**
@@ -222,10 +241,43 @@ public final class SourceParserService {
 
       return entry.variableNameAt(cacheKey,
           () -> AstFinder.extractVariableNameAt(unit.get(), targetFor(lineNumber, typeNames)));
-    } catch (IOException e) {
+    } catch (IOException | SourceModificationException e) {
 
       return null;
     }
+  }
+
+  private String preserveEmptiedBlockIndentation(CompilationUnit cu, String printed) {
+    if (!cu.containsData(BLOCK_INDENTS)) {
+      return printed;
+    }
+    Map<BlockStmt, String> indents = cu.getData(BLOCK_INDENTS);
+    List<BlockStmt> blocks = cu.findAll(BlockStmt.class);
+    if (blocks.stream()
+        .noneMatch(block -> block.getStatements().isEmpty() && indents.containsKey(block))) {
+      return printed;
+    }
+    Optional<CompilationUnit> reparsed = parser.parse(printed).getResult();
+    if (reparsed.isEmpty()) {
+      return printed;
+    }
+    List<BlockStmt> printedBlocks = reparsed.get().findAll(BlockStmt.class);
+    if (blocks.size() != printedBlocks.size()) {
+      return printed;
+    }
+    String[] lines = printed.split("\n", -1);
+    for (int index = 0; index < blocks.size(); index++) {
+      BlockStmt block = blocks.get(index);
+      String indent = indents.get(block);
+      if (indent != null && block.getStatements().isEmpty()) {
+        int lineIndex = printedBlocks.get(index).getEnd().orElseThrow().line - 1;
+        String stripped = lines[lineIndex].stripLeading();
+        if (stripped.startsWith("}")) {
+          lines[lineIndex] = indent + stripped;
+        }
+      }
+    }
+    return String.join("\n", lines);
   }
 
   private static TargetContext targetFor(int lineNumber, Set<String> typeNames) {

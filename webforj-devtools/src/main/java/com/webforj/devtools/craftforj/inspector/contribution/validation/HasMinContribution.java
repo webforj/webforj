@@ -4,7 +4,7 @@ import com.google.auto.service.AutoService;
 import com.webforj.concern.HasMin;
 import com.webforj.devtools.craftforj.inspector.contribution.ConcernContribution;
 import com.webforj.devtools.craftforj.inspector.contribution.FeatureHandler;
-import com.webforj.devtools.craftforj.inspector.contribution.utilities.NumberConverter;
+import com.webforj.devtools.craftforj.inspector.contribution.utilities.BoundValueConverter;
 import com.webforj.devtools.craftforj.inspector.model.FeatureCategory;
 import com.webforj.devtools.craftforj.inspector.model.FeatureProperty;
 
@@ -24,10 +24,12 @@ public class HasMinContribution extends ConcernContribution<HasMin<?, ?>> {
   public HasMinContribution() {
     super(HasMin.class, "Min", FeatureCategory.VALIDATION);
     setBuilderConfig(FeatureProperty.Builder::text);
+    setSourceTypeGetter("getMin");
     setGetter(c -> {
       Object val = c.getMin();
       return val != null ? String.valueOf(val) : "";
     });
-    setSetter((c, v) -> ((HasMin) c).setMin(NumberConverter.convert(v, c.getMin())));
+    setSetter(
+        (c, v) -> ((HasMin) c).setMin(BoundValueConverter.convert(c, "getMin", v, c.getMin())));
   }
 }

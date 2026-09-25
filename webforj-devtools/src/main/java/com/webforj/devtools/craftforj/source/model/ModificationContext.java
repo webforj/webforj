@@ -13,6 +13,7 @@ public class ModificationContext {
 
   private TargetContext target;
   private String variableName;
+  private String declarationType;
   private List<SourceChange> sourceChanges = new ArrayList<>();
 
   /**
@@ -99,6 +100,24 @@ public class ModificationContext {
    */
   public String getTypeName() {
     return target != null ? target.getTypeName() : null;
+  }
+
+  /**
+   * Gets the type reference to use when this edit introduces a local declaration.
+   *
+   * @return the bound declaration type, defaulting to the target's type name
+   */
+  public String getDeclarationType() {
+    return declarationType != null ? declarationType : getTypeName();
+  }
+
+  /**
+   * Sets the declaration type independently of the source target's identity.
+   *
+   * @param declarationType the safe simple or fully qualified type reference
+   */
+  public void setDeclarationType(String declarationType) {
+    this.declarationType = declarationType;
   }
 
 }

@@ -16,8 +16,7 @@ import com.webforj.devtools.craftforj.source.model.ModificationContext;
 import com.webforj.devtools.craftforj.source.model.SourceChange;
 import com.webforj.devtools.craftforj.source.model.SourceLocation;
 import com.webforj.devtools.craftforj.source.model.TargetContext;
-import com.webforj.devtools.craftforj.source.parser.AstFinder;
-import com.webforj.devtools.craftforj.source.parser.AstModifier;
+import com.webforj.devtools.craftforj.source.parser.TypeReferences;
 import com.webforj.devtools.craftforj.source.strategy.ModificationStrategy;
 import com.webforj.devtools.craftforj.utilities.ComponentLocator;
 import com.webforj.devtools.craftforj.utilities.ComponentTypeNames;
@@ -63,7 +62,7 @@ class DefinitionChangeWriter implements ChangeWriter {
 
     SourceLocation sourceLocation = targetResolver.resolve(component, first.getSource());
     if (sourceLocation == null || !sourceLocation.hasBasicInfo()) {
-      throw new SourceModificationException("Source location not found");
+      throw new SourceModificationException("The source location for this component was not found");
     }
 
     // A composite's features live on its bound component: inside the composite's own file the
@@ -98,9 +97,9 @@ class DefinitionChangeWriter implements ChangeWriter {
     }
 
     int lineNumber = sourceLocation.getLine();
-    String typeNameFqn = sourceLocation.getComponentType();
+    final String typeNameFqn = sourceLocation.getComponentType();
     String typeName = sourceLocation.getSimpleTypeName();
-    String variableName = sourceLocation.getVariableName();
+    final String variableName = sourceLocation.getVariableName();
 
     TargetContext target = new TargetContext(lineNumber, typeName);
     if (component != null) {
@@ -116,20 +115,17 @@ class DefinitionChangeWriter implements ChangeWriter {
               "No handler found for feature type: " + change.getFeatureType()));
 
       if (handler instanceof IconContribution) {
-        context.getRequiredImports()
-            .addAll(IconExpressionRewriter.rewrite(cu, target, change.getValue()));
+        IconExpressionRewriter.rewrite(cu, target, change.getValue(), context.getRequiredImports());
         continue;
       }
 
-      SourceChange sourceChange =
-          generateSourceChange(cu, change, handler, target, variableName, component);
+      SourceChange sourceChange = generateSourceChange(change, handler, component,
+          resolveComponentType(component, sourceLocation.getComponentType()));
       if (sourceChange != null) {
+        requireConsistentAliases(generated.values(), sourceChange);
         generated.put(change, sourceChange);
-        // A re-anchored alias type is a simple name; only fully qualified names are importable
-        if (typeNameFqn != null && typeNameFqn.contains(".")) {
-          context.getRequiredImports().add(typeNameFqn);
-        }
-        context.getRequiredImports().addAll(sourceChange.getImports());
+        TypeReferences.bind(cu, sourceChange.getArguments(), sourceChange.getImports(),
+            context.getRequiredImports());
       }
     }
 
@@ -139,6 +135,11 @@ class DefinitionChangeWriter implements ChangeWriter {
 
     ModificationContext modification =
         new ModificationContext(target, variableName, new ArrayList<>(generated.values()));
+    if (typeNameFqn != null && typeNameFqn.contains(".")
+        && generated.values().stream().anyMatch(change -> !change.isRemoval())) {
+      modification.setDeclarationType(
+          TypeReferences.resolveType(cu, typeNameFqn, context.getRequiredImports(), true));
+    }
 
     // Find and apply the appropriate strategy
     for (ModificationStrategy strategy : strategies) {
@@ -155,12 +156,13 @@ class DefinitionChangeWriter implements ChangeWriter {
       }
     }
 
-    throw new SourceModificationException("Cannot modify " + typeName + " at line " + lineNumber
-        + ". No suitable modification strategy found.");
+    throw new SourceModificationException("No " + typeName + " is declared at line " + lineNumber
+        + ". The source changed since the application was compiled. "
+        + "Reload the application before saving.");
   }
 
-  private SourceChange generateSourceChange(CompilationUnit cu, ChangeRequest change,
-      FeatureHandler handler, TargetContext target, String variableName, Component component) {
+  private SourceChange generateSourceChange(ChangeRequest change, FeatureHandler handler,
+      Component component, Class<?> componentType) {
     String methodName = handler.getSourceMethodName(change.getPropertyName());
     SourceGenerator generator = SourceGenerators.select(handler, component);
 
@@ -170,25 +172,60 @@ class DefinitionChangeWriter implements ChangeWriter {
         FeatureProperty.builder(change.getPropertyName(), change.getFeatureType())
             .javaType(change.getProperty().getJavaType()).value(sourceValue).build();
 
-    SourceChange sourceChange =
-        generator.generate(new GeneratorContext(methodName, sourceProperty));
+    GeneratorContext generatorContext = new GeneratorContext(methodName, sourceProperty);
+    SourceChange sourceChange = generator.generate(generatorContext);
     String accessor = handler.getSourceAccessor();
 
-    // If generator returns null (e.g., empty list), remove the method call
+    // Removal uses the same target strategy as insertion and replacement.
     if (sourceChange == null) {
-      if (variableName != null) {
-        AstModifier.removeMethodCall(cu, variableName, methodName, accessor);
-      } else if (AstFinder.usesBoundComponentPattern(cu, target)) {
-        AstModifier.removeBoundComponentMethodCall(cu, methodName, accessor);
-      }
-
-      return null;
+      sourceChange = generator.createRemoval(generatorContext);
     }
 
     if (accessor != null) {
       sourceChange = sourceChange.withAccessor(accessor);
     }
 
-    return sourceChange;
+    return sourceChange.withMethodExpansions(handler.getSourceMethodExpansions(componentType))
+        .withPropertyName(change.getPropertyName());
+  }
+
+  private Class<?> resolveComponentType(Component component, String className) {
+    if (component != null) {
+      return component.getClass();
+    }
+    if (className == null) {
+      return null;
+    }
+    Class<?> type = tryLoad(className, Thread.currentThread().getContextClassLoader());
+    return type != null ? type : tryLoad(className, getClass().getClassLoader());
+  }
+
+  private static Class<?> tryLoad(String className, ClassLoader loader) {
+    if (loader == null) {
+      return null;
+    }
+    try {
+      return Class.forName(className, false, loader);
+    } catch (ClassNotFoundException | LinkageError e) {
+      return null;
+    }
+  }
+
+  private void requireConsistentAliases(java.util.Collection<SourceChange> previous,
+      SourceChange current) {
+    for (SourceChange other : previous) {
+      boolean sameProperty = other.getMethodName().equals(current.getMethodName())
+          || other.getMethodExpansions().getOrDefault(current.getMethodName(), List.of())
+              .equals(List.of(other.getMethodName()))
+          || current.getMethodExpansions().getOrDefault(other.getMethodName(), List.of())
+              .equals(List.of(current.getMethodName()));
+      if (sameProperty && Objects.equals(other.getAccessor(), current.getAccessor())
+          && Objects.equals(other.getMatchKey(), current.getMatchKey())
+          && (other.isRemoval() != current.isRemoval()
+              || !other.getArguments().equals(current.getArguments()))) {
+        throw new SourceModificationException("Conflicting edits target the same source property: '"
+            + other.getMethodName() + "' and '" + current.getMethodName() + "'");
+      }
+    }
   }
 }

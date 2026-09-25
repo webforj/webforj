@@ -5,6 +5,9 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 /**
  * Gson adapter for Class serialization.
@@ -60,6 +63,9 @@ public class ClassTypeAdapter extends TypeAdapter<Class<?>> {
       case "java.lang.Double" -> Double.class;
       case "java.lang.Float" -> Float.class;
       case "java.lang.Boolean" -> Boolean.class;
+      case "java.time.LocalDate" -> LocalDate.class;
+      case "java.time.LocalTime" -> LocalTime.class;
+      case "java.time.LocalDateTime" -> LocalDateTime.class;
       default -> String.class;
     };
   }

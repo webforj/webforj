@@ -48,11 +48,11 @@ public class BoundComponentStrategy implements ModificationStrategy {
   @Override
   public void apply(CompilationUnit cu, ModificationContext context) {
     Optional<ClassOrInterfaceDeclaration> classDecl =
-        cu.findFirst(ClassOrInterfaceDeclaration.class);
+        AstFinder.findBoundComponentClass(cu, context.getTarget());
     if (classDecl.isEmpty()) {
       return;
     }
 
-    AstModifier.addSettersForBoundComponent(cu, classDecl.get(), context.getSourceChanges());
+    AstModifier.addSettersForBoundComponent(classDecl.get(), context.getSourceChanges());
   }
 }

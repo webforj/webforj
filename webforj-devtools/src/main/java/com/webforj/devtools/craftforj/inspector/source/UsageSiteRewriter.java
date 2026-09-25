@@ -75,6 +75,7 @@ public final class UsageSiteRewriter {
    *
    * @return the traces, or an empty list when the value does not flow from a constructor parameter
    */
+  @SuppressWarnings("unchecked")
   public static List<Trace> trace(CompilationUnit creationCu, TargetContext target,
       String setterMethodName) {
     ObjectCreationExpr creation = findCreationAt(creationCu, target).orElse(null);
@@ -159,8 +160,49 @@ public final class UsageSiteRewriter {
    */
   public static String rewrite(CompilationUnit usageCu, int usageLine, List<Trace> traces,
       Object originalValue, Object newValue, Class<?> javaType) {
+    ObjectCreationExpr usageCall = findUsageCall(usageCu, usageLine, traces);
+    Set<Integer> matchingIndexes = findMatchingIndexes(usageCall, traces, originalValue);
+
+    if (matchingIndexes.isEmpty()) {
+      Integer definiteIndex = findDefiniteComputedIndex(usageCall, traces);
+      if (definiteIndex != null) {
+        String replaced = usageCall.getArgument(definiteIndex).toString();
+        usageCall.setArgument(definiteIndex,
+            ScalarSourceGenerator.toExpression(newValue, javaType));
+        return replaced;
+      }
+
+      throw new SourceModificationException(
+          "The source changed since this value was read. Reload the application before saving.");
+    }
+
+    if (matchingIndexes.size() > 1) {
+      throw new SourceModificationException(
+          "Several arguments at the usage site match the property value");
+    }
+
+    usageCall.setArgument(matchingIndexes.iterator().next(),
+        ScalarSourceGenerator.toExpression(newValue, javaType));
+
+    return null;
+  }
+
+  /**
+   * Checks whether any traced argument matches the property's original value at the usage site.
+   * Multiple matches remain candidates so the rewriter can report the ambiguity.
+   */
+  static boolean hasMatchingArgument(CompilationUnit usageCu, int usageLine, List<Trace> traces,
+      Object originalValue) {
+    ObjectCreationExpr usageCall = findUsageCall(usageCu, usageLine, traces);
+
+    return !findMatchingIndexes(usageCall, traces, originalValue).isEmpty();
+  }
+
+  private static ObjectCreationExpr findUsageCall(CompilationUnit usageCu, int usageLine,
+      List<Trace> traces) {
     if (traces.isEmpty()) {
-      throw new SourceModificationException("The property does not trace to a usage site");
+      throw new SourceModificationException(
+          "This value comes from outside the component and cannot be traced to where it is set");
     }
 
     String className = traces.get(0).className();
@@ -178,6 +220,11 @@ public final class UsageSiteRewriter {
           "No " + className + " creation found at line " + usageLine);
     }
 
+    return usageCall;
+  }
+
+  private static Set<Integer> findMatchingIndexes(ObjectCreationExpr usageCall, List<Trace> traces,
+      Object originalValue) {
     Set<Integer> matchingIndexes = new LinkedHashSet<>();
     for (Trace candidate : traces) {
       if (usageCall.getArguments().size() != candidate.parameterCount()) {
@@ -189,26 +236,7 @@ public final class UsageSiteRewriter {
       }
     }
 
-    if (matchingIndexes.isEmpty()) {
-      Integer definiteIndex = findDefiniteComputedIndex(usageCall, traces);
-      if (definiteIndex != null) {
-        String replaced = usageCall.getArgument(definiteIndex).toString();
-        usageCall.setArgument(definiteIndex,
-            ScalarSourceGenerator.toExpression(newValue, javaType));
-        return replaced;
-      }
-
-      throw new SourceModificationException(
-          "The argument at the usage site no longer matches the property value");
-    }
-    if (matchingIndexes.size() > 1) {
-      throw new SourceModificationException(
-          "Several arguments at the usage site match the property value");
-    }
-
-    usageCall.setArgument(matchingIndexes.iterator().next(),
-        ScalarSourceGenerator.toExpression(newValue, javaType));
-    return null;
+    return matchingIndexes;
   }
 
   // A stale literal is a hard stop, but a computed argument at a parameter every setter-derived
@@ -274,6 +302,7 @@ public final class UsageSiteRewriter {
     return null;
   }
 
+  @SuppressWarnings("unchecked")
   private static String componentVariable(ObjectCreationExpr creation) {
     Optional<VariableDeclarator> declarator = creation.findAncestor(VariableDeclarator.class);
     if (declarator.isPresent()) {
