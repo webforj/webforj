@@ -156,8 +156,7 @@ final class PropertyDescriptorScanner {
 
   private static Method findBooleanGetter(Class<?> targetClass, String methodName) {
     Method getter = findMethod(targetClass, methodName);
-    if (getter != null
-        && (getter.getReturnType() == boolean.class || getter.getReturnType() == Boolean.class)) {
+    if (getter != null && isBooleanType(getter.getReturnType())) {
       return getter;
     }
     return null;
@@ -180,14 +179,20 @@ final class PropertyDescriptorScanner {
     Class<V> propType = descriptor.getType();
     // Iterate over all methods and find a compatible getter
     for (Method method : clazz.getMethods()) {
-      if ((method.getName().equals("get" + capitalize(propName))
-          || method.getName().equals("is" + capitalize(propName)))
+      boolean isGetter = method.getName().equals("get" + capitalize(propName));
+      boolean isBooleanGetter = method.getName().equals("is" + capitalize(propName))
+          && isBooleanType(method.getReturnType());
+      if ((isGetter || isBooleanGetter)
           && (propType == null || method.getReturnType().isAssignableFrom(propType))
           && method.getParameterTypes().length == 0) {
         return method;
       }
     }
     return null;
+  }
+
+  private static boolean isBooleanType(Class<?> type) {
+    return type == boolean.class || type == Boolean.class;
   }
 
   private static Method findMethod(Class<?> clazz, String methodName, Class<?>... paramTypes) {

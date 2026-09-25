@@ -2,7 +2,9 @@ package com.webforj.component.element;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.webforj.exceptions.WebforjRuntimeException;
 import org.junit.jupiter.api.Test;
 
 class PropertyDescriptorScannerTest {
@@ -29,6 +31,16 @@ class PropertyDescriptorScannerTest {
     PropertyDescriptorTester.run(NullableProperties.class, instance);
     assertNull(instance.getText());
     assertNull(instance.isEnabled());
+  }
+
+  @Test
+  void shouldRejectNonBooleanIsGetterForDescriptorWithNullDefault() {
+    InvalidNullableProperties instance = new InvalidNullableProperties();
+
+    WebforjRuntimeException exception = assertThrows(WebforjRuntimeException.class, () -> PropertyDescriptorScanner
+        .scan(InvalidNullableProperties.class, instance, descriptor -> true));
+    assertEquals("Getter method for property 'text' not found in class "
+        + InvalidNullableProperties.class.getName(), exception.getMessage());
   }
 
   static class NullableProperties {
@@ -65,5 +77,15 @@ class PropertyDescriptorScannerTest {
     public void setEnabled(Boolean enabled) {
       this.enabled = enabled;
     }
+  }
+
+  static class InvalidNullableProperties {
+    final PropertyDescriptor<String> textProp = PropertyDescriptor.property("text", null);
+
+    public String isText() {
+      return "invalid";
+    }
+
+    public void setText(String text) {}
   }
 }
