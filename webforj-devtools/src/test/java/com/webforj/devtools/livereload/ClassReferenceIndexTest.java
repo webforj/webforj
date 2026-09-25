@@ -2,12 +2,14 @@ package com.webforj.devtools.livereload;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.lang.ref.Reference;
+import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.net.URL;
@@ -197,14 +199,16 @@ class ClassReferenceIndexTest {
     compile(classes, "Card", "class Card {}");
     compile(classes, "View", "class View { Card card = new Card(); }");
 
-    WeakReference<ClassLoader> collected = populateWithDiscardedLoader();
+    ReferenceQueue<ClassLoader> queue = new ReferenceQueue<>();
+    WeakReference<ClassLoader> collected = populateWithDiscardedLoader(queue);
 
-    for (int attempt = 0; attempt < 50 && collected.get() != null; attempt++) {
+    Reference<? extends ClassLoader> cleared = null;
+    for (int attempt = 0; attempt < 50 && cleared == null; attempt++) {
       System.gc();
-      Thread.sleep(10);
+      cleared = queue.remove(100);
     }
 
-    assertNull(collected.get(), "the index kept a discarded class loader alive");
+    assertSame(collected, cleared, "the index kept a discarded class loader alive");
   }
 
   @Test
@@ -228,12 +232,13 @@ class ClassReferenceIndexTest {
     }
   }
 
-  private WeakReference<ClassLoader> populateWithDiscardedLoader() throws IOException {
+  private WeakReference<ClassLoader> populateWithDiscardedLoader(ReferenceQueue<ClassLoader> queue)
+      throws IOException {
     URLClassLoader discarded = newLoader(classes.toUri().toURL());
     assertEquals(Set.of("Card"), index.newWalk(discarded, Set.of("Card"), Set.of()).reach("View"));
     discarded.close();
 
-    return new WeakReference<>(discarded);
+    return new WeakReference<>(discarded, queue);
   }
 
   private static URLClassLoader newLoader(URL location) {

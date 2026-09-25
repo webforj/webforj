@@ -77,27 +77,6 @@ final class ClassReferenceIndex {
     return new Walk(loader, entries, targets, boundaries);
   }
 
-  private static Set<String> getReferences(Map<String, Entry> entries, ClassLoader loader,
-      String className) {
-    Entry entry = entries.get(className);
-    if (entry != null && entry.isCurrent()) {
-      return entry.getReferences();
-    }
-
-    Entry read = read(loader, className);
-    if (read == null) {
-      // The stale entry of a class file that disappeared is dropped, so a later walk stops paying
-      // for a file time that can no longer be read.
-      entries.remove(className);
-
-      return Collections.emptySet();
-    }
-
-    entries.put(className, read);
-
-    return read.getReferences();
-  }
-
   private static Entry read(ClassLoader loader, String className) {
     URL resource = loader.getResource(className.replace('.', '/') + CLASS_FILE_SUFFIX);
     if (resource == null) {
@@ -203,7 +182,7 @@ final class ClassReferenceIndex {
       Deque<String> pending = new ArrayDeque<>();
       visit(origin, found, pending);
       while (!pending.isEmpty() && !isComplete()) {
-        for (String reference : getReferences(entries, loader, pending.pop())) {
+        for (String reference : getReferences(pending.pop())) {
           if (!boundaries.contains(reference) && visited.add(reference)) {
             visit(reference, found, pending);
           }
@@ -232,6 +211,26 @@ final class ClassReferenceIndex {
       unreached.removeAll(reached);
 
       return unreached;
+    }
+
+    private Set<String> getReferences(String className) {
+      Entry entry = entries.get(className);
+      if (entry != null && entry.isCurrent()) {
+        return entry.getReferences();
+      }
+
+      Entry read = read(loader, className);
+      if (read == null) {
+        // The stale entry of a class file that disappeared is dropped, so a later walk stops paying
+        // for a file time that can no longer be read.
+        entries.remove(className);
+
+        return Collections.emptySet();
+      }
+
+      entries.put(className, read);
+
+      return read.getReferences();
     }
 
     private void visit(String className, Set<String> found, Deque<String> pending) {

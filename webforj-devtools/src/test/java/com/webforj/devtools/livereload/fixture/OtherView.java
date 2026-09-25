@@ -10,8 +10,12 @@ public class OtherView extends Component {
   private final OtherCard card = new OtherCard();
 
   @Override
-  protected void onCreate(Window window) {}
+  protected void onCreate(Window window) {
+    // Do nothing
+  }
 
   @Override
-  protected void onDestroy() {}
+  protected void onDestroy() {
+    // Do nothing
+  }
 }

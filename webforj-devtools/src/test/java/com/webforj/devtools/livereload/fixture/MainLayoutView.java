@@ -12,14 +12,22 @@ public class MainLayoutView extends Component implements RouteOutlet {
   private final Class<?> navigationTarget = DashboardView.class;
 
   @Override
-  protected void onCreate(Window window) {}
+  protected void onCreate(Window window) {
+    // Do nothing
+  }
 
   @Override
-  protected void onDestroy() {}
+  protected void onDestroy() {
+    // Do nothing
+  }
 
   @Override
-  public void showRouteContent(Component component) {}
+  public void showRouteContent(Component component) {
+    // Do nothing
+  }
 
   @Override
-  public void removeRouteContent(Component component) {}
+  public void removeRouteContent(Component component) {
+    // Do nothing
+  }
 }
