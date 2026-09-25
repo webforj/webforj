@@ -63,6 +63,10 @@ public class WebforjSecurityConfigurer
    * @throws IllegalArgumentException if unable to resolve the route path for the component
    */
   public WebforjSecurityConfigurer loginPage(Class<? extends Component> loginPageComponent) {
+    if (loginPageComponent == null) {
+      throw new IllegalArgumentException("Login page component must not be null");
+    }
+
     String path = RoutePathResolver.resolvePath(loginPageComponent);
     if (path == null) {
       throw new IllegalArgumentException(
@@ -141,6 +145,10 @@ public class WebforjSecurityConfigurer
    */
   public WebforjSecurityConfigurer accessDeniedPage(
       Class<? extends Component> accessDeniedPageComponent) {
+    if (accessDeniedPageComponent == null) {
+      throw new IllegalArgumentException("Access denied page component must not be null");
+    }
+
     String path = RoutePathResolver.resolvePath(accessDeniedPageComponent);
     if (path == null) {
       throw new IllegalArgumentException(
