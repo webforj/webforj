@@ -118,19 +118,25 @@ final class PropertyDescriptorScanner {
     } else {
       String propName = descriptor.getName();
       Class<V> propType = descriptor.getType();
+      methodName = "get" + capitalize(propName);
+      if (propType == null) {
+        Method getter = findMethod(targetClass, methodName);
+        if (getter != null) {
+          return getter;
+        }
+      }
       if (propType == null || propType == boolean.class || propType == Boolean.class) {
         String isGetterName = "is" + capitalize(propName);
         String hasGetterName = "has" + capitalize(propName);
 
-        Method getter = findMethod(targetClass, isGetterName);
+        Method getter = findBooleanGetter(targetClass, isGetterName);
         if (getter == null) {
-          getter = findMethod(targetClass, hasGetterName);
+          getter = findBooleanGetter(targetClass, hasGetterName);
         }
         if (getter != null) {
           return getter;
         }
       }
-      methodName = "get" + capitalize(propName);
     }
 
     Method getter = findMethod(targetClass, methodName);
@@ -146,6 +152,15 @@ final class PropertyDescriptorScanner {
     }
 
     return getter;
+  }
+
+  private static Method findBooleanGetter(Class<?> targetClass, String methodName) {
+    Method getter = findMethod(targetClass, methodName);
+    if (getter != null
+        && (getter.getReturnType() == boolean.class || getter.getReturnType() == Boolean.class)) {
+      return getter;
+    }
+    return null;
   }
 
   private static <T> Method findCompatibleSetter(Class<T> clazz, String methodName,

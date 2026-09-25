@@ -14,10 +14,17 @@ class PropertyDescriptorScannerTest {
         PropertyDescriptorScanner.scan(NullableProperties.class, instance, descriptor -> true);
 
     assertEquals(2, properties.size());
-    assertEquals(NullableProperties.class.getMethod("getText"), properties.get(0).getGetter());
+    var textProperty = properties.stream()
+        .filter(property -> property.getPropertyDescriptor().getName().equals("text")).findFirst()
+        .orElseThrow();
+    var enabledProperty = properties.stream()
+        .filter(property -> property.getPropertyDescriptor().getName().equals("enabled"))
+        .findFirst().orElseThrow();
+
+    assertEquals(NullableProperties.class.getMethod("getText"), textProperty.getGetter());
     assertEquals(NullableProperties.class.getMethod("setText", String.class),
-        properties.get(0).getSetter());
-    assertEquals(NullableProperties.class.getMethod("isEnabled"), properties.get(1).getGetter());
+        textProperty.getSetter());
+    assertEquals(NullableProperties.class.getMethod("isEnabled"), enabledProperty.getGetter());
 
     PropertyDescriptorTester.run(NullableProperties.class, instance);
     assertNull(instance.getText());
@@ -35,11 +42,19 @@ class PropertyDescriptorScannerTest {
       return text;
     }
 
+    public boolean isText() {
+      return false;
+    }
+
     public void setText(String text) {
       this.text = text;
     }
 
     public void setText(Integer value) {
+      throw new AssertionError("The getter must select the String overload");
+    }
+
+    public void setText(boolean value) {
       throw new AssertionError("The getter must select the String overload");
     }
 
