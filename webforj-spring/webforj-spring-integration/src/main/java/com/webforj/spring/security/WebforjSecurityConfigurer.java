@@ -4,6 +4,7 @@ import com.webforj.component.Component;
 import com.webforj.router.RoutePathResolver;
 import com.webforj.router.RoutePattern;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.function.Consumer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -60,9 +61,12 @@ public class WebforjSecurityConfigurer
    *
    * @param loginPageComponent the login page component class
    * @return this configurer for method chaining
+   * @throws NullPointerException if the component class is null
    * @throws IllegalArgumentException if unable to resolve the route path for the component
    */
   public WebforjSecurityConfigurer loginPage(Class<? extends Component> loginPageComponent) {
+    Objects.requireNonNull(loginPageComponent, "Login page component must not be null");
+
     String path = RoutePathResolver.resolvePath(loginPageComponent);
     if (path == null) {
       throw new IllegalArgumentException(
@@ -137,10 +141,14 @@ public class WebforjSecurityConfigurer
    *
    * @param accessDeniedPageComponent the access denied page component class
    * @return this configurer for method chaining
+   * @throws NullPointerException if the component class is null
    * @throws IllegalArgumentException if unable to resolve the route path for the component
    */
   public WebforjSecurityConfigurer accessDeniedPage(
       Class<? extends Component> accessDeniedPageComponent) {
+    Objects.requireNonNull(accessDeniedPageComponent,
+        "Access denied page component must not be null");
+
     String path = RoutePathResolver.resolvePath(accessDeniedPageComponent);
     if (path == null) {
       throw new IllegalArgumentException(

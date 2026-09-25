@@ -52,7 +52,7 @@ final class PropertyDescriptorScanner {
           PropertyDescriptor<V> descriptor = (PropertyDescriptor<V>) field.get(instance);
           if (descriptorFilter.test(descriptor)) {
             Method getter = findGetter(clazz, field, descriptor);
-            Method setter = findSetter(clazz, field, descriptor);
+            Method setter = findSetter(clazz, field, descriptor, getter);
             Class<?> targetClass = getTargetClass(field);
             properties.add(new PropertyDescriptorInfo<>(descriptor, getter, setter, targetClass));
           }
@@ -66,7 +66,7 @@ final class PropertyDescriptorScanner {
   }
 
   private static <T, V> Method findSetter(Class<T> clazz, Field field,
-      PropertyDescriptor<V> descriptor) {
+      PropertyDescriptor<V> descriptor, Method getter) {
     PropertyMethods methodsAnnotation = field.getAnnotation(PropertyMethods.class);
     String methodName;
     Class<?> targetClass = clazz;
@@ -81,16 +81,24 @@ final class PropertyDescriptorScanner {
       methodName = "set" + capitalize(propName);
     }
 
-    Class<V> propType = descriptor.getType();
-    Method setter = findMethod(targetClass, methodName, getPrimitiveType(propType));
-
-    if (setter == null) {
+    Class<?> propType = descriptor.getType();
+    Method setter;
+    if (propType == null) {
+      propType = getter.getReturnType();
       setter = findMethod(targetClass, methodName, propType);
+      if (setter == null) {
+        setter = findMethod(targetClass, methodName, getPrimitiveType(propType));
+      }
+    } else {
+      setter = findMethod(targetClass, methodName, getPrimitiveType(propType));
+      if (setter == null) {
+        setter = findMethod(targetClass, methodName, propType);
+      }
     }
 
     if (setter == null) {
       // Additional logic for handling complex types like List<Object>
-      setter = findCompatibleSetter(targetClass, methodName, descriptor);
+      setter = findCompatibleSetter(targetClass, methodName, propType);
     }
 
     if (setter == null) {
@@ -115,19 +123,25 @@ final class PropertyDescriptorScanner {
     } else {
       String propName = descriptor.getName();
       Class<V> propType = descriptor.getType();
-      if (propType.equals(boolean.class) || propType.equals(Boolean.class)) {
+      methodName = "get" + capitalize(propName);
+      if (propType == null) {
+        Method getter = findMethod(targetClass, methodName);
+        if (getter != null) {
+          return getter;
+        }
+      }
+      if (propType == null || propType == boolean.class || propType == Boolean.class) {
         String isGetterName = "is" + capitalize(propName);
         String hasGetterName = "has" + capitalize(propName);
 
-        Method getter = findMethod(targetClass, isGetterName);
+        Method getter = findBooleanGetter(targetClass, isGetterName);
         if (getter == null) {
-          getter = findMethod(targetClass, hasGetterName);
+          getter = findBooleanGetter(targetClass, hasGetterName);
         }
         if (getter != null) {
           return getter;
         }
       }
-      methodName = "get" + capitalize(propName);
     }
 
     Method getter = findMethod(targetClass, methodName);
@@ -145,12 +159,20 @@ final class PropertyDescriptorScanner {
     return getter;
   }
 
-  private static <T, V> Method findCompatibleSetter(Class<T> clazz, String methodName,
-      PropertyDescriptor<V> descriptor) {
+  private static Method findBooleanGetter(Class<?> targetClass, String methodName) {
+    Method getter = findMethod(targetClass, methodName);
+    if (getter != null && isBooleanType(getter.getReturnType())) {
+      return getter;
+    }
+    return null;
+  }
+
+  private static <T> Method findCompatibleSetter(Class<T> clazz, String methodName,
+      Class<?> propType) {
     // Iterate over all methods and find a compatible setter
     for (Method method : clazz.getMethods()) {
       if (method.getName().equals(methodName) && method.getParameterTypes().length == 1
-          && method.getParameterTypes()[0].isAssignableFrom(descriptor.getType())) {
+          && method.getParameterTypes()[0].isAssignableFrom(propType)) {
         return method;
       }
     }
@@ -159,16 +181,23 @@ final class PropertyDescriptorScanner {
 
   private static <T, V> Method findCompatibleGetter(Class<T> clazz, String propName,
       PropertyDescriptor<V> descriptor) {
+    Class<V> propType = descriptor.getType();
     // Iterate over all methods and find a compatible getter
     for (Method method : clazz.getMethods()) {
-      if ((method.getName().equals("get" + capitalize(propName))
-          || method.getName().equals("is" + capitalize(propName)))
-          && method.getReturnType().isAssignableFrom(descriptor.getType())
+      boolean isGetter = method.getName().equals("get" + capitalize(propName));
+      boolean isBooleanGetter = method.getName().equals("is" + capitalize(propName))
+          && isBooleanType(method.getReturnType());
+      if ((isGetter || isBooleanGetter)
+          && (propType == null || method.getReturnType().isAssignableFrom(propType))
           && method.getParameterTypes().length == 0) {
         return method;
       }
     }
     return null;
+  }
+
+  private static boolean isBooleanType(Class<?> type) {
+    return type == boolean.class || type == Boolean.class;
   }
 
   private static Method findMethod(Class<?> clazz, String methodName, Class<?>... paramTypes) {
