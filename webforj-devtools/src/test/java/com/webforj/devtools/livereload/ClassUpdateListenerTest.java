@@ -23,17 +23,23 @@ import com.webforj.Environment;
 import com.webforj.Page;
 import com.webforj.component.Component;
 import com.webforj.component.window.Frame;
-import com.webforj.component.window.Window;
 import com.webforj.conceiver.ConceiverProvider;
 import com.webforj.conceiver.DefaultConceiver;
+import com.webforj.devtools.livereload.fixture.DashboardCard;
+import com.webforj.devtools.livereload.fixture.DashboardView;
+import com.webforj.devtools.livereload.fixture.LayoutBadge;
+import com.webforj.devtools.livereload.fixture.MainLayoutView;
+import com.webforj.devtools.livereload.fixture.OtherCard;
+import com.webforj.devtools.livereload.fixture.OtherView;
 import com.webforj.event.page.PageEvent;
 import com.webforj.event.page.PageEventOptions;
-import com.webforj.router.RouteOutlet;
 import com.webforj.router.RouteRegistry;
 import com.webforj.router.Router;
 import com.webforj.router.history.Location;
 import com.webforj.router.history.MemoryHistory;
 import com.webforj.router.observer.RouteRendererObserver;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -120,6 +126,57 @@ class ClassUpdateListenerTest {
   }
 
   @Test
+  void shouldRebuildOnlyTheViewThatReachesTheChangedClass() {
+    router.navigate(new Location("/layout/dashboard"));
+    Component firstView = renderedComponent(DashboardView.class);
+    final Component layout = renderedComponent(MainLayoutView.class);
+
+    listener.apply(Set.of(DashboardCard.class.getName()), router, page);
+
+    assertTrue(firstView.isDestroyed());
+    assertNotSame(firstView, renderedComponent(DashboardView.class));
+    assertSame(layout, renderedComponent(MainLayoutView.class));
+    verify(page, never()).reload();
+  }
+
+  @Test
+  void shouldRebuildFromTheLayoutThatReachesTheChangedClass() {
+    router.navigate(new Location("/layout/dashboard"));
+    Component firstLayout = renderedComponent(MainLayoutView.class);
+
+    listener.apply(Set.of(LayoutBadge.class.getName(), DashboardCard.class.getName()), router,
+        page);
+
+    assertTrue(firstLayout.isDestroyed());
+    assertNotSame(firstLayout, renderedComponent(MainLayoutView.class));
+    verify(page, never()).reload();
+  }
+
+  @Test
+  void shouldRebuildFromTheChangedLayoutThatAloneReachesTheOtherChangedClass() {
+    router.navigate(new Location("/layout/dashboard"));
+    Component firstLayout = renderedComponent(MainLayoutView.class);
+
+    listener.apply(Set.of(MainLayoutView.class.getName(), LayoutBadge.class.getName()), router,
+        page);
+
+    assertTrue(firstLayout.isDestroyed());
+    assertNotSame(firstLayout, renderedComponent(MainLayoutView.class));
+    verify(page, never()).reload();
+  }
+
+  @Test
+  void shouldReloadForTheClassOnlyAnUnrenderedRouteReaches() {
+    router.navigate(new Location("/layout/dashboard"));
+    Component firstView = renderedComponent(DashboardView.class);
+
+    listener.apply(Set.of(OtherCard.class.getName()), router, page);
+
+    verify(page).reload();
+    assertFalse(firstView.isDestroyed());
+  }
+
+  @Test
   void shouldReloadForTheClassOutsideTheRouteTree() {
     // Nothing is guessed about a class the route tree cannot account for, such as a service.
     router.navigate(new Location("/layout/dashboard"));
@@ -174,6 +231,36 @@ class ClassUpdateListenerTest {
 
     verify(page).reload();
     assertFalse(firstView.isDestroyed());
+  }
+
+  @Test
+  void shouldReloadWhenTheClassReferencesCannotBeRead() {
+    ClassReferenceIndex failing = mock(ClassReferenceIndex.class);
+    when(failing.newWalk(any(), any(), any()))
+        .thenThrow(new UncheckedIOException(new IOException("unreadable")));
+    router.navigate(new Location("/layout/dashboard"));
+    Component firstView = renderedComponent(DashboardView.class);
+
+    new ClassUpdateListener(failing).apply(Set.of(DashboardCard.class.getName()), router, page);
+
+    verify(page).reload();
+    assertFalse(firstView.isDestroyed());
+  }
+
+  @Test
+  void shouldRebuildTheChangedRouteWithoutReadingAnyReferences() {
+    ClassReferenceIndex index = mock(ClassReferenceIndex.class);
+    ClassReferenceIndex.Walk walk = mock(ClassReferenceIndex.Walk.class);
+    when(index.newWalk(any(), any(), any())).thenReturn(walk);
+    when(walk.isComplete()).thenReturn(true);
+    router.navigate(new Location("/layout/dashboard"));
+    Component firstView = renderedComponent(DashboardView.class);
+
+    new ClassUpdateListener(index).apply(Set.of(DashboardView.class.getName()), router, page);
+
+    assertTrue(firstView.isDestroyed());
+    verify(walk, never()).reach(any());
+    verify(page, never()).reload();
   }
 
   @Test
@@ -247,51 +334,5 @@ class ClassUpdateListenerTest {
 
   private Component renderedComponent(Class<? extends Component> componentClass) {
     return router.getRenderer().getRenderedComponent(componentClass).orElseThrow();
-  }
-
-  public static class MainLayoutView extends Component implements RouteOutlet {
-    @Override
-    protected void onCreate(Window window) {
-      // Do nothing
-    }
-
-    @Override
-    protected void onDestroy() {
-      // Do nothing
-    }
-
-    @Override
-    public void showRouteContent(Component component) {
-      // Do nothing
-    }
-
-    @Override
-    public void removeRouteContent(Component component) {
-      // Do nothing
-    }
-  }
-
-  public static class DashboardView extends Component {
-    @Override
-    protected void onCreate(Window window) {
-      // Do nothing
-    }
-
-    @Override
-    protected void onDestroy() {
-      // Do nothing
-    }
-  }
-
-  public static class OtherView extends Component {
-    @Override
-    protected void onCreate(Window window) {
-      // Do nothing
-    }
-
-    @Override
-    protected void onDestroy() {
-      // Do nothing
-    }
   }
 }

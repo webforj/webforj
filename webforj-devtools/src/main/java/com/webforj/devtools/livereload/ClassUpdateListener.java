@@ -15,6 +15,7 @@ import com.webforj.router.RouteEntry;
 import com.webforj.router.RouteRelation;
 import com.webforj.router.Router;
 import com.webforj.router.history.Location;
+import java.io.UncheckedIOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
@@ -26,11 +27,12 @@ import java.util.Set;
  *
  * <p>
  * The reload client hands every class update to the page, and the page raises it here, inside its
- * own application instance. When every changed class is accounted for by the route tree, the router
- * recreates the affected part of the active hierarchy in place, so the rest of the interface and
- * the application state survive the change. An application without routing, a class the route tree
- * does not know, or a vetoed recreation all end in the full page reload, because nothing is ever
- * guessed about code the route tree cannot account for.
+ * own application instance. A changed class is accounted for when it is a route or when the
+ * compiled code of a rendered route references it, directly or through other application classes.
+ * When every changed class is accounted for, the router recreates the affected part of the active
+ * hierarchy in place, so the rest of the interface and the application state survive the change. An
+ * application without routing, a class no rendered route reaches, or a vetoed recreation all end in
+ * the full page reload.
  * </p>
  *
  * @author Hyyan Abo Fakher
@@ -42,8 +44,21 @@ public class ClassUpdateListener implements AppLifecycleListener {
   static final String DATA_KEY = "classes";
 
   private static final System.Logger logger = System.getLogger(ClassUpdateListener.class.getName());
+  private static final ClassReferenceIndex sharedReferences = new ClassReferenceIndex();
 
   private final Gson gson = new Gson();
+  private final ClassReferenceIndex references;
+
+  /**
+   * Creates a listener that reads the class references through the index every page shares.
+   */
+  public ClassUpdateListener() {
+    this(sharedReferences);
+  }
+
+  ClassUpdateListener(ClassReferenceIndex references) {
+    this.references = references;
+  }
 
   /**
    * {@inheritDoc}
@@ -86,26 +101,41 @@ public class ClassUpdateListener implements AppLifecycleListener {
       return;
     }
 
-    // The hierarchy iterates root first, so the first hit is the topmost affected node and its
-    // recreation covers every changed class below it.
+    // The hierarchy iterates root first, so the first affected node is the topmost one and its
+    // recreation covers every changed class below it. A node is affected when it is a changed
+    // route or when its compiled code reaches a changed class, directly or through other
+    // application classes. The walk stops at other routes, because the router creates a route and
+    // a reference to one, a navigation target for example, never builds it. A change to routes
+    // alone is complete before any class file is read.
+    Set<String> routes = getRegisteredRoutes(router);
     Class<? extends Component> target = null;
-    Set<String> partOfHierarchy = new HashSet<>();
-    for (RouteRelation<Class<? extends Component>> node : activePath.get()) {
-      Class<? extends Component> nodeClass = node.getData();
-      if (classNames.contains(nodeClass.getName())) {
-        if (target == null) {
+    ClassReferenceIndex.Walk walk;
+    try {
+      Class<? extends Component> root = activePath.get().getData();
+      walk = references.newWalk(root.getClassLoader(), classNames, routes);
+      for (RouteRelation<Class<? extends Component>> node : activePath.get()) {
+        Class<? extends Component> nodeClass = node.getData();
+        // A changed route still walks, so a class only that route reaches is accounted for.
+        boolean reaches = !walk.isComplete() && !walk.reach(nodeClass.getName()).isEmpty();
+        boolean affected = classNames.contains(nodeClass.getName()) || reaches;
+        if (affected && target == null) {
           target = nodeClass;
         }
 
-        partOfHierarchy.add(nodeClass.getName());
+        if (target != null && walk.isComplete()) {
+          break;
+        }
       }
+    } catch (UncheckedIOException e) {
+      logger.log(System.Logger.Level.DEBUG, "Could not read the class references", e);
+      reloadPage(page, e.getMessage());
+      return;
     }
 
-    for (String className : classNames) {
-      if (!partOfHierarchy.contains(className) && !isRegisteredRoute(router, className)) {
-        reloadPage(page, "the class " + className + " is outside the route tree");
-        return;
-      }
+    if (!walk.isComplete()) {
+      reloadPage(page, "the class " + walk.getUnreached().iterator().next()
+          + " is outside the rendered route tree");
+      return;
     }
 
     if (target == null) {
@@ -157,14 +187,13 @@ public class ClassUpdateListener implements AppLifecycleListener {
     }
   }
 
-  private static boolean isRegisteredRoute(Router router, String className) {
+  private static Set<String> getRegisteredRoutes(Router router) {
+    Set<String> routes = new HashSet<>();
     for (RouteEntry entry : router.getRegistry().getAvailableRouteEntires()) {
-      if (entry.getComponent().getName().equals(className)) {
-        return true;
-      }
+      routes.add(entry.getComponent().getName());
     }
 
-    return false;
+    return routes;
   }
 
   private static void reloadPage(Page page, String reason) {
