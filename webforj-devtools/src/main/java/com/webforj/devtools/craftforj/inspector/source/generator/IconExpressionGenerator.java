@@ -93,7 +93,7 @@ public final class IconExpressionGenerator {
 
   private static IconExpression staticFactory(String className, String name) {
     MethodCallExpr call = new MethodCallExpr(new NameExpr(className), "create",
-        NodeList.nodeList(new StringLiteralExpr(name)));
+        NodeList.nodeList(new StringLiteralExpr().setString(name)));
 
     return new IconExpression(call, List.of(ICONS_PACKAGE + className));
   }
@@ -114,7 +114,8 @@ public final class IconExpressionGenerator {
   private static IconExpression generic(String name, String pool) {
     ObjectCreationExpr creation =
         new ObjectCreationExpr(null, StaticJavaParser.parseClassOrInterfaceType("Icon"),
-            NodeList.nodeList(new StringLiteralExpr(name), new StringLiteralExpr(pool)));
+            NodeList.nodeList(new StringLiteralExpr().setString(name),
+                new StringLiteralExpr().setString(pool)));
 
     return new IconExpression(creation, List.of(ICONS_PACKAGE + "Icon"));
   }

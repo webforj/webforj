@@ -29,6 +29,6 @@ public class FactoryMethodStrategy implements ModificationStrategy {
     }
 
     AstModifier.extractToVariableAndAddSetters(factoryMethod.get(), context.getSourceChanges(),
-        context.getTypeName());
+        context.getDeclarationType());
   }
 }

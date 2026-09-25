@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -46,6 +47,20 @@ public class SourceCodeModifier {
   private final UsagePlanner usagePlanner;
   private final SourceFileEditor fileEditor;
   private final List<ChangeWriter> writers;
+
+  private static class ComponentWriteException extends RuntimeException {
+
+    private final String componentId;
+
+    ComponentWriteException(String componentId, Exception cause) {
+      super(errorMessage(cause), cause);
+      this.componentId = componentId;
+    }
+
+    String getComponentId() {
+      return componentId;
+    }
+  }
 
   private static class GroupResult {
 
@@ -236,6 +251,7 @@ public class SourceCodeModifier {
     Map<ChangeRequest, String> failures = new LinkedHashMap<>();
     Map<ChangeRequest, UsagePlanner.UsagePlan> plans = new LinkedHashMap<>();
     Map<ChangeRequest, String> resolvedTargets = new LinkedHashMap<>();
+    Map<ChangeRequest, SourceLocation> definitions = new LinkedHashMap<>();
 
     for (ChangeRequest change : changes) {
       try {
@@ -266,7 +282,7 @@ public class SourceCodeModifier {
           sourceLocation =
               targetResolver.resolveParent(change.getParentId(), change.getParentSource());
           if (sourceLocation == null || sourceLocation.getFile() == null) {
-            failures.put(change, "Parent layout source file not found");
+            failures.put(change, "The source file for the parent layout was not found");
             continue;
           }
         } else {
@@ -275,19 +291,72 @@ public class SourceCodeModifier {
         }
 
         if (sourceLocation == null || sourceLocation.getFile() == null) {
-          failures.put(change, "Source file not found");
+          failures.put(change, "The source file for this component was not found");
           continue;
         }
 
-        Path path = Path.of(sourceLocation.getFile());
+        Path path = Path.of(sourceLocation.getFile()).normalize();
         grouped.computeIfAbsent(path, k -> new ArrayList<>()).add(change);
+        if (!ChangeWriter.isParentScoped(registry, change)) {
+          definitions.put(change, sourceLocation);
+        }
       } catch (Exception e) {
         LOGGER.log(System.Logger.Level.DEBUG, "Failed to group change by file", e);
         failures.put(change, errorMessage(e));
       }
     }
 
+    for (List<ChangeRequest> fileChanges : grouped.values()) {
+      Map<ChangeRequest, String> conflicts = findSharedSourceConflicts(fileChanges, definitions);
+      fileChanges.removeIf(change -> {
+        String error = conflicts.get(change);
+        if (error == null) {
+          return false;
+        }
+        failures.put(change, error);
+        return true;
+      });
+    }
+    grouped.values().removeIf(List::isEmpty);
+
     return new GroupResult(grouped, failures, plans, resolvedTargets);
+  }
+
+  private Map<ChangeRequest, String> findSharedSourceConflicts(List<ChangeRequest> changes,
+      Map<ChangeRequest, SourceLocation> definitions) {
+    Map<ChangeRequest, String> conflicts = new LinkedHashMap<>();
+    for (int index = 0; index < changes.size(); index++) {
+      ChangeRequest first = changes.get(index);
+      SourceLocation source = definitions.get(first);
+      if (source == null || first.getProperty() == null
+          || registry.getHandler(first.getFeatureType()).isEmpty()) {
+        continue;
+      }
+
+      for (ChangeRequest second : changes.subList(index + 1, changes.size())) {
+        if (second.getProperty() != null
+            && !Objects.equals(first.getComponentId(), second.getComponentId())
+            && Objects.equals(first.getFeatureType(), second.getFeatureType())
+            && Objects.equals(first.getProperty().getName(), second.getProperty().getName())
+            && isSameDeclaration(source, definitions.get(second))
+            && !Objects.deepEquals(first.getValue(), second.getValue())) {
+          String error = "Property '" + first.getProperty().getName()
+              + "' has conflicting values for the same source statement. "
+              + "Choose one value for all instances.";
+          conflicts.put(first, error);
+          conflicts.put(second, error);
+        }
+      }
+    }
+
+    return conflicts;
+  }
+
+  private boolean isSameDeclaration(SourceLocation first, SourceLocation second) {
+    return second != null && Objects.equals(first.getLine(), second.getLine())
+        && Objects.equals(first.getVariableName(), second.getVariableName())
+        && Objects.equals(first.getDeclaringClass(), second.getDeclaringClass())
+        && Objects.equals(first.getComponentType(), second.getComponentType());
   }
 
   private FileOutcome processFile(Path file, List<ChangeRequest> changes,
@@ -297,19 +366,23 @@ public class SourceCodeModifier {
         .groupingBy(ChangeRequest::getComponentId, LinkedHashMap::new, Collectors.toList()));
 
     Map<String, String> errors = new LinkedHashMap<>();
-    SourceImports imports = new SourceImports();
-    WriteContext context = new WriteContext(plans, imports.getRequired());
-
-    FilePatch patch = fileEditor.edit(file, imports, dryRun,
-        cu -> writeComponents(cu, byComponent, context, errors));
-
-    return new FileOutcome(errors, patch, context.getReplacedExpressions());
+    while (true) {
+      SourceImports imports = new SourceImports();
+      WriteContext context = new WriteContext(plans, imports.getRequired());
+      try {
+        FilePatch patch =
+            fileEditor.edit(file, imports, dryRun, cu -> writeComponents(cu, byComponent, context));
+        return new FileOutcome(errors, patch, context.getReplacedExpressions());
+      } catch (ComponentWriteException e) {
+        // Discard the failed AST and imports before retrying the remaining components.
+        errors.put(e.getComponentId(), e.getMessage());
+        byComponent.remove(e.getComponentId());
+      }
+    }
   }
 
   private boolean writeComponents(CompilationUnit cu, Map<String, List<ChangeRequest>> byComponent,
-      WriteContext context, Map<String, String> errors) {
-    boolean anySucceeded = false;
-
+      WriteContext context) {
     for (Map.Entry<String, List<ChangeRequest>> entry : byComponent.entrySet()) {
       try {
         List<ChangeRequest> remaining = new ArrayList<>(entry.getValue());
@@ -321,15 +394,14 @@ public class SourceCodeModifier {
             remaining.removeAll(claimed);
           }
         }
-        anySucceeded = true;
       } catch (Exception e) {
         LOGGER.log(System.Logger.Level.DEBUG,
             () -> "Failed to apply changes for component: " + entry.getKey(), e);
-        errors.put(entry.getKey(), errorMessage(e));
+        throw new ComponentWriteException(entry.getKey(), e);
       }
     }
 
-    return anySucceeded;
+    return !byComponent.isEmpty();
   }
 
   private static String errorMessage(Exception e) {

@@ -1,7 +1,8 @@
 package com.webforj.devtools.craftforj.inspector.source;
 
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.VariableDeclarator;
 import com.webforj.component.Component;
 import com.webforj.devtools.craftforj.inspector.contribution.FeatureHandler;
 import com.webforj.devtools.craftforj.inspector.contribution.FeatureHandlerRegistry;
@@ -15,6 +16,7 @@ import com.webforj.devtools.craftforj.source.model.SourceLocation;
 import com.webforj.devtools.craftforj.source.model.TargetContext;
 import com.webforj.devtools.craftforj.source.parser.AstFinder;
 import com.webforj.devtools.craftforj.source.parser.AstModifier;
+import com.webforj.devtools.craftforj.source.parser.TypeReferences;
 import com.webforj.devtools.craftforj.source.strategy.ModificationStrategy;
 import com.webforj.devtools.craftforj.utilities.ComponentLocator;
 import com.webforj.devtools.craftforj.utilities.ComponentTypeNames;
@@ -23,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Predicate;
 
 /**
  * Writes parent-scoped layout item changes into the parent layout's source file.
@@ -62,7 +63,8 @@ class LayoutItemChangeWriter implements ChangeWriter {
     SourceLocation parentLocation =
         targetResolver.resolve(parentComponent, first.getParentSource());
     if (parentLocation == null || !parentLocation.hasBasicInfo()) {
-      throw new SourceModificationException("Parent layout source location not found");
+      throw new SourceModificationException(
+          "The source location for the parent layout was not found");
     }
 
     if (parentComponent == null) {
@@ -73,7 +75,7 @@ class LayoutItemChangeWriter implements ChangeWriter {
     Component component = ComponentLocator.findById(first.getComponentId()).orElse(null);
     SourceLocation childLocation = targetResolver.resolve(component, first.getSource());
     if (childLocation == null || !childLocation.hasBasicInfo()) {
-      throw new SourceModificationException("Source location not found");
+      throw new SourceModificationException("The source location for this component was not found");
     }
 
     if (component == null) {
@@ -89,6 +91,7 @@ class LayoutItemChangeWriter implements ChangeWriter {
     }
 
     String itemVar = resolveItemVariable(cu, childLocation, context.getRequiredImports());
+    VariableDeclarator itemDeclaration = resolveItemDeclaration(cu, childLocation, itemVar);
     TargetContext parentTarget =
         new TargetContext(parentLocation.getLine(), parentLocation.getSimpleTypeName());
     if (parentComponent != null) {
@@ -110,12 +113,17 @@ class LayoutItemChangeWriter implements ChangeWriter {
 
       SourceChange sourceChange = itemHandler.buildItemSourceChange(change.getProperty(), itemVar);
       if (sourceChange == null) {
-        removeItemCall(cu, parentTarget, parentVar, itemHandler, change, itemVar);
-        continue;
+        sourceChange = SourceChange.builder()
+            .removeMethodCall(itemHandler.getSourceMethodName(change.getPropertyName()))
+            .itemRef(itemVar, itemHandler.getItemPosition(), itemHandler.getItemCallArgumentCount())
+            .build();
       }
 
+      sourceChange = sourceChange.withPropertyName(change.getPropertyName());
+      sourceChange.setItemDeclaration(itemDeclaration);
       sourceChanges.add(sourceChange);
-      context.getRequiredImports().addAll(sourceChange.getImports());
+      TypeReferences.bind(cu, sourceChange.getArguments(), sourceChange.getImports(),
+          context.getRequiredImports());
     }
 
     if (sourceChanges.isEmpty()) {
@@ -124,6 +132,12 @@ class LayoutItemChangeWriter implements ChangeWriter {
 
     ModificationContext modification =
         new ModificationContext(parentTarget, parentVar, sourceChanges);
+    String parentType = parentLocation.getComponentType();
+    if (parentType != null && parentType.contains(".")
+        && sourceChanges.stream().anyMatch(change -> !change.isRemoval())) {
+      modification.setDeclarationType(
+          TypeReferences.resolveType(cu, parentType, context.getRequiredImports(), true));
+    }
     for (ModificationStrategy strategy : strategies) {
       if (strategy.canHandle(cu, parentTarget)) {
         strategy.apply(cu, modification);
@@ -132,8 +146,9 @@ class LayoutItemChangeWriter implements ChangeWriter {
     }
 
     throw new SourceModificationException(
-        "Cannot modify " + parentTarget.getTypeName() + " at line " + parentTarget.getLineNumber()
-            + ". No suitable modification strategy found.");
+        "No " + parentTarget.getTypeName() + " is declared at line " + parentTarget.getLineNumber()
+            + ". The source changed since the application was compiled. "
+            + "Reload the application before saving.");
   }
 
   private String resolveItemVariable(CompilationUnit cu, SourceLocation childLocation,
@@ -146,12 +161,15 @@ class LayoutItemChangeWriter implements ChangeWriter {
     // Inline-created children get extracted to a variable so the parent call can reference them
     TargetContext childTarget =
         new TargetContext(childLocation.getLine(), childLocation.getSimpleTypeName());
+    String typeName = childLocation.getComponentType();
+    String declarationType = typeName != null && typeName.contains(".")
+        ? TypeReferences.resolveType(cu, typeName, requiredImports, true)
+        : childTarget.getTypeName();
 
     String extracted = AstFinder.findInlineCreationAt(cu, childTarget)
-        .map(expr -> AstModifier.extractToVariable(expr, childTarget.getTypeName()))
+        .map(expr -> AstModifier.extractToVariable(expr, declarationType))
         .orElseGet(() -> AstFinder.findFactoryMethodAt(cu, childTarget)
-            .map(expr -> AstModifier.extractToVariable(expr, childTarget.getTypeName()))
-            .orElse(null));
+            .map(expr -> AstModifier.extractToVariable(expr, declarationType)).orElse(null));
 
     if (extracted == null) {
       throw new SourceModificationException(
@@ -159,26 +177,23 @@ class LayoutItemChangeWriter implements ChangeWriter {
               + childLocation.getLine());
     }
 
-    if (childLocation.getComponentType() != null) {
-      requiredImports.add(childLocation.getComponentType());
-    }
-
     return extracted;
   }
 
-  private void removeItemCall(CompilationUnit cu, TargetContext parentTarget, String parentVar,
-      LayoutItemContribution<?> itemHandler, ChangeRequest change, String itemVar) {
-    Predicate<MethodCallExpr> scopeMatcher = null;
-    if (parentVar != null && !parentVar.isEmpty()) {
-      scopeMatcher = mc -> AstModifier.isMethodCallOnVariable(mc, parentVar);
-    } else if (AstFinder.usesBoundComponentPattern(cu, parentTarget)) {
-      scopeMatcher = AstModifier::isMethodCallOnBoundComponent;
-    }
-
-    if (scopeMatcher != null) {
-      AstModifier.removeItemCall(cu, scopeMatcher,
-          itemHandler.getSourceMethodName(change.getPropertyName()), itemVar,
-          itemHandler.getItemPosition(), itemHandler.getItemCallArgumentCount());
-    }
+  private VariableDeclarator resolveItemDeclaration(CompilationUnit cu, SourceLocation location,
+      String name) {
+    return cu.findAll(VariableDeclarator.class).stream()
+        .filter(variable -> variable.getNameAsString().equals(name))
+        .filter(variable -> variable.getRange()
+            .or(() -> variable.getInitializer().flatMap(Node::getRange))
+            .map(range -> range.begin.line <= location.getLine()
+                && range.end.line >= location.getLine())
+            .orElse(false))
+        .findFirst()
+        .orElseThrow(() -> new SourceModificationException(
+            "No layout item '" + name + "' is declared at line " + location.getLine()
+                + ". The source changed since the application was compiled. "
+                + "Reload the application before saving."));
   }
+
 }

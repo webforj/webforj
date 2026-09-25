@@ -10,7 +10,9 @@ import com.webforj.devtools.craftforj.inspector.source.generator.IconExpressionG
 import com.webforj.devtools.craftforj.source.SourceModificationException;
 import com.webforj.devtools.craftforj.source.model.TargetContext;
 import com.webforj.devtools.craftforj.source.parser.AstFinder;
+import com.webforj.devtools.craftforj.source.parser.TypeReferences;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Rewrites the icon expression of an {@code Icon} component in place.
@@ -42,6 +44,11 @@ public final class IconExpressionRewriter {
    *         expression cannot be rewritten
    */
   public static List<String> rewrite(CompilationUnit cu, TargetContext target, Object value) {
+    return rewrite(cu, target, value, null);
+  }
+
+  static List<String> rewrite(CompilationUnit cu, TargetContext target, Object value,
+      Set<String> requiredImports) {
     List<Expression> candidates = AstFinder.findIconExpressionsAt(cu, target);
 
     if (candidates.isEmpty()) {
@@ -60,9 +67,13 @@ public final class IconExpressionRewriter {
     }
 
     IconExpression generated = IconExpressionGenerator.generate(String.valueOf(value));
+    if (requiredImports != null) {
+      TypeReferences.bind(cu, List.of(generated.expression()), generated.imports(),
+          requiredImports);
+    }
     expression.replace(generated.expression());
 
-    return generated.imports();
+    return requiredImports == null ? generated.imports() : List.of();
   }
 
   private static List<String> rewriteCreation(ObjectCreationExpr creation, Object value) {
@@ -77,8 +88,8 @@ public final class IconExpressionRewriter {
     }
 
     IconValue parsed = IconExpressionGenerator.parseValue(value);
-    creation.getArgument(0).replace(new StringLiteralExpr(parsed.name()));
-    creation.getArgument(1).replace(new StringLiteralExpr(parsed.pool()));
+    creation.getArgument(0).replace(new StringLiteralExpr().setString(parsed.name()));
+    creation.getArgument(1).replace(new StringLiteralExpr().setString(parsed.pool()));
 
     return List.of();
   }

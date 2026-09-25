@@ -32,12 +32,12 @@ public final class SourceFileResolver {
    */
   public static final List<String> JAVA_ONLY = List.of(".java");
 
-  private static final String[] SOURCE_DIRS =
-      {"src/main/java", "src/main/kotlin", "src", "source", "sources"};
+  private static final List<String> SOURCE_DIRS =
+      List.of("src/main/java", "src/main/kotlin", "src", "source", "sources");
 
   // Keyed by Class, so entries are reclaimed with the classloader that owns them: a hot reload
   // hands out fresh classes and the previous lookups go away with the old loader. The inner map
-  // holds one entry per extension set, so it stays at two entries at most.
+  // holds entries by extension set and the runtime's optional source filename.
   private static final ClassValue<Map<String, Optional<String>>> SOURCE_FILES = new ClassValue<>() {
     @Override
     protected Map<String, Optional<String>> computeValue(Class<?> type) {
@@ -74,25 +74,62 @@ public final class SourceFileResolver {
    * @return the absolute path to the source file, or null if not found
    */
   public static String resolve(String className, List<String> extensions) {
+    return resolveFile(className, extensions, null);
+  }
+
+  /**
+   * Resolves a runtime-recorded source filename within the class's package and source roots.
+   *
+   * @param className the fully qualified class name
+   * @param fileName the filename recorded by the runtime, without directories
+   * @param extensions the allowed source extensions
+   * @return the absolute source path, or null when the recorded file cannot be resolved
+   */
+  public static String resolve(String className, String fileName, List<String> extensions) {
+    if (fileName == null || fileName.isBlank()) {
+      return resolve(className, extensions);
+    }
+    if (fileName.contains("/") || fileName.contains("\\")
+        || extensions.stream().noneMatch(fileName::endsWith)) {
+      return null;
+    }
+    return resolveFile(className, extensions, fileName);
+  }
+
+  private static String resolveFile(String className, List<String> extensions, String fileName) {
     try {
       Class<?> type = Class.forName(className);
-      return SOURCE_FILES.get(type).computeIfAbsent(String.join(",", extensions),
-          ignored -> Optional.ofNullable(search(type, className, extensions))).orElse(null);
+      String key = String.join(",", extensions) + (fileName == null ? "" : ":" + fileName);
+      return SOURCE_FILES.get(type)
+          .computeIfAbsent(key, ignored -> Optional.ofNullable(search(type, extensions, fileName)))
+          .orElse(null);
     } catch (Exception e) {
 
       return null;
     }
   }
 
-  private static String search(Class<?> type, String className, List<String> extensions) {
+  private static String search(Class<?> type, List<String> extensions, String fileName) {
     try {
       File projectRoot = ProjectRootResolver.resolve(readConfig(), type).toFile();
-      String classPath = className.replace('.', File.separatorChar);
+      List<String> relativePaths;
+      if (fileName != null) {
+        String packagePath = type.getPackageName().replace('.', File.separatorChar);
+        relativePaths =
+            List.of(packagePath.isEmpty() ? fileName : packagePath + File.separator + fileName);
+      } else {
+        Class<?> sourceType = type;
+        while (sourceType.getEnclosingClass() != null) {
+          sourceType = sourceType.getEnclosingClass();
+        }
+        String classPath = sourceType.getName().replace('.', File.separatorChar);
+        relativePaths = extensions.stream().map(extension -> classPath + extension).toList();
+      }
 
       for (String sourceDir : SOURCE_DIRS) {
-        for (String ext : extensions) {
-          File sourceFile = new File(projectRoot, sourceDir + File.separator + classPath + ext);
-          if (sourceFile.exists()) {
+        for (String relativePath : relativePaths) {
+          File sourceFile = new File(projectRoot, sourceDir + File.separator + relativePath);
+          if (sourceFile.isFile()) {
             return sourceFile.getAbsolutePath();
           }
         }

@@ -234,13 +234,8 @@ class ColumnsLayoutBreakpointsContributionTest {
     }
 
     @Test
-    void shouldDefaultMissingMinWidthToZeroLiteral() {
-      SourceChange change = generator.generate(ctx(List.of(entry("small", null, 1))));
-
-      ObjectCreationExpr creation =
-          (ObjectCreationExpr) change.getArgument().asMethodCallExpr().getArguments().get(0);
-      assertTrue(creation.getArguments().get(1) instanceof IntegerLiteralExpr);
-      assertEquals("0", creation.getArguments().get(1).toString());
+    void shouldRestoreDefaultsWhenMinWidthIsMissing() {
+      assertNull(generator.generate(ctx(List.of(entry("small", null, 1)))));
     }
 
     @Test

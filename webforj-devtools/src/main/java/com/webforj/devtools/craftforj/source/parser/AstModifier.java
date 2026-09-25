@@ -5,22 +5,39 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
+import com.github.javaparser.ast.body.InitializerDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.expr.AssignExpr;
+import com.github.javaparser.ast.expr.ConditionalExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
+import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.CatchClause;
+import com.github.javaparser.ast.stmt.DoStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
+import com.github.javaparser.ast.stmt.ForEachStmt;
+import com.github.javaparser.ast.stmt.ForStmt;
+import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.Statement;
+import com.github.javaparser.ast.stmt.SwitchEntry;
+import com.github.javaparser.ast.stmt.WhileStmt;
+import com.webforj.devtools.craftforj.source.SourceModificationException;
 import com.webforj.devtools.craftforj.source.model.SourceChange;
 import com.webforj.devtools.craftforj.source.model.SourceChange.ItemPosition;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -145,19 +162,10 @@ public final class AstModifier {
    */
   public static boolean updateExistingSetterCall(Node searchRoot, String varName,
       SourceChange sourceChange) {
-    MethodCallExpr lastMatch = findExistingSetterCall(searchRoot, varName, sourceChange);
-    if (lastMatch != null) {
-      sourceChange.setReplacedComputedExpression(
-          AstFinder.findComputedArguments(lastMatch, sourceChange.getMatchKey()));
-      lastMatch.getArguments().clear();
-      for (Expression arg : sourceChange.getArguments()) {
-        lastMatch.addArgument(arg);
-      }
-
-      return true;
-    }
-
-    return false;
+    Predicate<MethodCallExpr> scopeMatcher =
+        varName != null ? call -> isMethodCallOnVariable(call, varName)
+            : AstModifier::isMethodCallOnBoundComponent;
+    return updateMatchingSetterCall(searchRoot, scopeMatcher, sourceChange);
   }
 
   /**
@@ -176,29 +184,10 @@ public final class AstModifier {
    */
   public static MethodCallExpr findExistingSetterCall(Node searchRoot, String varName,
       SourceChange sourceChange) {
-    MethodCallExpr lastMatch = null;
-    String matchKey = sourceChange.getMatchKey();
-
-    for (MethodCallExpr methodCall : searchRoot.findAll(MethodCallExpr.class)) {
-      boolean scopeMatches = varName != null ? isMethodCallOnVariable(methodCall, varName)
-          : isMethodCallOnBoundComponent(methodCall);
-      if (methodCall.getNameAsString().equals(sourceChange.getMethodName()) && scopeMatches
-          && Objects.equals(getDirectAccessor(methodCall), sourceChange.getAccessor())) {
-        if (matchKey != null) {
-          // Match by key for key-value methods
-          if (methodCall.getArguments().size() >= 1) {
-            String existingKey = methodCall.getArgument(0).toString().replace("\"", "");
-            if (existingKey.equals(matchKey)) {
-              lastMatch = methodCall;
-            }
-          }
-        } else {
-          lastMatch = methodCall;
-        }
-      }
-    }
-
-    return lastMatch;
+    Predicate<MethodCallExpr> scopeMatcher =
+        varName != null ? call -> isMethodCallOnVariable(call, varName)
+            : AstModifier::isMethodCallOnBoundComponent;
+    return findMatchingSetterCall(searchRoot, scopeMatcher, sourceChange);
   }
 
   /**
@@ -246,25 +235,7 @@ public final class AstModifier {
    * @return true if the method call is on getBoundComponent()
    */
   public static boolean isMethodCallOnBoundComponent(MethodCallExpr methodCall) {
-    if (methodCall.getScope().isEmpty()) {
-      return false;
-    }
-
-    Expression scope = methodCall.getScope().get();
-    if (scope instanceof MethodCallExpr mce) {
-      if (GET_BOUND_COMPONENT.equals(mce.getNameAsString()) && mce.getScope().isEmpty()) {
-        return true;
-      }
-
-      // Accessor-scoped: getBoundComponent().getSearch().setX(...)
-      if (mce.getArguments().isEmpty() && mce.getScope().isPresent()
-          && mce.getScope().get() instanceof MethodCallExpr inner
-          && GET_BOUND_COMPONENT.equals(inner.getNameAsString()) && inner.getScope().isEmpty()) {
-        return true;
-      }
-    }
-
-    return false;
+    return VariableReferences.isScopeOnBoundComponent(methodCall.getScope().orElse(null));
   }
 
   /**
@@ -277,7 +248,8 @@ public final class AstModifier {
    */
   public static boolean updateExistingBoundComponentSetterCall(Node searchRoot,
       SourceChange sourceChange) {
-    return updateExistingSetterCall(searchRoot, null, sourceChange);
+    return updateMatchingSetterCall(searchRoot, AstModifier::isMethodCallOnBoundComponent,
+        sourceChange);
   }
 
   /**
@@ -337,34 +309,7 @@ public final class AstModifier {
    */
   public static boolean updateExistingItemCall(CompilationUnit cu,
       Predicate<MethodCallExpr> scopeMatcher, SourceChange sourceChange) {
-    MethodCallExpr lastMatch = null;
-
-    for (MethodCallExpr methodCall : cu.findAll(MethodCallExpr.class)) {
-      if (methodCall.getNameAsString().equals(sourceChange.getMethodName())
-          && scopeMatcher.test(methodCall) && matchesItemCall(methodCall, sourceChange.getItemRef(),
-              sourceChange.getItemPosition(), sourceChange.getArguments().size())) {
-        lastMatch = methodCall;
-      }
-    }
-
-    if (lastMatch == null) {
-      return false;
-    }
-
-    if (sourceChange.getItemPosition() == ItemPosition.LAST
-        && lastMatch.getArguments().size() > sourceChange.getArguments().size()) {
-      detachItemArguments(lastMatch, sourceChange.getItemRef(),
-          sourceChange.getArguments().size() - 1);
-
-      return false;
-    }
-
-    lastMatch.getArguments().clear();
-    for (Expression arg : sourceChange.getArguments()) {
-      lastMatch.addArgument(arg);
-    }
-
-    return true;
+    return updateMatchingSetterCall(cu, scopeMatcher, sourceChange);
   }
 
   /**
@@ -372,8 +317,8 @@ public final class AstModifier {
    *
    * <p>
    * When the matched call is a varargs call listing several items, only the item argument is
-   * detached and the call is kept for the remaining items. Otherwise the whole statement is
-   * removed.
+   * detached and the call is kept for the remaining items. Otherwise the call is removed,
+   * preserving other calls in a fluent chain.
    * </p>
    *
    * @param cu the compilation unit to search
@@ -387,30 +332,20 @@ public final class AstModifier {
    */
   public static boolean removeItemCall(CompilationUnit cu, Predicate<MethodCallExpr> scopeMatcher,
       String methodName, String itemRef, ItemPosition itemPosition, int expectedArgCount) {
-    MethodCallExpr lastMatch = null;
-
-    for (MethodCallExpr methodCall : cu.findAll(MethodCallExpr.class)) {
-      if (methodCall.getNameAsString().equals(methodName) && scopeMatcher.test(methodCall)
-          && matchesItemCall(methodCall, itemRef, itemPosition, expectedArgCount)) {
-        lastMatch = methodCall;
-      }
-    }
+    SourceChange change = SourceChange.builder().removeMethodCall(methodName)
+        .itemRef(itemRef, itemPosition, expectedArgCount).build();
+    MethodCallExpr lastMatch = findMatchingSetterCall(cu, scopeMatcher, change);
 
     if (lastMatch == null) {
       return false;
     }
 
-    if (itemPosition == ItemPosition.LAST && lastMatch.getArguments().size() > expectedArgCount) {
-      detachItemArguments(lastMatch, itemRef, expectedArgCount - 1);
-      return true;
+    if (!detachSharedItem(lastMatch, change)) {
+      removeCallExpression(lastMatch);
     }
-
-    return lastMatch.findAncestor(Statement.class).filter(stmt -> stmt.getParentNode().isPresent())
-        .map(stmt -> {
-          stmt.remove();
-          return true;
-        }).orElse(false);
+    return true;
   }
+
 
   /**
    * Finds the insertion point for a parent-scoped item call.
@@ -450,12 +385,14 @@ public final class AstModifier {
     return lastRelevant;
   }
 
-  private static boolean matchesItemCall(MethodCallExpr call, String itemRef,
-      ItemPosition itemPosition, int expectedArgCount) {
+  private static boolean matchesItemCall(MethodCallExpr call, SourceChange change) {
     List<Expression> args = call.getArguments();
+    ItemPosition itemPosition = change.getItemPosition();
+    int expectedArgCount = change.getItemArgumentCount();
 
     if (itemPosition == ItemPosition.FIRST) {
-      return args.size() == expectedArgCount && !args.isEmpty() && isItemName(args.get(0), itemRef);
+      return args.size() == expectedArgCount && !args.isEmpty()
+          && isItemReference(args.get(0), change);
     }
 
     int valueArgCount = expectedArgCount - 1;
@@ -464,7 +401,7 @@ public final class AstModifier {
     }
 
     for (int i = valueArgCount; i < args.size(); i++) {
-      if (isItemName(args.get(i), itemRef)) {
+      if (isItemReference(args.get(i), change)) {
         return true;
       }
     }
@@ -472,23 +409,27 @@ public final class AstModifier {
     return false;
   }
 
-  private static void detachItemArguments(MethodCallExpr call, String itemRef, int fromIndex) {
+  private static void detachItemArguments(MethodCallExpr call, SourceChange change, int fromIndex) {
     List<Expression> toDetach = call.getArguments().stream().skip(fromIndex)
-        .filter(arg -> isItemName(arg, itemRef)).toList();
+        .filter(arg -> isItemReference(arg, change)).toList();
     toDetach.forEach(call.getArguments()::remove);
   }
 
-  private static boolean isItemName(Expression expression, String itemRef) {
-    return expression instanceof NameExpr nameExpr && nameExpr.getNameAsString().equals(itemRef);
+  private static boolean isItemReference(Expression expression, SourceChange change) {
+    if (change.getItemDeclaration() != null) {
+      return VariableReferences.isReferenceToVariable(expression, change.getItemDeclaration());
+    }
+    return expression instanceof NameExpr nameExpr
+        && nameExpr.getNameAsString().equals(change.getItemRef());
   }
 
   /**
-   * Gets the accessor method that directly scopes a setter call.
+   * Gets the accessor owning a setter call, including fluent setter chains.
    *
    * <p>
-   * An accessor is a no-argument getter used as the direct scope of the call, e.g. "getSearch" in
-   * {@code nav.getSearch().setPlaceholder(...)}. Fluent setter chains and getBoundComponent()
-   * scopes are not accessors.
+   * An accessor is a no-argument getter such as "getSearch" in
+   * {@code nav.getSearch().setFieldVisible(true).setPlaceholder(...)}. A chain without an accessor
+   * and getBoundComponent() scopes return null.
    * </p>
    *
    * @param methodCall the method call expression to check
@@ -496,18 +437,7 @@ public final class AstModifier {
    * @return the accessor method name, or null if the call is not accessor-scoped
    */
   public static String getDirectAccessor(MethodCallExpr methodCall) {
-    if (methodCall.getScope().isEmpty()) {
-      return null;
-    }
-
-    Expression scope = methodCall.getScope().get();
-    if (scope instanceof MethodCallExpr mce && mce.getArguments().isEmpty()
-        && mce.getNameAsString().startsWith("get")
-        && !GET_BOUND_COMPONENT.equals(mce.getNameAsString())) {
-      return mce.getNameAsString();
-    }
-
-    return null;
+    return VariableReferences.getAccessor(methodCall.getScope().orElse(null));
   }
 
   /**
@@ -715,21 +645,57 @@ public final class AstModifier {
       return false;
     }
 
+    Map<SourceChange, Statement> helpers = new IdentityHashMap<>();
+    expr.findAncestor(BlockStmt.class).ifPresent(block -> sourceChanges.forEach(change -> {
+      Statement helper = HelperEffects.findLastWrite(block,
+          receiver -> VariableReferences.isScopeOnExpression(receiver, expr), change);
+      if (helper != null) {
+        helpers.put(change, helper);
+      }
+    }));
+
+    for (SourceChange change : sourceChanges) {
+      if (change.isRemoval() || helpers.containsKey(change)) {
+        removeChainedCalls(expr, change);
+      }
+    }
+    Expression chain = expr;
+    while (chain.getParentNode().orElse(null) instanceof MethodCallExpr call
+        && call.getScope().orElse(null) == chain) {
+      chain = call;
+    }
+    List<SourceChange> writes = new ArrayList<>();
+    for (SourceChange change : sourceChanges) {
+      if (!change.isRemoval() && (helpers.containsKey(change) || !updateMatchingSetterCall(chain,
+          call -> VariableReferences.isScopeOnExpression(call, expr), change))) {
+        writes.add(change);
+      }
+    }
+    if (writes.isEmpty()) {
+      return true;
+    }
+
     BlockStmt block = expr.findAncestor(BlockStmt.class).orElse(null);
     if (block == null) {
       return false;
     }
 
-    String varName = extractToVariable(expr, typeName);
+    String varName = extractToVariable(chain, typeName);
     if (varName == null) {
       return false;
     }
 
     int declIndex = indexOfDeclaration(block, varName);
     int setterIndex = declIndex + 1;
-    for (SourceChange sourceChange : sourceChanges) {
+    for (SourceChange sourceChange : writes) {
       Statement setterStmt = createSetterStatement(varName, sourceChange);
-      block.addStatement(setterIndex++, setterStmt);
+      Statement helper = helpers.get(sourceChange);
+      if (helper != null) {
+        block.addStatement(VariableReferences.indexOfSame(block.getStatements(), helper) + 1,
+            setterStmt);
+      } else {
+        block.addStatement(setterIndex++, setterStmt);
+      }
     }
 
     return true;
@@ -761,20 +727,23 @@ public final class AstModifier {
       return null;
     }
 
-    int insertIndex = block.getStatements().indexOf(containingStmt);
+    int insertIndex = VariableReferences.indexOfSame(block.getStatements(), containingStmt);
     if (insertIndex < 0) {
       return null;
     }
 
-    String varName = generateFreeVariableName(typeName.toLowerCase(), block);
+    var declarationType = StaticJavaParser.parseClassOrInterfaceType(typeName);
+    String varName =
+        generateFreeVariableName(declarationType.getNameAsString().toLowerCase(Locale.ROOT), block);
 
     VariableDeclarator varDeclarator =
-        new VariableDeclarator(StaticJavaParser.parseType(typeName), varName, expr.clone());
+        new VariableDeclarator(declarationType, varName, expr.clone());
     VariableDeclarationExpr varDecl = new VariableDeclarationExpr(varDeclarator);
     ExpressionStmt declStmt = new ExpressionStmt(varDecl);
 
-    block.addStatement(insertIndex, declStmt);
     expr.replace(new NameExpr(varName));
+    block.setStatement(insertIndex, declStmt);
+    block.addStatement(insertIndex + 1, containingStmt);
 
     return varName;
   }
@@ -805,43 +774,75 @@ public final class AstModifier {
    */
   public static void addSettersForVariable(CompilationUnit cu, BlockStmt block, String varName,
       List<SourceChange> sourceChanges) {
-    for (SourceChange sourceChange : sourceChanges) {
-      if (sourceChange.getItemRef() != null) {
-        Predicate<MethodCallExpr> scopeMatcher = mc -> isMethodCallOnVariable(mc, varName);
-        if (!updateExistingItemCall(cu, scopeMatcher, sourceChange)) {
-          Statement setterStmt = createSetterStatement(varName, sourceChange);
-          insertItemCall(block, scopeMatcher, sourceChange.getItemRef(), setterStmt);
-        }
-        continue;
-      }
+    applyVariableSetters(cu, block, varName, sourceChanges, null, null);
+  }
 
-      if (!updateExistingSetterCall(block, varName, sourceChange)) {
-        Statement setterStmt = createSetterStatement(varName, sourceChange);
-        int insertAfterIndex = findInsertionPointForVariable(block, varName);
-        if (insertAfterIndex >= 0) {
-          block.addStatement(insertAfterIndex + 1, setterStmt);
-        } else {
-          block.addStatement(setterStmt);
-        }
-      }
+  /**
+   * Writes properties only on references to the selected variable declaration.
+   *
+   * @param cu the compilation unit
+   * @param block the initialization block
+   * @param variable the selected field or local declaration
+   * @param sourceChanges the setters to update, insert or remove
+   */
+  public static void addSettersForDeclaration(CompilationUnit cu, BlockStmt block,
+      VariableDeclarator variable, List<SourceChange> sourceChanges) {
+    for (SourceChange change : sourceChanges) {
+      requireStableBinding(block, variable, change.getAccessor());
     }
+    applyVariableSetters(cu, block, variable.getNameAsString(), sourceChanges, variable,
+        receiver -> VariableReferences.isScopeOnVariable(receiver, variable));
+  }
+
+  /**
+   * Checks whether an initialization block contains a write to the selected declaration.
+   *
+   * @param block the initialization block
+   * @param variable the selected declaration
+   * @param change the property write to match
+   * @return true when the block contains a matching initialization call
+   */
+  public static boolean hasSetterForDeclaration(BlockStmt block, VariableDeclarator variable,
+      SourceChange change) {
+    HelperEffects.findLastWrite(block,
+        receiver -> VariableReferences.isScopeOnVariable(receiver, variable), change);
+    return findMatchingSetterCall(block,
+        call -> VariableReferences.isCallOnVariable(call, variable), change) != null;
+  }
+
+  /**
+   * Updates or removes an existing setter in a declaration's initializer expression.
+   *
+   * @param variable the declaration whose component receives the initializer calls
+   * @param change the requested setter operation
+   * @return true when a matching initializer call was changed
+   */
+  public static boolean updateInitializerSetter(VariableDeclarator variable, SourceChange change) {
+    Predicate<MethodCallExpr> matcher = call -> VariableReferences.isCallOnVariable(call, variable);
+    if (change.isRemoval()) {
+      boolean found = findMatchingSetterCall(variable, matcher, change) != null;
+      removeExistingCalls(variable, matcher, change);
+      return found;
+    }
+    return updateMatchingSetterCall(variable, matcher, change);
   }
 
   private static void insertItemCall(BlockStmt block, Predicate<MethodCallExpr> scopeMatcher,
-      String itemRef, Statement setterStmt) {
-    int insertAfterIndex = findInsertionPointForItemCall(block, scopeMatcher, itemRef);
+      SourceChange change, Statement setterStmt) {
+    int insertAfterIndex = findInsertionPointForItemCall(block, scopeMatcher, change.getItemRef());
     if (insertAfterIndex >= 0) {
       block.addStatement(insertAfterIndex + 1, setterStmt);
     } else {
       block.addStatement(setterStmt);
     }
+    qualifyItemReference(setterStmt.asExpressionStmt().getExpression().asMethodCallExpr(), change);
   }
 
   /**
    * Adds setter calls for getBoundComponent().
    *
    * <p>
-   * Updates existing setters if found, otherwise adds new ones in the constructor.
+   * Updates existing initialization setters and covers every independent constructor path.
    * </p>
    *
    * @param cu the compilation unit
@@ -851,35 +852,445 @@ public final class AstModifier {
   public static void addSettersForBoundComponent(CompilationUnit cu,
       ClassOrInterfaceDeclaration classDecl, List<SourceChange> sourceChanges) {
     List<ConstructorDeclaration> constructors = classDecl.getConstructors();
-    BlockStmt block;
+    for (SourceChange change : sourceChanges) {
+      boolean initialized = false;
+      for (BodyDeclaration<?> member : classDecl.getMembers()) {
+        if (!(member instanceof InitializerDeclaration initializer) || initializer.isStatic()) {
+          continue;
+        }
+        Statement helper = HelperEffects.findLastWrite(initializer.getBody(),
+            VariableReferences::isScopeOnBoundComponent, change);
+        if (findMatchingSetterCall(initializer.getBody(), AstModifier::isMethodCallOnBoundComponent,
+            change) != null) {
+          applyBoundComponentSetter(initializer.getBody(), change, helper);
+          initialized = true;
+        }
+      }
+      for (ConstructorDeclaration constructor : constructors) {
+        BlockStmt block = constructor.getBody();
+        Statement helper =
+            HelperEffects.findLastWrite(block, VariableReferences::isScopeOnBoundComponent, change);
+        if (findMatchingSetterCall(block, AstModifier::isMethodCallOnBoundComponent, change) != null
+            || !initialized && !change.isRemoval()
+                && !AstFinder.isDelegatingConstructor(constructor)) {
+          applyBoundComponentSetter(block, change, helper);
+        }
+      }
+      if (constructors.isEmpty() && !initialized && !change.isRemoval()) {
+        ConstructorDeclaration constructor = classDecl.addConstructor();
+        constructor.setBody(new BlockStmt());
+        constructors = classDecl.getConstructors();
+        applyBoundComponentSetter(constructor.getBody(), change, null);
+      }
+    }
+  }
 
-    if (constructors.isEmpty()) {
-      ConstructorDeclaration ctor = classDecl.addConstructor();
-      ctor.setBody(new BlockStmt());
-      block = ctor.getBody();
-    } else {
-      block = constructors.get(0).getBody();
+  private static void applyBoundComponentSetter(BlockStmt block, SourceChange sourceChange,
+      Statement helper) {
+    requireStableBinding(block, sourceChange.getItemDeclaration());
+    requireStableAccessorBinding(block, sourceChange.getAccessor(),
+        VariableReferences::isScopeOnBoundComponent, "getBoundComponent()");
+    if (sourceChange.isRemoval()) {
+      removeExistingCalls(block, AstModifier::isMethodCallOnBoundComponent, sourceChange);
+      return;
+    }
+    Predicate<MethodCallExpr> scopeMatcher = AstModifier::isMethodCallOnBoundComponent;
+    if (helper != null && !isWrittenAfter(block, scopeMatcher, sourceChange, helper)) {
+      // The helper's write runs last, so the bound component's own write moves behind it.
+      removeExistingCalls(block, scopeMatcher, sourceChange);
+      Statement setterStmt = createBoundComponentSetterStatement(sourceChange);
+      block.addStatement(VariableReferences.indexOfSame(block.getStatements(), helper) + 1,
+          setterStmt);
+      qualifyItemReference(setterStmt.asExpressionStmt().getExpression().asMethodCallExpr(),
+          sourceChange);
+      return;
+    }
+    if (sourceChange.getItemRef() != null) {
+      if (!updateMatchingSetterCall(block, scopeMatcher, sourceChange)) {
+        Statement setterStmt = createBoundComponentSetterStatement(sourceChange);
+        insertItemCall(block, scopeMatcher, sourceChange, setterStmt);
+      }
+      return;
     }
 
+    if (!updateExistingBoundComponentSetterCall(block, sourceChange)) {
+      Statement setterStmt = createBoundComponentSetterStatement(sourceChange);
+      int insertAfterIndex = findInsertionPointForBoundComponent(block);
+      if (insertAfterIndex >= 0) {
+        block.addStatement(insertAfterIndex + 1, setterStmt);
+      } else {
+        block.addStatement(setterStmt);
+      }
+    }
+  }
+
+  private static boolean updateMatchingSetterCall(Node searchRoot,
+      Predicate<MethodCallExpr> scopeMatcher, SourceChange sourceChange) {
+    List<MethodCallExpr> matches = findMatchingSetterCalls(searchRoot, scopeMatcher, sourceChange);
+    if (!matches.isEmpty()) {
+      MethodCallExpr lastMatch = matches.get(matches.size() - 1);
+      if (detachSharedItem(lastMatch, sourceChange)) {
+        return false;
+      }
+      if (sourceChange.getItemRef() == null) {
+        sourceChange.setReplacedComputedExpression(
+            AstFinder.findComputedArguments(lastMatch, sourceChange.getMatchKey()));
+      }
+      lastMatch.getArguments().clear();
+      for (Expression arg : sourceChange.getArguments()) {
+        lastMatch.addArgument(arg);
+      }
+      qualifyItemReference(lastMatch, sourceChange);
+      if (sourceChange.isReplaceAllCalls()) {
+        for (int index = 0; index < matches.size() - 1; index++) {
+          removeCallExpression(matches.get(index));
+        }
+      }
+
+      return true;
+    }
+
+    return false;
+  }
+
+
+  private static MethodCallExpr findMatchingSetterCall(Node searchRoot,
+      Predicate<MethodCallExpr> scopeMatcher, SourceChange sourceChange) {
+    List<MethodCallExpr> matches = findMatchingSetterCalls(searchRoot, scopeMatcher, sourceChange);
+    return matches.isEmpty() ? null : matches.get(matches.size() - 1);
+  }
+
+  private static List<MethodCallExpr> findMatchingSetterCalls(Node searchRoot,
+      Predicate<MethodCallExpr> scopeMatcher, SourceChange sourceChange) {
+    expandCombinedCalls(searchRoot, scopeMatcher, sourceChange);
+    List<MethodCallExpr> matches = new ArrayList<>();
+    String matchKey = sourceChange.getMatchKey();
+
+    // A fluent receiver executes before the call wrapping it.
+    for (MethodCallExpr methodCall : searchRoot.findAll(MethodCallExpr.class,
+        Node.TreeTraversal.POSTORDER)) {
+      if (methodCall.getNameAsString().equals(sourceChange.getMethodName())
+          && scopeMatcher.test(methodCall) && isInExecutionScope(methodCall, searchRoot)
+          && Objects.equals(getDirectAccessor(methodCall), sourceChange.getAccessor())) {
+        if (matchKey != null && (methodCall.getArguments().isEmpty()
+            || !methodCall.getArgument(0).toString().replace("\"", "").equals(matchKey))) {
+          continue;
+        }
+        if (sourceChange.getItemRef() != null && !matchesItemCall(methodCall, sourceChange)) {
+          continue;
+        }
+        if (searchRoot instanceof BlockStmt && hasConditionalExecution(methodCall, searchRoot)) {
+          throw new SourceModificationException(sourceChange.getPropertyName()
+              + " is set under a condition, so one value cannot replace it. "
+              + "Edit the source directly.");
+        }
+        matches.add(methodCall);
+      }
+    }
+
+    return matches;
+  }
+
+  private static void expandCombinedCalls(Node searchRoot, Predicate<MethodCallExpr> scopeMatcher,
+      SourceChange change) {
+    if (change.getMethodExpansions().isEmpty()) {
+      return;
+    }
+    for (MethodCallExpr call : searchRoot.findAll(MethodCallExpr.class,
+        Node.TreeTraversal.POSTORDER)) {
+      List<String> setters = change.getMethodExpansions().get(call.getNameAsString());
+      if (setters == null || !setters.contains(change.getMethodName()) || !scopeMatcher.test(call)
+          || !isInExecutionScope(call, searchRoot)
+          || !Objects.equals(getDirectAccessor(call), change.getAccessor())) {
+        continue;
+      }
+      if (call.getArguments().size() != 1 && setters.size() != call.getArguments().size()
+          || call.getScope().isEmpty()) {
+        throw new SourceModificationException(
+            "'" + call.getNameAsString() + "' has unexpected arguments, so "
+                + change.getPropertyName() + " cannot be split out of it");
+      }
+      if (setters.size() > 1
+          && call.getArguments().stream().anyMatch(argument -> !isConstantArgument(argument))) {
+        throw new SourceModificationException(
+            "'" + call.getNameAsString() + "' is called with computed arguments, so "
+                + change.getPropertyName() + " cannot be split out of it");
+      }
+      if (searchRoot instanceof BlockStmt && hasConditionalExecution(call, searchRoot)) {
+        throw new SourceModificationException(
+            change.getPropertyName() + " is set under a condition, so one value cannot replace it. "
+                + "Edit the source directly.");
+      }
+      Expression receiver = call.getScope().orElseThrow();
+      List<Expression> arguments = call.getArguments().stream().map(Expression::clone).toList();
+      call.removeScope();
+      for (int index = 0; index < setters.size() - 1; index++) {
+        receiver = new MethodCallExpr(receiver, setters.get(index))
+            .addArgument(arguments.get(arguments.size() == 1 ? 0 : index).clone());
+      }
+      call.setScope(receiver);
+      call.setName(setters.get(setters.size() - 1));
+      call.setArguments(new NodeList<>(arguments.get(arguments.size() - 1)));
+    }
+  }
+
+  private static boolean isConstantArgument(Expression argument) {
+    if (argument.isLiteralExpr()) {
+      return true;
+    }
+    if (argument.isEnclosedExpr()) {
+      return isConstantArgument(argument.asEnclosedExpr().getInner());
+    }
+    if (argument.isUnaryExpr()) {
+      return switch (argument.asUnaryExpr().getOperator()) {
+        case PLUS, MINUS, LOGICAL_COMPLEMENT, BITWISE_COMPLEMENT ->
+          isConstantArgument(argument.asUnaryExpr().getExpression());
+        default -> false;
+      };
+    }
+    return false;
+  }
+
+
+  private static void applyVariableSetters(CompilationUnit cu, BlockStmt block, String varName,
+      List<SourceChange> sourceChanges, VariableDeclarator variable,
+      Predicate<Expression> receiver) {
+    Predicate<MethodCallExpr> scopeMatcher =
+        variable == null ? call -> isMethodCallOnVariable(call, varName)
+            : call -> VariableReferences.isCallOnVariable(call, variable);
     for (SourceChange sourceChange : sourceChanges) {
+      requireStableBinding(block, sourceChange.getItemDeclaration());
+      Statement helper =
+          receiver == null ? null : HelperEffects.findLastWrite(block, receiver, sourceChange);
+      if (sourceChange.isRemoval()) {
+        removeExistingCalls(block, scopeMatcher, sourceChange);
+        continue;
+      }
+      if (helper != null && !isWrittenAfter(block, scopeMatcher, sourceChange, helper)) {
+        // The helper's write runs last, so the component's own write moves behind it.
+        removeExistingCalls(block, scopeMatcher, sourceChange);
+        Statement setterStmt = createSetterStatement(varName, sourceChange);
+        block.addStatement(VariableReferences.indexOfSame(block.getStatements(), helper) + 1,
+            setterStmt);
+        qualifyItemReference(setterStmt.asExpressionStmt().getExpression().asMethodCallExpr(),
+            sourceChange);
+        if (variable != null) {
+          VariableReferences.qualifyInsertedReceiver(setterStmt, variable);
+        }
+        continue;
+      }
       if (sourceChange.getItemRef() != null) {
-        Predicate<MethodCallExpr> scopeMatcher = AstModifier::isMethodCallOnBoundComponent;
-        if (!updateExistingItemCall(cu, scopeMatcher, sourceChange)) {
-          Statement setterStmt = createBoundComponentSetterStatement(sourceChange);
-          insertItemCall(block, scopeMatcher, sourceChange.getItemRef(), setterStmt);
+        if (!updateMatchingSetterCall(block, scopeMatcher, sourceChange)) {
+          Statement setterStmt = createSetterStatement(varName, sourceChange);
+          insertItemCall(block, scopeMatcher, sourceChange, setterStmt);
+          if (variable != null) {
+            VariableReferences.qualifyInsertedReceiver(setterStmt, variable);
+          }
         }
         continue;
       }
 
-      if (!updateExistingBoundComponentSetterCall(block, sourceChange)) {
-        Statement setterStmt = createBoundComponentSetterStatement(sourceChange);
-        int insertAfterIndex = findInsertionPointForBoundComponent(block);
+      if (!updateMatchingSetterCall(block, scopeMatcher, sourceChange)) {
+        Statement setterStmt = createSetterStatement(varName, sourceChange);
+        int insertAfterIndex = findInsertionPointForVariable(block, varName);
+        if (variable != null && insertAfterIndex >= 0) {
+          Node declaration = variable;
+          while (declaration.getParentNode().filter(parent -> parent != block).isPresent()) {
+            declaration = declaration.getParentNode().orElseThrow();
+          }
+          insertAfterIndex = Math.max(insertAfterIndex, block.getStatements().indexOf(declaration));
+        }
         if (insertAfterIndex >= 0) {
           block.addStatement(insertAfterIndex + 1, setterStmt);
         } else {
           block.addStatement(setterStmt);
         }
+        if (variable != null) {
+          VariableReferences.qualifyInsertedReceiver(setterStmt, variable);
+        }
       }
     }
+  }
+
+
+  private static boolean isWrittenAfter(BlockStmt block, Predicate<MethodCallExpr> scopeMatcher,
+      SourceChange change, Statement helper) {
+    MethodCallExpr existing = findMatchingSetterCall(block, scopeMatcher, change);
+    if (existing == null) {
+      return false;
+    }
+    Node statement = existing;
+    while (statement.getParentNode().orElse(null) != block) {
+      statement = statement.getParentNode().orElseThrow();
+    }
+
+    return VariableReferences.indexOfSame(block.getStatements(), statement) > VariableReferences
+        .indexOfSame(block.getStatements(), helper);
+  }
+
+  private static boolean detachSharedItem(MethodCallExpr call, SourceChange change) {
+    if (change.getItemRef() == null || change.getItemPosition() != ItemPosition.LAST
+        || call.getArguments().size() <= change.getItemArgumentCount()) {
+      return false;
+    }
+    int valueCount = change.getItemArgumentCount() - 1;
+    if (call.getArguments().stream().skip(valueCount)
+        .allMatch(argument -> isItemReference(argument, change))) {
+      return false;
+    }
+    detachItemArguments(call, change, valueCount);
+    return true;
+  }
+
+  private static void qualifyItemReference(MethodCallExpr call, SourceChange change) {
+    if (change.getItemDeclaration() != null) {
+      int itemIndex =
+          change.getItemPosition() == ItemPosition.FIRST ? 0 : change.getItemArgumentCount() - 1;
+      VariableReferences.qualifyReference(call.getArgument(itemIndex), change.getItemDeclaration());
+    }
+  }
+
+  private static void requireStableBinding(BlockStmt block, VariableDeclarator variable) {
+    requireStableBinding(block, variable, null);
+  }
+
+  private static void requireStableBinding(BlockStmt block, VariableDeclarator variable,
+      String accessor) {
+    if (variable == null) {
+      return;
+    }
+    if (variable.getParentNode().orElse(null) instanceof VariableDeclarationExpr) {
+      BlockStmt declarationScope = variable.findAncestor(BlockStmt.class).orElse(null);
+      if (declarationScope != block
+          && (declarationScope == null || !declarationScope.isAncestorOf(block))) {
+        throw new SourceModificationException("'" + variable.getNameAsString()
+            + "' is declared in another block, so the write location cannot see it");
+      }
+    }
+    for (AssignExpr assignment : block.findAll(AssignExpr.class)) {
+      if (!isInExecutionScope(assignment, block)) {
+        continue;
+      }
+      if (VariableReferences.isReferenceToVariable(assignment.getTarget(), variable)) {
+        throw new SourceModificationException("'" + variable.getNameAsString()
+            + "' is reassigned after it is created, so a write could reach a different component");
+      }
+    }
+    requireStableAccessorBinding(block, accessor,
+        expression -> VariableReferences.isScopeOnVariable(expression, variable),
+        "'" + variable.getNameAsString() + "'");
+  }
+
+  private static void requireStableAccessorBinding(BlockStmt block, String accessor,
+      Predicate<Expression> scopeMatcher, String owner) {
+    if (accessor == null) {
+      return;
+    }
+    for (AssignExpr assignment : block.findAll(AssignExpr.class)) {
+      if (isInExecutionScope(assignment, block)
+          && accessor.equals(VariableReferences.getAccessor(assignment.getTarget()))
+          && scopeMatcher.test(assignment.getTarget())) {
+        throw new SourceModificationException("The alias of '" + accessor + "' on " + owner
+            + " is reassigned after it is created, so a write could reach a different component");
+      }
+    }
+  }
+
+  private static void removeExistingCalls(Node scope, Predicate<MethodCallExpr> scopeMatcher,
+      SourceChange change) {
+    MethodCallExpr call;
+    while ((call = findMatchingSetterCall(scope, scopeMatcher, change)) != null) {
+      if (!detachSharedItem(call, change)) {
+        removeCallExpression(call);
+      }
+    }
+  }
+
+  static boolean isInExecutionScope(Node node, Node scope) {
+    Node current = node;
+    while (current != scope) {
+      if (current instanceof LambdaExpr
+          || current instanceof BodyDeclaration<?> && scope instanceof BlockStmt) {
+        return false;
+      }
+      current = current.getParentNode().orElse(null);
+      if (current == null) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private static boolean hasConditionalExecution(Node node, Node scope) {
+    Node current = node;
+    while (current != scope && current != null) {
+      if (current instanceof IfStmt || current instanceof SwitchEntry || current instanceof ForStmt
+          || current instanceof ForEachStmt || current instanceof WhileStmt
+          || current instanceof DoStmt || current instanceof ConditionalExpr
+          || current instanceof CatchClause) {
+        return true;
+      }
+      current = current.getParentNode().orElse(null);
+    }
+    return false;
+  }
+
+  private static void removeChainedCalls(Expression expression, SourceChange change) {
+    Expression chain = expression;
+    while (chain.getParentNode().orElse(null) instanceof MethodCallExpr call
+        && call.getScope().orElse(null) == chain) {
+      chain = call;
+    }
+    expandCombinedCalls(chain, call -> VariableReferences.isScopeOnExpression(call, expression),
+        change);
+    Expression current = expression;
+    while (current.getParentNode().orElse(null) instanceof MethodCallExpr call
+        && call.getScope().orElse(null) == current) {
+      if (call.getNameAsString().equals(change.getMethodName())
+          && Objects.equals(getDirectAccessor(call), change.getAccessor())) {
+        current = removeCallExpression(call);
+      } else {
+        current = call;
+      }
+    }
+  }
+
+  private static Expression removeCallExpression(MethodCallExpr call) {
+    Node parent = call.getParentNode().orElse(null);
+    Expression receiver = call.getScope().orElse(null);
+    if (parent instanceof ExpressionStmt statement && statement.getExpression() == call) {
+      if (isPlainReceiver(receiver, getDirectAccessor(call))) {
+        if (statement.remove() || statement.replace(new BlockStmt())) {
+          return call;
+        }
+      } else if (receiver != null) {
+        statement.setExpression(receiver);
+        return receiver;
+      }
+    } else if (receiver != null) {
+      if (call.replace(receiver)) {
+        return receiver;
+      }
+    }
+    throw new SourceModificationException("Removing '" + call.getNameAsString()
+        + "' would change the statement around it, so it cannot be reset");
+  }
+
+  private static boolean isPlainReceiver(Expression expression, String accessor) {
+    if (expression instanceof NameExpr || expression instanceof ThisExpr) {
+      return true;
+    }
+    if (expression instanceof FieldAccessExpr field) {
+      return isPlainReceiver(field.getScope(), null);
+    }
+    if (expression instanceof MethodCallExpr method && method.getArguments().isEmpty()) {
+      if (method.getNameAsString().equals(GET_BOUND_COMPONENT)
+          && method.getScope().map(ThisExpr.class::isInstance).orElse(true)) {
+        return true;
+      }
+      return method.getNameAsString().equals(accessor)
+          && method.getScope().map(scope -> isPlainReceiver(scope, null)).orElse(false);
+    }
+    return false;
   }
 }

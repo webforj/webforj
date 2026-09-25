@@ -78,8 +78,13 @@ public class ColumnsLayoutBreakpointsContribution extends ConcernContribution<Co
   }
 
   private static List<Breakpoint> parseBreakpoints(Object value) {
+    List<Breakpoint> breakpoints = parseValidBreakpoints(value);
+    return breakpoints.isEmpty() ? ColumnsLayout.DEFAULT_BREAKPOINTS : breakpoints;
+  }
+
+  private static List<Breakpoint> parseValidBreakpoints(Object value) {
     if (!(value instanceof List<?> list) || list.isEmpty()) {
-      return ColumnsLayout.DEFAULT_BREAKPOINTS;
+      return List.of();
     }
 
     List<Breakpoint> breakpoints = new ArrayList<>();
@@ -100,7 +105,7 @@ public class ColumnsLayoutBreakpointsContribution extends ConcernContribution<Co
           minWidth, columns));
     }
 
-    return breakpoints.isEmpty() ? ColumnsLayout.DEFAULT_BREAKPOINTS : breakpoints;
+    return breakpoints;
   }
 
   private static String stringValue(Object value) {
@@ -139,20 +144,14 @@ public class ColumnsLayoutBreakpointsContribution extends ConcernContribution<Co
      */
     @Override
     public SourceChange generate(GeneratorContext context) {
-      Object value = context.getValue();
-      if (!(value instanceof List<?> list) || list.isEmpty()) {
+      List<Breakpoint> breakpoints = parseValidBreakpoints(context.getValue());
+      if (breakpoints.isEmpty()) {
         return null;
       }
 
       NodeList<Expression> entries = new NodeList<>();
-      for (Object entry : list) {
-        if (entry instanceof Map<?, ?> map) {
-          entries.add(breakpointExpression(map));
-        }
-      }
-
-      if (entries.isEmpty()) {
-        return null;
+      for (Breakpoint breakpoint : breakpoints) {
+        entries.add(breakpointExpression(breakpoint));
       }
 
       MethodCallExpr listOf = new MethodCallExpr(new NameExpr("List"), "of", entries);
@@ -161,15 +160,11 @@ public class ColumnsLayoutBreakpointsContribution extends ConcernContribution<Co
           .addImport(List.class.getName()).addImport(Breakpoint.class.getCanonicalName()).build();
     }
 
-    private Expression breakpointExpression(Map<?, ?> map) {
-      String name = stringValue(map.get(KEY_NAME));
-      String minWidth = stringValue(map.get(KEY_MIN_WIDTH));
-      int columns = intValue(map.get(KEY_COLUMNS));
-
+    private Expression breakpointExpression(Breakpoint breakpoint) {
       NodeList<Expression> args = new NodeList<>();
-      args.add(new StringLiteralExpr().setString(name == null ? minWidth : name));
-      args.add(minWidthExpression(minWidth));
-      args.add(new IntegerLiteralExpr(String.valueOf(columns)));
+      args.add(new StringLiteralExpr().setString(breakpoint.name()));
+      args.add(minWidthExpression(breakpoint.minWidth()));
+      args.add(new IntegerLiteralExpr(String.valueOf(breakpoint.columns())));
 
       return new ObjectCreationExpr(null,
           StaticJavaParser.parseClassOrInterfaceType(Breakpoint.class.getSimpleName()), args);
@@ -180,7 +175,11 @@ public class ColumnsLayoutBreakpointsContribution extends ConcernContribution<Co
       String pixels = value.endsWith("px") ? value.substring(0, value.length() - 2) : value;
 
       if (pixels.matches("\\d+")) {
-        return new IntegerLiteralExpr(pixels);
+        try {
+          return new IntegerLiteralExpr(Integer.toString(Integer.parseInt(pixels)));
+        } catch (NumberFormatException e) {
+          // Wider CSS lengths use the String overload instead of an invalid Java int literal.
+        }
       }
 
       return new StringLiteralExpr().setString(value);

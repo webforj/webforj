@@ -6,6 +6,8 @@ import com.webforj.component.Composite;
 import com.webforj.devtools.craftforj.inspector.model.FeatureCategory;
 import com.webforj.devtools.craftforj.inspector.model.FeatureProperty;
 import com.webforj.devtools.craftforj.inspector.source.generator.SourceGenerator;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -274,4 +276,29 @@ public interface FeatureHandler {
     return null;
   }
 
+  /**
+   * Describes equivalent fluent setters in execution order.
+   *
+   * <p>
+   * Each declared expansion must have the same property effects as the original call. The source
+   * engine preserves receiver identity and checks argument evaluation safety. For a one-argument
+   * call, each expanded setter receives that argument. Otherwise, each setter receives the
+   * corresponding argument.
+   * </p>
+   *
+   * @return combined method names mapped to their argument setters, or an empty map
+   */
+  default Map<String, List<String>> getSourceMethodExpansions() {
+    return Map.of();
+  }
+
+  /**
+   * Describes equivalent setters for the component's concrete implementation.
+   *
+   * @param componentType the component type, or null when unavailable
+   * @return implementation-specific expansions, defaulting to the concern's expansions
+   */
+  default Map<String, List<String>> getSourceMethodExpansions(Class<?> componentType) {
+    return getSourceMethodExpansions();
+  }
 }

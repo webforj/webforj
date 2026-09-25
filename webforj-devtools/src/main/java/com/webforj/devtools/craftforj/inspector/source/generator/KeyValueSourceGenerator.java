@@ -37,17 +37,15 @@ public final class KeyValueSourceGenerator implements SourceGenerator {
       return null;
     }
 
-    Object key;
+    Object key = getKey(value);
     Object val;
 
     if (value instanceof List<?> list) {
       if (list.size() < 2) {
         return null;
       }
-      key = list.get(0);
       val = list.get(1);
     } else if (value instanceof Map<?, ?> map) {
-      key = map.get("key");
       val = map.get("value");
     } else {
       throw new SourceModificationException(
@@ -68,5 +66,22 @@ public final class KeyValueSourceGenerator implements SourceGenerator {
 
     return SourceChange.builder().methodCall(context.getMethodName(), List.of(keyExpr, valExpr))
         .matchKey(String.valueOf(key)).build();
+  }
+
+  @Override
+  public SourceChange createRemoval(GeneratorContext context) {
+    Object key = getKey(context.getValue());
+    if (key == null) {
+      throw new SourceModificationException("KeyValue property missing key");
+    }
+    return SourceChange.builder().removeMethodCall(context.getMethodName())
+        .matchKey(String.valueOf(key)).build();
+  }
+
+  private Object getKey(Object value) {
+    if (value instanceof List<?> list && !list.isEmpty()) {
+      return list.get(0);
+    }
+    return value instanceof Map<?, ?> map ? map.get("key") : null;
   }
 }

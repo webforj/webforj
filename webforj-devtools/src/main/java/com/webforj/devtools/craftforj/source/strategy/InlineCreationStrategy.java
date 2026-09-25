@@ -29,6 +29,6 @@ public class InlineCreationStrategy implements ModificationStrategy {
     }
 
     AstModifier.extractToVariableAndAddSetters(creation.get(), context.getSourceChanges(),
-        context.getTypeName());
+        context.getDeclarationType());
   }
 }

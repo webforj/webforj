@@ -6,6 +6,8 @@ import com.webforj.devtools.craftforj.inspector.contribution.ConcernContribution
 import com.webforj.devtools.craftforj.inspector.contribution.FeatureHandler;
 import com.webforj.devtools.craftforj.inspector.model.FeatureCategory;
 import com.webforj.devtools.craftforj.inspector.model.FeatureProperty;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Contribution for Dialog cancel on outside click property.
@@ -26,4 +28,9 @@ public class DialogCancelOnOutsideClickContribution extends ConcernContribution<
     setSetter((c, v) -> c.setCancelOnOutsideClick(Boolean.TRUE.equals(v)));
   }
 
+  /** {@inheritDoc} */
+  @Override
+  public Map<String, List<String>> getSourceMethodExpansions() {
+    return Map.of("setCloseable", List.of("setCancelOnOutsideClick", "setCancelOnEscKey"));
+  }
 }

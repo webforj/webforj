@@ -6,6 +6,8 @@ import com.webforj.devtools.craftforj.inspector.contribution.ConcernContribution
 import com.webforj.devtools.craftforj.inspector.contribution.FeatureHandler;
 import com.webforj.devtools.craftforj.inspector.model.FeatureCategory;
 import com.webforj.devtools.craftforj.inspector.model.FeatureProperty;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Contribution for ColumnsLayout vertical spacing property.
@@ -22,5 +24,11 @@ public class ColumnsLayoutVerticalSpacingContribution extends ConcernContributio
     setBuilderConfig(FeatureProperty.Builder::size);
     setGetter(ColumnsLayout::getVerticalSpacing);
     setSetter((c, v) -> c.setVerticalSpacing(v == null ? null : String.valueOf(v)));
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public Map<String, List<String>> getSourceMethodExpansions() {
+    return Map.of("setSpacing", List.of("setVerticalSpacing", "setHorizontalSpacing"));
   }
 }

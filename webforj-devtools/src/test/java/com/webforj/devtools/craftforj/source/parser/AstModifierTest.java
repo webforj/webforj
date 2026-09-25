@@ -483,6 +483,37 @@ class AstModifierTest {
     }
 
     @Test
+    void shouldExtractSecondOfIdenticalStatements() {
+      String code = """
+          class Test {
+            void method() {
+              add(new Button());
+              add(new Button());
+            }
+          }
+          """;
+      CompilationUnit cu = StaticJavaParser.parse(code);
+      ObjectCreationExpr creation = cu.findAll(ObjectCreationExpr.class).get(1);
+      SourceChange change =
+          SourceChange.builder().methodCall("setText", new StringLiteralExpr("Hello")).build();
+
+      boolean result =
+          AstModifier.extractToVariableAndAddSetters(creation, List.of(change), "Button");
+
+      assertTrue(result);
+      String output = cu.toString();
+      assertEquals(1, output.split("add\\(new Button\\(\\)\\);", -1).length - 1,
+          "the first inline creation is kept once");
+      assertEquals(1, output.split("Button button = new Button\\(\\);", -1).length - 1,
+          "exactly one declaration is extracted");
+      assertEquals(1, output.split("add\\(button\\);", -1).length - 1,
+          "the extracted variable is added once");
+      assertTrue(
+          output.indexOf("add(new Button());") < output.indexOf("Button button = new Button();"),
+          "the first statement stays before the extracted declaration");
+    }
+
+    @Test
     void shouldExtractFactoryMethodCall() {
       String code = """
           class Test {

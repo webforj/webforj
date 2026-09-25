@@ -4,7 +4,7 @@ import com.google.auto.service.AutoService;
 import com.webforj.concern.HasMax;
 import com.webforj.devtools.craftforj.inspector.contribution.ConcernContribution;
 import com.webforj.devtools.craftforj.inspector.contribution.FeatureHandler;
-import com.webforj.devtools.craftforj.inspector.contribution.utilities.NumberConverter;
+import com.webforj.devtools.craftforj.inspector.contribution.utilities.BoundValueConverter;
 import com.webforj.devtools.craftforj.inspector.model.FeatureCategory;
 import com.webforj.devtools.craftforj.inspector.model.FeatureProperty;
 
@@ -24,10 +24,12 @@ public class HasMaxContribution extends ConcernContribution<HasMax<?, ?>> {
   public HasMaxContribution() {
     super(HasMax.class, "Max", FeatureCategory.VALIDATION);
     setBuilderConfig(FeatureProperty.Builder::text);
+    setSourceTypeGetter("getMax");
     setGetter(c -> {
       Object val = c.getMax();
       return val != null ? String.valueOf(val) : "";
     });
-    setSetter((c, v) -> ((HasMax) c).setMax(NumberConverter.convert(v, c.getMax())));
+    setSetter(
+        (c, v) -> ((HasMax) c).setMax(BoundValueConverter.convert(c, "getMax", v, c.getMax())));
   }
 }

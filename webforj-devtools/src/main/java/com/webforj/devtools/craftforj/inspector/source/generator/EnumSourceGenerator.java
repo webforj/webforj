@@ -69,7 +69,7 @@ public final class EnumSourceGenerator implements SourceGenerator {
       return SourceChange.builder()
           .methodCall(context.getMethodName(),
               new FieldAccessExpr(new NameExpr(enumClass.getSimpleName()), enumValue.name()))
-          .addImport(enumClass.getCanonicalName()).build();
+          .addImport(enumClass.getCanonicalName()).replaceAllCalls(true).build();
     } catch (ClassNotFoundException e) {
       throw new SourceModificationException(
           "Property '" + context.getMethodName() + "': enum class not found: " + enumClassName);

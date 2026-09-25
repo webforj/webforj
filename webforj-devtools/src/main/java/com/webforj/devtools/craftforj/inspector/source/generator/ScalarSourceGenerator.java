@@ -4,11 +4,18 @@ import com.github.javaparser.ast.expr.BooleanLiteralExpr;
 import com.github.javaparser.ast.expr.DoubleLiteralExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.expr.TextBlockLiteralExpr;
 import com.webforj.devtools.craftforj.source.SourceModificationException;
 import com.webforj.devtools.craftforj.source.model.SourceChange;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 
 /**
  * Source generator for scalar values (String, Boolean, Integer, etc.).
@@ -41,7 +48,13 @@ public final class ScalarSourceGenerator implements SourceGenerator {
 
     try {
       Expression expr = toExpression(value, context.getJavaType());
-      return SourceChange.builder().methodCall(context.getMethodName(), expr).build();
+      SourceChange.Builder change =
+          SourceChange.builder().methodCall(context.getMethodName(), expr).replaceAllCalls(true);
+      Class<?> type = context.getJavaType();
+      if (type == LocalDate.class || type == LocalTime.class || type == LocalDateTime.class) {
+        change.addImport(type.getName());
+      }
+      return change.build();
     } catch (SourceModificationException e) {
       throw new SourceModificationException(
           "Property '" + context.getMethodName() + "': " + e.getMessage());
@@ -68,32 +81,14 @@ public final class ScalarSourceGenerator implements SourceGenerator {
     // Use javaType to determine correct literal format
     if (javaType != null) {
       Expression expr = switch (javaType.getName()) {
-        case "java.lang.Integer", "int" -> {
-          int intValue =
-              (value instanceof Number n) ? n.intValue() : Integer.parseInt(value.toString());
-          yield new IntegerLiteralExpr(String.valueOf(intValue));
-        }
-        case "java.lang.Long", "long" -> {
-          long longValue =
-              (value instanceof Number n) ? n.longValue() : Long.parseLong(value.toString());
-          yield new IntegerLiteralExpr(longValue + "L");
-        }
-        case "java.lang.Double", "double" -> {
-          double doubleValue =
-              (value instanceof Number n) ? n.doubleValue() : Double.parseDouble(value.toString());
-          yield new DoubleLiteralExpr(doubleValue);
-        }
-        case "java.lang.Float", "float" -> {
-          float floatValue =
-              (value instanceof Number n) ? n.floatValue() : Float.parseFloat(value.toString());
-          yield new DoubleLiteralExpr(floatValue + "f");
-        }
-        case "java.lang.Boolean", "boolean" -> {
-          boolean boolValue =
-              (value instanceof Boolean b) ? b : Boolean.parseBoolean(value.toString());
-          yield new BooleanLiteralExpr(boolValue);
-        }
+        case "java.lang.Integer", "int" -> new IntegerLiteralExpr(String.valueOf(toInt(value)));
+        case "java.lang.Long", "long" -> new IntegerLiteralExpr(toLong(value) + "L");
+        case "java.lang.Double", "double" -> new DoubleLiteralExpr(toDouble(value));
+        case "java.lang.Float", "float" -> new DoubleLiteralExpr(toFloat(value) + "f");
+        case "java.lang.Boolean", "boolean" -> new BooleanLiteralExpr(toBoolean(value));
         case "java.lang.String" -> stringExpression(value.toString());
+        case "java.time.LocalDate", "java.time.LocalTime", "java.time.LocalDateTime" ->
+          toTemporalExpression(value, javaType);
         default -> null;
       };
       if (expr != null) {
@@ -134,10 +129,10 @@ public final class ScalarSourceGenerator implements SourceGenerator {
       return new IntegerLiteralExpr(String.valueOf(l) + "L");
     }
     if (value instanceof Double d) {
-      return new DoubleLiteralExpr(d);
+      return new DoubleLiteralExpr(toDouble(d));
     }
     if (value instanceof Float f) {
-      return new DoubleLiteralExpr(String.valueOf(f) + "f");
+      return new DoubleLiteralExpr(toFloat(f) + "f");
     }
     throw new SourceModificationException("Unsupported value type: " + value.getClass().getName());
   }
@@ -165,6 +160,70 @@ public final class ScalarSourceGenerator implements SourceGenerator {
   }
 
   private static final String TEXT_BLOCK_INDENT = "        ";
+
+  private static Expression toTemporalExpression(Object value, Class<?> type) {
+    try {
+      String text = value.toString();
+      String parsed = switch (type.getName()) {
+        case "java.time.LocalDate" -> LocalDate.parse(text).toString();
+        case "java.time.LocalTime" -> LocalTime.parse(text).toString();
+        default -> LocalDateTime.parse(text).toString();
+      };
+      return new MethodCallExpr(new NameExpr(type.getSimpleName()), "parse")
+          .addArgument(new StringLiteralExpr().setString(parsed));
+    } catch (DateTimeParseException e) {
+      throw new SourceModificationException(
+          "expected a valid " + type.getSimpleName() + " value in ISO format");
+    }
+  }
+
+  private static int toInt(Object value) {
+    try {
+      return new BigDecimal(value.toString()).intValueExact();
+    } catch (NumberFormatException | ArithmeticException e) {
+      throw new SourceModificationException("expected a whole number in the int range");
+    }
+  }
+
+  private static long toLong(Object value) {
+    try {
+      return new BigDecimal(value.toString()).longValueExact();
+    } catch (NumberFormatException | ArithmeticException e) {
+      throw new SourceModificationException("expected a whole number in the long range");
+    }
+  }
+
+  private static double toDouble(Object value) {
+    try {
+      double number = Double.parseDouble(value.toString());
+      if (Double.isFinite(number)) {
+        return number;
+      }
+    } catch (NumberFormatException e) {
+      // Report the same property error for malformed and non-finite values.
+    }
+    throw new SourceModificationException("expected a finite double value");
+  }
+
+  private static float toFloat(Object value) {
+    try {
+      float number = Float.parseFloat(value.toString());
+      if (Float.isFinite(number)) {
+        return number;
+      }
+    } catch (NumberFormatException e) {
+      // Report the same property error for malformed and non-finite values.
+    }
+    throw new SourceModificationException("expected a finite float value");
+  }
+
+  private static boolean toBoolean(Object value) {
+    String text = value.toString();
+    if ("true".equalsIgnoreCase(text) || "false".equalsIgnoreCase(text)) {
+      return Boolean.parseBoolean(text);
+    }
+    throw new SourceModificationException("expected true or false");
+  }
 
   /**
    * Builds the raw text-block content whose compiled value equals the given string.

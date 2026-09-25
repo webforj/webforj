@@ -24,6 +24,7 @@ public class HasStepContribution extends ConcernContribution<HasStep<?, ?>> {
   public HasStepContribution() {
     super(HasStep.class, "Step", FeatureCategory.VALIDATION);
     setBuilderConfig(FeatureProperty.Builder::text);
+    setSourceTypeGetter("getStep");
     setGetter(c -> {
       Object val = c.getStep();
       return val != null ? String.valueOf(val) : "";

@@ -4,6 +4,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
+import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.webforj.devtools.craftforj.source.SourceModificationException;
 import com.webforj.devtools.craftforj.source.model.ModificationContext;
@@ -82,7 +83,12 @@ public class LocalVariableStrategy implements ModificationStrategy {
     }
 
     if (block != null) {
-      AstModifier.addSettersForVariable(cu, block, actualVarName, context.getSourceChanges());
+      VariableDeclarator variable = AstFinder.findVariableAt(cu, context.getTarget()).orElse(null);
+      if (variable != null) {
+        AstModifier.addSettersForDeclaration(cu, block, variable, context.getSourceChanges());
+      } else {
+        AstModifier.addSettersForVariable(cu, block, actualVarName, context.getSourceChanges());
+      }
     }
   }
 }

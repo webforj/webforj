@@ -18,6 +18,7 @@ import com.webforj.devtools.craftforj.inspector.contribution.FeatureHandlerRegis
 import com.webforj.devtools.craftforj.inspector.model.FeatureProperty;
 import com.webforj.devtools.craftforj.inspector.source.model.ChangeRequest;
 import com.webforj.devtools.craftforj.inspector.source.model.ChangeResult;
+import com.webforj.devtools.craftforj.source.model.FilePatch;
 import com.webforj.devtools.craftforj.source.parser.SourceParserService;
 import com.webforj.devtools.craftforj.source.resolver.SourceFileResolver;
 import com.webforj.devtools.craftforj.source.resolver.SourcePathRegistry;
@@ -88,6 +89,7 @@ class SourceCodeModifierUsageTest {
     when(handler.getSourceValue(any(FeatureProperty.class)))
         .thenAnswer(inv -> ((FeatureProperty) inv.getArgument(0)).getValue());
     when(registry.getHandler("HasText")).thenReturn(Optional.of(handler));
+    when(registry.getHandler("HasTooltip")).thenReturn(Optional.of(handler));
 
     modifier = new SourceCodeModifier(registry, new SourceParserService());
     component = mock(Button.class);
@@ -121,8 +123,13 @@ class SourceCodeModifierUsageTest {
   }
 
   private ChangeRequest usageChange(Object originalValue, Object newValue) {
-    FeatureProperty property = FeatureProperty.builder("Text", "HasText").text()
-        .javaType(String.class).value(newValue).build();
+    return usageChange("Text", "HasText", originalValue, newValue);
+  }
+
+  private ChangeRequest usageChange(String name, String feature, Object originalValue,
+      Object newValue) {
+    FeatureProperty property = FeatureProperty.builder(name, feature).text().javaType(String.class)
+        .value(newValue).build();
     ChangeRequest change = new ChangeRequest("cmp-1", property, null);
     change.setTarget(ChangeRequest.TARGET_USAGE);
     change.setOriginalValue(originalValue);
@@ -154,10 +161,151 @@ class SourceCodeModifierUsageTest {
     assertTrue(results.get(0).isSuccess());
     assertEquals(ChangeRequest.TARGET_USAGE, results.get(0).getResolvedTarget());
 
-    String dashboard = Files.readString(dashboardFile);
-    assertTrue(dashboard
-        .contains("new Explore(\"Your dashboard is empty\", \"layout-dashboard\", \"New label\")"));
+    assertEquals("""
+        package com.example;
+
+        public class DashboardView {
+          public DashboardView() {
+            add(new Explore("Your dashboard is empty", "layout-dashboard", "New label"));
+          }
+        }
+        """, Files.readString(dashboardFile));
     assertEquals(EXPLORE_SOURCE, Files.readString(exploreFile));
+  }
+
+  @Test
+  @DisplayName("tooltip preview falls back to the definition and saves the resolved target")
+  void shouldPreviewAndSaveTooltipAtDefinition() throws IOException {
+    final String source = """
+        package com.example;
+
+        public class Explore {
+          public Explore(String message, String iconName, String ctaLabel) {
+            Paragraph messageLabel = new Paragraph(message);
+            Button cta = new Button(ctaLabel)
+                .setTheme(ButtonTheme.PRIMARY);
+            add(messageLabel, cta);
+          }
+        }
+        """;
+    final String expected = """
+        package com.example;
+
+        import com.webforj.component.button.Button;
+
+        public class Explore {
+          public Explore(String message, String iconName, String ctaLabel) {
+            Paragraph messageLabel = new Paragraph(message);
+            Button cta = new Button(ctaLabel)
+                .setTheme(ButtonTheme.PRIMARY);
+            add(messageLabel, cta);
+            cta.setTooltipText("Opens the wizard");
+          }
+        }
+        """;
+    Files.writeString(exploreFile, source);
+    ChangeRequest change = usageChange("TooltipText", "HasTooltip", "", "Opens the wizard");
+
+    final List<ChangeResult> preview = modifier.preview(List.of(change));
+    List<FilePatch> patches = modifier.previewPatches(List.of(change));
+
+    assertEquals(List.of(source), patches.stream().map(FilePatch::getOriginal).toList());
+    assertEquals(List.of(expected), patches.stream().map(FilePatch::getPatched).toList());
+    assertEquals(source, Files.readString(exploreFile));
+    assertEquals(DASHBOARD_SOURCE, Files.readString(dashboardFile));
+
+    change.setTarget(preview.get(0).getResolvedTarget());
+    modifier.apply(List.of(change));
+
+    assertEquals(expected, Files.readString(exploreFile));
+    assertEquals(DASHBOARD_SOURCE, Files.readString(dashboardFile));
+  }
+
+  @Test
+  @DisplayName("tooltip apply refuses to switch from usage to definition without a resolved target")
+  void shouldRefuseTooltipApplyAtUsage() throws IOException {
+    ChangeRequest change = usageChange("TooltipText", "HasTooltip", "", "Opens the wizard");
+
+    List<ChangeResult> results = modifier.apply(List.of(change));
+
+    assertEquals("The property cannot be changed at the usage site. Preview again to refresh the "
+        + "target.", results.get(0).getError());
+    assertEquals(EXPLORE_SOURCE, Files.readString(exploreFile));
+    assertEquals(DASHBOARD_SOURCE, Files.readString(dashboardFile));
+  }
+
+  @Test
+  @DisplayName("preview falls back for a stale constructor candidate without writing")
+  void shouldPreviewStaleConstructorCandidateAtDefinition() throws IOException {
+    final String source = """
+        package com.example;
+
+        public class Explore {
+          public Explore(String message, String iconName, String ctaLabel) {
+            Paragraph messageLabel = new Paragraph(message);
+            Button cta = new Button(ctaLabel)
+                .setTheme(ButtonTheme.PRIMARY);
+            add(messageLabel, cta);
+          }
+        }
+        """;
+    final String expected = """
+        package com.example;
+
+        import com.webforj.component.button.Button;
+
+        public class Explore {
+          public Explore(String message, String iconName, String ctaLabel) {
+            Paragraph messageLabel = new Paragraph(message);
+            Button cta = new Button(ctaLabel)
+                .setTheme(ButtonTheme.PRIMARY);
+            add(messageLabel, cta);
+            cta.setText("New label");
+          }
+        }
+        """;
+    Files.writeString(exploreFile, source);
+    ChangeRequest change = usageChange("Stale value", "New label");
+
+    List<FilePatch> patches = modifier.previewPatches(List.of(change));
+
+    assertEquals(List.of(source), patches.stream().map(FilePatch::getOriginal).toList());
+    assertEquals(List.of(expected), patches.stream().map(FilePatch::getPatched).toList());
+    assertEquals(source, Files.readString(exploreFile));
+    assertEquals(DASHBOARD_SOURCE, Files.readString(dashboardFile));
+  }
+
+  @Test
+  @DisplayName("a stale setter trace is refused in both preview and apply")
+  void shouldRefuseStaleSetterTrace() throws IOException {
+    String source = """
+        package com.example;
+
+        public class Explore {
+          public Explore(String message, String iconName, String ctaLabel) {
+            Paragraph messageLabel = new Paragraph(message);
+            Button cta = new Button()
+                .setText(ctaLabel)
+                .setTheme(ButtonTheme.PRIMARY);
+            add(messageLabel, cta);
+          }
+        }
+        """;
+    Files.writeString(exploreFile, source);
+    ChangeRequest change = usageChange("Stale value", "New label");
+
+    List<ChangeResult> preview = modifier.preview(List.of(change));
+    List<ChangeResult> applied = modifier.apply(List.of(change));
+
+    for (List<ChangeResult> results : List.of(preview, applied)) {
+      assertEquals(
+          "The source changed since this value was read. Reload the application before saving.",
+          results.get(0).getError());
+    }
+    assertEquals(List.of(),
+        modifier.previewPatches(List.of(change)).stream().map(FilePatch::getPatched).toList());
+    assertEquals(source, Files.readString(exploreFile));
+    assertEquals(DASHBOARD_SOURCE, Files.readString(dashboardFile));
   }
 
   @Test
@@ -198,6 +346,7 @@ class SourceCodeModifierUsageTest {
 
     assertEquals(1, results.size());
     assertFalse(results.get(0).isSuccess());
+    assertEquals(EXPLORE_SOURCE, Files.readString(exploreFile));
     assertEquals(DASHBOARD_SOURCE, Files.readString(dashboardFile));
   }
 

@@ -18,6 +18,25 @@ import java.util.List;
  */
 public final class ListSourceGenerator implements SourceGenerator {
 
+  private final Class<?> itemType;
+  private final boolean replaceAllCalls;
+
+  /** Creates a generator for untyped, replacing varargs methods. */
+  public ListSourceGenerator() {
+    this(null, false);
+  }
+
+  /**
+   * Creates a generator with the list contribution's element and accumulation contract.
+   *
+   * @param itemType the required element type, or null for untyped values
+   * @param replaceAllCalls whether the values replace all accumulating calls
+   */
+  public ListSourceGenerator(Class<?> itemType, boolean replaceAllCalls) {
+    this.itemType = itemType;
+    this.replaceAllCalls = replaceAllCalls;
+  }
+
   /**
    * {@inheritDoc}
    */
@@ -37,10 +56,16 @@ public final class ListSourceGenerator implements SourceGenerator {
 
     try {
       List<Expression> args = new ArrayList<>();
-      for (Object item : items) {
+      for (int index = 0; index < items.size(); index++) {
+        Object item = items.get(index);
+        if (itemType != null && !itemType.isInstance(item)) {
+          throw new SourceModificationException("expects " + itemType.getSimpleName()
+              + " items but item " + (index + 1) + " is not a " + itemType.getSimpleName());
+        }
         args.add(ScalarSourceGenerator.toExpression(item));
       }
-      return SourceChange.builder().methodCall(context.getMethodName(), args).build();
+      return SourceChange.builder().methodCall(context.getMethodName(), args)
+          .replaceAllCalls(replaceAllCalls).build();
     } catch (SourceModificationException e) {
       throw new SourceModificationException(
           "Property '" + context.getMethodName() + "': " + e.getMessage());

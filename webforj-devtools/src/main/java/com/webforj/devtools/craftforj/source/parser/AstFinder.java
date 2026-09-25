@@ -4,6 +4,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.CallableDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.BinaryExpr;
@@ -15,12 +16,16 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
+import com.webforj.devtools.craftforj.source.SourceModificationException;
 import com.webforj.devtools.craftforj.source.model.TargetContext;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -45,16 +50,8 @@ public final class AstFinder {
    * @return the field declaration if found
    */
   public static Optional<FieldDeclaration> findFieldAt(CompilationUnit cu, TargetContext target) {
-    int lineNumber = target.getLineNumber();
-    for (FieldDeclaration field : cu.findAll(FieldDeclaration.class)) {
-      if (field.getRange().isPresent() && field.getRange().get().begin.line <= lineNumber
-          && field.getRange().get().end.line >= lineNumber
-          && matchesFieldType(field, acceptedTypes(target))) {
-        return Optional.of(field);
-      }
-    }
-
-    return Optional.empty();
+    return findVariableAt(cu, target).flatMap(VariableDeclarator::getParentNode)
+        .filter(FieldDeclaration.class::isInstance).map(FieldDeclaration.class::cast);
   }
 
   /**
@@ -196,12 +193,18 @@ public final class AstFinder {
    */
   public static Optional<ObjectCreationExpr> findInlineCreationAt(CompilationUnit cu,
       TargetContext target) {
+    requireUnambiguousCreation(cu, target);
+    return locateInlineCreationAt(cu, target);
+  }
+
+  private static Optional<ObjectCreationExpr> locateInlineCreationAt(CompilationUnit cu,
+      TargetContext target) {
     int lineNumber = target.getLineNumber();
-    String typeName = target.getTypeName();
+    final Collection<String> typeNames = acceptedTypes(target);
     for (ObjectCreationExpr creation : cu.findAll(ObjectCreationExpr.class)) {
       if (creation.getRange().isPresent()) {
         int creationLine = creation.getRange().get().begin.line;
-        if (creationLine == lineNumber && creation.getType().getNameAsString().equals(typeName)) {
+        if (creationLine == lineNumber && matchesType(creation.getType(), creation, typeNames)) {
           if (isInlineCreation(creation)) {
             return Optional.of(creation);
           }
@@ -327,26 +330,17 @@ public final class AstFinder {
    * @return the variable name or null if not found
    */
   public static String extractVariableNameAt(CompilationUnit cu, TargetContext target) {
+    requireUnambiguousCreation(cu, target);
+    Optional<VariableDeclarator> variable = locateVariableAt(cu, target);
+    if (variable.isPresent()) {
+      return variable.get().getNameAsString();
+    }
+    if (locateInlineCreationAt(cu, target).isPresent()
+        || findFactoryMethodAt(cu, target).isPresent()) {
+      return null;
+    }
     int lineNumber = target.getLineNumber();
     Collection<String> typeNames = acceptedTypes(target);
-
-    for (VariableDeclarationExpr varDecl : cu.findAll(VariableDeclarationExpr.class)) {
-      if (varDecl.getRange().isPresent() && varDecl.getRange().get().begin.line <= lineNumber
-          && varDecl.getRange().get().end.line >= lineNumber) {
-        if (!varDecl.getVariables().isEmpty() && matchesType(varDecl.getCommonType(),
-            varDecl.getVariable(0).getInitializer().orElse(null), typeNames)) {
-          return varDecl.getVariable(0).getNameAsString();
-        }
-      }
-    }
-
-    for (VariableDeclarator varDecl : cu.findAll(VariableDeclarator.class)) {
-      if (varDecl.getRange().isPresent() && varDecl.getRange().get().begin.line <= lineNumber
-          && varDecl.getRange().get().end.line >= lineNumber
-          && matchesType(varDecl.getType(), varDecl.getInitializer().orElse(null), typeNames)) {
-        return varDecl.getNameAsString();
-      }
-    }
 
     for (FieldDeclaration field : cu.findAll(FieldDeclaration.class)) {
       if (field.getRange().isPresent()) {
@@ -362,11 +356,85 @@ public final class AstFinder {
     return null;
   }
 
+  /**
+   * Finds the individual variable owning the creation at the target source line.
+   *
+   * @param cu the compilation unit to search
+   * @param target the component type and source line
+   * @return the most specific matching declarator, independent of its declaration position
+   */
+  public static Optional<VariableDeclarator> findVariableAt(CompilationUnit cu,
+      TargetContext target) {
+    requireUnambiguousCreation(cu, target);
+    return locateVariableAt(cu, target);
+  }
+
+  private static Optional<VariableDeclarator> locateVariableAt(CompilationUnit cu,
+      TargetContext target) {
+    Collection<String> types = acceptedTypes(target);
+    int line = target.getLineNumber();
+    return cu.findAll(VariableDeclarator.class).stream()
+        .filter(variable -> isVariableAtLine(variable, line))
+        .filter(variable -> matchesType(variable.getType(), variable.getInitializer().orElse(null),
+            types))
+        .min(Comparator
+            .<VariableDeclarator>comparingInt(variable -> variable.getInitializer().stream()
+                .flatMap(expression -> expression.findAll(ObjectCreationExpr.class).stream())
+                .anyMatch(creation -> creation.getBegin().map(position -> position.line == line)
+                    .orElse(false) && matchesType(creation.getType(), creation, types)) ? 0 : 1)
+            .thenComparingInt(variable -> variable.getRange()
+                .map(range -> range.end.line - range.begin.line).orElse(Integer.MAX_VALUE)));
+  }
+
+  private static boolean isVariableAtLine(VariableDeclarator variable, int line) {
+    if (variable.getRange().map(range -> range.begin.line <= line && range.end.line >= line)
+        .orElse(false)) {
+      return true;
+    }
+    Node parent = variable.getParentNode().orElse(null);
+    boolean single = parent instanceof FieldDeclaration field && field.getVariables().size() == 1
+        || parent instanceof VariableDeclarationExpr local && local.getVariables().size() == 1;
+    return single && parent.getRange()
+        .map(range -> range.begin.line <= line && range.end.line >= line).orElse(false);
+  }
+
+  private static void requireUnambiguousCreation(CompilationUnit cu, TargetContext target) {
+    Collection<String> types = acceptedTypes(target);
+    List<ObjectCreationExpr> matches = cu.findAll(ObjectCreationExpr.class).stream()
+        .filter(creation -> creation.getBegin()
+            .map(position -> position.line == target.getLineNumber()).orElse(false))
+        .filter(creation -> matchesType(creation.getType(), creation, types)).limit(2).toList();
+    List<String> creationTypes = new ArrayList<>(
+        matches.stream().map(creation -> creation.getType().getNameAsString()).toList());
+    cu.findAll(VariableDeclarator.class).stream()
+        .filter(variable -> isVariableAtLine(variable, target.getLineNumber()))
+        .filter(
+            variable -> variable.getInitializer().filter(Expression::isMethodCallExpr).isPresent())
+        .filter(variable -> !(VariableReferences
+            .getReceiver(variable.getInitializer().orElse(null)) instanceof ObjectCreationExpr))
+        .filter(variable -> matchesType(variable.getType(), variable.getInitializer().orElse(null),
+            types))
+        .limit(2).map(variable -> simpleTypeName(variable.getType().asString()))
+        .forEach(creationTypes::add);
+    if (creationTypes.size() > 1) {
+      String type = creationTypes.get(0);
+      if (!type.equals(creationTypes.get(1))) {
+        type = "component";
+      }
+      throw new SourceModificationException("Cannot identify " + type + " at line "
+          + target.getLineNumber() + ": multiple matching creations share this line");
+    }
+  }
+
   @SuppressWarnings("unchecked")
   private static boolean isInlineCreation(ObjectCreationExpr creation) {
     Optional<VariableDeclarator> varDecl = creation.findAncestor(VariableDeclarator.class);
     if (varDecl.isPresent()) {
       return false;
+    }
+
+    if (creation.getParentNode().filter(ReturnStmt.class::isInstance).isPresent()) {
+      return true;
     }
 
     Optional<MethodCallExpr> methodCall = creation.findAncestor(MethodCallExpr.class);
@@ -411,21 +479,22 @@ public final class AstFinder {
       return true;
     }
 
-    return cu.findFirst(ClassOrInterfaceDeclaration.class).map(classDecl -> {
-      if (expectedTypeNames.contains(classDecl.getNameAsString())) {
-        return true;
-      }
+    return cu.findFirst(ClassOrInterfaceDeclaration.class)
+        .map(classDecl -> matchesBoundComponentType(classDecl, expectedTypeNames)).orElse(false);
+  }
 
-      for (ClassOrInterfaceType extendedType : classDecl.getExtendedTypes()) {
-        if ("Composite".equals(extendedType.getNameAsString())) {
-          return extendedType.getTypeArguments()
-              .map(args -> !args.isEmpty() && matchesType(args.get(0), null, expectedTypeNames))
-              .orElse(true);
-        }
-      }
 
-      return false;
-    }).orElse(false);
+  /**
+   * Checks whether a constructor delegates initialization to another constructor of its class.
+   *
+   * @param constructor the constructor to inspect
+   * @return true for an initial {@code this(...)} invocation
+   */
+  public static boolean isDelegatingConstructor(ConstructorDeclaration constructor) {
+    BlockStmt block = constructor.getBody();
+    return !block.getStatements().isEmpty()
+        && block.getStatement(0).isExplicitConstructorInvocationStmt()
+        && block.getStatement(0).asExplicitConstructorInvocationStmt().isThis();
   }
 
   /**
@@ -529,30 +598,45 @@ public final class AstFinder {
    * @return true if getBoundComponent() pattern should be used
    */
   public static boolean usesBoundComponentPattern(CompilationUnit cu, TargetContext target) {
-    if (!isCompositeClass(cu)) {
-      return false;
+    return findBoundComponentClass(cu, target).isPresent();
+  }
+
+  /**
+   * Finds the innermost class owning an unaliased bound component at the target line.
+   *
+   * @param cu the compilation unit to search
+   * @param target the component type and source line
+   * @return the owning composite, when its bound-component pattern matches the target
+   */
+  public static Optional<ClassOrInterfaceDeclaration> findBoundComponentClass(CompilationUnit cu,
+      TargetContext target) {
+    Optional<ClassOrInterfaceDeclaration> owner =
+        cu.findAll(ClassOrInterfaceDeclaration.class).stream()
+            .filter(type -> type.getRange()
+                .map(range -> range.begin.line <= target.getLineNumber()
+                    && range.end.line >= target.getLineNumber())
+                .orElse(false))
+            .min(Comparator.comparingInt(type -> type.getRange().orElseThrow().end.line
+                - type.getRange().orElseThrow().begin.line));
+    if (owner.isEmpty() || !extendsComposite(owner.get())
+        || !matchesBoundComponentType(owner.get(), acceptedTypes(target))) {
+      return Optional.empty();
     }
 
-    if (!boundComponentTypeMatches(cu, acceptedTypes(target))) {
-      return false;
-    }
-
-    // Check if there's a variable declaration for getBoundComponent
-    // e.g., FlexLayout self = getBoundComponent();
-    for (VariableDeclarator varDecl : cu.findAll(VariableDeclarator.class)) {
+    for (VariableDeclarator varDecl : owner.get().findAll(VariableDeclarator.class)) {
+      if (varDecl.findAncestor(ClassOrInterfaceDeclaration.class).orElse(null) != owner.get()) {
+        continue;
+      }
       if (varDecl.getInitializer().isPresent()) {
         var init = varDecl.getInitializer().get();
         if (init instanceof MethodCallExpr mce
             && "getBoundComponent".equals(mce.getNameAsString())) {
-          // A variable is assigned to getBoundComponent, so don't use this strategy
-          return false;
+          return Optional.empty();
         }
       }
     }
 
-    // It's a Composite class without a variable for getBoundComponent()
-    // We can add getBoundComponent().xxx() calls to the constructor
-    return true;
+    return owner;
   }
 
   /**
@@ -592,6 +676,27 @@ public final class AstFinder {
   }
 
   // A bare name naming a parameter or local of the enclosing callable carries per-call data; a
+  private static boolean matchesBoundComponentType(ClassOrInterfaceDeclaration classDecl,
+      Collection<String> expectedTypeNames) {
+    if (expectedTypeNames == null || expectedTypeNames.isEmpty()) {
+      return true;
+    }
+    if (expectedTypeNames.contains(classDecl.getNameAsString())) {
+      return true;
+    }
+
+    for (ClassOrInterfaceType extendedType : classDecl.getExtendedTypes()) {
+      if ("Composite".equals(extendedType.getNameAsString())) {
+        return extendedType.getTypeArguments()
+            .map(args -> !args.isEmpty() && matchesType(args.get(0), null, expectedTypeNames))
+            .orElse(true);
+      }
+    }
+
+    return false;
+  }
+
+
   // name resolving elsewhere (a constant, an enum) is a stable reference and stays silent
   private static boolean isCallableScopedReference(Expression expression) {
     if (!(expression instanceof NameExpr name)) {

@@ -90,7 +90,7 @@ class UsagePlanner {
       return null;
     }
 
-    String creationFile = targetResolver.resolveSourceFile(creationPoint.className());
+    String creationFile = targetResolver.resolveSourcePointFile(creationPoint);
     if (creationFile == null) {
       return null;
     }
@@ -99,7 +99,7 @@ class UsagePlanner {
     String usageFile = null;
     List<SourcePoint> chain = ComponentSourceRegistry.getSourceChain(component);
     for (int i = 1; i < chain.size(); i++) {
-      String file = targetResolver.resolveSourceFile(chain.get(i).className());
+      String file = targetResolver.resolveSourcePointFile(chain.get(i));
       if (file == null) {
         break;
       }
@@ -128,6 +128,16 @@ class UsagePlanner {
           UsageSiteRewriter.trace(creationCu, target, methodName);
       if (traces.isEmpty()) {
         return null;
+      }
+
+      // Constructor arguments are only candidates until a usage literal matches the old value.
+      // Setter traces remain authoritative and retain the rewriter's stale-value checks.
+      if (traces.stream().noneMatch(UsageSiteRewriter.Trace::fromSetter)) {
+        CompilationUnit usageCu = parserService.parse(Path.of(usageFile)).orElse(null);
+        if (usageCu == null || !UsageSiteRewriter.hasMatchingArgument(usageCu,
+            usagePoint.lineNumber(), traces, change.getOriginalValue())) {
+          return null;
+        }
       }
 
       SourceLocation usageLocation = new SourceLocation(usageFile, usagePoint.lineNumber(),

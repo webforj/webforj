@@ -1,5 +1,6 @@
 package com.webforj.devtools.craftforj.inspector.contribution.utilities;
 
+import com.webforj.devtools.craftforj.source.SourceModificationException;
 import java.util.function.Consumer;
 import java.util.function.ObjDoubleConsumer;
 import java.util.regex.Pattern;
@@ -20,6 +21,30 @@ public final class DimensionSetter {
   private static final Pattern PURE_NUMBER = Pattern.compile("^-?\\d+(\\.\\d+)?$");
 
   private DimensionSetter() {}
+
+  /**
+   * Normalizes source values using the same pixel conversion as the live dimension setter.
+   *
+   * @param value the editor's numeric or CSS value
+   * @return normalized CSS, or null for a missing value
+   */
+  public static Object getSourceValue(Object value) {
+    if (value == null) {
+      return null;
+    }
+
+    String text = String.valueOf(value).trim();
+    if (!PURE_NUMBER.matcher(text).matches()) {
+      return text;
+    }
+
+    float pixels = Float.parseFloat(text);
+    if (!Float.isFinite(pixels)) {
+      throw new SourceModificationException("Dimension value must be a finite number");
+    }
+
+    return pixels + "px";
+  }
 
   /**
    * Sets a dimension value using the appropriate setter.
