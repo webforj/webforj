@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicReference;
 final class ClassUpdateDelivery {
 
   private static final System.Logger logger = System.getLogger(ClassUpdateDelivery.class.getName());
-  private static final long DEBOUNCE_DELAY_MILLIS = 150;
+  private static final long DEBOUNCE_DELAY_MILLIS = 100;
 
   private final LiveReloadServer server;
   private final String description;

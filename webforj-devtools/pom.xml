@@ -193,6 +193,15 @@
       <version>1.6.0</version>
     </dependency>
 
+    <!-- Ships with webforj-engine at runtime. Declared here because the class update listener
+         reads the class references with it. -->
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm</artifactId>
+      <version>9.9.1</version>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- Re-logs the forwarded bundler output through the application log. Supplied by the running
         application, so it stays provided and never ships from this jar. -->
     <dependency>
