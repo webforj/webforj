@@ -71,8 +71,8 @@ public class FieldDeclarationStrategy implements ModificationStrategy {
 
     for (SourceChange change : context.getSourceChanges()) {
       boolean found = AstModifier.updateInitializerSetter(variable, change);
-      found |= applyToInitializers(cu, initializers, variable, change);
-      applyToConstructors(cu, constructors, variable, change, found);
+      found |= applyToInitializers(initializers, variable, change);
+      applyToConstructors(constructors, variable, change, found);
       if (constructors.isEmpty() && !found && !change.isRemoval()) {
         BlockStmt block =
             owner instanceof ClassOrInterfaceDeclaration classDecl ? getConstructorBody(classDecl)
@@ -94,7 +94,7 @@ public class FieldDeclarationStrategy implements ModificationStrategy {
         + variableName + "' at line " + context.getLineNumber());
   }
 
-  private static boolean applyToInitializers(CompilationUnit cu, List<BlockStmt> initializers,
+  private static boolean applyToInitializers(List<BlockStmt> initializers,
       VariableDeclarator variable, SourceChange change) {
     boolean found = false;
     for (BlockStmt block : initializers) {
@@ -107,9 +107,8 @@ public class FieldDeclarationStrategy implements ModificationStrategy {
     return found;
   }
 
-  private static void applyToConstructors(CompilationUnit cu,
-      List<ConstructorDeclaration> constructors, VariableDeclarator variable, SourceChange change,
-      boolean found) {
+  private static void applyToConstructors(List<ConstructorDeclaration> constructors,
+      VariableDeclarator variable, SourceChange change, boolean found) {
     for (ConstructorDeclaration constructor : constructors) {
       BlockStmt block = constructor.getBody();
       if (AstModifier.hasSetterForDeclaration(block, variable, change)
