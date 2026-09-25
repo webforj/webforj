@@ -113,8 +113,36 @@ async function runBuild() {
 }
 
 const watching = process.argv.includes('--watch');
-const ok = await runBuild();
 if (watching) {
+  // One build runs at a time. A change arriving while a build is writing its output is remembered
+  // and built once the running build has finished, so a rebuild never clears the output directory
+  // underneath the build still writing into it.
+  let inFlight = null;
+  let queued = false;
+  const requestBuild = () => {
+    if (inFlight) {
+      queued = true;
+      return inFlight;
+    }
+
+    inFlight = runBuild()
+      .catch((e) => {
+        console.error(String(e));
+        return false;
+      })
+      .then((ok) => {
+        inFlight = null;
+        if (queued) {
+          queued = false;
+          return requestBuild();
+        }
+
+        return ok;
+      });
+
+    return inFlight;
+  };
+
   let timer;
   const onChange = (event, file) => {
     if (file?.split(/[\\/]/).includes('node_modules')) {
@@ -122,9 +150,7 @@ if (watching) {
     }
 
     clearTimeout(timer);
-    timer = setTimeout(() => {
-      runBuild().catch((e) => console.error(String(e)));
-    }, 60);
+    timer = setTimeout(requestBuild, 60);
   };
 
   // Watch the bundle source root and any extra directories a plugin builds from, such as the
@@ -147,6 +173,9 @@ if (watching) {
   process.on('SIGINT', stop);
   process.on('SIGTERM', stop);
 
+  // Observe edits before the initial build reports that the watch is ready.
+  await requestBuild();
+
   // Poll whether the parent is still there and exit once it is gone, so the watcher never lingers as
   // an orphan.
   const parentPid = process.ppid;
@@ -157,6 +186,6 @@ if (watching) {
       stop();
     }
   }, 1000);
-} else if (!ok) {
+} else if (!await runBuild()) {
   process.exit(1);
 }
