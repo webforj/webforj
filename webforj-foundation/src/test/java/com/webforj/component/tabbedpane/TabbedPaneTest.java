@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
@@ -39,6 +40,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -203,6 +205,38 @@ class TabbedPaneTest {
   @Nested
   @DisplayName("Add Tabs with Associated Component API")
   class AddTabsWithAssociatedComponentApi {
+
+    @Test
+    void shouldAddTheTabByIdBeforeCreatingComponentWithPresetId() throws BBjException {
+      Window window = mock(Window.class);
+      TabbedPane spy = spy(component);
+      when(spy.isAttached()).thenReturn(true);
+      doReturn(window).when(spy).getWindow();
+      DwcComponentMock panel = new DwcComponentMock();
+      panel.setBBjId(107);
+      DwcComponentMock other = new DwcComponentMock();
+      other.setBBjId(108);
+
+      try (
+          MockedStatic<ComponentAccessor> componentAccessor = mockStatic(ComponentAccessor.class)) {
+        ComponentAccessor accessor = mock(ComponentAccessor.class);
+        componentAccessor.when(ComponentAccessor::getDefault).thenReturn(accessor);
+        componentAccessor.when(() -> ComponentAccessor.getDefault().getControl(spy))
+            .thenReturn(control);
+        InOrder order = inOrder(control, accessor);
+
+        spy.addTab("Tab1", panel);
+        spy.insertTab(0, "Tab0", other);
+
+        order.verify(control).addTab("Tab1", 107);
+        order.verify(accessor).create(panel, window);
+        order.verify(control).insertTab(0, "Tab0", 108);
+        order.verify(accessor).create(other, window);
+        verify(control, times(0)).addTab(anyString(), any(BBjControl.class));
+      } catch (IllegalAccessException e) {
+        throw new IllegalStateException(e);
+      }
+    }
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
