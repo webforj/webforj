@@ -220,6 +220,40 @@ class WriteStylesheetActionTest {
   }
 
   @Test
+  @DisplayName("keeps the developer's rules when the theme is saved again beside its font region")
+  void shouldKeepRulesBetweenThemeFontAndTheme() throws IOException {
+    Files.writeString(stylesheet, """
+        body {
+          margin: 0;
+        }
+        dwc-app-layout {
+          --dwc-app-layout-drawer-width: 16em;
+        }
+        """);
+    action.handle(changeParams(regionChange("theme-font", "@import url('font.css');")));
+    action.handle(changeParams(regionChange("theme", ":root { --x: 1; }", "END")));
+
+    action.handle(changeParams(regionChange("theme", ":root { --x: 2; }", "END")));
+
+    assertEquals("""
+        /* webforj-devtools:theme-font - generated, do not edit */
+        @import url('font.css');
+        /* /webforj-devtools:theme-font */
+
+        body {
+          margin: 0;
+        }
+        dwc-app-layout {
+          --dwc-app-layout-drawer-width: 16em;
+        }
+
+        /* webforj-devtools:theme - generated, do not edit */
+        :root { --x: 2; }
+        /* /webforj-devtools:theme */
+        """, Files.readString(stylesheet));
+  }
+
+  @Test
   @DisplayName("keeps the developer's own rules on their own line however often it is saved")
   void shouldKeepRegionOnItsOwnLines() throws IOException {
     for (int save = 0; save < 5; save++) {

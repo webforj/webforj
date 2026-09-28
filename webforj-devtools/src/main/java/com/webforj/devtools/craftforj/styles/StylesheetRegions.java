@@ -222,9 +222,10 @@ public final class StylesheetRegions {
     return fence(quoted, quoted);
   }
 
+  // The name must end after the opening fence, or the theme fence would swallow theme-font
   private static Pattern fence(String opening, String closing) {
-    return Pattern.compile("/\\*\\s*" + Pattern.quote(PREFIX) + opening + "[^*]*\\*/" + "(.*?)"
-        + "/\\*\\s*/" + Pattern.quote(PREFIX) + closing + "\\s*\\*/\\n?", Pattern.DOTALL);
+    return Pattern.compile("/\\*\\s*" + Pattern.quote(PREFIX) + opening + "(?![a-z0-9-])[^*]*\\*/"
+        + "(.*?)" + "/\\*\\s*/" + Pattern.quote(PREFIX) + closing + "\\s*\\*/\\n?", Pattern.DOTALL);
   }
 
   private static String build(String name, String body) {
