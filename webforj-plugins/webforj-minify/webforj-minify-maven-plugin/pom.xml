@@ -15,10 +15,6 @@
   <name>${project.artifactId}</name>
   <description>Maven plugin for minifying webforJ assets at build time</description>
 
-  <properties>
-    <maven.version>3.9.16</maven.version>
-    <maven-plugin-annotations.version>3.15.2</maven-plugin-annotations.version>
-  </properties>
 
   <dependencies>
     <!-- Foundation module -->
@@ -31,21 +27,18 @@
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-plugin-api</artifactId>
-      <version>${maven.version}</version>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-core</artifactId>
-      <version>${maven.version}</version>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.apache.maven.plugin-tools</groupId>
       <artifactId>maven-plugin-annotations</artifactId>
-      <version>${maven-plugin-annotations.version}</version>
       <scope>provided</scope>
     </dependency>
 
@@ -70,7 +63,6 @@
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-compat</artifactId>
-      <version>${maven.version}</version>
       <scope>test</scope>
     </dependency>
 
@@ -94,7 +86,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-plugin-plugin</artifactId>
-        <version>3.15.2</version>
+        <version>${webforj.maven-plugin-tools.version}</version>
         <configuration>
           <goalPrefix>webforj-minify</goalPrefix>
         </configuration>

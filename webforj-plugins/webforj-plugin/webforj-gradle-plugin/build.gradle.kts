@@ -24,6 +24,16 @@ val javaRelease = rootDoc.getElementsByTagName("maven.compiler.release").let { n
   else throw GradleException("Could not find maven.compiler.release in root POM")
 }
 
+val junitVersion = rootDoc.getElementsByTagName("webforj.junit.version").let { nodes ->
+  if (nodes.length > 0) nodes.item(0).textContent
+  else throw GradleException("Could not find webforj.junit.version in root POM")
+}
+
+val mockitoVersion = rootDoc.getElementsByTagName("webforj.mockito.version").let { nodes ->
+  if (nodes.length > 0) nodes.item(0).textContent
+  else throw GradleException("Could not find webforj.mockito.version in root POM")
+}
+
 group = "com.webforj"
 version = parentVersion
 
@@ -46,10 +56,11 @@ dependencies {
   implementation("com.webforj:webforj-bundle-bun:$version")
   implementation("org.slf4j:slf4j-api:1.7.36")
 
-  testImplementation("org.junit.jupiter:junit-jupiter:5.10.3")
-  testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.10.3")
-  testImplementation("org.mockito:mockito-core:5.17.0")
-  testImplementation("org.mockito:mockito-junit-jupiter:5.17.0")
+  testImplementation(enforcedPlatform("org.junit:junit-bom:$junitVersion"))
+  testImplementation("org.junit.jupiter:junit-jupiter")
+  testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+  testImplementation("org.mockito:mockito-core:$mockitoVersion")
+  testImplementation("org.mockito:mockito-junit-jupiter:$mockitoVersion")
 }
 
 gradlePlugin {
