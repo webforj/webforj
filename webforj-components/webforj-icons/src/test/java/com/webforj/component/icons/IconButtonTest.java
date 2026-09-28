@@ -29,6 +29,11 @@ class IconButtonTest {
   class PropertiesApi {
 
     @Test
+    void shouldBeEnabledByDefault() {
+      assertTrue(component.isEnabled());
+    }
+
+    @Test
     void shouldSetGetEnabled() {
       component.setEnabled(true);
       assertTrue(component.isEnabled());
