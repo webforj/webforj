@@ -35,7 +35,7 @@ public class IconButton extends Icon
 
   // Properties
   private final PropertyDescriptor<Boolean> disabledProp =
-      PropertyDescriptor.property("disabled", true);
+      PropertyDescriptor.property("disabled", false);
   private final PropertyDescriptor<Boolean> focusRingEnabledProp =
       PropertyDescriptor.property("focusVisible", false);
   private final PropertyDescriptor<Integer> tabTraversableProp =
