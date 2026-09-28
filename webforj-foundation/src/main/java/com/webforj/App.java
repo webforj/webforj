@@ -9,6 +9,7 @@ import com.typesafe.config.Config;
 import com.webforj.annotation.AnnotationProcessor;
 import com.webforj.annotation.AppProfile;
 import com.webforj.annotation.Routify;
+import com.webforj.bridge.AppAccessor;
 import com.webforj.component.window.Frame;
 import com.webforj.environment.ObjectTable;
 import com.webforj.environment.StringTable;
@@ -27,6 +28,8 @@ import com.webforj.router.RouteRegistry;
 import com.webforj.router.Router;
 import com.webforj.router.RouterDevUtils;
 import com.webforj.router.event.NavigateEvent;
+import com.webforj.router.history.BrowserHistory;
+import com.webforj.router.history.History;
 import com.webforj.router.history.Location;
 import java.lang.System.Logger;
 import java.net.URL;
@@ -34,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -154,6 +158,12 @@ public abstract class App {
   private static final AtomicInteger appCounter = new AtomicInteger(0);
   private final String appId;
   private boolean isInitialized = false;
+  private boolean initializationStarted;
+  private History routerHistory;
+
+  static {
+    AppAccessor.setDefault(new AppAccessorImpl());
+  }
 
   /**
    * Creates a new App instance with a unique ID.
@@ -182,6 +192,7 @@ public abstract class App {
       throw new WebforjAppInitializeException("App is already initialized.");
     }
 
+    initializationStarted = true;
     logger.log(Logger.Level.INFO, String.format("Starting %s", appId));
 
     try {
@@ -779,6 +790,14 @@ public abstract class App {
     // no-op
   }
 
+  void setRouterHistory(History history) {
+    if (initializationStarted) {
+      throw new IllegalStateException(
+          "Router history must be configured before App initialization.");
+    }
+    routerHistory = Objects.requireNonNull(history, "History must not be null");
+  }
+
   /**
    * Set either the terminate or error app action.
    *
@@ -907,7 +926,8 @@ public abstract class App {
     }
 
     RouteRegistry registry = RouteRegistry.ofPackage(packages);
-    Router router = new Router(root, registry);
+    Router router =
+        new Router(root, registry, routerHistory != null ? routerHistory : new BrowserHistory());
     ObjectTable.put(Router.class.getName(), router);
 
     if (getClass().getAnnotation(Routify.class).manageFramesVisibility()) {
