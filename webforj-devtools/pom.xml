@@ -156,14 +156,12 @@
     <dependency>
       <groupId>jakarta.servlet</groupId>
       <artifactId>jakarta.servlet-api</artifactId>
-      <version>6.1.0</version>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>com.github.javaparser</groupId>
       <artifactId>javaparser-core</artifactId>
-      <version>3.27.1</version>
     </dependency>
 
     <dependency>
@@ -183,7 +181,6 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>33.7.1-jre</version>
       <scope>provided</scope>
     </dependency>
 

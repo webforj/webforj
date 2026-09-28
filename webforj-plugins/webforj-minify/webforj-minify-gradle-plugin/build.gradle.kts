@@ -24,6 +24,11 @@ val javaRelease = rootDoc.getElementsByTagName("maven.compiler.release").let { n
   else throw GradleException("Could not find maven.compiler.release in root POM")
 }
 
+val junitVersion = rootDoc.getElementsByTagName("webforj.junit.version").let { nodes ->
+  if (nodes.length > 0) nodes.item(0).textContent
+  else throw GradleException("Could not find webforj.junit.version in root POM")
+}
+
 group = "com.webforj"
 version = parentVersion
 
@@ -45,8 +50,9 @@ dependencies {
     implementation("com.webforj:webforj-minify-foundation:$version")
 
     // Testing
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.3")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.10.3")
+    testImplementation(enforcedPlatform("org.junit:junit-bom:$junitVersion"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 gradlePlugin {

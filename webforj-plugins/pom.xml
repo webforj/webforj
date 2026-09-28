@@ -14,6 +14,36 @@
   <artifactId>webforj-plugins</artifactId>
   <name>${project.artifactId}</name>
 
+  <properties>
+    <webforj.maven.version>3.9.16</webforj.maven.version>
+    <webforj.maven-plugin-tools.version>3.15.2</webforj.maven-plugin-tools.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-core</artifactId>
+        <version>${webforj.maven.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-plugin-api</artifactId>
+        <version>${webforj.maven.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-compat</artifactId>
+        <version>${webforj.maven.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.plugin-tools</groupId>
+        <artifactId>maven-plugin-annotations</artifactId>
+        <version>${webforj.maven-plugin-tools.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <modules>
     <module>webforj-install-maven-plugin</module>
     <module>webforj-install-bbj-plugin</module>

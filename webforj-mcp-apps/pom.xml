@@ -13,10 +13,6 @@
   <artifactId>webforj-mcp-apps</artifactId>
   <name>${project.artifactId}</name>
 
-  <properties>
-    <!-- The SDK version Spring AI 2.0.0 resolves -->
-    <mcp.sdk.version>2.0.1</mcp.sdk.version>
-  </properties>
   <description>webforJ MCP integration and MCP apps</description>
 
   <dependencies>
@@ -48,19 +44,16 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>33.7.1-jre</version>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>io.modelcontextprotocol.sdk</groupId>
       <artifactId>mcp-core</artifactId>
-      <version>${mcp.sdk.version}</version>
     </dependency>
     <dependency>
       <groupId>io.modelcontextprotocol.sdk</groupId>
       <artifactId>mcp-json-jackson3</artifactId>
-      <version>${mcp.sdk.version}</version>
     </dependency>
     <dependency>
       <groupId>com.github.victools</groupId>
@@ -76,7 +69,6 @@
     <dependency>
       <groupId>jakarta.servlet</groupId>
       <artifactId>jakarta.servlet-api</artifactId>
-      <version>6.1.0</version>
       <scope>provided</scope>
     </dependency>
 
