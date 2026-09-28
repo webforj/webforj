@@ -56,15 +56,18 @@ class AppAccessorTest {
 
     initialize(app);
 
-    assertThrows(IllegalStateException.class,
-        () -> AppAccessor.getDefault().setRouterHistory(app, new MemoryHistory()));
+    AppAccessor accessor = AppAccessor.getDefault();
+    MemoryHistory replacement = new MemoryHistory();
+    assertThrows(IllegalStateException.class, () -> accessor.setRouterHistory(app, replacement));
     assertSame(history, app.routerAtRun.getHistory());
   }
 
   @Test
   void shouldRejectNullHistory() {
-    assertThrows(NullPointerException.class,
-        () -> AppAccessor.getDefault().setRouterHistory(new RoutedApp(), null));
+    AppAccessor accessor = AppAccessor.getDefault();
+    RoutedApp app = new RoutedApp();
+
+    assertThrows(NullPointerException.class, () -> accessor.setRouterHistory(app, null));
   }
 
   @Test
@@ -87,6 +90,7 @@ class AppAccessorTest {
     BBjAPI api = mock(BBjAPI.class);
     when(environment.getBBjAPI()).thenReturn(api);
     when(api.getWebManager()).thenReturn(mock(BBjWebManager.class));
+    Page page = mock(Page.class);
     Map<String, Object> objects = new HashMap<>();
     try (MockedStatic<Environment> environments = mockStatic(Environment.class);
         MockedStatic<Page> pages = mockStatic(Page.class);
@@ -94,7 +98,7 @@ class AppAccessorTest {
         MockedStatic<StringTable> stringTable = mockStatic(StringTable.class)) {
       environments.when(Environment::getCurrent).thenReturn(environment);
       environments.when(Environment::getContextPath).thenReturn("/");
-      pages.when(Page::getCurrent).thenReturn(mock(Page.class));
+      pages.when(Page::getCurrent).thenReturn(page);
       objectTable.when(() -> ObjectTable.put(anyString(), any())).thenAnswer(call -> {
         objects.put(call.getArgument(0), call.getArgument(1));
         return call.getArgument(1);
@@ -119,8 +123,10 @@ class AppAccessorTest {
     protected void onWillRun() {
       routerAtWillRun = Router.getCurrent();
       if (checkHistoryLocked) {
+        AppAccessor accessor = AppAccessor.getDefault();
+        MemoryHistory replacement = new MemoryHistory();
         assertThrows(IllegalStateException.class,
-            () -> AppAccessor.getDefault().setRouterHistory(this, new MemoryHistory()));
+            () -> accessor.setRouterHistory(this, replacement));
       }
     }
 
