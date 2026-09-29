@@ -78,11 +78,11 @@ public class AppLayout extends ElementCompositeContainer
 
   // Property descriptors
   private final PropertyDescriptor<Boolean> drawerOpenProp =
-      PropertyDescriptor.property("drawerOpened", false);
+      PropertyDescriptor.property("drawerOpened", true);
   private final PropertyDescriptor<Boolean> drawerPopoverProp =
       PropertyDescriptor.property("drawerPopover", false);
   private final PropertyDescriptor<Boolean> drawerOverlayProp =
-      PropertyDescriptor.property("drawerOverlay", false);
+      PropertyDescriptor.property("drawerOverlay", true);
   private final PropertyDescriptor<DrawerPlacement> drawerPlacementProp =
       PropertyDescriptor.property("drawerPlacement", DrawerPlacement.LEFT);
   private final PropertyDescriptor<String> drawerBreakPointProp =
