@@ -135,11 +135,11 @@ class SourceSitesTest {
         findHidden(create("app.Hidden", "lambda$build$2", descriptor, 0, 1, 11)).toString());
     assertEquals("new Button(\"Third\")",
         findHidden(create("app.Hidden", "lambda$4", "()V", 0, 1, 28)).toString());
+    CreationSite ambiguous = create("app.Hidden", "lambda$other$3", "()V", 0, 1);
     assertEquals(
         "Hidden holds 2 places that fit the code that created this component, which one cannot be"
             + " told",
-        assertThrows(SourceModificationException.class,
-            () -> findHidden(create("app.Hidden", "lambda$other$3", "()V", 0, 1))).getMessage());
+        assertThrows(SourceModificationException.class, () -> findHidden(ambiguous)).getMessage());
   }
 
   @Test
@@ -191,7 +191,8 @@ class SourceSitesTest {
     assertNotEquals(site, create("app.View", "other", "(I)V", 0, 1));
     assertNotEquals(site, create("app.View", "fill", "(J)V", 0, 1));
     assertNotEquals(site, create("app.View", "fill", "(I)V", 0, 1, 7));
-    assertNotEquals("site", site);
+    Object other = "site";
+    assertNotEquals(other, site);
   }
 
   private Object find(CreationSite site) {

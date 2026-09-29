@@ -142,7 +142,6 @@ class MethodResolverTest {
         }
         """).orElseThrow();
     List<MethodCallExpr> calls = numbers.findAll(MethodCallExpr.class);
-    List<ObjectCreationExpr> creations = numbers.findAll(ObjectCreationExpr.class);
 
     assertEquals(
         List.of("append:1", "append:1", "append:1", "append:1", "append:1", "setLength:1", "add:1",
@@ -152,6 +151,9 @@ class MethodResolverTest {
             .toList());
     assertEquals(double.class, MethodResolver.resolveReturnType(calls.get(8)));
     assertEquals(int.class, MethodResolver.resolveReturnType(calls.get(9)));
+
+    List<ObjectCreationExpr> creations = numbers.findAll(ObjectCreationExpr.class);
+
     assertTrue(MethodResolver.hasOverloadWithout(creations.get(0), 0));
     assertFalse(MethodResolver.hasOverloadWithout(creations.get(1), 0));
   }

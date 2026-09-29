@@ -87,16 +87,18 @@ class SourceFileEditorTest {
     Path file = createSource(SOURCE);
     String external = SOURCE.replace("names", "externalNames");
 
-    assertThrows(SourceModificationException.class,
-        () -> editor.edit(file, new SourceImports(), false, cu -> {
-          cu.getClassByName("MyView").ifPresent(type -> type.addAnnotation("Deprecated"));
-          try {
-            Files.writeString(file, external);
-          } catch (IOException e) {
-            throw new java.io.UncheckedIOException(e);
-          }
-          return true;
-        }));
+    SourceImports imports = new SourceImports();
+    SourceEdit edit = cu -> {
+      cu.getClassByName("MyView").ifPresent(type -> type.addAnnotation("Deprecated"));
+      try {
+        Files.writeString(file, external);
+      } catch (IOException e) {
+        throw new java.io.UncheckedIOException(e);
+      }
+      return true;
+    };
+
+    assertThrows(SourceModificationException.class, () -> editor.edit(file, imports, false, edit));
 
     assertEquals(external, Files.readString(file));
   }

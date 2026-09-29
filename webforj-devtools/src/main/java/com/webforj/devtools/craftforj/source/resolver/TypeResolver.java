@@ -302,7 +302,7 @@ public final class TypeResolver {
    *
    * @return the declaration, or {@code null} when the file does not declare the type
    */
-  static TypeDeclaration<?> findDeclaredType(ClassOrInterfaceType type, Node at) {
+  static TypeDeclaration<?> findDeclaredType(ClassOrInterfaceType type, Node at) { // NOSONAR
     CompilationUnit cu = at.findCompilationUnit().orElse(null);
     if (cu == null) {
       return null;

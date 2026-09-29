@@ -26,6 +26,7 @@ import com.webforj.devtools.craftforj.source.site.SourceSites;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Every piece of source that belongs to one component.
@@ -42,6 +43,7 @@ import java.util.List;
  */
 final class ComponentSlice {
 
+  private static final Pattern NUMBERED_CLASS = Pattern.compile("\\$\\d");
   private final SourceLocation location;
   private final List<Statement> statements = new ArrayList<>();
   private final List<Expression> arguments = new ArrayList<>();
@@ -102,17 +104,7 @@ final class ComponentSlice {
       }
     }
 
-    String name = location.getVariableName();
-    String type = location.getSimpleTypeName();
-    List<VariableDeclarator> matches = new ArrayList<>();
-    for (VariableDeclarator candidate : cu.findAll(VariableDeclarator.class)) {
-      if (candidate.getNameAsString().equals(name) && isDeclaredBy(candidate, location)
-          && (hasCreationOf(cu, candidate, type) || AstFinder.matchesType(candidate.getType(),
-              candidate.getInitializer().orElse(null), type))) {
-        matches.add(candidate);
-      }
-    }
-
+    List<VariableDeclarator> matches = findMatches(cu, location);
     if (matches.size() > 1 && location.getLine() != null) {
       int line = location.getLine();
       List<VariableDeclarator> anchored = matches.stream()
@@ -125,10 +117,8 @@ final class ComponentSlice {
     }
 
     if (matches.size() != 1) {
-      throw new SourceModificationException(matches.isEmpty()
-          ? "No declaration of " + describe(location) + " found in " + getFileName(location)
-          : "More than one declaration of " + describe(location) + " found in "
-              + getFileName(location));
+      throw new SourceModificationException(describeFound(
+          matches.isEmpty() ? "No declaration" : "More than one declaration", location));
     }
 
     return matches.get(0);
@@ -308,6 +298,24 @@ final class ComponentSlice {
         && (holder instanceof Statement || holder instanceof LambdaExpr);
   }
 
+  private static List<VariableDeclarator> findMatches(CompilationUnit cu, SourceLocation location) {
+    String name = location.getVariableName();
+    String type = location.getSimpleTypeName();
+
+    return cu
+        .findAll(
+            VariableDeclarator.class)
+        .stream()
+        .filter(candidate -> candidate.getNameAsString().equals(name)
+            && isDeclaredBy(candidate, location) && (hasCreationOf(cu, candidate, type) || AstFinder
+                .matchesType(candidate.getType(), candidate.getInitializer().orElse(null), type)))
+        .toList();
+  }
+
+  private static String describeFound(String found, SourceLocation location) {
+    return found + " of " + describe(location) + " found in " + getFileName(location);
+  }
+
   private static VariableDeclarator findDeclared(Expression creation) {
     return VariableResolver.findHolder(MethodResolver.findChainEnd(creation));
   }
@@ -316,7 +324,7 @@ final class ComponentSlice {
   // asked for
   private static boolean isDeclaredBy(VariableDeclarator candidate, SourceLocation location) {
     String owner = location.getDeclaringClass();
-    if (owner == null || owner.isBlank() || owner.matches(".*\\$\\d.*")) {
+    if (owner == null || owner.isBlank() || NUMBERED_CLASS.matcher(owner).find()) {
       return true;
     }
 
@@ -338,8 +346,7 @@ final class ComponentSlice {
 
   private static Expression findInlineCreation(CompilationUnit cu, SourceLocation location) {
     if (location.getLine() == null) {
-      throw new SourceModificationException(
-          "No creation of " + describe(location) + " found in " + getFileName(location));
+      throw new SourceModificationException(describeFound("No creation", location));
     }
 
     TargetContext target = new TargetContext(location.getLine(), location.getSimpleTypeName());
@@ -361,10 +368,11 @@ final class ComponentSlice {
               && type.getAnnotationByName("Route").isPresent())
           .isPresent();
 
-      throw new SourceModificationException(routed
-          ? location.getSimpleTypeName() + " is placed by the router, its @Route decides where it "
-              + "renders"
-          : "No creation of " + describe(location) + " found in " + getFileName(location));
+      throw new SourceModificationException(
+          routed
+              ? location.getSimpleTypeName()
+                  + " is placed by the router, its @Route decides where it " + "renders"
+              : describeFound("No creation", location));
     }
 
     return creation;

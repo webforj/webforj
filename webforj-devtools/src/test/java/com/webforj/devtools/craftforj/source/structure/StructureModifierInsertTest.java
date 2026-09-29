@@ -3,8 +3,8 @@ package com.webforj.devtools.craftforj.source.structure;
 import static com.webforj.devtools.craftforj.source.structure.StructureFixture.BUTTON;
 import static com.webforj.devtools.craftforj.source.structure.StructureFixture.FLEX;
 import static com.webforj.devtools.craftforj.source.structure.StructureFixture.TEXT_FIELD;
-import static com.webforj.devtools.craftforj.source.structure.StructureFixture.after;
 import static com.webforj.devtools.craftforj.source.structure.StructureFixture.TOOLBAR;
+import static com.webforj.devtools.craftforj.source.structure.StructureFixture.after;
 import static com.webforj.devtools.craftforj.source.structure.StructureFixture.before;
 import static com.webforj.devtools.craftforj.source.structure.StructureFixture.line;
 import static com.webforj.devtools.craftforj.source.structure.StructureFixture.point;
@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.webforj.devtools.craftforj.source.SourceModificationException;
 import com.webforj.devtools.craftforj.source.model.SourceLocation;
+import com.webforj.devtools.craftforj.source.structure.model.AttachPoint;
 import com.webforj.devtools.craftforj.source.structure.model.ComponentCreation;
 import com.webforj.devtools.craftforj.source.structure.model.InsertResult;
 import java.io.IOException;
@@ -22,10 +23,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 @DisplayName("StructureModifier insert")
 class StructureModifierInsertTest {
@@ -54,44 +60,15 @@ class StructureModifierInsertTest {
     return creation;
   }
 
-  @Test
-  @DisplayName("adds an argument after the sibling of a call listing several children")
-  void shouldAddArgumentAfterSibling() throws IOException {
-    Path file = fixture.write("View.java", """
-        package com.example;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View() {
-            FlexLayout layout = new FlexLayout();
-            Button save = new Button("Save");
-            Button cancel = new Button("Cancel");
-            layout.add(save, cancel);
-          }
-        }
-        """);
+  @ParameterizedTest
+  @MethodSource("siblingAttachCases")
+  void shouldAttachNextToSibling(String source, String expected) throws IOException {
+    Path file = fixture.write("View.java", source);
 
     editor.insert(button(),
         after(variable(file, "layout", FLEX), variable(file, "save", BUTTON), "add"), false);
 
-    assertEquals("""
-        package com.example;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View() {
-            FlexLayout layout = new FlexLayout();
-            Button save = new Button("Save");
-            Button button = new Button("Button");
-            Button cancel = new Button("Cancel");
-            layout.add(save, button, cancel);
-          }
-        }
-        """, Files.readString(file));
+    assertEquals(expected, Files.readString(file));
   }
 
   @Test
@@ -172,49 +149,6 @@ class StructureModifierInsertTest {
   }
 
   @Test
-  @DisplayName("writes a call of its own in a file that attaches one child per call")
-  void shouldWriteOwnCallAfterSiblingCall() throws IOException {
-    Path file = fixture.write("View.java", """
-        package com.example;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View() {
-            FlexLayout layout = new FlexLayout();
-            Button save = new Button("Save");
-            layout.add(save);
-            Button cancel = new Button("Cancel");
-            layout.add(cancel);
-          }
-        }
-        """);
-
-    editor.insert(button(),
-        after(variable(file, "layout", FLEX), variable(file, "save", BUTTON), "add"), false);
-
-    assertEquals("""
-        package com.example;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View() {
-            FlexLayout layout = new FlexLayout();
-            Button save = new Button("Save");
-            layout.add(save);
-            Button button = new Button("Button");
-            layout.add(button);
-            Button cancel = new Button("Cancel");
-            layout.add(cancel);
-          }
-        }
-        """, Files.readString(file));
-  }
-
-  @Test
   @DisplayName("writes before the declaration of a sibling whose statements stand together")
   void shouldWriteOwnCallBeforeGroupedSibling() throws IOException {
     Path file = fixture.write("View.java", """
@@ -260,7 +194,8 @@ class StructureModifierInsertTest {
   }
 
   @Test
-  @DisplayName("writes right before the sibling call when the declarations stand apart from the calls")
+  @DisplayName("writes right before the sibling call when the declarations stand apart from the"
+      + " calls")
   void shouldWriteOwnCallBeforeSiblingCall() throws IOException {
     Path file = fixture.write("View.java", """
         package com.example;
@@ -846,95 +781,6 @@ class StructureModifierInsertTest {
   }
 
   @Test
-  @DisplayName("declares a field when the sibling is a field with an initializer")
-  void shouldDeclareFieldNextToFieldSibling() throws IOException {
-    Path file = fixture.write("View.java", """
-        package com.example;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          private final FlexLayout layout = new FlexLayout();
-          private final Button save = new Button("Save");
-          private String title;
-
-          public View() {
-            layout.add(save);
-          }
-        }
-        """);
-
-    editor.insert(button(),
-        after(variable(file, "layout", FLEX), variable(file, "save", BUTTON), "add"), false);
-
-    assertEquals("""
-        package com.example;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          private final FlexLayout layout = new FlexLayout();
-          private final Button save = new Button("Save");
-          private Button button = new Button("Button");
-          private String title;
-
-          public View() {
-            layout.add(save, button);
-          }
-        }
-        """, Files.readString(file));
-  }
-
-  @Test
-  @DisplayName("declares a field and assigns it when the sibling is assigned in code")
-  void shouldAssignFieldLikeFieldSibling() throws IOException {
-    Path file = fixture.write("View.java", """
-        package com.example;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          private FlexLayout layout;
-          private Button save;
-
-          public View() {
-            layout = new FlexLayout();
-            save = new Button("Save");
-            save.setEnabled(false);
-            layout.add(save);
-          }
-        }
-        """);
-
-    editor.insert(button(),
-        after(variable(file, "layout", FLEX), variable(file, "save", BUTTON), "add"), false);
-
-    assertEquals("""
-        package com.example;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          private FlexLayout layout;
-          private Button save;
-          private Button button;
-
-          public View() {
-            layout = new FlexLayout();
-            save = new Button("Save");
-            save.setEnabled(false);
-            button = new Button("Button");
-            layout.add(save, button);
-          }
-        }
-        """, Files.readString(file));
-  }
-
-  @Test
   @DisplayName("creates the component inline when the sibling is created inline")
   void shouldCreateInlineNextToInlineSibling() throws IOException {
     Path file = fixture.write("View.java", """
@@ -964,44 +810,6 @@ class StructureModifierInsertTest {
           public View() {
             FlexLayout layout = new FlexLayout();
             layout.add(new Button("Save"), new Button("Button"));
-          }
-        }
-        """, Files.readString(file));
-  }
-
-  @Test
-  @DisplayName("adds an argument to the creation that takes the children")
-  void shouldAddToConstructorChildren() throws IOException {
-    Path file = fixture.write("View.java", """
-        package com.example;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View() {
-            Button save = new Button("Save");
-            Button cancel = new Button("Cancel");
-            FlexLayout layout = new FlexLayout(save, cancel);
-          }
-        }
-        """);
-
-    editor.insert(button(),
-        after(variable(file, "layout", FLEX), variable(file, "save", BUTTON), "add"), false);
-
-    assertEquals("""
-        package com.example;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View() {
-            Button save = new Button("Save");
-            Button button = new Button("Button");
-            Button cancel = new Button("Cancel");
-            FlexLayout layout = new FlexLayout(save, button, cancel);
           }
         }
         """, Files.readString(file));
@@ -1040,42 +848,6 @@ class StructureModifierInsertTest {
             Button button = new Button("Button");
             Button save = new Button("Save");
             FlexLayout layout = new FlexLayout(FlexDirection.ROW, button, save);
-          }
-        }
-        """, Files.readString(file));
-  }
-
-  @Test
-  @DisplayName("adds an argument to the static factory that starts a builder chain")
-  void shouldAddToBuilderFactory() throws IOException {
-    Path file = fixture.write("View.java", """
-        package com.example;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View() {
-            Button save = new Button("Save");
-            FlexLayout layout = FlexLayout.create(save).vertical().build();
-          }
-        }
-        """);
-
-    editor.insert(button(),
-        after(variable(file, "layout", FLEX), variable(file, "save", BUTTON), "add"), false);
-
-    assertEquals("""
-        package com.example;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View() {
-            Button save = new Button("Save");
-            Button button = new Button("Button");
-            FlexLayout layout = FlexLayout.create(save, button).vertical().build();
           }
         }
         """, Files.readString(file));
@@ -1137,12 +909,16 @@ class StructureModifierInsertTest {
 
     String original = Files.readString(file);
 
+    ComponentCreation creation = button();
+    AttachPoint place = after(variable(file, "panel", "com.example.CardPanel"),
+        variable(file, "save", BUTTON), "add");
+
     SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.insert(button(), after(variable(file, "panel", "com.example.CardPanel"),
-            variable(file, "save", BUTTON), "add"), false));
+        () -> editor.insert(creation, place, false));
 
     assertEquals(
-        "Cannot place a component next to Button save, it is handed to the creation of CardPanel panel which takes a fixed set of arguments",
+        "Cannot place a component next to Button save, it is handed to the creation of CardPanel"
+            + " panel which takes a fixed set of arguments",
         refused.getMessage());
     assertEquals(original, Files.readString(file));
   }
@@ -1208,12 +984,16 @@ class StructureModifierInsertTest {
 
     String original = Files.readString(file);
 
+    ComponentCreation creation = button();
+    AttachPoint place = after(variable(file, "panel", "com.example.CardPanel"),
+        variable(file, "save", BUTTON), "addItem");
+
     SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.insert(button(), after(variable(file, "panel", "com.example.CardPanel"),
-            variable(file, "save", BUTTON), "addItem"), false));
+        () -> editor.insert(creation, place, false));
 
     assertEquals(
-        "Cannot place a component next to Button save, its statement attaches several components in one chain",
+        "Cannot place a component next to Button save, its statement attaches several components"
+            + " in one chain",
         refused.getMessage());
     assertEquals(original, Files.readString(file));
   }
@@ -1509,80 +1289,32 @@ class StructureModifierInsertTest {
 
     String original = Files.readString(file);
 
+    ComponentCreation creation = button();
+    AttachPoint place =
+        after(variable(file, "layout", "com.webforj.component.layout.applayout.AppLayout"),
+            variable(file, "save", BUTTON), "add");
+
     SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.insert(button(),
-            after(variable(file, "layout", "com.webforj.component.layout.applayout.AppLayout"),
-                variable(file, "save", BUTTON), "add"),
-            false));
+        () -> editor.insert(creation, place, false));
 
     assertEquals("Button save is not attached to AppLayout layout with [add] in View.java",
         refused.getMessage());
     assertEquals(original, Files.readString(file));
   }
 
-  @Test
-  @DisplayName("refuses a sibling that is attached inside a branch")
-  void shouldRefuseSiblingAttachedInBranch() throws IOException {
-    Path file = fixture.write("View.java", """
-        package com.example;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View(boolean admin) {
-            FlexLayout layout = new FlexLayout();
-            Button save = new Button("Save");
-            if (admin) {
-              layout.add(save);
-            }
-          }
-        }
-        """);
-
+  @ParameterizedTest
+  @MethodSource("refusedSiblingCases")
+  void shouldRefuseSibling(String source, String sibling, String message) throws IOException {
+    Path file = fixture.write("View.java", source);
     String original = Files.readString(file);
+    ComponentCreation creation = button();
+    AttachPoint place =
+        after(variable(file, "layout", FLEX), variable(file, sibling, BUTTON), "add");
 
-    SourceModificationException refused =
-        assertThrows(SourceModificationException.class, () -> editor.insert(button(),
-            after(variable(file, "layout", FLEX), variable(file, "save", BUTTON), "add"), false));
+    SourceModificationException refused = assertThrows(SourceModificationException.class,
+        () -> editor.insert(creation, place, false));
 
-    assertEquals(
-        "The attach call of Button save at line 11 sits inside a branch, a loop or a lambda",
-        refused.getMessage());
-    assertEquals(original, Files.readString(file));
-  }
-
-  @Test
-  @DisplayName("refuses a sibling that is attached in more than one place")
-  void shouldRefuseSiblingAttachedTwice() throws IOException {
-    Path file = fixture.write("View.java", """
-        package com.example;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View(boolean wide) {
-            FlexLayout layout = new FlexLayout();
-            Button save = new Button("Save");
-            if (wide) {
-              layout.add(save);
-            } else {
-              layout.add(save);
-            }
-          }
-        }
-        """);
-
-    String original = Files.readString(file);
-
-    SourceModificationException refused =
-        assertThrows(SourceModificationException.class, () -> editor.insert(button(),
-            after(variable(file, "layout", FLEX), variable(file, "save", BUTTON), "add"), false));
-
-    assertEquals(
-        "Button save is attached more than once to FlexLayout layout with [add] in View.java",
-        refused.getMessage());
+    assertEquals(message, refused.getMessage());
     assertEquals(original, Files.readString(file));
   }
 
@@ -1606,39 +1338,13 @@ class StructureModifierInsertTest {
 
     String original = Files.readString(file);
 
+    ComponentCreation creation = button();
+    AttachPoint place = point(variable(file, "missing", FLEX), "add");
+
     SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.insert(button(), point(variable(file, "missing", FLEX), "add"), false));
+        () -> editor.insert(creation, place, false));
 
     assertEquals("No declaration of FlexLayout missing found in View.java", refused.getMessage());
-    assertEquals(original, Files.readString(file));
-  }
-
-  @Test
-  @DisplayName("refuses a sibling the file does not declare")
-  void shouldRefuseUnknownSibling() throws IOException {
-    Path file = fixture.write("View.java", """
-        package com.example;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View() {
-            FlexLayout layout = new FlexLayout();
-            Button save = new Button("Save");
-            layout.add(save);
-          }
-        }
-        """);
-
-    String original = Files.readString(file);
-
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.insert(button(),
-            after(variable(file, "layout", FLEX), variable(file, "missing", BUTTON), "add"),
-            false));
-
-    assertEquals("No declaration of Button missing found in View.java", refused.getMessage());
     assertEquals(original, Files.readString(file));
   }
 
@@ -1664,8 +1370,11 @@ class StructureModifierInsertTest {
 
     String original = Files.readString(file);
 
+    ComponentCreation creation = button();
+    AttachPoint place = point(variable(file, "layout", FLEX), "add");
+
     SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.insert(button(), point(variable(file, "layout", FLEX), "add"), false));
+        () -> editor.insert(creation, place, false));
 
     assertEquals("More than one declaration of FlexLayout layout found in View.java",
         refused.getMessage());
@@ -1735,9 +1444,11 @@ class StructureModifierInsertTest {
 
     String original = Files.readString(file);
 
+    ComponentCreation creation = new ComponentCreation(BUTTON, "new Button(");
+    AttachPoint place = point(variable(file, "layout", FLEX), "add");
+
     SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.insert(new ComponentCreation(BUTTON, "new Button("),
-            point(variable(file, "layout", FLEX), "add"), false));
+        () -> editor.insert(creation, place, false));
 
     assertEquals("The creation of Button does not parse, new Button(", refused.getMessage());
     assertEquals(original, Files.readString(file));
@@ -1761,8 +1472,11 @@ class StructureModifierInsertTest {
 
     String original = Files.readString(file);
 
+    ComponentCreation creation = button();
+    AttachPoint place = point(variable(file, "layout", FLEX), "add");
+
     SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.insert(button(), point(variable(file, "layout", FLEX), "add"), false));
+        () -> editor.insert(creation, place, false));
 
     assertEquals("Failed to parse source file: " + file, refused.getMessage());
     assertEquals(original, Files.readString(file));
@@ -1934,35 +1648,6 @@ class StructureModifierInsertTest {
           }
         }
         """, Files.readString(file));
-  }
-
-  @Test
-  @DisplayName("ignores a call that goes through an is accessor of the parent")
-  void shouldIgnoreCallsBehindBooleanAccessor() throws IOException {
-    Path file = fixture.write("View.java", """
-        package com.example;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View() {
-            FlexLayout layout = new FlexLayout();
-            Button save = new Button("Save");
-            layout.isVisible().add(save);
-          }
-        }
-        """);
-
-    String original = Files.readString(file);
-
-    SourceModificationException refused =
-        assertThrows(SourceModificationException.class, () -> editor.insert(button(),
-            after(variable(file, "layout", FLEX), variable(file, "save", BUTTON), "add"), false));
-
-    assertEquals("Button save is not attached to FlexLayout layout with [add] in View.java",
-        refused.getMessage());
-    assertEquals(original, Files.readString(file));
   }
 
   @Test
@@ -2253,5 +1938,268 @@ class StructureModifierInsertTest {
           }
         }
         """, Files.readString(file));
+  }
+
+  private static Stream<Arguments> siblingAttachCases() {
+    return Stream.of(
+        Arguments.of(
+            Named.of("adds an argument after the sibling of a call listing several children", """
+                package com.example;
+
+                import com.webforj.component.button.Button;
+                import com.webforj.component.layout.flexlayout.FlexLayout;
+
+                public class View {
+                  public View() {
+                    FlexLayout layout = new FlexLayout();
+                    Button save = new Button("Save");
+                    Button cancel = new Button("Cancel");
+                    layout.add(save, cancel);
+                  }
+                }
+                """), """
+                package com.example;
+
+                import com.webforj.component.button.Button;
+                import com.webforj.component.layout.flexlayout.FlexLayout;
+
+                public class View {
+                  public View() {
+                    FlexLayout layout = new FlexLayout();
+                    Button save = new Button("Save");
+                    Button button = new Button("Button");
+                    Button cancel = new Button("Cancel");
+                    layout.add(save, button, cancel);
+                  }
+                }
+                """),
+        Arguments
+            .of(Named.of("writes a call of its own in a file that attaches one child per call", """
+                package com.example;
+
+                import com.webforj.component.button.Button;
+                import com.webforj.component.layout.flexlayout.FlexLayout;
+
+                public class View {
+                  public View() {
+                    FlexLayout layout = new FlexLayout();
+                    Button save = new Button("Save");
+                    layout.add(save);
+                    Button cancel = new Button("Cancel");
+                    layout.add(cancel);
+                  }
+                }
+                """), """
+                package com.example;
+
+                import com.webforj.component.button.Button;
+                import com.webforj.component.layout.flexlayout.FlexLayout;
+
+                public class View {
+                  public View() {
+                    FlexLayout layout = new FlexLayout();
+                    Button save = new Button("Save");
+                    layout.add(save);
+                    Button button = new Button("Button");
+                    layout.add(button);
+                    Button cancel = new Button("Cancel");
+                    layout.add(cancel);
+                  }
+                }
+                """),
+        Arguments
+            .of(Named.of("declares a field when the sibling is a field with an initializer", """
+                package com.example;
+
+                import com.webforj.component.button.Button;
+                import com.webforj.component.layout.flexlayout.FlexLayout;
+
+                public class View {
+                  private final FlexLayout layout = new FlexLayout();
+                  private final Button save = new Button("Save");
+                  private String title;
+
+                  public View() {
+                    layout.add(save);
+                  }
+                }
+                """), """
+                package com.example;
+
+                import com.webforj.component.button.Button;
+                import com.webforj.component.layout.flexlayout.FlexLayout;
+
+                public class View {
+                  private final FlexLayout layout = new FlexLayout();
+                  private final Button save = new Button("Save");
+                  private Button button = new Button("Button");
+                  private String title;
+
+                  public View() {
+                    layout.add(save, button);
+                  }
+                }
+                """),
+        Arguments
+            .of(Named.of("declares a field and assigns it when the sibling is assigned in code", """
+                package com.example;
+
+                import com.webforj.component.button.Button;
+                import com.webforj.component.layout.flexlayout.FlexLayout;
+
+                public class View {
+                  private FlexLayout layout;
+                  private Button save;
+
+                  public View() {
+                    layout = new FlexLayout();
+                    save = new Button("Save");
+                    save.setEnabled(false);
+                    layout.add(save);
+                  }
+                }
+                """), """
+                package com.example;
+
+                import com.webforj.component.button.Button;
+                import com.webforj.component.layout.flexlayout.FlexLayout;
+
+                public class View {
+                  private FlexLayout layout;
+                  private Button save;
+                  private Button button;
+
+                  public View() {
+                    layout = new FlexLayout();
+                    save = new Button("Save");
+                    save.setEnabled(false);
+                    button = new Button("Button");
+                    layout.add(save, button);
+                  }
+                }
+                """),
+        Arguments.of(Named.of("adds an argument to the creation that takes the children", """
+            package com.example;
+
+            import com.webforj.component.button.Button;
+            import com.webforj.component.layout.flexlayout.FlexLayout;
+
+            public class View {
+              public View() {
+                Button save = new Button("Save");
+                Button cancel = new Button("Cancel");
+                FlexLayout layout = new FlexLayout(save, cancel);
+              }
+            }
+            """), """
+            package com.example;
+
+            import com.webforj.component.button.Button;
+            import com.webforj.component.layout.flexlayout.FlexLayout;
+
+            public class View {
+              public View() {
+                Button save = new Button("Save");
+                Button button = new Button("Button");
+                Button cancel = new Button("Cancel");
+                FlexLayout layout = new FlexLayout(save, button, cancel);
+              }
+            }
+            """), Arguments
+            .of(Named.of("adds an argument to the static factory that starts a builder chain", """
+                package com.example;
+
+                import com.webforj.component.button.Button;
+                import com.webforj.component.layout.flexlayout.FlexLayout;
+
+                public class View {
+                  public View() {
+                    Button save = new Button("Save");
+                    FlexLayout layout = FlexLayout.create(save).vertical().build();
+                  }
+                }
+                """), """
+                package com.example;
+
+                import com.webforj.component.button.Button;
+                import com.webforj.component.layout.flexlayout.FlexLayout;
+
+                public class View {
+                  public View() {
+                    Button save = new Button("Save");
+                    Button button = new Button("Button");
+                    FlexLayout layout = FlexLayout.create(save, button).vertical().build();
+                  }
+                }
+                """));
+  }
+
+  private static Stream<Arguments> refusedSiblingCases() {
+    return Stream.of(
+        Arguments.of(Named.of("refuses a sibling that is attached inside a branch", """
+            package com.example;
+
+            import com.webforj.component.button.Button;
+            import com.webforj.component.layout.flexlayout.FlexLayout;
+
+            public class View {
+              public View(boolean admin) {
+                FlexLayout layout = new FlexLayout();
+                Button save = new Button("Save");
+                if (admin) {
+                  layout.add(save);
+                }
+              }
+            }
+            """), "save",
+            "The attach call of Button save at line 11 sits inside a branch, a loop or a lambda"),
+        Arguments.of(Named.of("refuses a sibling that is attached in more than one place", """
+            package com.example;
+
+            import com.webforj.component.button.Button;
+            import com.webforj.component.layout.flexlayout.FlexLayout;
+
+            public class View {
+              public View(boolean wide) {
+                FlexLayout layout = new FlexLayout();
+                Button save = new Button("Save");
+                if (wide) {
+                  layout.add(save);
+                } else {
+                  layout.add(save);
+                }
+              }
+            }
+            """), "save",
+            "Button save is attached more than once to FlexLayout layout with [add] in View.java"),
+        Arguments.of(Named.of("refuses a sibling the file does not declare", """
+            package com.example;
+
+            import com.webforj.component.button.Button;
+            import com.webforj.component.layout.flexlayout.FlexLayout;
+
+            public class View {
+              public View() {
+                FlexLayout layout = new FlexLayout();
+                Button save = new Button("Save");
+                layout.add(save);
+              }
+            }
+            """), "missing", "No declaration of Button missing found in View.java"),
+        Arguments.of(Named.of("ignores a call that goes through an is accessor of the parent", """
+            package com.example;
+
+            import com.webforj.component.button.Button;
+            import com.webforj.component.layout.flexlayout.FlexLayout;
+
+            public class View {
+              public View() {
+                FlexLayout layout = new FlexLayout();
+                Button save = new Button("Save");
+                layout.isVisible().add(save);
+              }
+            }
+            """), "save",
+            "Button save is not attached to FlexLayout layout with [add] in View.java"));
   }
 }

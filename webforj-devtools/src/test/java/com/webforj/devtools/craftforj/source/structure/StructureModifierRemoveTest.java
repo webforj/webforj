@@ -13,17 +13,26 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.webforj.devtools.craftforj.source.SourceModificationException;
 import com.webforj.devtools.craftforj.source.model.SourceLocation;
+import com.webforj.devtools.craftforj.source.structure.model.AttachPoint;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 @DisplayName("StructureModifier remove")
 class StructureModifierRemoveTest {
+
+  private static final String CREATED_MANY_TIMES =
+      "Button entry is created inside a loop or a lambda, one line builds several components";
 
   private final StructureModifier editor = StructureFixture.createEditor();
   private StructureFixture fixture;
@@ -450,9 +459,11 @@ class StructureModifierRemoveTest {
 
     String original = Files.readString(file);
 
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.remove(List.of(line(file, 9, BUTTON)),
-            point(variable(file, "layout", FLEX), "add"), false));
+    List<SourceLocation> removed = List.of(line(file, 9, BUTTON));
+    AttachPoint place = point(variable(file, "layout", FLEX), "add");
+
+    SourceModificationException refused =
+        assertThrows(SourceModificationException.class, () -> editor.remove(removed, place, false));
 
     assertEquals("More than one Button is created at line 9, the line alone cannot tell which",
         refused.getMessage());
@@ -622,32 +633,20 @@ class StructureModifierRemoveTest {
         """, Files.readString(file));
   }
 
-  @Test
-  @DisplayName("refuses a component that is read and attached nowhere")
-  void shouldRefuseReadComponentWithoutAttachment() throws IOException {
-    Path file = fixture.write("View.java", """
-        package com.example;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View() {
-            FlexLayout layout = new FlexLayout();
-            Button save = new Button("Save");
-            String label = save.getText();
-          }
-        }
-        """);
+  @ParameterizedTest
+  @MethodSource("refusedComponents")
+  void shouldRefuseComponent(String source, String name, String message) throws IOException {
+    Path file = fixture.write("View.java", source);
 
     String original = Files.readString(file);
 
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.remove(List.of(variable(file, "save", BUTTON)),
-            point(variable(file, "layout", FLEX), "add"), false));
+    List<SourceLocation> removed = List.of(variable(file, name, BUTTON));
+    AttachPoint place = point(variable(file, "layout", FLEX), "add");
 
-    assertEquals("Button save is still used at line 10, String label = save.getText();",
-        refused.getMessage());
+    SourceModificationException refused =
+        assertThrows(SourceModificationException.class, () -> editor.remove(removed, place, false));
+
+    assertEquals(message, refused.getMessage());
     assertEquals(original, Files.readString(file));
   }
 
@@ -890,12 +889,15 @@ class StructureModifierRemoveTest {
 
     String original = Files.readString(file);
 
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.remove(List.of(variable(file, "save", BUTTON)),
-            point(variable(file, "panel", "com.example.CardPanel"), "add"), false));
+    List<SourceLocation> removed = List.of(variable(file, "save", BUTTON));
+    AttachPoint place = point(variable(file, "panel", "com.example.CardPanel"), "add");
+
+    SourceModificationException refused =
+        assertThrows(SourceModificationException.class, () -> editor.remove(removed, place, false));
 
     assertEquals(
-        "The creation of CardPanel panel at line 8 takes a fixed set of arguments, the component cannot be taken out of it",
+        "The creation of CardPanel panel at line 8 takes a fixed set of arguments, the component"
+            + " cannot be taken out of it",
         refused.getMessage());
     assertEquals(original, Files.readString(file));
   }
@@ -1008,72 +1010,6 @@ class StructureModifierRemoveTest {
           }
         }
         """, Files.readString(file));
-  }
-
-  @Test
-  @DisplayName("refuses a component a loop creates several times")
-  void shouldRefuseComponentCreatedInLoop() throws IOException {
-    Path file = fixture.write("View.java", """
-        package com.example;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View(String[] names) {
-            FlexLayout layout = new FlexLayout();
-            for (String name : names) {
-              Button entry = new Button(name);
-              layout.add(entry);
-            }
-          }
-        }
-        """);
-
-    String original = Files.readString(file);
-
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.remove(List.of(variable(file, "entry", BUTTON)),
-            point(variable(file, "layout", FLEX), "add"), false));
-
-    assertEquals(
-        "Button entry is created inside a loop or a lambda, one line builds several components",
-        refused.getMessage());
-    assertEquals(original, Files.readString(file));
-  }
-
-  @Test
-  @DisplayName("refuses a component a lambda creates on every run")
-  void shouldRefuseComponentCreatedInLambda() throws IOException {
-    Path file = fixture.write("View.java", """
-        package com.example;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View() {
-            FlexLayout layout = new FlexLayout();
-            Button more = new Button("More");
-            more.onClick(e -> {
-              Button entry = new Button("Entry");
-              layout.add(entry);
-            });
-            layout.add(more);
-          }
-        }
-        """);
-
-    String original = Files.readString(file);
-
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.remove(List.of(variable(file, "entry", BUTTON)),
-            point(variable(file, "layout", FLEX), "add"), false));
-
-    assertEquals(
-        "Button entry is created inside a loop or a lambda, one line builds several components",
-        refused.getMessage());
-    assertEquals(original, Files.readString(file));
   }
 
   @Test
@@ -1413,38 +1349,14 @@ class StructureModifierRemoveTest {
 
     String original = Files.readString(file);
 
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.remove(List.of(line(file, 8, "com.example.View")),
-            point(line(file, 8, "com.example.MainLayout"), "add"), false));
+    List<SourceLocation> removed = List.of(line(file, 8, "com.example.View"));
+    AttachPoint place = point(line(file, 8, "com.example.MainLayout"), "add");
+
+    SourceModificationException refused =
+        assertThrows(SourceModificationException.class, () -> editor.remove(removed, place, false));
 
     assertEquals("View is placed by the router, its @Route decides where it renders",
         refused.getMessage());
-    assertEquals(original, Files.readString(file));
-  }
-
-  @Test
-  @DisplayName("refuses a component the file does not declare")
-  void shouldRefuseUnknownComponent() throws IOException {
-    Path file = fixture.write("View.java", """
-        package com.example;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View() {
-            FlexLayout layout = new FlexLayout();
-          }
-        }
-        """);
-
-    String original = Files.readString(file);
-
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.remove(List.of(variable(file, "save", BUTTON)),
-            point(variable(file, "layout", FLEX), "add"), false));
-
-    assertEquals("No declaration of Button save found in View.java", refused.getMessage());
     assertEquals(original, Files.readString(file));
   }
 
@@ -1466,9 +1378,11 @@ class StructureModifierRemoveTest {
 
     String original = Files.readString(file);
 
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.remove(List.of(line(file, 8, BUTTON)),
-            point(variable(file, "layout", FLEX), "add"), false));
+    List<SourceLocation> removed = List.of(line(file, 8, BUTTON));
+    AttachPoint place = point(variable(file, "layout", FLEX), "add");
+
+    SourceModificationException refused =
+        assertThrows(SourceModificationException.class, () -> editor.remove(removed, place, false));
 
     assertEquals("No creation of Button at line 8 found in View.java", refused.getMessage());
     assertEquals(original, Files.readString(file));
@@ -1656,9 +1570,11 @@ class StructureModifierRemoveTest {
 
     String original = Files.readString(file);
 
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.remove(List.of(variable(file, "save", BUTTON)),
-            point(variable(file, "layout", FLEX), "add"), false));
+    List<SourceLocation> removed = List.of(variable(file, "save", BUTTON));
+    AttachPoint place = point(variable(file, "layout", FLEX), "add");
+
+    SourceModificationException refused =
+        assertThrows(SourceModificationException.class, () -> editor.remove(removed, place, false));
 
     assertEquals("The change leaves View.java with an error at line 10, variable other might not "
         + "have been initialized", refused.getMessage());
@@ -1684,11 +1600,78 @@ class StructureModifierRemoveTest {
 
     String original = Files.readString(file);
 
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.remove(List.of(new SourceLocation(file.toString(), null, null, null, BUTTON)),
-            point(variable(file, "layout", FLEX), "add"), false));
+    List<SourceLocation> removed =
+        List.of(new SourceLocation(file.toString(), null, null, null, BUTTON));
+    AttachPoint place = point(variable(file, "layout", FLEX), "add");
+
+    SourceModificationException refused =
+        assertThrows(SourceModificationException.class, () -> editor.remove(removed, place, false));
 
     assertEquals("No creation of Button at line null found in View.java", refused.getMessage());
     assertEquals(original, Files.readString(file));
+  }
+
+  private static Stream<Arguments> refusedComponents() {
+    return Stream.of(
+        Arguments.of(Named.of("refuses a component that is read and attached nowhere", """
+            package com.example;
+
+            import com.webforj.component.button.Button;
+            import com.webforj.component.layout.flexlayout.FlexLayout;
+
+            public class View {
+              public View() {
+                FlexLayout layout = new FlexLayout();
+                Button save = new Button("Save");
+                String label = save.getText();
+              }
+            }
+            """), "save", "Button save is still used at line 10, String label = save.getText();"),
+        Arguments.of(Named.of("refuses a component a loop creates several times", """
+            package com.example;
+
+            import com.webforj.component.button.Button;
+            import com.webforj.component.layout.flexlayout.FlexLayout;
+
+            public class View {
+              public View(String[] names) {
+                FlexLayout layout = new FlexLayout();
+                for (String name : names) {
+                  Button entry = new Button(name);
+                  layout.add(entry);
+                }
+              }
+            }
+            """), "entry", CREATED_MANY_TIMES),
+        Arguments.of(Named.of("refuses a component a lambda creates on every run", """
+            package com.example;
+
+            import com.webforj.component.button.Button;
+            import com.webforj.component.layout.flexlayout.FlexLayout;
+
+            public class View {
+              public View() {
+                FlexLayout layout = new FlexLayout();
+                Button more = new Button("More");
+                more.onClick(e -> {
+                  Button entry = new Button("Entry");
+                  layout.add(entry);
+                });
+                layout.add(more);
+              }
+            }
+            """), "entry", CREATED_MANY_TIMES),
+        Arguments.of(Named.of("refuses a component the file does not declare", """
+            package com.example;
+
+            import com.webforj.component.button.Button;
+            import com.webforj.component.layout.flexlayout.FlexLayout;
+
+            public class View {
+              public View() {
+                FlexLayout layout = new FlexLayout();
+              }
+            }
+            """), "save", "No declaration of Button save found in View.java"));
   }
 }

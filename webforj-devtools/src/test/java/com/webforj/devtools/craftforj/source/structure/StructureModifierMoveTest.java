@@ -12,6 +12,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.webforj.devtools.craftforj.source.SourceModificationException;
+import com.webforj.devtools.craftforj.source.model.SourceLocation;
+import com.webforj.devtools.craftforj.source.structure.model.AttachPoint;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -279,10 +281,12 @@ class StructureModifierMoveTest {
 
     String original = Files.readString(file);
 
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.move(List.of(variable(file, "save", BUTTON)),
-            point(variable(file, "footer", FLEX), "add"),
-            before(variable(file, "header", FLEX), variable(file, "help", BUTTON), "add"), false));
+    List<SourceLocation> moved = List.of(variable(file, "save", BUTTON));
+    AttachPoint from = point(variable(file, "footer", FLEX), "add");
+    AttachPoint to = before(variable(file, "header", FLEX), variable(file, "help", BUTTON), "add");
+
+    SourceModificationException refused =
+        assertThrows(SourceModificationException.class, () -> editor.move(moved, from, to, false));
 
     assertEquals("The moved code reads label, which stays in View.java", refused.getMessage());
     assertEquals(original, Files.readString(file));
@@ -643,10 +647,12 @@ class StructureModifierMoveTest {
 
     String original = Files.readString(file);
 
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.move(List.of(variable(file, "save", BUTTON)),
-            point(variable(file, "header", FLEX), "add"),
-            point(variable(file, "footer", FLEX), "add"), false));
+    List<SourceLocation> moved = List.of(variable(file, "save", BUTTON));
+    AttachPoint from = point(variable(file, "header", FLEX), "add");
+    AttachPoint to = point(variable(file, "footer", FLEX), "add");
+
+    SourceModificationException refused =
+        assertThrows(SourceModificationException.class, () -> editor.move(moved, from, to, false));
 
     assertEquals("The moved code reads label, which stays in View.java", refused.getMessage());
     assertEquals(original, Files.readString(file));
@@ -771,10 +777,12 @@ class StructureModifierMoveTest {
 
     String original = Files.readString(file);
 
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.move(List.of(variable(file, "row", FLEX)),
-            point(variable(file, "layout", FLEX), "add"), point(variable(file, "row", FLEX), "add"),
-            false));
+    List<SourceLocation> moved = List.of(variable(file, "row", FLEX));
+    AttachPoint from = point(variable(file, "layout", FLEX), "add");
+    AttachPoint to = point(variable(file, "row", FLEX), "add");
+
+    SourceModificationException refused =
+        assertThrows(SourceModificationException.class, () -> editor.move(moved, from, to, false));
 
     assertEquals("A component cannot be moved into itself", refused.getMessage());
     assertEquals(original, Files.readString(file));
@@ -802,10 +810,12 @@ class StructureModifierMoveTest {
 
     String original = Files.readString(file);
 
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.move(List.of(variable(file, "row", FLEX), variable(file, "cell", FLEX)),
-            point(variable(file, "layout", FLEX), "add"),
-            point(variable(file, "cell", FLEX), "add"), false));
+    List<SourceLocation> moved = List.of(variable(file, "row", FLEX), variable(file, "cell", FLEX));
+    AttachPoint from = point(variable(file, "layout", FLEX), "add");
+    AttachPoint to = point(variable(file, "cell", FLEX), "add");
+
+    SourceModificationException refused =
+        assertThrows(SourceModificationException.class, () -> editor.move(moved, from, to, false));
 
     assertEquals("A component cannot be moved into itself", refused.getMessage());
     assertEquals(original, Files.readString(file));
@@ -833,10 +843,12 @@ class StructureModifierMoveTest {
 
     String original = Files.readString(file);
 
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.move(List.of(variable(file, "save", BUTTON)),
-            point(variable(file, "layout", FLEX), "add"),
-            after(variable(file, "layout", FLEX), variable(file, "save", BUTTON), "add"), false));
+    List<SourceLocation> moved = List.of(variable(file, "save", BUTTON));
+    AttachPoint from = point(variable(file, "layout", FLEX), "add");
+    AttachPoint to = after(variable(file, "layout", FLEX), variable(file, "save", BUTTON), "add");
+
+    SourceModificationException refused =
+        assertThrows(SourceModificationException.class, () -> editor.move(moved, from, to, false));
 
     assertEquals("A component cannot be placed next to itself", refused.getMessage());
     assertEquals(original, Files.readString(file));
@@ -865,10 +877,12 @@ class StructureModifierMoveTest {
 
     String original = Files.readString(file);
 
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.move(List.of(variable(file, "save", BUTTON)),
-            point(variable(file, "layout", FLEX), "add"), point(variable(file, "row", FLEX), "add"),
-            false));
+    List<SourceLocation> moved = List.of(variable(file, "save", BUTTON));
+    AttachPoint from = point(variable(file, "layout", FLEX), "add");
+    AttachPoint to = point(variable(file, "row", FLEX), "add");
+
+    SourceModificationException refused =
+        assertThrows(SourceModificationException.class, () -> editor.move(moved, from, to, false));
 
     assertEquals(
         "The attach call of Button save at line 12 sits inside a branch, a loop or a lambda",
@@ -896,10 +910,12 @@ class StructureModifierMoveTest {
 
     String original = Files.readString(file);
 
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.move(List.of(variable(file, "save", BUTTON)),
-            point(variable(file, "layout", FLEX), "add"), point(variable(file, "row", FLEX), "add"),
-            false));
+    List<SourceLocation> moved = List.of(variable(file, "save", BUTTON));
+    AttachPoint from = point(variable(file, "layout", FLEX), "add");
+    AttachPoint to = point(variable(file, "row", FLEX), "add");
+
+    SourceModificationException refused =
+        assertThrows(SourceModificationException.class, () -> editor.move(moved, from, to, false));
 
     assertEquals("Button save is not attached to FlexLayout layout with [add] in View.java",
         refused.getMessage());

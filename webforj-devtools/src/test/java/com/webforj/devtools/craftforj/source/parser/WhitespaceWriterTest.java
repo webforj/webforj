@@ -2,8 +2,13 @@ package com.webforj.devtools.craftforj.source.parser;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 @DisplayName("WhitespaceWriter")
 class WhitespaceWriterTest {
@@ -331,49 +336,9 @@ class WhitespaceWriterTest {
         """, WhitespaceWriter.repair(original, printed));
   }
 
-  @Test
-  @DisplayName("should leave the closing of a call below a line that ends in a comment")
-  void shouldKeepClosingBelowComment() {
-    String original = """
-        public class View {
-          public View() {
-            add(save, // kept
-                cancel);
-          }
-        }
-        """;
-    String printed = """
-        public class View {
-          public View() {
-            add(save // kept
-            );
-          }
-        }
-        """;
-
-    assertEquals(printed, WhitespaceWriter.repair(original, printed));
-  }
-
-  @Test
-  @DisplayName("should indent a changed statement from the first line of a wrapped signature")
-  void shouldIndentBelowWrappedSignature() {
-    String original = """
-        public class View {
-          public View(String first,
-              String second) {
-            save.setText("A");
-          }
-        }
-        """;
-    String printed = """
-        public class View {
-          public View(String first,
-              String second) {
-            save.setText("B");
-          }
-        }
-        """;
-
+  @ParameterizedTest
+  @MethodSource("unchangedRepairs")
+  void shouldKeepPrintedContentUnchanged(String original, String printed) {
     assertEquals(printed, WhitespaceWriter.repair(original, printed));
   }
 
@@ -405,38 +370,6 @@ class WhitespaceWriterTest {
           }
         }
         """, WhitespaceWriter.repair(original, printed));
-  }
-
-  @Test
-  @DisplayName("should keep a blank line the developer wrote at the edge of a block")
-  void shouldKeepWrittenBlankLineAtBlockEdge() {
-    String original = """
-        public class View {
-          public View() {
-
-            add(layout);
-          }
-
-          void build() {
-            add(save);
-          }
-        }
-        """;
-    String printed = """
-        public class View {
-          public View() {
-
-            add(layout);
-          }
-
-          void build() {
-            add(save);
-            add(help);
-          }
-        }
-        """;
-
-    assertEquals(printed, WhitespaceWriter.repair(original, printed));
   }
 
   @Test
@@ -484,5 +417,66 @@ class WhitespaceWriterTest {
           }
         }
         """, WhitespaceWriter.repair(original, printed));
+  }
+
+  private static Stream<Arguments> unchangedRepairs() {
+    return Stream.of(
+        Arguments.of(
+            Named.of("should leave the closing of a call below a line that ends in a comment", """
+                public class View {
+                  public View() {
+                    add(save, // kept
+                        cancel);
+                  }
+                }
+                """), """
+                public class View {
+                  public View() {
+                    add(save // kept
+                    );
+                  }
+                }
+                """),
+        Arguments.of(Named
+            .of("should indent a changed statement from the first line of a wrapped signature", """
+                public class View {
+                  public View(String first,
+                      String second) {
+                    save.setText("A");
+                  }
+                }
+                """), """
+                public class View {
+                  public View(String first,
+                      String second) {
+                    save.setText("B");
+                  }
+                }
+                """),
+        Arguments
+            .of(Named.of("should keep a blank line the developer wrote at the edge of a block", """
+                public class View {
+                  public View() {
+
+                    add(layout);
+                  }
+
+                  void build() {
+                    add(save);
+                  }
+                }
+                """), """
+                public class View {
+                  public View() {
+
+                    add(layout);
+                  }
+
+                  void build() {
+                    add(save);
+                    add(help);
+                  }
+                }
+                """));
   }
 }

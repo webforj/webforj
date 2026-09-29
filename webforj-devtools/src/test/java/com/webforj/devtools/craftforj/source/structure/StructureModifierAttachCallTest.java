@@ -9,10 +9,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.webforj.devtools.craftforj.source.model.SourceLocation;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 @DisplayName("StructureModifier attach call")
 class StructureModifierAttachCallTest {
@@ -34,105 +39,18 @@ class StructureModifierAttachCallTest {
     return new SourceLocation(file.toString(), null, "com.example.Card", null, TEXT_FIELD);
   }
 
-  @Test
-  @DisplayName("finds a call on the parent variable")
-  void shouldFindCallOnVariable() throws IOException {
-    Path file = fixture.write("View.java", """
-        package com.example;
-
-        public class View {
-          public View() {
-            TextField field = new TextField("Text");
-            field.setPrefixComponent(new Icon("star", "tabler"));
-          }
-        }
-        """);
+  @ParameterizedTest
+  @MethodSource("callsOnTheParent")
+  void shouldFindCallOnParent(String source) throws IOException {
+    Path file = fixture.write("View.java", source);
 
     assertTrue(editor.hasAttachCall(point(variable(file, "field", TEXT_FIELD), PREFIX)));
   }
 
-  @Test
-  @DisplayName("finds a call on the parent field read through this")
-  void shouldFindCallThroughThis() throws IOException {
-    Path file = fixture.write("View.java", """
-        package com.example;
-
-        public class View {
-          private final TextField field = new TextField("Text");
-
-          public View() {
-            this.field.setPrefixComponent(new Icon("star", "tabler"));
-          }
-        }
-        """);
-
-    assertTrue(editor.hasAttachCall(point(variable(file, "field", TEXT_FIELD), PREFIX)));
-  }
-
-  @Test
-  @DisplayName("finds a call at the end of a fluent chain on the parent")
-  void shouldFindCallInChain() throws IOException {
-    Path file = fixture.write("View.java", """
-        package com.example;
-
-        public class View {
-          public View() {
-            TextField field = new TextField("Text");
-            field.setLabel("Name").setPrefixComponent(new Icon("star", "tabler"));
-          }
-        }
-        """);
-
-    assertTrue(editor.hasAttachCall(point(variable(file, "field", TEXT_FIELD), PREFIX)));
-  }
-
-  @Test
-  @DisplayName("finds a call chained on the creation of the parent")
-  void shouldFindCallOnCreation() throws IOException {
-    Path file = fixture.write("View.java", """
-        package com.example;
-
-        public class View {
-          public View() {
-            TextField field = new TextField("Text").setPrefixComponent(new Icon("star", "tabler"));
-          }
-        }
-        """);
-
-    assertTrue(editor.hasAttachCall(point(variable(file, "field", TEXT_FIELD), PREFIX)));
-  }
-
-  @Test
-  @DisplayName("does not count the call of another component in the same file")
-  void shouldIgnoreCallOnSibling() throws IOException {
-    Path file = fixture.write("View.java", """
-        package com.example;
-
-        public class View {
-          public View() {
-            TextField other = new TextField("Other");
-            other.setPrefixComponent(new Icon("star", "tabler"));
-            TextField field = new TextField("Text");
-          }
-        }
-        """);
-
-    assertFalse(editor.hasAttachCall(point(variable(file, "field", TEXT_FIELD), PREFIX)));
-  }
-
-  @Test
-  @DisplayName("does not count a call reached through an accessor of the parent")
-  void shouldIgnoreCallThroughAccessor() throws IOException {
-    Path file = fixture.write("View.java", """
-        package com.example;
-
-        public class View {
-          public View() {
-            TextField field = new TextField("Text");
-            field.getSuffixComponent().setPrefixComponent(new Icon("star", "tabler"));
-          }
-        }
-        """);
+  @ParameterizedTest
+  @MethodSource("callsNotOnTheParent")
+  void shouldNotFindCallOnParent(String source) throws IOException {
+    Path file = fixture.write("View.java", source);
 
     assertFalse(editor.hasAttachCall(point(variable(file, "field", TEXT_FIELD), PREFIX)));
   }
@@ -212,20 +130,77 @@ class StructureModifierAttachCallTest {
             PREFIX)));
   }
 
-  @Test
-  @DisplayName("finds no call when the parent calls another method")
-  void shouldIgnoreOtherMethods() throws IOException {
-    Path file = fixture.write("View.java", """
+  private static Stream<Arguments> callsOnTheParent() {
+    return Stream.of(Arguments.of(Named.of("finds a call on the parent variable", """
         package com.example;
 
         public class View {
           public View() {
             TextField field = new TextField("Text");
-            field.setSuffixComponent(new Icon("star", "tabler"));
+            field.setPrefixComponent(new Icon("star", "tabler"));
           }
         }
-        """);
+        """)), Arguments.of(Named.of("finds a call on the parent field read through this", """
+        package com.example;
 
-    assertFalse(editor.hasAttachCall(point(variable(file, "field", TEXT_FIELD), PREFIX)));
+        public class View {
+          private final TextField field = new TextField("Text");
+
+          public View() {
+            this.field.setPrefixComponent(new Icon("star", "tabler"));
+          }
+        }
+        """)), Arguments.of(Named.of("finds a call at the end of a fluent chain on the parent", """
+        package com.example;
+
+        public class View {
+          public View() {
+            TextField field = new TextField("Text");
+            field.setLabel("Name").setPrefixComponent(new Icon("star", "tabler"));
+          }
+        }
+        """)), Arguments.of(Named.of("finds a call chained on the creation of the parent", """
+        package com.example;
+
+        public class View {
+          public View() {
+            TextField field = new TextField("Text").setPrefixComponent(new Icon("star", "tabler"));
+          }
+        }
+        """)));
+  }
+
+  private static Stream<Arguments> callsNotOnTheParent() {
+    return Stream.of(
+        Arguments.of(Named.of("does not count the call of another component in the same file", """
+            package com.example;
+
+            public class View {
+              public View() {
+                TextField other = new TextField("Other");
+                other.setPrefixComponent(new Icon("star", "tabler"));
+                TextField field = new TextField("Text");
+              }
+            }
+            """)),
+        Arguments.of(Named.of("does not count a call reached through an accessor of the parent", """
+            package com.example;
+
+            public class View {
+              public View() {
+                TextField field = new TextField("Text");
+                field.getSuffixComponent().setPrefixComponent(new Icon("star", "tabler"));
+              }
+            }
+            """)), Arguments.of(Named.of("finds no call when the parent calls another method", """
+            package com.example;
+
+            public class View {
+              public View() {
+                TextField field = new TextField("Text");
+                field.setSuffixComponent(new Icon("star", "tabler"));
+              }
+            }
+            """)));
   }
 }

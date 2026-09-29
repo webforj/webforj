@@ -136,13 +136,7 @@ public class ComponentSiteResolver {
       CreationSite site = CompiledSites.find(frame, createdAt)
           .orElseThrow(() -> new SourceModificationException("The expression that creates this "
               + type + " was not recorded, reload the application"));
-      // A method the compiler wrote stands between two the source declares and says nothing
-      if (site.getKind() == CreationSite.Kind.BRIDGE) {
-        continue;
-      }
-
-      if (site.getKind() == CreationSite.Kind.DELEGATION) {
-        requireOwnConstructor(component, owner, called);
+      if (isPassedThrough(component, owner, site, called)) {
         continue;
       }
 
@@ -169,6 +163,19 @@ public class ComponentSiteResolver {
     } catch (IOException e) {
       throw new SourceModificationException("Failed to read source file: " + file);
     }
+  }
+
+  // A method the compiler wrote stands between two the source declares and says nothing, a
+  // constructor that hands over to another one only has to belong to the component
+  private static boolean isPassedThrough(Component component, String owner, CreationSite site,
+      String called) {
+    if (site.getKind() == CreationSite.Kind.DELEGATION) {
+      requireOwnConstructor(component, owner, called);
+
+      return true;
+    }
+
+    return site.getKind() == CreationSite.Kind.BRIDGE;
   }
 
   // The constructors of the class of the component run before the expression that asked for it

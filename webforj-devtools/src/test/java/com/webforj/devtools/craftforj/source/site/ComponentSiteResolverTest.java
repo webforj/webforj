@@ -68,10 +68,10 @@ class ComponentSiteResolverTest {
     SourceLocation first = resolve("First");
     SourceLocation second = resolve("Second");
 
-    assertEquals(9, first.getLine());
-    assertEquals(11, second.getLine());
     assertEquals("new Button(describe(\"First\"))", read(file, first));
     assertEquals("new Button(\"Second\")", read(file, second));
+    assertEquals(9, first.getLine());
+    assertEquals(11, second.getLine());
     assertEquals(CreationSite.builder().setClassName("app.View")
         .setMethod("<init>", "(Lcom/webforj/component/layout/flexlayout/FlexLayout;)V")
         .setKind(CreationSite.Kind.CREATION).setName("Button")
@@ -375,10 +375,11 @@ class ComponentSiteResolverTest {
     fixture.close();
     Button button = new Button("Unknown");
     fixture = new RuntimeSourceFixture(directory);
+    ComponentSiteResolver resolver = fixture.createSiteResolver();
 
     assertEquals("The source of this Button was not recorded",
-        assertThrows(SourceModificationException.class,
-            () -> fixture.createSiteResolver().resolve(button)).getMessage());
+        assertThrows(SourceModificationException.class, () -> resolver.resolve(button))
+            .getMessage());
   }
 
   private FlexLayout run() {

@@ -177,27 +177,31 @@ final class DetachWriter {
       slices.forEach(DetachWriter::requireSingleRun);
     }
 
-    boolean changed = true;
-    while (changed) {
-      changed = false;
-      List<Node> removed = collectGone(leaving);
-      for (ComponentSlice slice : new ArrayList<>(leaving)) {
-        Node retained = findRetained(slice, removed, keepReferenced);
-        if (retained == null) {
-          continue;
-        }
+    ComponentSlice kept = findKept(leaving, root, keepReferenced);
+    while (kept != null) {
+      leaving.remove(kept);
+      kept = findKept(leaving, root, keepReferenced);
+    }
 
+    return leaving;
+  }
+
+  // The first component that leaves while the rest of the file still holds it
+  private ComponentSlice findKept(List<ComponentSlice> leaving, ComponentSlice root,
+      boolean keepReferenced) {
+    List<Node> removed = collectGone(leaving);
+    for (ComponentSlice slice : leaving) {
+      Node retained = findRetained(slice, removed, keepReferenced);
+      if (retained != null) {
         if (slice != root && !keepReferenced) {
           throw refuse(slice, retained);
         }
 
-        leaving.remove(slice);
-        changed = true;
-        break;
+        return slice;
       }
     }
 
-    return leaving;
+    return null;
   }
 
   // The first use that holds a component in the file, a field other classes can reach counts

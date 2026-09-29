@@ -84,13 +84,15 @@ class ComponentSourceRegistryTest {
     Object component = SourceRegistryProbe.createThrough();
 
     List<SourceFrame> frames = ComponentSourceRegistry.getSourceFrames(component);
-    List<SourcePoint> chain = ComponentSourceRegistry.getSourceChain(component);
 
     assertEquals(List.of("create", "createThrough"),
         frames.stream().limit(2).map(SourceFrame::getMethodName).toList());
     assertEquals(List.of("()Ljava/lang/Object;", "()Ljava/lang/Object;"),
         frames.stream().limit(2).map(SourceFrame::getDescriptor).toList());
     assertTrue(frames.stream().limit(2).allMatch(frame -> frame.getBytecodeIndex() >= 0));
+
+    List<SourcePoint> chain = ComponentSourceRegistry.getSourceChain(component);
+
     assertEquals(chain, frames.stream().map(SourceFrame::getSourcePoint).toList());
     assertEquals(ComponentSourceRegistry.getSourcePoint(component), chain.get(0));
     assertTrue(ComponentSourceRegistry.getCreationTime(component) > 0);

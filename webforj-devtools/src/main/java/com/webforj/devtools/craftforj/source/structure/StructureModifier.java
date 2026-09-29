@@ -199,10 +199,8 @@ public class StructureModifier {
 
     FilePatch patch = fileEditor.edit(Path.of(to.getParent().getFile()), required, true, cu -> {
       ParentReference parent = ParentReference.of(cu, to.getParent());
-      List<Expression> parsed = new ArrayList<>();
-      for (String argument : arguments) {
-        parsed.add(parseExpression(to.getMethodName(), argument));
-      }
+      List<Expression> parsed = arguments.stream()
+          .map(argument -> parseExpression(to.getMethodName(), argument)).toList();
       new AttachWriter(cu, parent, to).placeCall(parsed);
 
       return true;
@@ -315,9 +313,8 @@ public class StructureModifier {
       leading.add(declaration);
     }
 
-    for (String call : creation.getCalls()) {
-      leading.add(parseStatement(creation, name + "." + call + ";"));
-    }
+    creation.getCalls().stream().map(call -> parseStatement(creation, name + "." + call + ";"))
+        .forEach(leading::add);
 
     writer.place(new NameExpr(name), leading, List.of());
     created.name = name;

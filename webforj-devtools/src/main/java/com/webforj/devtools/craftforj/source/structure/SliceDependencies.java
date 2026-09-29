@@ -3,6 +3,7 @@ package com.webforj.devtools.craftforj.source.structure;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.TypeDeclaration;
@@ -65,35 +66,12 @@ final class SliceDependencies {
     source.findAll(ClassOrInterfaceDeclaration.class).forEach(type -> type.getFields().forEach(
         field -> field.getVariables().forEach(variable -> fields.add(variable.getNameAsString()))));
 
+    Set<String> reachable = sameClass ? fields : Set.of();
     for (Node node : nodes) {
-      for (NameExpr name : node.findAll(NameExpr.class)) {
-        String id = name.getNameAsString();
-        boolean reachable =
-            own.contains(id) || isTypeName(name) || (sameClass && fields.contains(id));
-        if (!reachable) {
-          throw new SourceModificationException(
-              "The moved code reads " + id + ", which stays in " + fileName);
-        }
-      }
-
-      if (sameClass) {
-        continue;
-      }
-
-      for (MethodCallExpr call : node.findAll(MethodCallExpr.class)) {
-        if (call.getScope().isEmpty()) {
-          throw new SourceModificationException(
-              "The moved code calls " + call.getNameAsString() + "(), which stays in " + fileName);
-        }
-      }
-
-      boolean self = node.findAll(ThisExpr.class).stream().anyMatch(
-          expression -> !(expression.getParentNode().orElse(null) instanceof FieldAccessExpr access
-              && moved.contains(access.getNameAsString())))
-          || !node.findAll(SuperExpr.class).isEmpty();
-      if (self) {
-        throw new SourceModificationException(
-            "The moved code reads this, which is the class in " + fileName);
+      requireReachableNames(node, own, reachable, fileName);
+      if (!sameClass) {
+        requireNoOwnCalls(node, fileName);
+        requireNoSelf(node, fileName);
       }
     }
   }
@@ -114,39 +92,17 @@ final class SliceDependencies {
 
     for (String type : getTypeNames(nodes)) {
       String qualified = qualify(type);
-      if (qualified == null) {
-        if (sourcePackage.equals(targetPackage)) {
-          continue;
-        }
-
-        boolean nested = source.findAll(TypeDeclaration.class).stream().anyMatch(
-            declared -> declared.getNameAsString().equals(type) && !declared.isTopLevelType());
-        if (nested) {
-          throw new SourceModificationException(
-              "The moved code uses " + type + ", which is declared inside the class it leaves");
-        }
-
-        if (sourcePackage.isEmpty()) {
-          throw new SourceModificationException("The moved code uses " + type
-              + ", which sits in the default package and cannot be imported");
-        }
-
-        qualified = sourcePackage + "." + type;
+      if (qualified == null && !sourcePackage.equals(targetPackage)) {
+        qualified = qualifyByPackage(type, sourcePackage);
       }
 
-      for (ImportDeclaration existing : target.getImports()) {
-        String name = existing.getNameAsString();
-        if (!existing.isAsterisk() && !existing.isStatic() && name.endsWith("." + type)
-            && !name.equals(qualified)) {
-          throw new SourceModificationException(
-              "The target file already imports another " + type + ", " + name);
+      if (qualified != null) {
+        requireNoOtherImport(target, type, qualified);
+        String owner =
+            qualified.contains(".") ? qualified.substring(0, qualified.lastIndexOf('.')) : "";
+        if (!owner.equals(targetPackage) && !"java.lang".equals(owner)) {
+          imports.add(qualified);
         }
-      }
-
-      String owner =
-          qualified.contains(".") ? qualified.substring(0, qualified.lastIndexOf('.')) : "";
-      if (!owner.equals(targetPackage) && !"java.lang".equals(owner)) {
-        imports.add(qualified);
       }
     }
 
@@ -184,6 +140,34 @@ final class SliceDependencies {
     imports.setTracked(candidates, used);
   }
 
+  private void requireNoSelf(Node node, String fileName) {
+    boolean self = node.findAll(ThisExpr.class).stream().anyMatch(
+        expression -> !(expression.getParentNode().orElse(null) instanceof FieldAccessExpr access
+            && moved.contains(access.getNameAsString())))
+        || !node.findAll(SuperExpr.class).isEmpty();
+    if (self) {
+      throw new SourceModificationException(
+          "The moved code reads this, which is the class in " + fileName);
+    }
+  }
+
+  // A type no import names sits in the package of the file it is written in
+  private String qualifyByPackage(String type, String sourcePackage) {
+    boolean nested = source.findAll(TypeDeclaration.class).stream().anyMatch(
+        declared -> declared.getNameAsString().equals(type) && !declared.isTopLevelType());
+    if (nested) {
+      throw new SourceModificationException(
+          "The moved code uses " + type + ", which is declared inside the class it leaves");
+    }
+
+    if (sourcePackage.isEmpty()) {
+      throw new SourceModificationException("The moved code uses " + type
+          + ", which sits in the default package and cannot be imported");
+    }
+
+    return sourcePackage + "." + type;
+  }
+
   private String qualify(String type) {
     for (ImportDeclaration declaration : source.getImports()) {
       String name = declaration.getNameAsString();
@@ -200,6 +184,38 @@ final class SliceDependencies {
     }
 
     return TypeResolver.load("java.lang." + type) != null ? "java.lang." + type : null;
+  }
+
+  private static void requireReachableNames(Node node, Set<String> own, Set<String> fields,
+      String fileName) {
+    for (NameExpr name : node.findAll(NameExpr.class)) {
+      String id = name.getNameAsString();
+      boolean reachable = own.contains(id) || isTypeName(name) || fields.contains(id);
+      if (!reachable) {
+        throw new SourceModificationException(
+            "The moved code reads " + id + ", which stays in " + fileName);
+      }
+    }
+  }
+
+  private static void requireNoOwnCalls(Node node, String fileName) {
+    for (MethodCallExpr call : node.findAll(MethodCallExpr.class)) {
+      if (call.getScope().isEmpty()) {
+        throw new SourceModificationException(
+            "The moved code calls " + call.getNameAsString() + "(), which stays in " + fileName);
+      }
+    }
+  }
+
+  private static void requireNoOtherImport(CompilationUnit target, String type, String qualified) {
+    for (ImportDeclaration existing : target.getImports()) {
+      String name = existing.getNameAsString();
+      if (!existing.isAsterisk() && !existing.isStatic() && name.endsWith("." + type)
+          && !name.equals(qualified)) {
+        throw new SourceModificationException(
+            "The target file already imports another " + type + ", " + name);
+      }
+    }
   }
 
   private static Set<String> getTypeNames(List<Node> nodes) {
@@ -234,6 +250,6 @@ final class SliceDependencies {
   }
 
   private static String getPackage(CompilationUnit cu) {
-    return cu.getPackageDeclaration().map(declaration -> declaration.getNameAsString()).orElse("");
+    return cu.getPackageDeclaration().map(PackageDeclaration::getNameAsString).orElse("");
   }
 }

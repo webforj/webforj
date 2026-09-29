@@ -13,7 +13,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.webforj.devtools.craftforj.source.SourceModificationException;
 import com.webforj.devtools.craftforj.source.model.FilePatch;
+import com.webforj.devtools.craftforj.source.model.SourceLocation;
 import com.webforj.devtools.craftforj.source.staging.StagingException;
+import com.webforj.devtools.craftforj.source.structure.model.AttachPoint;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -580,10 +582,12 @@ class StructureModifierCrossFileTest {
     String sourceBefore = Files.readString(source);
     String targetBefore = Files.readString(target);
 
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.move(List.of(variable(source, "save", BUTTON)),
-            point(variable(source, "header", FLEX), "add"),
-            point(variable(target, "content", FLEX), "add"), false));
+    List<SourceLocation> moved = List.of(variable(source, "save", BUTTON));
+    AttachPoint from = point(variable(source, "header", FLEX), "add");
+    AttachPoint to = point(variable(target, "content", FLEX), "add");
+
+    SourceModificationException refused =
+        assertThrows(SourceModificationException.class, () -> editor.move(moved, from, to, false));
 
     assertEquals("The moved code calls submit(), which stays in MainLayout.java",
         refused.getMessage());
@@ -625,10 +629,12 @@ class StructureModifierCrossFileTest {
     String sourceBefore = Files.readString(source);
     String targetBefore = Files.readString(target);
 
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.move(List.of(variable(source, "save", BUTTON)),
-            point(variable(source, "header", FLEX), "add"),
-            point(variable(target, "content", FLEX), "add"), false));
+    List<SourceLocation> moved = List.of(variable(source, "save", BUTTON));
+    AttachPoint from = point(variable(source, "header", FLEX), "add");
+    AttachPoint to = point(variable(target, "content", FLEX), "add");
+
+    SourceModificationException refused =
+        assertThrows(SourceModificationException.class, () -> editor.move(moved, from, to, false));
 
     assertEquals("The moved code reads label, which stays in MainLayout.java",
         refused.getMessage());
@@ -672,10 +678,12 @@ class StructureModifierCrossFileTest {
     String sourceBefore = Files.readString(source);
     String targetBefore = Files.readString(target);
 
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.move(List.of(variable(source, "save", BUTTON)),
-            point(variable(source, "header", FLEX), "add"),
-            point(variable(target, "content", FLEX), "add"), false));
+    List<SourceLocation> moved = List.of(variable(source, "save", BUTTON));
+    AttachPoint from = point(variable(source, "header", FLEX), "add");
+    AttachPoint to = point(variable(target, "content", FLEX), "add");
+
+    SourceModificationException refused =
+        assertThrows(SourceModificationException.class, () -> editor.move(moved, from, to, false));
 
     assertEquals("The moved code reads label, which stays in MainLayout.java",
         refused.getMessage());
@@ -718,10 +726,12 @@ class StructureModifierCrossFileTest {
     String sourceBefore = Files.readString(source);
     String targetBefore = Files.readString(target);
 
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.move(List.of(variable(source, "save", BUTTON)),
-            point(variable(source, "header", FLEX), "add"),
-            point(variable(target, "content", FLEX), "add"), false));
+    List<SourceLocation> moved = List.of(variable(source, "save", BUTTON));
+    AttachPoint from = point(variable(source, "header", FLEX), "add");
+    AttachPoint to = point(variable(target, "content", FLEX), "add");
+
+    SourceModificationException refused =
+        assertThrows(SourceModificationException.class, () -> editor.move(moved, from, to, false));
 
     assertEquals("The moved code reads this, which is the class in MainLayout.java",
         refused.getMessage());
@@ -765,10 +775,12 @@ class StructureModifierCrossFileTest {
     String sourceBefore = Files.readString(source);
     String targetBefore = Files.readString(target);
 
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.move(List.of(variable(source, "save", BUTTON)),
-            point(variable(source, "header", FLEX), "add"),
-            point(variable(target, "content", FLEX), "add"), false));
+    List<SourceLocation> moved = List.of(variable(source, "save", BUTTON));
+    AttachPoint from = point(variable(source, "header", FLEX), "add");
+    AttachPoint to = point(variable(target, "content", FLEX), "add");
+
+    SourceModificationException refused =
+        assertThrows(SourceModificationException.class, () -> editor.move(moved, from, to, false));
 
     assertEquals("The moved code reads LABEL, which stays in MainLayout.java",
         refused.getMessage());
@@ -812,10 +824,12 @@ class StructureModifierCrossFileTest {
     String sourceBefore = Files.readString(source);
     String targetBefore = Files.readString(target);
 
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.move(List.of(variable(source, "save", BUTTON)),
-            point(variable(source, "header", FLEX), "add"),
-            point(variable(target, "content", FLEX), "add"), false));
+    List<SourceLocation> moved = List.of(variable(source, "save", BUTTON));
+    AttachPoint from = point(variable(source, "header", FLEX), "add");
+    AttachPoint to = point(variable(target, "content", FLEX), "add");
+
+    SourceModificationException refused =
+        assertThrows(SourceModificationException.class, () -> editor.move(moved, from, to, false));
 
     assertEquals("Button save is still used at line 12, reset.onClick(e -> save.setEnabled(true));",
         refused.getMessage());
@@ -1037,10 +1051,12 @@ class StructureModifierCrossFileTest {
     String sourceBefore = Files.readString(source);
     String targetBefore = Files.readString(target);
 
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.move(List.of(variable(source, "save", BUTTON)),
-            point(variable(source, "header", FLEX), "add"),
-            point(variable(target, "content", FLEX), "add"), false));
+    List<SourceLocation> moved = List.of(variable(source, "save", BUTTON));
+    AttachPoint from = point(variable(source, "header", FLEX), "add");
+    AttachPoint to = point(variable(target, "content", FLEX), "add");
+
+    SourceModificationException refused =
+        assertThrows(SourceModificationException.class, () -> editor.move(moved, from, to, false));
 
     assertEquals("The target file already imports another Button, " + OTHER_BUTTON,
         refused.getMessage());
@@ -1081,10 +1097,13 @@ class StructureModifierCrossFileTest {
     String sourceBefore = Files.readString(source);
     String targetBefore = Files.readString(target);
 
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.move(List.of(variable(source, "badge", "com.example.layout.MainLayout.Badge")),
-            point(variable(source, "header", FLEX), "add"),
-            point(variable(target, "content", FLEX), "add"), false));
+    List<SourceLocation> moved =
+        List.of(variable(source, "badge", "com.example.layout.MainLayout.Badge"));
+    AttachPoint from = point(variable(source, "header", FLEX), "add");
+    AttachPoint to = point(variable(target, "content", FLEX), "add");
+
+    SourceModificationException refused =
+        assertThrows(SourceModificationException.class, () -> editor.move(moved, from, to, false));
 
     assertEquals("The moved code uses Badge, which is declared inside the class it leaves",
         refused.getMessage());
@@ -1259,10 +1278,12 @@ class StructureModifierCrossFileTest {
     String sourceBefore = Files.readString(source);
     String targetBefore = Files.readString(target);
 
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.move(List.of(variable(source, "save", BUTTON)),
-            point(variable(source, "header", FLEX), "add"),
-            point(variable(target, "content", FLEX), "add"), false));
+    List<SourceLocation> moved = List.of(variable(source, "save", BUTTON));
+    AttachPoint from = point(variable(source, "header", FLEX), "add");
+    AttachPoint to = point(variable(target, "content", FLEX), "add");
+
+    SourceModificationException refused =
+        assertThrows(SourceModificationException.class, () -> editor.move(moved, from, to, false));
 
     assertEquals("Failed to parse source file: " + target, refused.getMessage());
     assertEquals(sourceBefore, Files.readString(source));
@@ -1301,10 +1322,12 @@ class StructureModifierCrossFileTest {
     String sourceBefore = Files.readString(source);
     String targetBefore = Files.readString(target);
 
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.move(List.of(variable(source, "save", BUTTON)),
-            point(variable(source, "header", FLEX), "add"),
-            point(variable(target, "missing", FLEX), "add"), false));
+    List<SourceLocation> moved = List.of(variable(source, "save", BUTTON));
+    AttachPoint from = point(variable(source, "header", FLEX), "add");
+    AttachPoint to = point(variable(target, "missing", FLEX), "add");
+
+    SourceModificationException refused =
+        assertThrows(SourceModificationException.class, () -> editor.move(moved, from, to, false));
 
     assertEquals("No declaration of FlexLayout missing found in DashboardView.java",
         refused.getMessage());
@@ -1344,13 +1367,16 @@ class StructureModifierCrossFileTest {
     String sourceBefore = Files.readString(source);
     String targetBefore = Files.readString(target);
 
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.move(List.of(variable(source, "save", BUTTON)),
-            point(variable(target, "content", FLEX), "add"),
-            point(variable(target, "content", FLEX), "add"), false));
+    List<SourceLocation> moved = List.of(variable(source, "save", BUTTON));
+    AttachPoint from = point(variable(target, "content", FLEX), "add");
+    AttachPoint to = point(variable(target, "content", FLEX), "add");
+
+    SourceModificationException refused =
+        assertThrows(SourceModificationException.class, () -> editor.move(moved, from, to, false));
 
     assertEquals(
-        "Button save is created in MainLayout.java and attached in DashboardView.java, the two must be one file",
+        "Button save is created in MainLayout.java and attached in DashboardView.java, the two"
+            + " must be one file",
         refused.getMessage());
     assertEquals(sourceBefore, Files.readString(source));
     assertEquals(targetBefore, Files.readString(target));
@@ -1407,10 +1433,11 @@ class StructureModifierCrossFileTest {
     assertTrue(target.toFile().setWritable(false));
 
     try {
-      assertThrows(StagingException.class,
-          () -> editor.move(List.of(variable(source, "save", BUTTON)),
-              point(variable(source, "header", FLEX), "add"),
-              point(variable(target, "content", FLEX), "add"), false));
+      List<SourceLocation> moved = List.of(variable(source, "save", BUTTON));
+      AttachPoint from = point(variable(source, "header", FLEX), "add");
+      AttachPoint to = point(variable(target, "content", FLEX), "add");
+
+      assertThrows(StagingException.class, () -> editor.move(moved, from, to, false));
     } finally {
       assertTrue(target.toFile().setWritable(true));
     }
@@ -1451,10 +1478,12 @@ class StructureModifierCrossFileTest {
     String sourceBefore = Files.readString(source);
     String targetBefore = Files.readString(target);
 
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.move(List.of(variable(source, "save", BUTTON)),
-            point(variable(source, "header", FLEX), "add"),
-            point(variable(target, "content", FLEX), "add"), false));
+    List<SourceLocation> moved = List.of(variable(source, "save", BUTTON));
+    AttachPoint from = point(variable(source, "header", FLEX), "add");
+    AttachPoint to = point(variable(target, "content", FLEX), "add");
+
+    SourceModificationException refused =
+        assertThrows(SourceModificationException.class, () -> editor.move(moved, from, to, false));
 
     assertEquals("The moved code reads this, which is the class in MainLayout.java",
         refused.getMessage());
@@ -1551,10 +1580,12 @@ class StructureModifierCrossFileTest {
     Path target = fixture.write("DashboardView.java", TARGET);
     String sourceBefore = Files.readString(source);
 
-    SourceModificationException refused = assertThrows(SourceModificationException.class,
-        () -> editor.move(List.of(variable(source, "card", "UserCard")),
-            point(variable(source, "header", FLEX), "add"),
-            point(variable(target, "content", FLEX), "add"), false));
+    List<SourceLocation> moved = List.of(variable(source, "card", "UserCard"));
+    AttachPoint from = point(variable(source, "header", FLEX), "add");
+    AttachPoint to = point(variable(target, "content", FLEX), "add");
+
+    SourceModificationException refused =
+        assertThrows(SourceModificationException.class, () -> editor.move(moved, from, to, false));
 
     assertEquals(
         "The moved code uses UserCard, which sits in the default package and cannot be imported",

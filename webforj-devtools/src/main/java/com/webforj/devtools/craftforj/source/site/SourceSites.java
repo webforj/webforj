@@ -469,9 +469,9 @@ public final class SourceSites {
     }
 
     List<BodyDeclaration<?>> getMembers() {
-      return node instanceof ObjectCreationExpr creation
-          ? new ArrayList<>(creation.getAnonymousClassBody().orElseThrow())
-          : new ArrayList<>(((TypeDeclaration<?>) node).getMembers());
+      return new ArrayList<>(node instanceof ObjectCreationExpr creation
+          ? creation.getAnonymousClassBody().orElseThrow()
+          : ((TypeDeclaration<?>) node).getMembers());
     }
 
     // The constants of an enum are created by its static initializer, before anything else

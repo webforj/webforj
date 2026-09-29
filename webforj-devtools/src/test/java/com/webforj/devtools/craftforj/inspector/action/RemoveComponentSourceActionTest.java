@@ -15,6 +15,7 @@ import com.webforj.component.Component;
 import com.webforj.component.button.Button;
 import com.webforj.component.html.elements.Paragraph;
 import com.webforj.component.icons.Icon;
+import com.webforj.component.layout.appnav.AppNavItem;
 import com.webforj.component.layout.flexlayout.FlexLayout;
 import com.webforj.component.layout.toolbar.Toolbar;
 import com.webforj.devtools.craftforj.inspector.action.RemoveComponentSourceAction.Response;
@@ -28,11 +29,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 @DisplayName("RemoveComponentSourceAction")
 class RemoveComponentSourceActionTest {
@@ -58,87 +64,16 @@ class RemoveComponentSourceActionTest {
     assertEquals("inspector.removeComponentSource", new RemoveComponentSourceAction().getAction());
   }
 
-  @Test
-  @DisplayName("should remove a local with its configuration, its listener and its attach call")
-  void shouldRemoveLocalComponent() throws IOException {
-    Path file = fixture.addSource("app.View", """
-        package app;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.button.ButtonTheme;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View(FlexLayout layout) {
-            layout.setSpacing("1em");
-            Button save = new Button("Save");
-            save.setTheme(ButtonTheme.PRIMARY);
-            save.onClick(event -> {
-              save.setEnabled(false);
-            });
-            Button cancel = new Button("Cancel");
-            layout.add(save, cancel);
-          }
-        }
-        """);
+  @ParameterizedTest
+  @MethodSource("removedComponents")
+  void shouldRemoveComponent(String source, String text, String expected) throws IOException {
+    Path file = fixture.addSource("app.View", source);
     run();
 
-    Response response = remove(findButton("Save"));
+    Response response = remove(findButton(text));
 
     assertRemoved(response, file);
-    assertEquals("""
-        package app;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View(FlexLayout layout) {
-            layout.setSpacing("1em");
-            Button cancel = new Button("Cancel");
-            layout.add(cancel);
-          }
-        }
-        """, Files.readString(file));
-  }
-
-  @Test
-  @DisplayName("should remove the second of two creations the compiler reports on one line")
-  void shouldRemoveCreationReportedOnAnotherLine() throws IOException {
-    Path file = fixture.addSource("app.View", """
-        package app;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View(FlexLayout layout) {
-            layout.add(
-                new Button("First"),
-                new Button("Second"),
-                new Button("Third"));
-          }
-        }
-        """);
-    run();
-
-    Response response = remove(findButton("Second"));
-
-    assertRemoved(response, file);
-    assertEquals("""
-        package app;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View(FlexLayout layout) {
-            layout.add(
-                new Button("First"),
-                new Button("Third"));
-          }
-        }
-        """, Files.readString(file));
+    assertEquals(expected, Files.readString(file));
   }
 
   @Test
@@ -231,9 +166,10 @@ class RemoveComponentSourceActionTest {
         """;
     Path file = fixture.addSource("app.View", source);
     run();
-    String changed = source.replace("    layout.add(TablerIcon.create(\"plus\"));\n",
-        "    layout.add(TablerIcon.create(\"home\"));\n"
-            + "    layout.add(TablerIcon.create(\"plus\"));\n");
+    String changed = source.replace("    layout.add(TablerIcon.create(\"plus\"));\n", """
+            layout.add(TablerIcon.create("home"));
+            layout.add(TablerIcon.create("plus"));
+        """);
     Files.writeString(file, changed);
 
     Response response = remove(findIcon("plus"));
@@ -258,11 +194,11 @@ class RemoveComponentSourceActionTest {
           }
         }
         """;
-    Path file = fixture.addSource("app.View", source);
+    fixture.addSource("app.View", source);
     run();
     String changed =
         source.replace("    layout.add(", "    layout.setSpacing(\"1em\");\n    layout.add(");
-    fixture.addSource("app.View", changed);
+    Path file = fixture.addSource("app.View", changed);
     fixture.compile();
 
     Response response = remove(findIcon("plus"));
@@ -270,108 +206,6 @@ class RemoveComponentSourceActionTest {
     assertRefused(response,
         "View was compiled again after this component was created, reload the application");
     assertEquals(changed, Files.readString(file));
-  }
-
-  @Test
-  @DisplayName("should remove the call that asked a helper for the component and keep the helper")
-  void shouldRemoveHelperCall() throws IOException {
-    Path file = fixture.addSource("app.View", """
-        package app;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View(FlexLayout layout) {
-            layout.add(
-                build("Search"),
-                build("Notifications"));
-            layout.add(build("Logout"));
-          }
-
-          private Button build(String text) {
-            Button button = new Button(text);
-            button.setEnabled(false);
-            return button;
-          }
-        }
-        """);
-    run();
-
-    Response response = remove(findButton("Notifications"));
-
-    assertRemoved(response, file);
-    assertEquals("""
-        package app;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View(FlexLayout layout) {
-            layout.add(
-                build("Search"));
-            layout.add(build("Logout"));
-          }
-
-          private Button build(String text) {
-            Button button = new Button(text);
-            button.setEnabled(false);
-            return button;
-          }
-        }
-        """, Files.readString(file));
-  }
-
-  @Test
-  @DisplayName("should follow a helper that hands on what another helper returned")
-  void shouldRemoveCallOfHelperChain() throws IOException {
-    Path file = fixture.addSource("app.View", """
-        package app;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View(FlexLayout layout) {
-            Button first = primary("First");
-            layout.add(first, primary("Second"));
-          }
-
-          private static Button primary(String text) {
-            return create(text).setEnabled(false);
-          }
-
-          private static Button create(String text) {
-            return new Button(text);
-          }
-        }
-        """);
-    run();
-
-    Response response = remove(findButton("First"));
-
-    assertRemoved(response, file);
-    assertEquals("""
-        package app;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View(FlexLayout layout) {
-            layout.add(primary("Second"));
-          }
-
-          private static Button primary(String text) {
-            return create(text).setEnabled(false);
-          }
-
-          private static Button create(String text) {
-            return new Button(text);
-          }
-        }
-        """, Files.readString(file));
   }
 
   @Test
@@ -403,47 +237,9 @@ class RemoveComponentSourceActionTest {
 
     Response response = remove(fixture.show(icon));
 
+    assertEquals(source, Files.readString(file));
     assertRefused(response,
         "Icon is created by code that built 2 components, its source stands for all of them");
-    assertEquals(source, Files.readString(file));
-  }
-
-  @Test
-  @DisplayName("should remove the only component a loop created")
-  void shouldRemoveOnlyComponentOfLoop() throws IOException {
-    Path file = fixture.addSource("app.View", """
-        package app;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-        import java.util.List;
-
-        public class View {
-          public View(FlexLayout layout) {
-            for (String name : List.of("Only")) {
-              layout.add(new Button(name));
-            }
-          }
-        }
-        """);
-    run();
-
-    Response response = remove(findButton("Only"));
-
-    assertRemoved(response, file);
-    assertEquals("""
-        package app;
-
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-        import java.util.List;
-
-        public class View {
-          public View(FlexLayout layout) {
-            for (String name : List.of("Only")) {
-            }
-          }
-        }
-        """, Files.readString(file));
   }
 
   @Test
@@ -475,89 +271,6 @@ class RemoveComponentSourceActionTest {
   }
 
   @Test
-  @DisplayName("should remove a component a lambda declares and leave the lambda")
-  void shouldRemoveLocalOfLambda() throws IOException {
-    Path file = fixture.addSource("app.View", """
-        package app;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View(FlexLayout layout) {
-            Runnable first = () -> layout.add(new Button("First"));
-            Runnable second = () -> {
-              Button button = new Button("Second");
-              button.setEnabled(false);
-              layout.add(button);
-              layout.setSpacing("1em");
-            };
-            first.run();
-            second.run();
-          }
-        }
-        """);
-    run();
-
-    Response response = remove(findButton("Second"));
-
-    assertRemoved(response, file);
-    assertEquals("""
-        package app;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View(FlexLayout layout) {
-            Runnable first = () -> layout.add(new Button("First"));
-            Runnable second = () -> {
-              layout.setSpacing("1em");
-            };
-            first.run();
-            second.run();
-          }
-        }
-        """, Files.readString(file));
-  }
-
-  @Test
-  @DisplayName("should leave an empty lambda where the component was all the lambda wrote")
-  void shouldRemoveBodyOfLambda() throws IOException {
-    Path file = fixture.addSource("app.View", """
-        package app;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View(FlexLayout layout) {
-            Runnable build = () -> layout.add(new Button("Only"));
-            build.run();
-          }
-        }
-        """);
-    run();
-
-    Response response = remove(findButton("Only"));
-
-    assertRemoved(response, file);
-    assertEquals("""
-        package app;
-
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View(FlexLayout layout) {
-            Runnable build = () -> {
-            };
-            build.run();
-          }
-        }
-        """, Files.readString(file));
-  }
-
-  @Test
   @DisplayName("should refuse a component of two lambdas nothing tells apart")
   void shouldRefuseLambdasOfOneLine() throws IOException {
     String source = """
@@ -586,44 +299,6 @@ class RemoveComponentSourceActionTest {
         "View holds 2 places that fit the code that created this component, which one cannot be"
             + " told");
     assertEquals(source, Files.readString(file));
-  }
-
-  @Test
-  @DisplayName("should remove the call that asked a lambda for the component")
-  void shouldRemoveCallOfLambda() throws IOException {
-    Path file = fixture.addSource("app.View", """
-        package app;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-        import java.util.function.Supplier;
-
-        public class View {
-          public View(FlexLayout layout) {
-            Supplier<Button> supplier = () -> new Button("Supplied");
-            layout.add(new Button("Kept"), supplier.get());
-          }
-        }
-        """);
-    run();
-
-    Response response = remove(findButton("Supplied"));
-
-    assertRemoved(response, file);
-    assertEquals("""
-        package app;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-        import java.util.function.Supplier;
-
-        public class View {
-          public View(FlexLayout layout) {
-            Supplier<Button> supplier = () -> new Button("Supplied");
-            layout.add(new Button("Kept"));
-          }
-        }
-        """, Files.readString(file));
   }
 
   @Test
@@ -659,101 +334,6 @@ class RemoveComponentSourceActionTest {
           public View(FlexLayout layout) {
             super(new Paragraph("Second"));
             layout.add(this);
-          }
-        }
-        """, Files.readString(file));
-  }
-
-  @Test
-  @DisplayName("should tell the body of a loop from its update, which runs after the body")
-  void shouldRemoveCallOfLoopBody() throws IOException {
-    Path file = fixture.addSource("app.View", """
-        package app;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View(FlexLayout layout) {
-            int count = 0;
-            for (Button kept = create("Init"); count < 1; kept = create("Update")) {
-              layout.add(create("Body"));
-              count++;
-            }
-          }
-
-          private static Button create(String text) {
-            return new Button(text);
-          }
-        }
-        """);
-    run();
-
-    Response response = remove(findButton("Body"));
-
-    assertRemoved(response, file);
-    assertEquals("""
-        package app;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View(FlexLayout layout) {
-            int count = 0;
-            for (Button kept = create("Init"); count < 1; kept = create("Update")) {
-              count++;
-            }
-          }
-
-          private static Button create(String text) {
-            return new Button(text);
-          }
-        }
-        """, Files.readString(file));
-  }
-
-  @Test
-  @DisplayName("should remove a component a class without a name creates")
-  void shouldRemoveComponentOfAnonymousClass() throws IOException {
-    Path file = fixture.addSource("app.View", """
-        package app;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View(FlexLayout layout) {
-            Runnable build = new Runnable() {
-              @Override
-              public void run() {
-                layout.setSpacing("1em");
-                layout.add(new Button("Inner"));
-              }
-            };
-            build.run();
-          }
-        }
-        """);
-    run();
-
-    Response response = remove(findButton("Inner"));
-
-    assertRemoved(response, file);
-    assertEquals("""
-        package app;
-
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View(FlexLayout layout) {
-            Runnable build = new Runnable() {
-              @Override
-              public void run() {
-                layout.setSpacing("1em");
-              }
-            };
-            build.run();
           }
         }
         """, Files.readString(file));
@@ -907,47 +487,8 @@ class RemoveComponentSourceActionTest {
 
     Response response = remove(fixture.show((Button) sink.get(0)));
 
-    assertRefused(response, "Button save is still used at line 9, sink.add(save);");
     assertEquals(source, Files.readString(file));
-  }
-
-  @Test
-  @DisplayName("should detach a field other classes can reach and keep it declared")
-  void shouldKeepReachableField() throws IOException {
-    Path file = fixture.addSource("app.View", """
-        package app;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          protected final Button save = new Button("Save");
-
-          public View(FlexLayout layout) {
-            save.setEnabled(false);
-            layout.add(save);
-          }
-        }
-        """);
-    run();
-
-    Response response = remove(findButton("Save"));
-
-    assertRemoved(response, file);
-    assertEquals("""
-        package app;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          protected final Button save = new Button("Save");
-
-          public View(FlexLayout layout) {
-            save.setEnabled(false);
-          }
-        }
-        """, Files.readString(file));
+    assertRefused(response, "Button save is still used at line 9, sink.add(save);");
   }
 
   @Test
@@ -1084,101 +625,94 @@ class RemoveComponentSourceActionTest {
   @Test
   @DisplayName("should take a component out of a creation that has a constructor without it")
   void shouldRemoveConstructorArgument() throws IOException {
-    Path file = fixture.addSource("app.View",
-        """
-            package app;
+    Path file = fixture.addSource("app.View", """
+        package app;
 
-            import com.webforj.component.icons.TablerIcon;
-            import com.webforj.component.layout.appnav.AppNav;
-            import com.webforj.component.layout.appnav.AppNavItem;
-            import com.webforj.component.layout.flexlayout.FlexLayout;
+        import com.webforj.component.icons.TablerIcon;
+        import com.webforj.component.layout.appnav.AppNav;
+        import com.webforj.component.layout.appnav.AppNavItem;
+        import com.webforj.component.layout.flexlayout.FlexLayout;
 
-            public class View {
-              public View(FlexLayout layout) {
-                AppNav navigation = new AppNav();
-                navigation.addItem(new AppNavItem("Dashboard", "/dashboard", TablerIcon.create("home")));
-                navigation.addItem(new AppNavItem("Reports", "/reports", TablerIcon.create("chart-bar")));
-                layout.add(navigation);
-              }
-            }
-            """);
+        public class View {
+          public View(FlexLayout layout) {
+            AppNav menu = new AppNav();
+            menu.addItem(new AppNavItem("Dashboard", "/dashboard", TablerIcon.create("home")));
+            menu.addItem(new AppNavItem("Reports", "/reports", TablerIcon.create("chart-bar")));
+            layout.add(menu);
+          }
+        }
+        """);
     run();
 
     Response response = remove(findIcon("home"));
 
     assertRemoved(response, file);
-    assertEquals(
-        """
-            package app;
+    assertEquals("""
+        package app;
 
-            import com.webforj.component.icons.TablerIcon;
-            import com.webforj.component.layout.appnav.AppNav;
-            import com.webforj.component.layout.appnav.AppNavItem;
-            import com.webforj.component.layout.flexlayout.FlexLayout;
+        import com.webforj.component.icons.TablerIcon;
+        import com.webforj.component.layout.appnav.AppNav;
+        import com.webforj.component.layout.appnav.AppNavItem;
+        import com.webforj.component.layout.flexlayout.FlexLayout;
 
-            public class View {
-              public View(FlexLayout layout) {
-                AppNav navigation = new AppNav();
-                navigation.addItem(new AppNavItem("Dashboard", "/dashboard"));
-                navigation.addItem(new AppNavItem("Reports", "/reports", TablerIcon.create("chart-bar")));
-                layout.add(navigation);
-              }
-            }
-            """,
-        Files.readString(file));
+        public class View {
+          public View(FlexLayout layout) {
+            AppNav menu = new AppNav();
+            menu.addItem(new AppNavItem("Dashboard", "/dashboard"));
+            menu.addItem(new AppNavItem("Reports", "/reports", TablerIcon.create("chart-bar")));
+            layout.add(menu);
+          }
+        }
+        """, Files.readString(file));
   }
 
   @Test
   @DisplayName("should remove a creation with the component that is created inside of it")
   void shouldRemoveCreationWithItsArgument() throws IOException {
-    Path file = fixture.addSource("app.View",
-        """
-            package app;
+    Path file = fixture.addSource("app.View", """
+        package app;
 
-            import com.webforj.component.icons.TablerIcon;
-            import com.webforj.component.layout.appnav.AppNav;
-            import com.webforj.component.layout.appnav.AppNavItem;
-            import com.webforj.component.layout.flexlayout.FlexLayout;
+        import com.webforj.component.icons.TablerIcon;
+        import com.webforj.component.layout.appnav.AppNav;
+        import com.webforj.component.layout.appnav.AppNavItem;
+        import com.webforj.component.layout.flexlayout.FlexLayout;
 
-            public class View {
-              public View(FlexLayout layout) {
-                AppNav navigation = new AppNav();
-                navigation.addItem(new AppNavItem("Dashboard", "/dashboard", TablerIcon.create("home")));
-                navigation.addItem(new AppNavItem("Reports", "/reports", TablerIcon.create("chart-bar")));
-                layout.add(navigation);
-              }
-            }
-            """);
+        public class View {
+          public View(FlexLayout layout) {
+            AppNav menu = new AppNav();
+            menu.addItem(new AppNavItem("Dashboard", "/dashboard", TablerIcon.create("home")));
+            menu.addItem(new AppNavItem("Reports", "/reports", TablerIcon.create("chart-bar")));
+            layout.add(menu);
+          }
+        }
+        """);
     run();
-    Component dashboard = fixture.getComponents().stream()
-        .filter(component -> component.getClass().getSimpleName().equals("AppNavItem")).toList()
-        .get(0);
+    Component dashboard =
+        fixture.getComponents().stream().filter(AppNavItem.class::isInstance).toList().get(0);
 
     Response response = remove(dashboard);
 
     assertRemoved(response, file);
-    assertEquals(
-        """
-            package app;
+    assertEquals("""
+        package app;
 
-            import com.webforj.component.icons.TablerIcon;
-            import com.webforj.component.layout.appnav.AppNav;
-            import com.webforj.component.layout.appnav.AppNavItem;
-            import com.webforj.component.layout.flexlayout.FlexLayout;
+        import com.webforj.component.icons.TablerIcon;
+        import com.webforj.component.layout.appnav.AppNav;
+        import com.webforj.component.layout.appnav.AppNavItem;
+        import com.webforj.component.layout.flexlayout.FlexLayout;
 
-            public class View {
-              public View(FlexLayout layout) {
-                AppNav navigation = new AppNav();
-                navigation.addItem(new AppNavItem("Reports", "/reports", TablerIcon.create("chart-bar")));
-                layout.add(navigation);
-              }
-            }
-            """,
-        Files.readString(file));
+        public class View {
+          public View(FlexLayout layout) {
+            AppNav menu = new AppNav();
+            menu.addItem(new AppNavItem("Reports", "/reports", TablerIcon.create("chart-bar")));
+            layout.add(menu);
+          }
+        }
+        """, Files.readString(file));
   }
 
   @Test
-  @DisplayName("should remove one item of a navigation and keep the others")
+  @DisplayName("should remove one item of a menu and keep the others")
   void shouldRemoveItemOfSingleComponentMethod() throws IOException {
     Path file = fixture.addSource("app.View", """
         package app;
@@ -1197,9 +731,8 @@ class RemoveComponentSourceActionTest {
         }
         """);
     run();
-    Component reports = fixture.getComponents().stream()
-        .filter(component -> component.getClass().getSimpleName().equals("AppNavItem")).toList()
-        .get(1);
+    Component reports =
+        fixture.getComponents().stream().filter(AppNavItem.class::isInstance).toList().get(1);
 
     Response response = remove(reports);
 
@@ -1278,47 +811,6 @@ class RemoveComponentSourceActionTest {
   }
 
   @Test
-  @DisplayName("should remove a field that the constructor assigns")
-  void shouldRemoveAssignedField() throws IOException {
-    Path file = fixture.addSource("app.View", """
-        package app;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          private final Button first = new Button("First");
-          private Button second;
-
-          public View(FlexLayout layout) {
-            second = new Button("Second");
-            this.second.setEnabled(false);
-            layout.add(first, this.second);
-          }
-        }
-        """);
-    run();
-
-    Response response = remove(findButton("Second"));
-
-    assertRemoved(response, file);
-    assertEquals("""
-        package app;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          private final Button first = new Button("First");
-
-          public View(FlexLayout layout) {
-            layout.add(first);
-          }
-        }
-        """, Files.readString(file));
-  }
-
-  @Test
   @DisplayName("should remove a local of a case group and leave the field of the same name alone")
   void shouldRemoveLocalOfCaseGroup() throws IOException {
     Path file = fixture.addSource("app.View", """
@@ -1371,61 +863,6 @@ class RemoveComponentSourceActionTest {
             }
             target.setText("Field stays");
           }
-        }
-        """, Files.readString(file));
-  }
-
-  @Test
-  @DisplayName("should leave a name alone that a class in between inherits")
-  void shouldLeaveInheritedNameAlone() throws IOException {
-    Path file = fixture.addSource("app.View", """
-        package app;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          private final Button target = new Button("Selected");
-
-          public View(FlexLayout layout) {
-            layout.add(target);
-          }
-
-          class Inner extends Base {
-            void attach(FlexLayout layout) {
-              layout.add(target);
-            }
-          }
-        }
-
-        class Base {
-          protected Button target = new Button("Inherited");
-        }
-        """);
-    run();
-
-    Response response = remove(findButton("Selected"));
-
-    assertRemoved(response, file);
-    assertEquals("""
-        package app;
-
-        import com.webforj.component.button.Button;
-        import com.webforj.component.layout.flexlayout.FlexLayout;
-
-        public class View {
-          public View(FlexLayout layout) {
-          }
-
-          class Inner extends Base {
-            void attach(FlexLayout layout) {
-              layout.add(target);
-            }
-          }
-        }
-
-        class Base {
-          protected Button target = new Button("Inherited");
         }
         """, Files.readString(file));
   }
@@ -1595,6 +1032,449 @@ class RemoveComponentSourceActionTest {
     request.add("source", new Gson().toJsonTree(location));
 
     return action.handle(request);
+  }
+
+  private static Stream<Arguments> removedComponents() {
+    return Stream.of(
+        Arguments.of(Named.of(
+            "should remove a local with its configuration, its listener and its attach call", """
+                package app;
+
+                import com.webforj.component.button.Button;
+                import com.webforj.component.button.ButtonTheme;
+                import com.webforj.component.layout.flexlayout.FlexLayout;
+
+                public class View {
+                  public View(FlexLayout layout) {
+                    layout.setSpacing("1em");
+                    Button save = new Button("Save");
+                    save.setTheme(ButtonTheme.PRIMARY);
+                    save.onClick(event -> {
+                      save.setEnabled(false);
+                    });
+                    Button cancel = new Button("Cancel");
+                    layout.add(save, cancel);
+                  }
+                }
+                """), "Save", """
+                package app;
+
+                import com.webforj.component.button.Button;
+                import com.webforj.component.layout.flexlayout.FlexLayout;
+
+                public class View {
+                  public View(FlexLayout layout) {
+                    layout.setSpacing("1em");
+                    Button cancel = new Button("Cancel");
+                    layout.add(cancel);
+                  }
+                }
+                """),
+        Arguments.of(Named
+            .of("should remove the second of two creations the compiler reports on one line", """
+                package app;
+
+                import com.webforj.component.button.Button;
+                import com.webforj.component.layout.flexlayout.FlexLayout;
+
+                public class View {
+                  public View(FlexLayout layout) {
+                    layout.add(
+                        new Button("First"),
+                        new Button("Second"),
+                        new Button("Third"));
+                  }
+                }
+                """), "Second", """
+                package app;
+
+                import com.webforj.component.button.Button;
+                import com.webforj.component.layout.flexlayout.FlexLayout;
+
+                public class View {
+                  public View(FlexLayout layout) {
+                    layout.add(
+                        new Button("First"),
+                        new Button("Third"));
+                  }
+                }
+                """),
+        Arguments.of(Named.of(
+            "should remove the call that asked a helper for the component and keep the helper", """
+                package app;
+
+                import com.webforj.component.button.Button;
+                import com.webforj.component.layout.flexlayout.FlexLayout;
+
+                public class View {
+                  public View(FlexLayout layout) {
+                    layout.add(
+                        build("Search"),
+                        build("Notifications"));
+                    layout.add(build("Logout"));
+                  }
+
+                  private Button build(String text) {
+                    Button button = new Button(text);
+                    button.setEnabled(false);
+                    return button;
+                  }
+                }
+                """), "Notifications", """
+                package app;
+
+                import com.webforj.component.button.Button;
+                import com.webforj.component.layout.flexlayout.FlexLayout;
+
+                public class View {
+                  public View(FlexLayout layout) {
+                    layout.add(
+                        build("Search"));
+                    layout.add(build("Logout"));
+                  }
+
+                  private Button build(String text) {
+                    Button button = new Button(text);
+                    button.setEnabled(false);
+                    return button;
+                  }
+                }
+                """),
+        Arguments
+            .of(Named.of("should follow a helper that hands on what another helper returned", """
+                package app;
+
+                import com.webforj.component.button.Button;
+                import com.webforj.component.layout.flexlayout.FlexLayout;
+
+                public class View {
+                  public View(FlexLayout layout) {
+                    Button first = primary("First");
+                    layout.add(first, primary("Second"));
+                  }
+
+                  private static Button primary(String text) {
+                    return create(text).setEnabled(false);
+                  }
+
+                  private static Button create(String text) {
+                    return new Button(text);
+                  }
+                }
+                """), "First", """
+                package app;
+
+                import com.webforj.component.button.Button;
+                import com.webforj.component.layout.flexlayout.FlexLayout;
+
+                public class View {
+                  public View(FlexLayout layout) {
+                    layout.add(primary("Second"));
+                  }
+
+                  private static Button primary(String text) {
+                    return create(text).setEnabled(false);
+                  }
+
+                  private static Button create(String text) {
+                    return new Button(text);
+                  }
+                }
+                """),
+        Arguments.of(Named.of("should remove the only component a loop created", """
+            package app;
+
+            import com.webforj.component.button.Button;
+            import com.webforj.component.layout.flexlayout.FlexLayout;
+            import java.util.List;
+
+            public class View {
+              public View(FlexLayout layout) {
+                for (String name : List.of("Only")) {
+                  layout.add(new Button(name));
+                }
+              }
+            }
+            """), "Only", """
+            package app;
+
+            import com.webforj.component.layout.flexlayout.FlexLayout;
+            import java.util.List;
+
+            public class View {
+              public View(FlexLayout layout) {
+                for (String name : List.of("Only")) {
+                }
+              }
+            }
+            """),
+        Arguments
+            .of(Named.of("should remove a component a lambda declares and leave the lambda", """
+                package app;
+
+                import com.webforj.component.button.Button;
+                import com.webforj.component.layout.flexlayout.FlexLayout;
+
+                public class View {
+                  public View(FlexLayout layout) {
+                    Runnable first = () -> layout.add(new Button("First"));
+                    Runnable second = () -> {
+                      Button button = new Button("Second");
+                      button.setEnabled(false);
+                      layout.add(button);
+                      layout.setSpacing("1em");
+                    };
+                    first.run();
+                    second.run();
+                  }
+                }
+                """), "Second", """
+                package app;
+
+                import com.webforj.component.button.Button;
+                import com.webforj.component.layout.flexlayout.FlexLayout;
+
+                public class View {
+                  public View(FlexLayout layout) {
+                    Runnable first = () -> layout.add(new Button("First"));
+                    Runnable second = () -> {
+                      layout.setSpacing("1em");
+                    };
+                    first.run();
+                    second.run();
+                  }
+                }
+                """),
+        Arguments.of(Named
+            .of("should leave an empty lambda where the component was all the lambda wrote", """
+                package app;
+
+                import com.webforj.component.button.Button;
+                import com.webforj.component.layout.flexlayout.FlexLayout;
+
+                public class View {
+                  public View(FlexLayout layout) {
+                    Runnable build = () -> layout.add(new Button("Only"));
+                    build.run();
+                  }
+                }
+                """), "Only", """
+                package app;
+
+                import com.webforj.component.layout.flexlayout.FlexLayout;
+
+                public class View {
+                  public View(FlexLayout layout) {
+                    Runnable build = () -> {
+                    };
+                    build.run();
+                  }
+                }
+                """),
+        Arguments.of(Named.of("should remove the call that asked a lambda for the component", """
+            package app;
+
+            import com.webforj.component.button.Button;
+            import com.webforj.component.layout.flexlayout.FlexLayout;
+            import java.util.function.Supplier;
+
+            public class View {
+              public View(FlexLayout layout) {
+                Supplier<Button> supplier = () -> new Button("Supplied");
+                layout.add(new Button("Kept"), supplier.get());
+              }
+            }
+            """), "Supplied", """
+            package app;
+
+            import com.webforj.component.button.Button;
+            import com.webforj.component.layout.flexlayout.FlexLayout;
+            import java.util.function.Supplier;
+
+            public class View {
+              public View(FlexLayout layout) {
+                Supplier<Button> supplier = () -> new Button("Supplied");
+                layout.add(new Button("Kept"));
+              }
+            }
+            """),
+        Arguments.of(Named
+            .of("should tell the body of a loop from its update, which runs after the body", """
+                package app;
+
+                import com.webforj.component.button.Button;
+                import com.webforj.component.layout.flexlayout.FlexLayout;
+
+                public class View {
+                  public View(FlexLayout layout) {
+                    int count = 0;
+                    for (Button kept = create("Init"); count < 1; kept = create("Update")) {
+                      layout.add(create("Body"));
+                      count++;
+                    }
+                  }
+
+                  private static Button create(String text) {
+                    return new Button(text);
+                  }
+                }
+                """), "Body", """
+                package app;
+
+                import com.webforj.component.button.Button;
+                import com.webforj.component.layout.flexlayout.FlexLayout;
+
+                public class View {
+                  public View(FlexLayout layout) {
+                    int count = 0;
+                    for (Button kept = create("Init"); count < 1; kept = create("Update")) {
+                      count++;
+                    }
+                  }
+
+                  private static Button create(String text) {
+                    return new Button(text);
+                  }
+                }
+                """),
+        Arguments.of(Named.of("should remove a component a class without a name creates", """
+            package app;
+
+            import com.webforj.component.button.Button;
+            import com.webforj.component.layout.flexlayout.FlexLayout;
+
+            public class View {
+              public View(FlexLayout layout) {
+                Runnable build = new Runnable() {
+                  @Override
+                  public void run() {
+                    layout.setSpacing("1em");
+                    layout.add(new Button("Inner"));
+                  }
+                };
+                build.run();
+              }
+            }
+            """), "Inner", """
+            package app;
+
+            import com.webforj.component.layout.flexlayout.FlexLayout;
+
+            public class View {
+              public View(FlexLayout layout) {
+                Runnable build = new Runnable() {
+                  @Override
+                  public void run() {
+                    layout.setSpacing("1em");
+                  }
+                };
+                build.run();
+              }
+            }
+            """),
+        Arguments
+            .of(Named.of("should detach a field other classes can reach and keep it declared", """
+                package app;
+
+                import com.webforj.component.button.Button;
+                import com.webforj.component.layout.flexlayout.FlexLayout;
+
+                public class View {
+                  protected final Button save = new Button("Save");
+
+                  public View(FlexLayout layout) {
+                    save.setEnabled(false);
+                    layout.add(save);
+                  }
+                }
+                """), "Save", """
+                package app;
+
+                import com.webforj.component.button.Button;
+                import com.webforj.component.layout.flexlayout.FlexLayout;
+
+                public class View {
+                  protected final Button save = new Button("Save");
+
+                  public View(FlexLayout layout) {
+                    save.setEnabled(false);
+                  }
+                }
+                """),
+        Arguments.of(Named.of("should remove a field that the constructor assigns", """
+            package app;
+
+            import com.webforj.component.button.Button;
+            import com.webforj.component.layout.flexlayout.FlexLayout;
+
+            public class View {
+              private final Button first = new Button("First");
+              private Button second;
+
+              public View(FlexLayout layout) {
+                second = new Button("Second");
+                this.second.setEnabled(false);
+                layout.add(first, this.second);
+              }
+            }
+            """), "Second", """
+            package app;
+
+            import com.webforj.component.button.Button;
+            import com.webforj.component.layout.flexlayout.FlexLayout;
+
+            public class View {
+              private final Button first = new Button("First");
+
+              public View(FlexLayout layout) {
+                layout.add(first);
+              }
+            }
+            """),
+        Arguments.of(Named.of("should leave a name alone that a class in between inherits", """
+            package app;
+
+            import com.webforj.component.button.Button;
+            import com.webforj.component.layout.flexlayout.FlexLayout;
+
+            public class View {
+              private final Button target = new Button("Selected");
+
+              public View(FlexLayout layout) {
+                layout.add(target);
+              }
+
+              class Inner extends Base {
+                void attach(FlexLayout layout) {
+                  layout.add(target);
+                }
+              }
+            }
+
+            class Base {
+              protected Button target = new Button("Inherited");
+            }
+            """), "Selected", """
+            package app;
+
+            import com.webforj.component.button.Button;
+            import com.webforj.component.layout.flexlayout.FlexLayout;
+
+            public class View {
+              public View(FlexLayout layout) {
+              }
+
+              class Inner extends Base {
+                void attach(FlexLayout layout) {
+                  layout.add(target);
+                }
+              }
+            }
+
+            class Base {
+              protected Button target = new Button("Inherited");
+            }
+            """));
   }
 
   private static void assertRemoved(Response response, Path file) {
