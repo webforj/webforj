@@ -37,7 +37,7 @@
     <webforj.kotlin.version>2.4.20</webforj.kotlin.version>
     <!-- The SDK version Spring AI 2.0.0 resolves -->
     <webforj.mcp-sdk.version>2.0.1</webforj.mcp-sdk.version>
-    <webforj.mockito.version>5.22.0</webforj.mockito.version>
+    <webforj.mockito.version>5.24.0</webforj.mockito.version>
     <webforj.spring-boot.version>4.1.1</webforj.spring-boot.version>
     <webforj.typesafe-config.version>1.4.9</webforj.typesafe-config.version>
     <webforj.webpush.version>1.3.0</webforj.webpush.version>
