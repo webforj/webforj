@@ -27,6 +27,7 @@ import com.webforj.devtools.craftforj.inspector.action.GetBeanInfoAction;
 import com.webforj.devtools.craftforj.inspector.action.GetComponentMapAction;
 import com.webforj.devtools.craftforj.inspector.action.GetSourceAction;
 import com.webforj.devtools.craftforj.inspector.action.PreviewPatchAction;
+import com.webforj.devtools.craftforj.inspector.action.RemoveComponentSourceAction;
 import com.webforj.devtools.craftforj.inspector.action.StageSourceAction;
 import com.webforj.devtools.craftforj.router.ActiveRouteTracker;
 import com.webforj.devtools.craftforj.router.action.SetRouteSecurityAction;
@@ -142,6 +143,7 @@ class CraftforjLifecycleListenerTest {
       assertTrue(registry.unregister(GetComponentMapAction.ACTION));
       assertTrue(registry.unregister(GetCapabilitiesAction.ACTION));
       assertTrue(registry.unregister(GetAppInfoAction.ACTION));
+      assertTrue(registry.unregister(RemoveComponentSourceAction.ACTION));
       verify(page, times(1)).addInlineJavaScript(anyString(), eq(true));
       verify(tracker).attach(router);
     }
@@ -174,6 +176,7 @@ class CraftforjLifecycleListenerTest {
       // A feature that is off cannot be reached from the browser at all
       assertFalse(registry.unregister(ApplyChangesAction.ACTION));
       assertFalse(registry.unregister(PreviewPatchAction.ACTION));
+      assertFalse(registry.unregister(RemoveComponentSourceAction.ACTION));
       assertFalse(registry.unregister(StageSourceAction.ACTION));
       assertFalse(registry.unregister(WriteStylesheetAction.ACTION));
       assertFalse(registry.unregister(SetRouteSecurityAction.ACTION));

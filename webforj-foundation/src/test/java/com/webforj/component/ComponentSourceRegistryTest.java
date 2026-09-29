@@ -5,164 +5,139 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mockStatic;
 
+import com.basis.webforj.BasisRegistryProbe;
+import com.webforj.SourceRegistryProbe;
+import com.webforj.component.ComponentSourceRegistry.SourceFrame;
 import com.webforj.component.ComponentSourceRegistry.SourcePoint;
 import com.webforj.environment.ObjectTable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
+import sun.webforj.SunRegistryProbe;
 
 class ComponentSourceRegistryTest {
 
+  private final Map<String, Object> table = new HashMap<>();
+  private MockedStatic<ObjectTable> objectTable;
+
+  @BeforeEach
+  void setUp() {
+    objectTable = mockStatic(ObjectTable.class);
+    objectTable.when(() -> ObjectTable.contains(anyString()))
+        .thenAnswer(call -> table.containsKey(call.getArgument(0)));
+    objectTable.when(() -> ObjectTable.get(anyString()))
+        .thenAnswer(call -> table.get(call.getArgument(0)));
+    objectTable.when(() -> ObjectTable.put(anyString(), any()))
+        .thenAnswer(call -> table.put(call.getArgument(0), call.getArgument(1)));
+  }
+
+  @AfterEach
+  void tearDown() {
+    objectTable.close();
+  }
+
   @Test
   void shouldReturnNullForUnregisteredComponent() {
-    Map<Integer, Throwable> storage = new HashMap<>();
-
-    try (MockedStatic<ObjectTable> mocked = mockStatic(ObjectTable.class)) {
-      mocked.when(() -> ObjectTable.contains(any())).thenReturn(true);
-      mocked.when(() -> ObjectTable.get(any())).thenReturn(storage);
-
-      Object component = new Object();
-      SourcePoint result = ComponentSourceRegistry.getSourcePoint(component);
-
-      assertNull(result);
-    }
-  }
-
-  @Test
-  void shouldRegisterAndFindSourcePoint() {
-    Map<Integer, Throwable> storage = new HashMap<>();
-
-    try (MockedStatic<ObjectTable> mocked = mockStatic(ObjectTable.class)) {
-      mocked.when(() -> ObjectTable.contains(any())).thenReturn(true);
-      mocked.when(() -> ObjectTable.get(any())).thenReturn(storage);
-
-      Object component = new Object();
-      ComponentSourceRegistry.register(component);
-
-      SourcePoint result = ComponentSourceRegistry.getSourcePoint(component);
-
-      assertNotNull(result);
-      assertNotNull(result.className());
-      assertNotNull(result.fileName());
-      assertTrue(result.lineNumber() > 0);
-    }
-  }
-
-  @Test
-  void shouldCreateStorageIfNotExists() {
-    Map<Integer, Throwable> storage = new HashMap<>();
-
-    try (MockedStatic<ObjectTable> mocked = mockStatic(ObjectTable.class)) {
-      mocked.when(() -> ObjectTable.contains(any())).thenReturn(false);
-      mocked.when(() -> ObjectTable.put(any(), any())).thenAnswer(inv -> storage);
-      mocked.when(() -> ObjectTable.get(any())).thenReturn(storage);
-
-      Object component = new Object();
-      ComponentSourceRegistry.register(component);
-
-      mocked.verify(() -> ObjectTable.put(eq(ComponentSourceRegistry.class.getName()), any()));
-    }
+    assertNull(ComponentSourceRegistry.getSourcePoint(new Object()));
   }
 
   @Test
   void shouldReturnEmptyChainForUnregisteredComponent() {
-    Map<Integer, Throwable> storage = new HashMap<>();
+    Object component = new Object();
 
-    try (MockedStatic<ObjectTable> mocked = mockStatic(ObjectTable.class)) {
-      mocked.when(() -> ObjectTable.contains(any())).thenReturn(true);
-      mocked.when(() -> ObjectTable.get(any())).thenReturn(storage);
-
-      Object component = new Object();
-      List<SourcePoint> chain = ComponentSourceRegistry.getSourceChain(component);
-
-      assertNotNull(chain);
-      assertTrue(chain.isEmpty());
-    }
+    assertTrue(ComponentSourceRegistry.getSourceChain(component).isEmpty());
+    assertTrue(ComponentSourceRegistry.getSourceFrames(component).isEmpty());
+    assertEquals(-1, ComponentSourceRegistry.getCreationTime(component));
   }
 
   @Test
-  void shouldReturnChainWithFirstElementMatchingSourcePoint() {
-    Map<Integer, Throwable> storage = new HashMap<>();
+  void shouldRegisterAndFindSourcePoint() {
+    Object component = SourceRegistryProbe.create();
 
-    try (MockedStatic<ObjectTable> mocked = mockStatic(ObjectTable.class)) {
-      mocked.when(() -> ObjectTable.contains(any())).thenReturn(true);
-      mocked.when(() -> ObjectTable.get(any())).thenReturn(storage);
+    SourcePoint result = ComponentSourceRegistry.getSourcePoint(component);
 
-      Object component = new Object();
-      Throwable stack = new Throwable();
-      stack.setStackTrace(new StackTraceElement[] {
-          new StackTraceElement("com.webforj.component.ComponentSourceRegistry", "register",
-              "ComponentSourceRegistry.java", 37),
-          new StackTraceElement("com.example.app.MyView", "<init>", "MyView.java", 10),
-          new StackTraceElement("com.example.app.MyApp", "run", "MyApp.java", 20)});
-      storage.put(System.identityHashCode(component), stack);
+    assertNotNull(result);
+    assertEquals("com.webforj.SourceRegistryProbe", result.className());
+    assertEquals("SourceRegistryProbe.java", result.fileName());
+    assertTrue(result.lineNumber() > 0);
+    assertEquals(new SourcePoint(result.className(), result.fileName(), result.lineNumber()),
+        result);
+  }
 
-      List<SourcePoint> chain = ComponentSourceRegistry.getSourceChain(component);
-      SourcePoint sourcePoint = ComponentSourceRegistry.getSourcePoint(component);
+  @Test
+  void shouldCreateStorageIfNotExists() {
+    ComponentSourceRegistry.register(new Object());
 
-      assertEquals(2, chain.size());
-      assertEquals(sourcePoint, chain.get(0));
-      assertEquals("com.example.app.MyView", chain.get(0).className());
-      assertEquals("com.example.app.MyApp", chain.get(1).className());
-    }
+    objectTable.verify(() -> ObjectTable.put(eq(ComponentSourceRegistry.class.getName()), any()));
+  }
+
+  @Test
+  void shouldReturnChainInStackOrderWithTheRunningInstruction() {
+    Object component = SourceRegistryProbe.createThrough();
+
+    List<SourceFrame> frames = ComponentSourceRegistry.getSourceFrames(component);
+
+    assertEquals(List.of("create", "createThrough"),
+        frames.stream().limit(2).map(SourceFrame::getMethodName).toList());
+    assertEquals(List.of("()Ljava/lang/Object;", "()Ljava/lang/Object;"),
+        frames.stream().limit(2).map(SourceFrame::getDescriptor).toList());
+    assertTrue(frames.stream().limit(2).allMatch(frame -> frame.getBytecodeIndex() >= 0));
+
+    List<SourcePoint> chain = ComponentSourceRegistry.getSourceChain(component);
+
+    assertEquals(chain, frames.stream().map(SourceFrame::getSourcePoint).toList());
+    assertEquals(ComponentSourceRegistry.getSourcePoint(component), chain.get(0));
+    assertTrue(ComponentSourceRegistry.getCreationTime(component) > 0);
   }
 
   @Test
   void shouldExcludeFilteredPackagesFromChain() {
-    Map<Integer, Throwable> storage = new HashMap<>();
+    List<Object> components = List.of(SourceRegistryProbe.create(), BasisRegistryProbe.create(),
+        SunRegistryProbe.create());
 
-    try (MockedStatic<ObjectTable> mocked = mockStatic(ObjectTable.class)) {
-      mocked.when(() -> ObjectTable.contains(any())).thenReturn(true);
-      mocked.when(() -> ObjectTable.get(any())).thenReturn(storage);
+    List<String> classes = components.stream().map(ComponentSourceRegistry::getSourceChain)
+        .flatMap(List::stream).map(SourcePoint::className).toList();
 
-      Object component = new Object();
-      Throwable stack = new Throwable();
-      stack.setStackTrace(new StackTraceElement[] {
-          new StackTraceElement("com.webforj.component.ComponentSourceRegistry", "register",
-              "ComponentSourceRegistry.java", 37),
-          new StackTraceElement("com.basis.internal.Helper", "help", "Helper.java", 5),
-          new StackTraceElement("java.lang.Thread", "run", "Thread.java", 1),
-          new StackTraceElement("jdk.internal.reflect.Foo", "invoke", "Foo.java", 2),
-          new StackTraceElement("sun.reflect.Bar", "invoke", "Bar.java", 3),
-          new StackTraceElement("com.example.app.MyView", "<init>", "MyView.java", 10)});
-      storage.put(System.identityHashCode(component), stack);
-
-      List<SourcePoint> chain = ComponentSourceRegistry.getSourceChain(component);
-
-      assertEquals(1, chain.size());
-      assertEquals("com.example.app.MyView", chain.get(0).className());
-    }
+    assertTrue(classes.contains("com.webforj.SourceRegistryProbe"), classes.toString());
+    assertTrue(classes.stream()
+        .noneMatch(name -> name.startsWith("com.webforj.component.") || name.startsWith("java.")
+            || name.startsWith("jdk.") || name.startsWith("sun.") || name.startsWith("com.basis.")),
+        classes.toString());
   }
 
   @Test
   void shouldCapChainAtTenEntries() {
-    Map<Integer, Throwable> storage = new HashMap<>();
+    Object component = SourceRegistryProbe.createThrough();
 
-    try (MockedStatic<ObjectTable> mocked = mockStatic(ObjectTable.class)) {
-      mocked.when(() -> ObjectTable.contains(any())).thenReturn(true);
-      mocked.when(() -> ObjectTable.get(any())).thenReturn(storage);
+    assertEquals(10, ComponentSourceRegistry.getSourceChain(component).size());
+  }
 
-      Object component = new Object();
-      StackTraceElement[] frames = new StackTraceElement[15];
-      for (int i = 0; i < frames.length; i++) {
-        frames[i] =
-            new StackTraceElement("com.example.app.Frame" + i, "run", "Frame" + i + ".java", i);
-      }
+  @Test
+  void shouldReturnChainTheCallerMayChange() {
+    Object component = SourceRegistryProbe.create();
+    List<SourcePoint> chain = ComponentSourceRegistry.getSourceChain(component);
+    int size = chain.size();
+    chain.clear();
 
-      Throwable stack = new Throwable();
-      stack.setStackTrace(frames);
-      storage.put(System.identityHashCode(component), stack);
+    assertEquals(size, ComponentSourceRegistry.getSourceChain(component).size());
+  }
 
-      List<SourcePoint> chain = ComponentSourceRegistry.getSourceChain(component);
+  @Test
+  void shouldKeepEqualComponentsApart() {
+    String first = new String("same");
+    String second = new String("same");
 
-      assertEquals(10, chain.size());
-      assertEquals("com.example.app.Frame0", chain.get(0).className());
-      assertEquals("com.example.app.Frame9", chain.get(9).className());
-    }
+    ComponentSourceRegistry.register(first);
+
+    assertNotNull(ComponentSourceRegistry.getSourcePoint(first));
+    assertNull(ComponentSourceRegistry.getSourcePoint(second));
   }
 }

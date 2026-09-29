@@ -62,6 +62,30 @@ public final class StatementWrapper {
     return out.toString();
   }
 
+  /**
+   * Detects the indentation unit a file uses.
+   *
+   * @param content the file content
+   * @return the leading whitespace of the first indented line, two spaces when none is indented
+   */
+  static String detectIndentUnit(String content) {
+    for (String line : (Iterable<String>) content.lines()::iterator) {
+      String stripped = line.stripLeading();
+      // Javadoc and block comment continuations indent one extra space, they never reflect the
+      // file's indentation unit.
+      if (stripped.isEmpty() || stripped.startsWith("*")) {
+        continue;
+      }
+
+      int width = line.length() - stripped.length();
+      if (width > 0) {
+        return line.substring(0, width);
+      }
+    }
+
+    return "  ";
+  }
+
   private static String wrapLine(String line, String unit) {
     String code = line.stripLeading();
     String indent = line.substring(0, line.length() - code.length());
@@ -120,24 +144,6 @@ public final class StatementWrapper {
 
   private static String callPrefix(MethodCallExpr call) {
     return call.getScope().map(scope -> scope + ".").orElse("") + call.getNameAsString() + "(";
-  }
-
-  private static String detectIndentUnit(String content) {
-    for (String line : (Iterable<String>) content.lines()::iterator) {
-      String stripped = line.stripLeading();
-      // Javadoc and block comment continuations indent one extra space; they never reflect the
-      // file's indentation unit.
-      if (stripped.isEmpty() || stripped.startsWith("*")) {
-        continue;
-      }
-
-      int width = line.length() - stripped.length();
-      if (width > 0) {
-        return line.substring(0, width);
-      }
-    }
-
-    return "  ";
   }
 
   private static Statement parseStatement(String code) {

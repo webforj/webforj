@@ -1,5 +1,7 @@
 package com.webforj.devtools.craftforj.source.model;
 
+import com.webforj.devtools.craftforj.source.staging.SourceHasher;
+
 /**
  * The content of one source file before and after a set of changes.
  *
@@ -17,6 +19,8 @@ public class FilePatch {
   private final String file;
   private final String original;
   private final String patched;
+  private final String originalHash;
+  private final String patchedHash;
 
   /**
    * Creates a patch preview for one file.
@@ -29,6 +33,8 @@ public class FilePatch {
     this.file = file;
     this.original = original;
     this.patched = patched;
+    this.originalHash = original == null ? null : SourceHasher.hash(original);
+    this.patchedHash = patched == null ? null : SourceHasher.hash(patched);
   }
 
   /**
@@ -56,5 +62,23 @@ public class FilePatch {
    */
   public String getPatched() {
     return patched;
+  }
+
+  /**
+   * Gets the hash of the content as it is on disk.
+   *
+   * @return the hash of the original content, or {@code null} when there is none
+   */
+  public String getOriginalHash() {
+    return originalHash;
+  }
+
+  /**
+   * Gets the hash of the content as it would be written.
+   *
+   * @return the hash of the patched content, or {@code null} when there is none
+   */
+  public String getPatchedHash() {
+    return patchedHash;
   }
 }
