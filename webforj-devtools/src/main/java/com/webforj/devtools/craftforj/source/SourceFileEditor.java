@@ -5,6 +5,7 @@ import com.webforj.devtools.craftforj.source.model.FilePatch;
 import com.webforj.devtools.craftforj.source.parser.ImportWriter;
 import com.webforj.devtools.craftforj.source.parser.SourceParserService;
 import com.webforj.devtools.craftforj.source.parser.StatementWrapper;
+import com.webforj.devtools.craftforj.source.parser.WhitespaceWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,8 +15,9 @@ import java.nio.file.Path;
  *
  * <p>
  * The editor reads and parses the file, hands the parsed file to the feature's {@link SourceEdit},
- * then prints it with formatting preserved, syncs the imports, wraps the statements the edit made
- * too long and writes the result. Every feature that changes source goes through this one pass.
+ * then prints it with formatting preserved, syncs the imports, repairs the whitespace of what it
+ * added, wraps the statements the edit made too long and writes the result. Every feature that
+ * changes source goes through this one pass.
  * </p>
  *
  * @author Hyyan Abo Fakher
@@ -57,13 +59,17 @@ public class SourceFileEditor {
       return new FilePatch(file.toString(), original, null);
     }
 
-    String patched = StatementWrapper.wrap(original,
-        ImportWriter.sync(parserService.print(cu), imports.getCandidates(), imports.getUsed()));
+    String printed =
+        ImportWriter.sync(parserService.print(cu), imports.getCandidates(), imports.getUsed());
+    String patched = StatementWrapper.wrap(original, WhitespaceWriter.repair(original, printed));
     if (patched.equals(original)) {
       return new FilePatch(file.toString(), original, null);
     }
 
     if (!dryRun) {
+      if (!original.equals(readSource(file))) {
+        throw new SourceModificationException("The source file changed during the edit: " + file);
+      }
       writeSource(file, patched);
     }
 

@@ -277,4 +277,11 @@ class SourceParserServiceTest {
       assertEquals("button", service.extractVariableName(file, 3, Set.of("Button")));
     }
   }
+
+  @Test
+  @DisplayName("should yield no statement for code with a syntax error")
+  void shouldYieldNoStatementForSyntaxError() {
+    assertNull(service.parseStatement("Button save = new Button(;"));
+    assertEquals("save.setText(\"x\");", service.parseStatement("save.setText(\"x\");").toString());
+  }
 }

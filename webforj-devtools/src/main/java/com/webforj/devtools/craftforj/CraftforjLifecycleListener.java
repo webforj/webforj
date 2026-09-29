@@ -25,6 +25,7 @@ import com.webforj.devtools.craftforj.inspector.action.GetSourceAction;
 import com.webforj.devtools.craftforj.inspector.action.GetStagedSourceAction;
 import com.webforj.devtools.craftforj.inspector.action.GetTranslationsAction;
 import com.webforj.devtools.craftforj.inspector.action.PreviewPatchAction;
+import com.webforj.devtools.craftforj.inspector.action.RemoveComponentSourceAction;
 import com.webforj.devtools.craftforj.inspector.action.SetFeaturePropertyAction;
 import com.webforj.devtools.craftforj.inspector.action.StageSourceAction;
 import com.webforj.devtools.craftforj.inspector.source.SourceFreeformChangesCapability;
@@ -197,6 +198,7 @@ public class CraftforjLifecycleListener implements AppLifecycleListener {
       if (capabilitiesProvider.isSupported(SourceChangesCapability.KEY)) {
         actionRegistry.register(new ApplyChangesAction());
         actionRegistry.register(new PreviewPatchAction());
+        actionRegistry.register(new RemoveComponentSourceAction());
       }
 
       if (capabilitiesProvider.isSupported(SourceFreeformChangesCapability.KEY)) {

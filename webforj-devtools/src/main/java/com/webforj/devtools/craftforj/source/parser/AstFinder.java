@@ -668,6 +668,43 @@ public final class AstFinder {
     return computed.isEmpty() ? null : String.join(", ", computed);
   }
 
+  /**
+   * Finds the nearest node of a type that holds a node.
+   *
+   * @param <T> the node type
+   * @param node the node to look around
+   * @param type the class of the wanted node
+   *
+   * @return the nearest ancestor of that type, empty when none holds the node
+   */
+  public static <T> Optional<T> findAncestor(Node node, Class<T> type) {
+    Node current = node.getParentNode().orElse(null);
+    while (current != null && !type.isInstance(current)) {
+      current = current.getParentNode().orElse(null);
+    }
+
+    return Optional.ofNullable(type.cast(current));
+  }
+
+  /**
+   * Finds the position of a node in a list by identity. {@code NodeList.indexOf} compares nodes
+   * structurally, so two textually identical statements in one block would report the first one.
+   *
+   * @param nodes the list to search
+   * @param node the node instance to locate
+   *
+   * @return the index of the same instance, or -1 when the list does not hold it
+   */
+  public static int indexOfSame(List<? extends Node> nodes, Node node) {
+    for (int index = 0; index < nodes.size(); index++) {
+      if (nodes.get(index) == node) {
+        return index;
+      }
+    }
+
+    return -1;
+  }
+
   private static boolean isComputedExpression(Expression expression) {
     return expression.findFirst(Node.class,
         node -> node instanceof MethodCallExpr || node instanceof ObjectCreationExpr

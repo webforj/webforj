@@ -415,6 +415,46 @@ class AstModifierTest {
 
       assertEquals("button4", name);
     }
+
+    @Test
+    void shouldSkipParameterOfEnclosingMethodAndOfLambdas() {
+      String code = """
+          class Test {
+            void method(String button) {
+              run(button2 -> {});
+            }
+          }
+          """;
+      CompilationUnit cu = new SourceParserService().parse(code).orElseThrow();
+      BlockStmt block =
+          cu.findFirst(ClassOrInterfaceDeclaration.class).get().getMethods().get(0).getBody().get();
+
+      String name = AstModifier.generateFreeVariableName("button", block);
+
+      assertEquals("button3", name);
+    }
+
+    @Test
+    void shouldSkipEveryNameOfTheClass() {
+      String code = """
+          class Test {
+            private Button button;
+
+            void first(String button2) {
+              Button button3 = new Button();
+            }
+
+            void second() {
+              Button button4 = new Button();
+            }
+          }
+          """;
+      CompilationUnit cu = new SourceParserService().parse(code).orElseThrow();
+      ClassOrInterfaceDeclaration type = cu.findFirst(ClassOrInterfaceDeclaration.class).get();
+
+      assertEquals("button5", AstModifier.generateFreeVariableName("button", type));
+      assertEquals("label", AstModifier.generateFreeVariableName("label", type));
+    }
   }
 
   @Nested

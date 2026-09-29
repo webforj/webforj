@@ -1,5 +1,7 @@
 package com.webforj.devtools.craftforj.source.model;
 
+import com.webforj.devtools.craftforj.source.site.model.CreationSite;
+
 /**
  * Source code location where a component was instantiated.
  *
@@ -19,6 +21,7 @@ public class SourceLocation {
   private String declaringClass;
   private String variableName;
   private String componentType;
+  private CreationSite site;
 
   /**
    * Creates a SourceLocation with the given values.
@@ -126,6 +129,24 @@ public class SourceLocation {
    */
   public void setComponentType(String componentType) {
     this.componentType = componentType;
+  }
+
+  /**
+   * Gets the expression that creates the component.
+   *
+   * @return the creation site, or {@code null} when the location knows its line only
+   */
+  public CreationSite getSite() {
+    return site;
+  }
+
+  /**
+   * Sets the expression that creates the component.
+   *
+   * @param site the creation site
+   */
+  public void setSite(CreationSite site) {
+    this.site = site;
   }
 
   /**

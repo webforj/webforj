@@ -9,7 +9,10 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.github.javaparser.ast.Modifier;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.webforj.devtools.craftforj.source.model.FilePatch;
@@ -76,6 +79,26 @@ class SourceFileEditorTest {
 
     assertTrue(patch.getPatched().contains("@Deprecated"));
     assertEquals(SOURCE, Files.readString(file));
+  }
+
+  @Test
+  @DisplayName("should preserve an external edit made while preparing a source write")
+  void shouldRefuseConcurrentEdit() throws IOException {
+    Path file = createSource(SOURCE);
+    String external = SOURCE.replace("names", "externalNames");
+
+    assertThrows(SourceModificationException.class,
+        () -> editor.edit(file, new SourceImports(), false, cu -> {
+          cu.getClassByName("MyView").ifPresent(type -> type.addAnnotation("Deprecated"));
+          try {
+            Files.writeString(file, external);
+          } catch (IOException e) {
+            throw new java.io.UncheckedIOException(e);
+          }
+          return true;
+        }));
+
+    assertEquals(external, Files.readString(file));
   }
 
   @Test
@@ -228,6 +251,37 @@ class SourceFileEditorTest {
 
   private String importLine(String qualifiedName) {
     return "import " + qualifiedName + ";";
+  }
+
+  @Test
+  @DisplayName("should repair the whitespace of a member the edit added")
+  void shouldRepairWhitespaceOfAddedMember() throws IOException {
+    Path file = createSource(SOURCE);
+
+    editor.edit(file, new SourceImports(), false, cu -> {
+      ConstructorDeclaration constructor =
+          new ConstructorDeclaration(new NodeList<>(Modifier.publicModifier()), "MyView");
+      constructor.getBody().addStatement("names = List.of();");
+      cu.getClassByName("MyView").ifPresent(type -> type.getMembers().add(constructor));
+
+      return true;
+    });
+
+    assertEquals("""
+        package com.example;
+
+        import java.util.List;
+
+        public class MyView {
+
+          // kept as written
+          private   List<String> names;
+
+          public MyView() {
+            names = List.of();
+          }
+        }
+        """, Files.readString(file));
   }
 
   private Path createSource(String content) throws IOException {

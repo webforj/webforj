@@ -3,6 +3,7 @@ package com.webforj.devtools.craftforj;
 import com.typesafe.config.Config;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 /**
  * Resolves the root directory of the running project.
@@ -26,8 +27,8 @@ public final class ProjectRootResolver {
   public static final String KEY_PROJECT_ROOT = "webforj.devtools.craftforj.project-root";
 
   private static final System.Logger LOGGER = System.getLogger(ProjectRootResolver.class.getName());
-  private static final String[] BUILD_MARKERS =
-      {"pom.xml", "build.gradle", "build.gradle.kts", "settings.gradle", "settings.gradle.kts"};
+  private static final List<String> BUILD_MARKERS = List.of("pom.xml", "build.gradle",
+      "build.gradle.kts", "settings.gradle", "settings.gradle.kts");
 
   private ProjectRootResolver() {}
 

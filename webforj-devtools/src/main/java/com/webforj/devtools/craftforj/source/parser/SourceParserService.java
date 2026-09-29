@@ -136,7 +136,9 @@ public final class SourceParserService {
    */
   public Statement parseStatement(String code) {
     try {
-      return parser.parseStatement(code).getResult().orElse(null);
+      ParseResult<Statement> result = parser.parseStatement(code);
+
+      return result.isSuccessful() ? result.getResult().orElse(null) : null;
     } catch (Exception e) {
       return null;
     }

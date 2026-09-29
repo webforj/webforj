@@ -6,9 +6,11 @@ import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.BodyDeclaration;
+import com.github.javaparser.ast.body.CallableDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.InitializerDeclaration;
+import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.ConditionalExpr;
@@ -580,21 +582,31 @@ public final class AstModifier {
     Set<String> usedNames = new HashSet<>();
 
     block.findAll(VariableDeclarator.class).forEach(v -> usedNames.add(v.getNameAsString()));
+    block.findAll(Parameter.class).forEach(p -> usedNames.add(p.getNameAsString()));
+    AstFinder.findAncestor(block, CallableDeclaration.class).ifPresent(callable -> callable
+        .getParameters().forEach(p -> usedNames.add(((Parameter) p).getNameAsString())));
 
     block.findAncestor(ClassOrInterfaceDeclaration.class)
         .ifPresent(classDecl -> classDecl.getFields().forEach(
             field -> field.getVariables().forEach(v -> usedNames.add(v.getNameAsString()))));
 
-    if (!usedNames.contains(baseName)) {
-      return baseName;
-    }
+    return pickFreeName(baseName, usedNames);
+  }
 
-    int suffix = 2;
-    while (usedNames.contains(baseName + suffix)) {
-      suffix++;
-    }
+  /**
+   * Generates a variable name no variable or parameter of the class uses.
+   *
+   * @param baseName the base name to use
+   * @param type the class to check for existing names
+   *
+   * @return a unique variable name
+   */
+  public static String generateFreeVariableName(String baseName, ClassOrInterfaceDeclaration type) {
+    Set<String> usedNames = new HashSet<>();
+    type.findAll(VariableDeclarator.class).forEach(v -> usedNames.add(v.getNameAsString()));
+    type.findAll(Parameter.class).forEach(p -> usedNames.add(p.getNameAsString()));
 
-    return baseName + suffix;
+    return pickFreeName(baseName, usedNames);
   }
 
   /**
@@ -1342,5 +1354,18 @@ public final class AstModifier {
           && method.getScope().map(scope -> isPlainReceiver(scope, null)).orElse(false);
     }
     return false;
+  }
+
+  private static String pickFreeName(String baseName, Set<String> usedNames) {
+    if (!usedNames.contains(baseName)) {
+      return baseName;
+    }
+
+    int suffix = 2;
+    while (usedNames.contains(baseName + suffix)) {
+      suffix++;
+    }
+
+    return baseName + suffix;
   }
 }
