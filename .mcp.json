@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "webforj": {
+      "type": "http",
+      "url": "https://mcp.webforj.com/mcp"
+    }
+  }
+}
