@@ -23,7 +23,7 @@ final class HistoryLock {
 
   private static final Logger LOGGER = System.getLogger(HistoryLock.class.getName());
   private static final Map<Path, Folder> FOLDERS = new ConcurrentHashMap<>();
-  private static final String DIRECTORY = "lock";
+  private static final String LOCK_DIRECTORY = "lock";
   private static final String FILE = "journal.lock";
   private static final long RETRY_MILLIS = 5;
 
@@ -60,7 +60,7 @@ final class HistoryLock {
 
     FileChannel channel = null;
     try {
-      Path lockDirectory = directory.resolve(DIRECTORY);
+      Path lockDirectory = directory.resolve(LOCK_DIRECTORY);
       Files.createDirectories(lockDirectory);
       channel = FileChannel.open(lockDirectory.resolve(FILE), StandardOpenOption.CREATE,
           StandardOpenOption.WRITE);

@@ -91,7 +91,7 @@ class CraftforjActionRegistryHistoryTest {
     assertEquals(List.of(first.toString(), second.toString()),
         entries.get(0).getFiles().stream().map(HistoryFileSnapshot::getPath).toList());
 
-    assertTrue(journal.undo(null).isDone());
+    assertTrue(journal.undo().isDone());
     assertEquals("class First {}\n", Files.readString(first));
     assertEquals("class Second {}\n", Files.readString(second));
   }
@@ -108,9 +108,9 @@ class CraftforjActionRegistryHistoryTest {
     assertEquals(1, info.getEntries().size());
     assertEquals(info.getEntries().get(0).getId(), response.get("historyId").getAsLong());
     assertTrue(response.get("success").getAsBoolean());
-    assertTrue(journal.undo(null).isDone());
+    assertTrue(journal.undo().isDone());
     assertEquals("one\n", Files.readString(file));
-    assertTrue(journal.redo(null).isDone());
+    assertTrue(journal.redo().isDone());
     assertEquals("two\n", Files.readString(file));
   }
 
@@ -142,7 +142,7 @@ class CraftforjActionRegistryHistoryTest {
 
     assertEquals(journal.getInfo().getEntries().get(0).getId(),
         response.get("historyId").getAsLong());
-    assertTrue(journal.undo(null).isDone());
+    assertTrue(journal.undo().isDone());
     assertEquals("a {}\n", Files.readString(sheet));
   }
 
@@ -158,10 +158,10 @@ class CraftforjActionRegistryHistoryTest {
     dispatch(WriteStylesheetAction.ACTION, createAppendParams(sheet));
 
     assertEquals("rw-rw-r--", getMode(sheet));
-    assertTrue(journal.undo(null).isDone());
+    assertTrue(journal.undo().isDone());
     assertEquals("a {}\n", Files.readString(sheet));
     assertEquals("rw-rw-r--", getMode(sheet));
-    assertTrue(journal.redo(null).isDone());
+    assertTrue(journal.redo().isDone());
     assertEquals("rw-rw-r--", getMode(sheet));
   }
 
@@ -288,8 +288,8 @@ class CraftforjActionRegistryHistoryTest {
     assertTrue(firstId < secondId);
     assertEquals(List.of(secondId, firstId),
         journal.getInfo().getEntries().stream().map(HistoryEntryInfo::getId).toList());
-    assertTrue(journal.undo(null).isDone());
-    assertTrue(journal.undo(null).isDone());
+    assertTrue(journal.undo().isDone());
+    assertTrue(journal.undo().isDone());
     assertEquals("first one\n", Files.readString(first));
     assertEquals("second one\n", Files.readString(second));
   }

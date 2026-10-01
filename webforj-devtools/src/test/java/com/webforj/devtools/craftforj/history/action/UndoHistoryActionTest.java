@@ -80,7 +80,7 @@ class UndoHistoryActionTest {
       none.add("id", JsonNull.INSTANCE);
 
       assertTrue(new UndoHistoryAction(journal).handle(null).isDone());
-      assertTrue(journal.redo(null).isDone());
+      assertTrue(journal.redo().isDone());
       assertTrue(new UndoHistoryAction(journal).handle(none).isDone());
       assertArrayEquals("one\n".getBytes(StandardCharsets.UTF_8), Files.readAllBytes(file));
     }

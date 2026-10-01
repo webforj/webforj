@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -47,7 +48,7 @@ public final class HistoryJournal {
 
   private static final Logger LOGGER = System.getLogger(HistoryJournal.class.getName());
   private static final Gson GSON = new Gson();
-  private static final int LIMIT = 100;
+  private static final int STEP_LIMIT = 100;
   private static final long LOCK_TIMEOUT_MILLIS = 10_000;
   private static final int KEY_LENGTH = 16;
   private static final String INDEX_FILE = "journal.json";
@@ -62,7 +63,7 @@ public final class HistoryJournal {
   private final HistoryLock lock;
 
   HistoryJournal(Path directory) {
-    this(directory, LIMIT, LOCK_TIMEOUT_MILLIS);
+    this(directory, STEP_LIMIT, LOCK_TIMEOUT_MILLIS);
   }
 
   HistoryJournal(Path directory, int limit, long lockTimeout) {
@@ -116,22 +117,40 @@ public final class HistoryJournal {
   }
 
   /**
-   * Takes an applied step back.
+   * Takes the newest applied step back.
    *
-   * @param entryId the id of the step, or {@code null} for the newest applied one
    * @return the outcome
    */
-  public synchronized HistoryRestoreResult undo(Long entryId) {
+  public synchronized HistoryRestoreResult undo() {
+    return applyStep(null, true);
+  }
+
+  /**
+   * Takes an applied step back.
+   *
+   * @param entryId the id of the step
+   * @return the outcome
+   */
+  public synchronized HistoryRestoreResult undo(long entryId) {
     return applyStep(entryId, true);
+  }
+
+  /**
+   * Writes the oldest undone step again.
+   *
+   * @return the outcome
+   */
+  public synchronized HistoryRestoreResult redo() {
+    return applyStep(null, false);
   }
 
   /**
    * Writes an undone step again.
    *
-   * @param entryId the id of the step, or {@code null} for the oldest undone one
+   * @param entryId the id of the step
    * @return the outcome
    */
-  public synchronized HistoryRestoreResult redo(Long entryId) {
+  public synchronized HistoryRestoreResult redo(long entryId) {
     return applyStep(entryId, false);
   }
 
@@ -311,17 +330,20 @@ public final class HistoryJournal {
   private HistoryRestoreResult writeStep(HistoryEntries entries, HistoryEntry entry, boolean undo) {
     HistoryEntryInfo info = new HistoryEntryInfo(entry);
     List<String> files = getPaths(entry);
-    Map<Path, byte[]> target = readSnapshots(entry, undo);
-    if (target == null) {
+    Optional<Map<Path, byte[]>> snapshots = readSnapshots(entry, undo);
+    if (snapshots.isEmpty()) {
       return createRefusal(Code.SNAPSHOT_MISSING, "The stored content of a file is gone", info,
           files, toInfo(entries));
     }
 
-    Map<Path, byte[]> current = readFiles(target.keySet());
-    if (current == null) {
+    Map<Path, byte[]> target = snapshots.get();
+    Optional<Map<Path, byte[]>> before = readFiles(target.keySet());
+    if (before.isEmpty()) {
       return createRefusal(Code.RESTORE_FAILED, "The files could not be read before the step", info,
           files, toInfo(entries));
     }
+
+    Map<Path, byte[]> current = before.get();
 
     Map<Path, Set<PosixFilePermission>> modes = readPermissions(current.keySet());
     List<Path> written = new ArrayList<>();
@@ -376,14 +398,9 @@ public final class HistoryJournal {
   }
 
   private static List<String> findChangedFiles(HistoryEntries entries, HistoryEntry entry) {
-    List<String> changed = new ArrayList<>();
-    for (HistoryFileSnapshot file : entry.getFiles()) {
-      if (!isHolding(Path.of(file.getPath()), entries.findLinkedContent(entry, file))) {
-        changed.add(file.getPath());
-      }
-    }
-
-    return changed;
+    return entry.getFiles().stream()
+        .filter(file -> !isHolding(Path.of(file.getPath()), entries.findLinkedContent(entry, file)))
+        .map(HistoryFileSnapshot::getPath).toList();
   }
 
   private static boolean isHolding(Path file, Set<String> expected) {
@@ -395,7 +412,7 @@ public final class HistoryJournal {
     }
   }
 
-  private Map<Path, byte[]> readSnapshots(HistoryEntry entry, boolean before) {
+  private Optional<Map<Path, byte[]>> readSnapshots(HistoryEntry entry, boolean before) {
     Map<Path, byte[]> contents = new LinkedHashMap<>();
     for (HistoryFileSnapshot file : entry.getFiles()) {
       String hash = before ? file.getBefore() : file.getAfter();
@@ -404,17 +421,17 @@ public final class HistoryJournal {
         try {
           content = Files.readAllBytes(getSnapshotPath(hash));
         } catch (IOException e) {
-          return null;
+          return Optional.empty();
         }
       }
 
       contents.put(Path.of(file.getPath()), content);
     }
 
-    return contents;
+    return Optional.of(contents);
   }
 
-  private static Map<Path, byte[]> readFiles(Collection<Path> files) {
+  private static Optional<Map<Path, byte[]>> readFiles(Collection<Path> files) {
     Map<Path, byte[]> contents = new LinkedHashMap<>();
     try {
       for (Path file : files) {
@@ -422,10 +439,10 @@ public final class HistoryJournal {
       }
     } catch (IOException e) {
       LOGGER.log(Level.WARNING, "Could not read the files before a step", e);
-      return null;
+      return Optional.empty();
     }
 
-    return contents;
+    return Optional.of(contents);
   }
 
   private static Map<Path, Set<PosixFilePermission>> readPermissions(Collection<Path> files) {

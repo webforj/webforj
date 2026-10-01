@@ -48,6 +48,7 @@ public final class UndoHistoryAction implements CraftforjActionHandler<HistoryRe
    */
   @Override
   public HistoryRestoreResult handle(JsonObject params) {
-    return HistoryRestoreRequests.handle(params, journal, journal::undo, Code.NOTHING_TO_UNDO);
+    return HistoryRestoreRequests.handle(params, journal, Code.NOTHING_TO_UNDO, journal::undo,
+        journal::undo);
   }
 }

@@ -102,9 +102,11 @@ class RemoveHistoryActionTest {
       Files.writeString(blocked, "not a directory");
       HistoryJournal unusable = HistoryJournal.create(blocked, dir, RemoveHistoryActionTest.class);
 
+      RemoveHistoryAction action = new RemoveHistoryAction(unusable);
+      JsonObject params = new JsonObject();
+
       assertEquals("The history is busy or could not be read",
-          assertThrows(CraftforjActionException.class,
-              () -> new RemoveHistoryAction(unusable).handle(new JsonObject())).getMessage());
+          assertThrows(CraftforjActionException.class, () -> action.handle(params)).getMessage());
     }
   }
 }

@@ -71,7 +71,7 @@ class HistoryJournalSkipTest {
     long skipped = journal.getInfo().getEntries().get(0).getId();
     journal.remove(List.of(skipped));
 
-    assertEquals(HistoryRestoreResult.Code.NOTHING_TO_UNDO, journal.undo(null).getCode());
+    assertEquals(HistoryRestoreResult.Code.NOTHING_TO_UNDO, journal.undo().getCode());
     assertEquals(HistoryRestoreResult.Code.NOTHING_TO_UNDO, journal.undo(skipped).getCode());
     assertTrue(readEntries(store).isEmpty());
 
@@ -93,7 +93,7 @@ class HistoryJournalSkipTest {
 
     journal.remove(List.of(skipped));
 
-    assertEquals(HistoryRestoreResult.Code.FILE_CHANGED, journal.undo(null).getCode());
+    assertEquals(HistoryRestoreResult.Code.FILE_CHANGED, journal.undo().getCode());
     assertArrayEquals(toBytes("outside\n"), Files.readAllBytes(view));
   }
 
@@ -104,7 +104,7 @@ class HistoryJournalSkipTest {
     addWrite(journal, view, toBytes("b\n"));
     addWrite(journal, view, toBytes("c\n"));
     long skipped = journal.getInfo().getEntries().get(0).getId();
-    assertTrue(journal.undo(null).isDone());
+    assertTrue(journal.undo().isDone());
 
     HistoryJournalInfo info = journal.remove(List.of(skipped));
 

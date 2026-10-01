@@ -46,7 +46,7 @@ class HistoryJournalNamedStepsTest {
     addWrite(journal, view, toBytes("view two\n"));
     addWrite(journal, other, toBytes("other two\n"));
     long first = journal.getInfo().getEntries().get(1).getId();
-    long second = journal.getInfo().getEntries().get(0).getId();
+    final long second = journal.getInfo().getEntries().get(0).getId();
 
     HistoryRestoreResult early = journal.undo(first);
 
@@ -96,8 +96,8 @@ class HistoryJournalNamedStepsTest {
     addWrite(journal, view, toBytes("view two\n"));
     addWrite(journal, other, toBytes("other two\n"));
     long newer = journal.getInfo().getEntries().get(0).getId();
-    assertTrue(journal.undo(null).isDone());
-    assertTrue(journal.undo(null).isDone());
+    assertTrue(journal.undo().isDone());
+    assertTrue(journal.undo().isDone());
 
     HistoryRestoreResult result = journal.redo(newer);
 
@@ -119,8 +119,8 @@ class HistoryJournalNamedStepsTest {
     addWrite(journal, view, toBytes("view two\n"));
     addWrite(journal, other, toBytes("other two\n"));
     addWrite(journal, third, toBytes("third two\n"));
-    long middle = journal.getInfo().getEntries().get(1).getId();
-    long newest = journal.getInfo().getEntries().get(0).getId();
+    final long middle = journal.getInfo().getEntries().get(1).getId();
+    final long newest = journal.getInfo().getEntries().get(0).getId();
     Path index = store.resolve("journal.json");
     String[] parts = Files.readString(index).split("\"applied\":true", -1);
     assertEquals(4, parts.length);

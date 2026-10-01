@@ -48,6 +48,7 @@ public final class RedoHistoryAction implements CraftforjActionHandler<HistoryRe
    */
   @Override
   public HistoryRestoreResult handle(JsonObject params) {
-    return HistoryRestoreRequests.handle(params, journal, journal::redo, Code.NOTHING_TO_REDO);
+    return HistoryRestoreRequests.handle(params, journal, Code.NOTHING_TO_REDO, journal::redo,
+        journal::redo);
   }
 }

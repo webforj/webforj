@@ -56,7 +56,7 @@ class HistoryJournalUndoRedoTest {
     write(view, before);
     addWrite(journal, view, after);
 
-    HistoryRestoreResult undone = journal.undo(null);
+    HistoryRestoreResult undone = journal.undo();
 
     assertTrue(undone.isDone());
     assertNull(undone.getCode());
@@ -65,7 +65,7 @@ class HistoryJournalUndoRedoTest {
     assertFalse(undone.getEntry().isApplied());
     assertFalse(undone.getJournal().getEntries().get(0).isApplied());
 
-    HistoryRestoreResult redone = journal.redo(null);
+    HistoryRestoreResult redone = journal.redo();
 
     assertTrue(redone.isDone());
     assertArrayEquals(after, Files.readAllBytes(view));
@@ -80,15 +80,15 @@ class HistoryJournalUndoRedoTest {
     addWrite(journal, view, toBytes("two\n"));
     addWrite(journal, view, toBytes("three\n"));
 
-    journal.undo(null);
+    journal.undo();
     assertArrayEquals(toBytes("two\n"), Files.readAllBytes(view));
-    journal.undo(null);
+    journal.undo();
     assertArrayEquals(toBytes("one\n"), Files.readAllBytes(view));
-    assertEquals(HistoryRestoreResult.Code.NOTHING_TO_UNDO, journal.undo(null).getCode());
-    journal.redo(null);
-    journal.redo(null);
+    assertEquals(HistoryRestoreResult.Code.NOTHING_TO_UNDO, journal.undo().getCode());
+    journal.redo();
+    journal.redo();
     assertArrayEquals(toBytes("three\n"), Files.readAllBytes(view));
-    assertEquals(HistoryRestoreResult.Code.NOTHING_TO_REDO, journal.redo(null).getCode());
+    assertEquals(HistoryRestoreResult.Code.NOTHING_TO_REDO, journal.redo().getCode());
   }
 
   @Test
@@ -106,9 +106,9 @@ class HistoryJournalUndoRedoTest {
       return null;
     });
 
-    assertTrue(journal.undo(null).isDone());
+    assertTrue(journal.undo().isDone());
     assertFalse(Files.exists(created));
-    assertTrue(journal.redo(null).isDone());
+    assertTrue(journal.redo().isDone());
     assertArrayEquals(toBytes("class Created {}\n"), Files.readAllBytes(created));
   }
 
@@ -126,9 +126,9 @@ class HistoryJournalUndoRedoTest {
       return null;
     });
 
-    assertTrue(journal.undo(null).isDone());
+    assertTrue(journal.undo().isDone());
     assertArrayEquals(toBytes("class View {}\n"), Files.readAllBytes(view));
-    assertTrue(journal.redo(null).isDone());
+    assertTrue(journal.redo().isDone());
     assertFalse(Files.exists(view));
   }
 
@@ -147,10 +147,10 @@ class HistoryJournalUndoRedoTest {
       return null;
     });
 
-    assertTrue(journal.undo(null).isDone());
+    assertTrue(journal.undo().isDone());
     assertEquals("rw-r--r--", PosixFilePermissions.toString(Files.getPosixFilePermissions(view)));
     assertEquals("rwxr-xr-x", PosixFilePermissions.toString(Files.getPosixFilePermissions(script)));
-    assertTrue(journal.redo(null).isDone());
+    assertTrue(journal.redo().isDone());
     assertEquals("rw-r--r--", PosixFilePermissions.toString(Files.getPosixFilePermissions(view)));
     assertEquals("rwxr-xr-x", PosixFilePermissions.toString(Files.getPosixFilePermissions(script)));
     assertArrayEquals(toBytes("echo two\n"), Files.readAllBytes(script));
@@ -170,11 +170,11 @@ class HistoryJournalUndoRedoTest {
     }
     addWrite(journal, link, toBytes("two\n"));
 
-    assertTrue(journal.undo(null).isDone());
+    assertTrue(journal.undo().isDone());
     assertTrue(Files.isSymbolicLink(link));
     assertEquals(real, Files.readSymbolicLink(link));
     assertArrayEquals(toBytes("one\n"), Files.readAllBytes(real));
-    assertTrue(journal.redo(null).isDone());
+    assertTrue(journal.redo().isDone());
     assertTrue(Files.isSymbolicLink(link));
     assertArrayEquals(toBytes("two\n"), Files.readAllBytes(real));
     try (Stream<Path> files = Files.list(real.getParent())) {
@@ -196,9 +196,9 @@ class HistoryJournalUndoRedoTest {
       return null;
     });
 
-    assertTrue(journal.undo(null).isDone());
+    assertTrue(journal.undo().isDone());
     assertFalse(Files.exists(created));
-    assertTrue(journal.redo(null).isDone());
+    assertTrue(journal.redo().isDone());
     assertArrayEquals(toBytes("class Created {}\n"), Files.readAllBytes(created));
     assertEquals(defaults, Files.getPosixFilePermissions(created));
   }
@@ -212,12 +212,12 @@ class HistoryJournalUndoRedoTest {
       write(created, toBytes("class Created {}\n"));
       return null;
     });
-    assertTrue(journal.undo(null).isDone());
+    assertTrue(journal.undo().isDone());
     Files.setPosixFilePermissions(store, PosixFilePermissions.fromString("r-x------"));
 
     HistoryRestoreResult result;
     try {
-      result = journal.redo(null);
+      result = journal.redo();
     } finally {
       Files.setPosixFilePermissions(store, PosixFilePermissions.fromString("rwx------"));
     }
@@ -317,7 +317,7 @@ class HistoryJournalUndoRedoTest {
       write(created, toBytes("class Created {}\n"));
       return null;
     });
-    assertTrue(journal.undo(null).isDone());
+    assertTrue(journal.undo().isDone());
     Path refused = created.toAbsolutePath().normalize();
 
     HistoryRestoreResult result;
@@ -330,7 +330,7 @@ class HistoryJournalUndoRedoTest {
 
           return invocation.callRealMethod();
         })) {
-      result = journal.redo(null);
+      result = journal.redo();
     }
 
     assertEquals(HistoryRestoreResult.Code.RESTORE_FAILED, result.getCode());
@@ -355,7 +355,7 @@ class HistoryJournalUndoRedoTest {
 
     HistoryRestoreResult result;
     try {
-      result = journal.undo(null);
+      result = journal.undo();
     } finally {
       Files.setPosixFilePermissions(store, PosixFilePermissions.fromString("rwx------"));
     }
@@ -374,7 +374,7 @@ class HistoryJournalUndoRedoTest {
     addWrite(journal, view, toBytes("two\n"));
     write(view, toBytes("edited in the IDE\n"));
 
-    HistoryRestoreResult result = journal.undo(null);
+    HistoryRestoreResult result = journal.undo();
 
     assertFalse(result.isDone());
     assertEquals(HistoryRestoreResult.Code.FILE_CHANGED, result.getCode());
@@ -390,10 +390,10 @@ class HistoryJournalUndoRedoTest {
   void shouldRefuseRedoAfterOutsideChange() throws IOException {
     write(view, toBytes("one\n"));
     addWrite(journal, view, toBytes("two\n"));
-    journal.undo(null);
+    journal.undo();
     write(view, toBytes("edited in the IDE\n"));
 
-    HistoryRestoreResult result = journal.redo(null);
+    HistoryRestoreResult result = journal.redo();
 
     assertEquals(HistoryRestoreResult.Code.FILE_CHANGED, result.getCode());
     assertEquals(List.of(view.toString()), result.getFiles());
@@ -411,7 +411,7 @@ class HistoryJournalUndoRedoTest {
       }
     }
 
-    HistoryRestoreResult result = journal.undo(null);
+    HistoryRestoreResult result = journal.undo();
 
     assertEquals(HistoryRestoreResult.Code.SNAPSHOT_MISSING, result.getCode());
     assertArrayEquals(toBytes("two\n"), Files.readAllBytes(view));
@@ -434,7 +434,7 @@ class HistoryJournalUndoRedoTest {
     Files.setPosixFilePermissions(folder, PosixFilePermissions.fromString("r-x------"));
 
     try {
-      HistoryRestoreResult result = journal.undo(null);
+      HistoryRestoreResult result = journal.undo();
 
       assertEquals(HistoryRestoreResult.Code.RESTORE_FAILED, result.getCode());
       assertArrayEquals(toBytes("two\n"), Files.readAllBytes(view));
@@ -456,7 +456,7 @@ class HistoryJournalUndoRedoTest {
 
     HistoryRestoreResult result;
     try {
-      result = journal.undo(null);
+      result = journal.undo();
     } finally {
       Files.setPosixFilePermissions(store, PosixFilePermissions.fromString("rwx------"));
     }
@@ -492,7 +492,7 @@ class HistoryJournalUndoRedoTest {
 
           return invocation.callRealMethod();
         })) {
-      result = journal.undo(null);
+      result = journal.undo();
     } finally {
       Files.setPosixFilePermissions(store, PosixFilePermissions.fromString("rwx------"));
     }

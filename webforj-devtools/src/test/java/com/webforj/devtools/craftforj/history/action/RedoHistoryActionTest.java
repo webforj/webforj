@@ -58,7 +58,7 @@ class RedoHistoryActionTest {
     @Test
     @DisplayName("Should redo the most recently undone step")
     void shouldRedoUndoneStep() throws IOException {
-      assertTrue(journal.undo(null).isDone());
+      assertTrue(journal.undo().isDone());
 
       assertTrue(new RedoHistoryAction(journal).handle(new JsonObject()).isDone());
       assertArrayEquals("two\n".getBytes(StandardCharsets.UTF_8), Files.readAllBytes(file));
@@ -77,15 +77,15 @@ class RedoHistoryActionTest {
     }
 
     @Test
-    @DisplayName("Should take the most recently undone step when a request names no entry or a null "
-        + "one")
+    @DisplayName("Should take the most recently undone step when a request names no entry or a "
+        + "null one")
     void shouldTakeNewestWithoutEntryId() throws IOException {
       JsonObject none = new JsonObject();
       none.add("id", JsonNull.INSTANCE);
 
-      assertTrue(journal.undo(null).isDone());
+      assertTrue(journal.undo().isDone());
       assertTrue(new RedoHistoryAction(journal).handle(none).isDone());
-      assertTrue(journal.undo(null).isDone());
+      assertTrue(journal.undo().isDone());
       assertTrue(new RedoHistoryAction(journal).handle(null).isDone());
       assertArrayEquals("two\n".getBytes(StandardCharsets.UTF_8), Files.readAllBytes(file));
     }
@@ -95,7 +95,7 @@ class RedoHistoryActionTest {
     void shouldRefuseEntryIdThatIsNoNumber() throws IOException {
       JsonObject odd = new JsonObject();
       odd.add("id", new JsonObject());
-      assertTrue(journal.undo(null).isDone());
+      assertTrue(journal.undo().isDone());
 
       HistoryRestoreResult result = new RedoHistoryAction(journal).handle(odd);
 
@@ -110,7 +110,7 @@ class RedoHistoryActionTest {
     void shouldRefuseEntryIdThatIsText() throws IOException {
       JsonObject text = new JsonObject();
       text.addProperty("id", "abc");
-      assertTrue(journal.undo(null).isDone());
+      assertTrue(journal.undo().isDone());
 
       HistoryRestoreResult result = new RedoHistoryAction(journal).handle(text);
 

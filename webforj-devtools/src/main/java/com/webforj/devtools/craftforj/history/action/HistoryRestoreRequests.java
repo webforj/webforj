@@ -6,7 +6,8 @@ import com.webforj.devtools.craftforj.history.HistoryJournal;
 import com.webforj.devtools.craftforj.history.model.HistoryRestoreResult;
 import com.webforj.devtools.craftforj.history.model.HistoryRestoreResult.Code;
 import java.util.OptionalLong;
-import java.util.function.Function;
+import java.util.function.LongFunction;
+import java.util.function.Supplier;
 
 /**
  * Handles the requests of the undo and the redo action.
@@ -25,15 +26,16 @@ final class HistoryRestoreRequests {
    *
    * @param params the request parameters
    * @param journal the journal of the application
-   * @param step the undo or the redo, given the id of the step or {@code null} for the next one
    * @param refusal the code a request with an id that is not a whole number is refused with
+   * @param next the undo or the redo of the next step
+   * @param step the undo or the redo of the step the request names
    * @return the outcome
    */
-  static HistoryRestoreResult handle(JsonObject params, HistoryJournal journal,
-      Function<Long, HistoryRestoreResult> step, Code refusal) {
+  static HistoryRestoreResult handle(JsonObject params, HistoryJournal journal, Code refusal,
+      Supplier<HistoryRestoreResult> next, LongFunction<HistoryRestoreResult> step) {
     JsonElement named = params == null ? null : params.get(PARAM_ID);
     if (named == null || named.isJsonNull()) {
-      return step.apply(null);
+      return next.get();
     }
 
     OptionalLong entryId = readEntryId(named);

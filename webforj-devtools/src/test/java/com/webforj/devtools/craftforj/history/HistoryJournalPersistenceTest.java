@@ -62,7 +62,7 @@ class HistoryJournalPersistenceTest {
     HistoryJournal reloaded = new HistoryJournal(store);
 
     assertEquals(1, reloaded.getInfo().getEntries().size());
-    assertTrue(reloaded.undo(null).isDone());
+    assertTrue(reloaded.undo().isDone());
     assertArrayEquals(toBytes("one\n"), Files.readAllBytes(view));
     assertEquals(1, journal.getInfo().getEntries().size());
     assertFalse(journal.getInfo().getEntries().get(0).isApplied());
@@ -79,8 +79,8 @@ class HistoryJournalPersistenceTest {
     assertNotNull(id);
     addWrite(journal, view, toBytes("three\n"));
     assertEquals(id, journal.getInfo().getJournalId());
-    assertEquals(id, journal.undo(null).getJournal().getJournalId());
-    assertEquals(id, journal.redo(null).getJournal().getJournalId());
+    assertEquals(id, journal.undo().getJournal().getJournalId());
+    assertEquals(id, journal.redo().getJournal().getJournalId());
     long newest = journal.getInfo().getEntries().get(0).getId();
     assertEquals(id, journal.remove(List.of(newest)).getJournalId());
     assertEquals(id, new HistoryJournal(store).getInfo().getJournalId());
@@ -92,7 +92,7 @@ class HistoryJournalPersistenceTest {
   void shouldChangeJournalIdAfterFolderRemoved() throws IOException {
     write(view, toBytes("one\n"));
     addWrite(journal, view, toBytes("two\n"));
-    String before = journal.getInfo().getJournalId();
+    final String before = journal.getInfo().getJournalId();
     try (Stream<Path> files = Files.walk(store)) {
       for (Path file : files.sorted(Comparator.reverseOrder()).toList()) {
         Files.delete(file);
@@ -122,7 +122,7 @@ class HistoryJournalPersistenceTest {
     assertNull(journal.getInfo().getJournalId());
     assertEquals(1, journal.getInfo().getEntries().size());
 
-    String id = journal.undo(null).getJournal().getJournalId();
+    String id = journal.undo().getJournal().getJournalId();
 
     assertNotNull(id);
     assertEquals(id, journal.getInfo().getJournalId());
@@ -195,7 +195,7 @@ class HistoryJournalPersistenceTest {
 
     assertEquals(1, info.getEntries().size());
     assertEquals(List.of(view.toString()), getPaths(info.getEntries().get(0)));
-    assertTrue(journal.undo(null).isDone());
+    assertTrue(journal.undo().isDone());
     assertArrayEquals(toBytes("one\n"), Files.readAllBytes(view));
   }
 
@@ -206,7 +206,7 @@ class HistoryJournalPersistenceTest {
     Files.writeString(blocked, "not a directory");
     HistoryJournal unusable = new HistoryJournal(blocked);
 
-    HistoryRestoreResult undo = unusable.undo(null);
+    HistoryRestoreResult undo = unusable.undo();
 
     assertNull(unusable.getInfo());
     assertNull(unusable.remove(List.of(1L)));
@@ -219,7 +219,7 @@ class HistoryJournalPersistenceTest {
   void shouldAnswerNoJournalWhenJournalIsUnreadable() throws IOException {
     Files.createDirectories(store.resolve("journal.json"));
 
-    HistoryRestoreResult undo = journal.undo(null);
+    HistoryRestoreResult undo = journal.undo();
 
     assertNull(journal.getInfo());
     assertEquals(HistoryRestoreResult.Code.RESTORE_FAILED, undo.getCode());
@@ -384,7 +384,7 @@ class HistoryJournalPersistenceTest {
       addWrite(journal, view, toBytes(step + "\n"));
     }
     for (int step = 0; step < 10; step++) {
-      assertTrue(journal.undo(null).isDone());
+      assertTrue(journal.undo().isDone());
     }
 
     HistoryJournalInfo info;
@@ -395,7 +395,7 @@ class HistoryJournalPersistenceTest {
       files.verify(() -> Files.readAllBytes(view), times(0));
       files.clearInvocations();
 
-      undo = journal.undo(null);
+      undo = journal.undo();
 
       files.verify(() -> Files.readAllBytes(view), times(2));
     }

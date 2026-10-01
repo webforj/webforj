@@ -109,11 +109,11 @@ class HistoryJournalSeveralWritersTest {
     for (int position = written.size() - 1; position >= 0; position--) {
       HistoryJournal target = position % 2 == 0 ? first : second;
 
-      assertTrue(target.undo(null).isDone());
+      assertTrue(target.undo().isDone());
       assertArrayEquals(toBytes(position == 0 ? "start\n" : written.get(position - 1)),
           Files.readAllBytes(view));
     }
-    assertEquals(HistoryRestoreResult.Code.NOTHING_TO_UNDO, second.undo(null).getCode());
+    assertEquals(HistoryRestoreResult.Code.NOTHING_TO_UNDO, second.undo().getCode());
     assertTrue(isLockFree(store));
     assertNotNull(new HistoryJournal(store, 100, 50).getInfo());
   }
@@ -150,7 +150,7 @@ class HistoryJournalSeveralWritersTest {
     assertEquals(100, entries.stream().map(HistoryEntryInfo::getId).distinct().count());
     int[] left = {50, 50};
     for (int step = 0; step < 100; step++) {
-      HistoryRestoreResult result = journals.get(step % 2).undo(null);
+      HistoryRestoreResult result = journals.get(step % 2).undo();
       int index = files.get(0).toString().equals(result.getFiles().get(0)) ? 0 : 1;
       left[index]--;
 
@@ -160,7 +160,7 @@ class HistoryJournalSeveralWritersTest {
               left[index] == 0 ? "start " + index + "\n" : written.get(index).get(left[index] - 1)),
           Files.readAllBytes(files.get(index)));
     }
-    assertEquals(HistoryRestoreResult.Code.NOTHING_TO_UNDO, journals.get(1).undo(null).getCode());
+    assertEquals(HistoryRestoreResult.Code.NOTHING_TO_UNDO, journals.get(1).undo().getCode());
     assertTrue(isLockFree(store));
     assertNotNull(new HistoryJournal(store, 100, 50).getInfo());
   }
@@ -188,7 +188,7 @@ class HistoryJournalSeveralWritersTest {
 
     HistoryJournal undoing = new HistoryJournal(store);
     CompletableFuture<HistoryRestoreResult> undo =
-        CompletableFuture.supplyAsync(() -> undoing.undo(null));
+        CompletableFuture.supplyAsync(() -> undoing.undo());
 
     assertThrows(TimeoutException.class, () -> undo.get(300, TimeUnit.MILLISECONDS));
     assertArrayEquals(toBytes("three\n"), Files.readAllBytes(view));
@@ -319,7 +319,7 @@ class HistoryJournalSeveralWritersTest {
     holding.await();
 
     try {
-      HistoryRestoreResult busy = impatient.undo(null);
+      HistoryRestoreResult busy = impatient.undo();
 
       assertEquals(HistoryRestoreResult.Code.BUSY, busy.getCode());
       assertNull(busy.getJournal());
@@ -329,7 +329,7 @@ class HistoryJournalSeveralWritersTest {
       holder.join();
     }
 
-    assertTrue(impatient.undo(null).isDone());
+    assertTrue(impatient.undo().isDone());
     assertTrue(isLockFree(store));
   }
 }

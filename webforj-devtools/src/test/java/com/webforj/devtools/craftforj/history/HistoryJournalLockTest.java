@@ -31,7 +31,9 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -84,7 +86,7 @@ class HistoryJournalLockTest {
 
   @Test
   @DisplayName("Should let exactly one of two journals hold the journal at a time")
-  void shouldLetOneJournalHoldAtATime() throws Exception {
+  void shouldLetOneJournalHoldAtOnce() throws Exception {
     AtomicInteger holders = new AtomicInteger();
     AtomicInteger most = new AtomicInteger();
     write(view, toBytes("one\n"));
@@ -101,11 +103,7 @@ class HistoryJournalLockTest {
           }
           addStep(target, List.of(view), () -> {
             most.accumulateAndGet(holders.incrementAndGet(), Math::max);
-            try {
-              Thread.sleep(2);
-            } catch (InterruptedException e) {
-              Thread.currentThread().interrupt();
-            }
+            Thread.yield();
             holders.decrementAndGet();
             return null;
           });
@@ -193,7 +191,7 @@ class HistoryJournalLockTest {
     try {
       assertEquals("held", readLine(holder));
 
-      HistoryRestoreResult busy = new HistoryJournal(store, 100, 50).undo(null);
+      HistoryRestoreResult busy = new HistoryJournal(store, 100, 50).undo();
 
       assertEquals(HistoryRestoreResult.Code.BUSY, busy.getCode());
       assertArrayEquals(toBytes("two\n"), Files.readAllBytes(view));
@@ -201,7 +199,7 @@ class HistoryJournalLockTest {
       stopLockProgram(holder);
     }
 
-    assertTrue(journal.undo(null).isDone());
+    assertTrue(journal.undo().isDone());
     assertTrue(Files.exists(getLockFile(store)));
   }
 
@@ -215,10 +213,9 @@ class HistoryJournalLockTest {
     try {
       assertEquals("held", readLine(holder));
 
-      undo = CompletableFuture.supplyAsync(() -> journal.undo(null));
-      Thread.sleep(300);
+      undo = CompletableFuture.supplyAsync(() -> journal.undo());
 
-      assertFalse(undo.isDone());
+      assertThrows(TimeoutException.class, () -> undo.get(300, TimeUnit.MILLISECONDS));
       assertArrayEquals(toBytes("two\n"), Files.readAllBytes(view));
     } finally {
       stopLockProgram(holder);
@@ -234,7 +231,7 @@ class HistoryJournalLockTest {
   void shouldLeaveLockFreeForOtherProcess() throws Exception {
     write(view, toBytes("one\n"));
     addWrite(journal, view, toBytes("two\n"));
-    assertTrue(journal.undo(null).isDone());
+    assertTrue(journal.undo().isDone());
 
     Process probe = startLockProgram("probe");
 
@@ -249,7 +246,7 @@ class HistoryJournalLockTest {
     addWrite(journal, view, toBytes("two\n"));
     write(view, toBytes("outside\n"));
 
-    assertEquals(HistoryRestoreResult.Code.FILE_CHANGED, journal.undo(null).getCode());
+    assertEquals(HistoryRestoreResult.Code.FILE_CHANGED, journal.undo().getCode());
     assertTrue(isLockFree(store));
   }
 
@@ -258,10 +255,13 @@ class HistoryJournalLockTest {
   void shouldReleaseLockOnError() throws IOException {
     write(view, toBytes("one\n"));
 
-    assertThrows(WriteError.class, () -> addStep(journal, List.of(view), () -> {
+    List<Path> files = List.of(view);
+    Supplier<Object> failing = () -> {
       write(view, toBytes("two\n"));
       throw new WriteError();
-    }));
+    };
+
+    assertThrows(WriteError.class, () -> addStep(journal, files, failing));
 
     assertTrue(isLockFree(store));
     assertEquals(1, journal.getInfo().getEntries().size());
@@ -272,8 +272,8 @@ class HistoryJournalLockTest {
   void shouldRefuseRedoThatWaitedForStep() throws Exception {
     write(view, toBytes("one\n"));
     addWrite(journal, view, toBytes("two\n"));
-    long undone = journal.getInfo().getEntries().get(0).getId();
-    assertTrue(journal.undo(null).isDone());
+    final long undone = journal.getInfo().getEntries().get(0).getId();
+    assertTrue(journal.undo().isDone());
     HistoryJournal recording = new HistoryJournal(store);
     HistoryJournal redoing = new HistoryJournal(store);
     CountDownLatch holding = new CountDownLatch(1);
@@ -293,9 +293,8 @@ class HistoryJournalLockTest {
 
     CompletableFuture<HistoryRestoreResult> redo =
         CompletableFuture.supplyAsync(() -> redoing.redo(undone));
-    Thread.sleep(200);
 
-    assertFalse(redo.isDone());
+    assertThrows(TimeoutException.class, () -> redo.get(200, TimeUnit.MILLISECONDS));
 
     release.countDown();
     holder.join();

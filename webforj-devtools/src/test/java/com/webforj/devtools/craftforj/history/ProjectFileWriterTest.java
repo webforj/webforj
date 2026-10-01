@@ -150,7 +150,7 @@ class ProjectFileWriterTest {
       Files.writeString(file, "a {}\n");
       Files.setPosixFilePermissions(file, PosixFilePermissions.fromString("rw-rw-r--"));
       HistoryJournal journal = new HistoryJournal(project.resolve("journal"));
-      HistoryStep step = journal.openStep();
+      final HistoryStep step = journal.openStep();
       byte[] content = "\uFEFFb {}\r\n".getBytes(StandardCharsets.UTF_8);
 
       ProjectFileWriter.reset(file, content, null);
@@ -164,7 +164,8 @@ class ProjectFileWriterTest {
     }
 
     @Test
-    @DisplayName("Should restore a missing file with the mode it is given and delete for no content")
+    @DisplayName("Should restore a missing file with the mode it is given and delete for no "
+        + "content")
     void shouldRestoreMissingFileWithMode() throws IOException {
       assumeTrue(isPosix());
       Path file = project.resolve("src/New.java");
@@ -238,14 +239,15 @@ class ProjectFileWriterTest {
   class Step {
 
     @Test
-    @DisplayName("Should give the open step each file before it changes, and no other thread's file")
+    @DisplayName("Should give the open step each file before it changes, and no other thread's "
+        + "file")
     void shouldGiveStepFilesBeforeChange() throws Exception {
       Path file = project.resolve("View.java");
       Path sheet = project.resolve("app.css");
-      Path other = project.resolve("Other.java");
+      final Path other = project.resolve("Other.java");
       Files.writeString(file, "one\n");
       HistoryJournal journal = new HistoryJournal(project.resolve("journal"));
-      HistoryStep step = journal.openStep();
+      final HistoryStep step = journal.openStep();
 
       ProjectFileWriter.write(file, "two\n");
       ProjectFileWriter.writeAtomic(sheet, "a {}\n");

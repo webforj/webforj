@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.List;
+import java.util.function.Supplier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -100,10 +101,13 @@ class HistoryJournalRecordTest {
   void shouldRecordFailingWrite() {
     write(view, toBytes("class View {}\n"));
 
-    assertThrows(IllegalStateException.class, () -> addStep(journal, List.of(view), () -> {
+    List<Path> files = List.of(view);
+    Supplier<Object> failing = () -> {
       write(view, toBytes("class View { int a; }\n"));
       throw new IllegalStateException("boom");
-    }));
+    };
+
+    assertThrows(IllegalStateException.class, () -> addStep(journal, files, failing));
 
     assertEquals(1, journal.getInfo().getEntries().size());
   }
@@ -114,8 +118,8 @@ class HistoryJournalRecordTest {
     write(view, toBytes("one\n"));
     addWrite(journal, view, toBytes("two\n"));
     addWrite(journal, view, toBytes("three\n"));
-    long undone = journal.getInfo().getEntries().get(0).getId();
-    assertTrue(journal.undo(null).isDone());
+    final long undone = journal.getInfo().getEntries().get(0).getId();
+    assertTrue(journal.undo().isDone());
 
     addWrite(journal, view, toBytes("four\n"));
 
