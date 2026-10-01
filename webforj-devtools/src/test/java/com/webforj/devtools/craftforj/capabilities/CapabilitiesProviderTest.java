@@ -14,6 +14,7 @@ import com.typesafe.config.ConfigFactory;
 import com.webforj.App;
 import com.webforj.Environment;
 import com.webforj.devtools.craftforj.ai.AiAssistantCapability;
+import com.webforj.devtools.craftforj.history.HistoryCapability;
 import com.webforj.devtools.craftforj.inspector.source.SourceFreeformChangesCapability;
 import com.webforj.devtools.craftforj.source.SourceChangesCapability;
 import com.webforj.devtools.craftforj.styles.StylesheetChangesCapability;
@@ -180,19 +181,19 @@ class CapabilitiesProviderTest {
     void shouldLoadDeclaredServicesInFileOrder() {
       List<CraftforjCapability> declared = CapabilitiesProvider.loadCapabilities();
 
-      assertEquals(4, declared.size());
+      assertEquals(5, declared.size());
       assertEquals(SourceChangesCapability.class, declared.get(0).getClass());
       assertEquals(StylesheetChangesCapability.class, declared.get(1).getClass());
       assertEquals(AiAssistantCapability.class, declared.get(2).getClass());
       assertEquals(SourceFreeformChangesCapability.class, declared.get(3).getClass());
+      assertEquals(HistoryCapability.class, declared.get(4).getClass());
     }
 
     @Test
     @DisplayName("Should announce every declared capability on an empty configuration")
     void shouldAnnounceEveryCapabilityOnEmptyConfiguration() {
-      assertEquals(
-          List.of(SourceChangesCapability.KEY, StylesheetChangesCapability.KEY,
-              AiAssistantCapability.KEY, SourceFreeformChangesCapability.KEY),
+      assertEquals(List.of(SourceChangesCapability.KEY, StylesheetChangesCapability.KEY,
+          AiAssistantCapability.KEY, SourceFreeformChangesCapability.KEY, HistoryCapability.KEY),
           getAnnouncedFor(mock(App.class), ""));
     }
 
@@ -202,9 +203,8 @@ class CapabilitiesProviderTest {
       try (MockedStatic<Environment> mocked = mockStatic(Environment.class)) {
         mocked.when(Environment::getCurrent).thenReturn(null);
 
-        assertEquals(
-            List.of(SourceChangesCapability.KEY, StylesheetChangesCapability.KEY,
-                AiAssistantCapability.KEY, SourceFreeformChangesCapability.KEY),
+        assertEquals(List.of(SourceChangesCapability.KEY, StylesheetChangesCapability.KEY,
+            AiAssistantCapability.KEY, SourceFreeformChangesCapability.KEY, HistoryCapability.KEY),
             new CapabilitiesProvider(mock(App.class), true).getCapabilities());
       }
     }
@@ -214,8 +214,8 @@ class CapabilitiesProviderTest {
     void shouldDropAssistantAndFreeformWhenAssistantOff() {
       String hocon = AiAssistantCapability.CONFIG_KEY + " = false";
 
-      assertEquals(List.of(SourceChangesCapability.KEY, StylesheetChangesCapability.KEY),
-          getAnnouncedFor(mock(App.class), hocon));
+      assertEquals(List.of(SourceChangesCapability.KEY, StylesheetChangesCapability.KEY,
+          HistoryCapability.KEY), getAnnouncedFor(mock(App.class), hocon));
     }
 
     @Test
@@ -223,8 +223,8 @@ class CapabilitiesProviderTest {
     void shouldDropSourceAndFreeformWhenSourceChangesOff() {
       String hocon = SourceChangesCapability.CONFIG_KEY + " = false";
 
-      assertEquals(List.of(StylesheetChangesCapability.KEY, AiAssistantCapability.KEY),
-          getAnnouncedFor(mock(App.class), hocon));
+      assertEquals(List.of(StylesheetChangesCapability.KEY, AiAssistantCapability.KEY,
+          HistoryCapability.KEY), getAnnouncedFor(mock(App.class), hocon));
     }
 
     @Test
@@ -232,8 +232,10 @@ class CapabilitiesProviderTest {
     void shouldDropOnlyFreeformWhenFreeformSwitchOff() {
       String hocon = SourceFreeformChangesCapability.CONFIG_KEY + " = false";
 
-      assertEquals(List.of(SourceChangesCapability.KEY, StylesheetChangesCapability.KEY,
-          AiAssistantCapability.KEY), getAnnouncedFor(mock(App.class), hocon));
+      assertEquals(
+          List.of(SourceChangesCapability.KEY, StylesheetChangesCapability.KEY,
+              AiAssistantCapability.KEY, HistoryCapability.KEY),
+          getAnnouncedFor(mock(App.class), hocon));
     }
 
     @Test
@@ -248,8 +250,21 @@ class CapabilitiesProviderTest {
           }
           """;
 
-      assertEquals(List.of(StylesheetChangesCapability.KEY, AiAssistantCapability.KEY),
-          getAnnouncedFor(new KotlinApp(), hocon));
+      assertEquals(List.of(StylesheetChangesCapability.KEY, AiAssistantCapability.KEY,
+          HistoryCapability.KEY), getAnnouncedFor(new KotlinApp(), hocon));
+    }
+
+    @Test
+    @DisplayName("Should drop the history when no write is offered")
+    void shouldDropHistoryWithoutWrites() {
+      String hocon = """
+          webforj.devtools.craftforj {
+            source-changes = false
+            stylesheet-changes = false
+          }
+          """;
+
+      assertEquals(List.of(AiAssistantCapability.KEY), getAnnouncedFor(mock(App.class), hocon));
     }
   }
 

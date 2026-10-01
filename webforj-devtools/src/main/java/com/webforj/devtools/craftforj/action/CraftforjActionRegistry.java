@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.webforj.Page;
 import com.webforj.PendingResult;
+import com.webforj.devtools.craftforj.history.HistoryJournal;
+import com.webforj.devtools.craftforj.history.HistoryStep;
 import com.webforj.devtools.craftforj.security.ChannelCredentials;
 import com.webforj.event.page.PageEvent;
 import java.lang.System.Logger;
@@ -28,6 +30,7 @@ public class CraftforjActionRegistry {
   private static final Gson GSON = new GsonBuilder().serializeNulls().create();
   private final Map<String, CraftforjActionHandler<?>> handlers = new ConcurrentHashMap<>();
   private final ChannelCredentials credentials;
+  private HistoryJournal history;
 
   /**
    * Creates a registry bound to the given channel credentials.
@@ -49,6 +52,15 @@ public class CraftforjActionRegistry {
     if (handlers.putIfAbsent(action, handler) != null) {
       throw new IllegalArgumentException("Handler already registered for action: " + action);
     }
+  }
+
+  /**
+   * Sets the journal every request records its project file changes in.
+   *
+   * @param history the journal, or {@code null} to record nothing
+   */
+  public void setHistory(HistoryJournal history) {
+    this.history = history;
   }
 
   /**
@@ -104,14 +116,30 @@ public class CraftforjActionRegistry {
 
   private CraftforjResponse executeHandler(Page page, CraftforjRequest request) {
     String action = request.getAction();
-    boolean debug = LOGGER.isLoggable(Level.DEBUG);
-
     CraftforjActionHandler<?> handler = action == null ? null : handlers.get(action);
     if (handler == null) {
       LOGGER.log(Level.WARNING, "Unknown action: {0}", action);
       return CraftforjResponse.error(request.getRequestId(), "Unknown action: " + action);
     }
 
+    HistoryStep step = history == null ? null : history.openStep();
+    CraftforjResponse response = null;
+    try {
+      response = handleRequest(page, request, handler);
+    } finally {
+      Long historyId = step == null ? null : step.close();
+      if (response != null) {
+        response.setHistoryId(historyId);
+      }
+    }
+
+    return response;
+  }
+
+  private CraftforjResponse handleRequest(Page page, CraftforjRequest request,
+      CraftforjActionHandler<?> handler) {
+    String action = request.getAction();
+    boolean debug = LOGGER.isLoggable(Level.DEBUG);
     if (debug) {
       LOGGER.log(Level.DEBUG, ">>> {0} params={1}", action, request.getParams());
     }

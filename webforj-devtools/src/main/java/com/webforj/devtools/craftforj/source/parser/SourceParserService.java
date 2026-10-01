@@ -42,8 +42,8 @@ public final class SourceParserService {
   private static final int CACHE_CAPACITY = 32;
   private static final DataKey<Map<BlockStmt, String>> BLOCK_INDENTS = new DataKey<>() {};
 
-  private final JavaParser parser;
-  private final JavaParser lexicalParser;
+  private final ParserConfiguration configuration;
+  private final ParserConfiguration lexicalConfiguration;
   // Bounded and instance scoped: the entries die with the service, and the eldest file is evicted
   // past the cap, so a long session can never accumulate compilation units.
   private final Map<Path, CachedUnit> cache =
@@ -58,11 +58,9 @@ public final class SourceParserService {
    * Creates a new parser service.
    */
   public SourceParserService() {
-    this.parser = new JavaParser(ParserConfigurations.create());
-
-    ParserConfiguration lexicalConfig = ParserConfigurations.create();
-    lexicalConfig.setLexicalPreservationEnabled(true);
-    this.lexicalParser = new JavaParser(lexicalConfig);
+    this.configuration = ParserConfigurations.create();
+    this.lexicalConfiguration = ParserConfigurations.create();
+    this.lexicalConfiguration.setLexicalPreservationEnabled(true);
   }
 
   /**
@@ -114,7 +112,7 @@ public final class SourceParserService {
    * Parses source code.
    */
   public Optional<CompilationUnit> parse(String content) {
-    ParseResult<CompilationUnit> result = parser.parse(content);
+    ParseResult<CompilationUnit> result = createParser().parse(content);
     return result.getResult();
   }
 
@@ -125,7 +123,7 @@ public final class SourceParserService {
    * @return the parse result carrying either the unit or its problems
    */
   public ParseResult<CompilationUnit> parseWithProblems(String content) {
-    return parser.parse(content == null ? "" : content);
+    return createParser().parse(content == null ? "" : content);
   }
 
   /**
@@ -136,7 +134,7 @@ public final class SourceParserService {
    */
   public Statement parseStatement(String code) {
     try {
-      ParseResult<Statement> result = parser.parseStatement(code);
+      ParseResult<Statement> result = createParser().parseStatement(code);
 
       return result.isSuccessful() ? result.getResult().orElse(null) : null;
     } catch (Exception e) {
@@ -151,7 +149,7 @@ public final class SourceParserService {
    * @return the parsed file, or empty when the source has a syntax error
    */
   public Optional<CompilationUnit> parseWithLexicalPreservation(String content) {
-    ParseResult<CompilationUnit> result = lexicalParser.parse(content);
+    ParseResult<CompilationUnit> result = new JavaParser(lexicalConfiguration).parse(content);
     if (!result.isSuccessful()) {
       return Optional.empty();
     }
@@ -259,7 +257,7 @@ public final class SourceParserService {
         .noneMatch(block -> block.getStatements().isEmpty() && indents.containsKey(block))) {
       return printed;
     }
-    Optional<CompilationUnit> reparsed = parser.parse(printed).getResult();
+    Optional<CompilationUnit> reparsed = createParser().parse(printed).getResult();
     if (reparsed.isEmpty()) {
       return printed;
     }
@@ -291,8 +289,12 @@ public final class SourceParserService {
     return target;
   }
 
+  private JavaParser createParser() {
+    return new JavaParser(configuration);
+  }
+
   /**
-   * Lazy holder so the parsers are only built when the service is first used.
+   * Lazy holder so the service is only built when it is first used.
    *
    * @author Hyyan Abo Fakher
    * @since 26.02

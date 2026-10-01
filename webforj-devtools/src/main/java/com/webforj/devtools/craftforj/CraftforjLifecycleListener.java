@@ -12,6 +12,12 @@ import com.webforj.devtools.craftforj.appinfo.action.GetAppInfoAction;
 import com.webforj.devtools.craftforj.capabilities.CapabilitiesProvider;
 import com.webforj.devtools.craftforj.capabilities.action.GetCapabilitiesAction;
 import com.webforj.devtools.craftforj.docs.action.GetDocsAction;
+import com.webforj.devtools.craftforj.history.HistoryCapability;
+import com.webforj.devtools.craftforj.history.HistoryJournal;
+import com.webforj.devtools.craftforj.history.action.GetHistoryAction;
+import com.webforj.devtools.craftforj.history.action.RedoHistoryAction;
+import com.webforj.devtools.craftforj.history.action.RemoveHistoryAction;
+import com.webforj.devtools.craftforj.history.action.UndoHistoryAction;
 import com.webforj.devtools.craftforj.icons.action.GetIconPoolsAction;
 import com.webforj.devtools.craftforj.icons.action.ResolveIconPoolAction;
 import com.webforj.devtools.craftforj.inspector.action.ApplyChangesAction;
@@ -86,13 +92,14 @@ public class CraftforjLifecycleListener implements AppLifecycleListener {
   private static final Map<String, String> scriptCache = new ConcurrentHashMap<>();
   private final ModuleStore moduleStore = new ModuleStore();
   private final ActiveRouteTracker activeRouteTracker;
+  private final Path historyHome;
   private CraftforjActionRegistry actionRegistry;
 
   /**
    * Creates a new CraftforjLifecycleListener with default dependencies.
    */
   public CraftforjLifecycleListener() {
-    this(null, new ActiveRouteTracker());
+    this(null, new ActiveRouteTracker(), Path.of(System.getProperty("user.home")));
   }
 
   /**
@@ -100,11 +107,13 @@ public class CraftforjLifecycleListener implements AppLifecycleListener {
    *
    * @param actionRegistry the action registry, or {@code null} to build one per page
    * @param activeRouteTracker the active route tracker
+   * @param historyHome the home the undo and redo journals live under
    */
   CraftforjLifecycleListener(CraftforjActionRegistry actionRegistry,
-      ActiveRouteTracker activeRouteTracker) {
+      ActiveRouteTracker activeRouteTracker, Path historyHome) {
     this.actionRegistry = actionRegistry;
     this.activeRouteTracker = activeRouteTracker;
+    this.historyHome = historyHome;
   }
 
   /**
@@ -194,6 +203,15 @@ public class CraftforjLifecycleListener implements AppLifecycleListener {
 
       actionRegistry.register(new GetSourceAction());
       actionRegistry.register(new GetBeanInfoAction());
+
+      if (capabilitiesProvider.isSupported(HistoryCapability.KEY)) {
+        HistoryJournal journal = HistoryJournal.create(historyHome, projectRoot, app.getClass());
+        actionRegistry.setHistory(journal);
+        actionRegistry.register(new GetHistoryAction(journal));
+        actionRegistry.register(new UndoHistoryAction(journal));
+        actionRegistry.register(new RedoHistoryAction(journal));
+        actionRegistry.register(new RemoveHistoryAction(journal));
+      }
 
       if (capabilitiesProvider.isSupported(SourceChangesCapability.KEY)) {
         actionRegistry.register(new ApplyChangesAction());
