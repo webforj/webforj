@@ -29,7 +29,8 @@ replay_pid*
 *.iml
 /.project
 /.classpath
-/.claude
+/.claude/*
+!/.claude/skills
 **/sample/
 
 .gradle/
