@@ -1,6 +1,7 @@
 package com.webforj.devtools.craftforj.source;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.webforj.devtools.craftforj.history.ProjectFileWriter;
 import com.webforj.devtools.craftforj.source.model.FilePatch;
 import com.webforj.devtools.craftforj.source.parser.ImportWriter;
 import com.webforj.devtools.craftforj.source.parser.SourceParserService;
@@ -86,7 +87,7 @@ public class SourceFileEditor {
 
   private void writeSource(Path file, String content) throws IOException {
     try {
-      Files.writeString(file, content);
+      ProjectFileWriter.write(file, content);
     } catch (IOException e) {
       throw new IOException("Failed to write source file: " + file, e);
     }

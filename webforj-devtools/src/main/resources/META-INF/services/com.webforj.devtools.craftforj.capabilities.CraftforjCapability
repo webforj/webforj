@@ -2,3 +2,4 @@ com.webforj.devtools.craftforj.source.SourceChangesCapability
 com.webforj.devtools.craftforj.styles.StylesheetChangesCapability
 com.webforj.devtools.craftforj.ai.AiAssistantCapability
 com.webforj.devtools.craftforj.inspector.source.SourceFreeformChangesCapability
+com.webforj.devtools.craftforj.history.HistoryCapability

@@ -13,8 +13,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -49,6 +54,42 @@ class SourceParserServiceTest {
 
       assertTrue(result.isPresent());
       assertEquals("com.example", result.get().getPackageDeclaration().get().getNameAsString());
+    }
+
+    @Test
+    @DisplayName("parses for several sessions at the same time")
+    void shouldParseFromSeveralThreads() throws Exception {
+      String code = """
+          package com.example;
+          public class View {
+            public View() {
+              Button first = new Button("First");
+              Button second = new Button("Second");
+              TextField third = new TextField("Third");
+              add(first, second, third);
+            }
+          }
+          """;
+      ExecutorService sessions = Executors.newFixedThreadPool(8);
+      try {
+        List<Future<Integer>> parses = new ArrayList<>();
+        for (int session = 0; session < 8; session++) {
+          parses.add(sessions.submit(() -> {
+            int parsed = 0;
+            for (int round = 0; round < 200; round++) {
+              parsed += service.parse(code).isPresent() ? 1 : 0;
+            }
+
+            return parsed;
+          }));
+        }
+
+        for (Future<Integer> parse : parses) {
+          assertEquals(200, parse.get());
+        }
+      } finally {
+        sessions.shutdownNow();
+      }
     }
 
     @Test

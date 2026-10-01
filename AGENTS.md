@@ -47,6 +47,7 @@ Every change goes through these steps in order. None is skipped because the chan
    - Fix the shared cause in the layer that owns it. No one off normalizers, no special cases. Guards are generic.
    - Design race and lifecycle problems out (read the new state fully, then swap it in) instead of a boolean that drops work.
    - Code with no production caller is removed with the tests that only exercised it.
+   - Every change cleans up after itself in the same change: code, branches, types, keys, strings, specs and notes that the change made dead or stale are removed. Nothing is left dangling.
    - Existing public signatures and behaviour stay unless a demonstrated defect and the maintainer's decision say otherwise.
    - Then run `reviewing-java` over every touched class.
 6. **Verify.** Load `verifying-changes`. Formatter, module verify, exit codes read, then proof in a running app the way a developer works.

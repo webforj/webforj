@@ -21,9 +21,19 @@ public final class SourceHasher {
    * @return the lowercase hex digest
    */
   public static String hash(String content) {
+    return hash(content.getBytes(StandardCharsets.UTF_8));
+  }
+
+  /**
+   * Hashes raw file content with SHA-256.
+   *
+   * @param content the bytes as they are on disk
+   * @return the lowercase hex digest
+   */
+  public static String hash(byte[] content) {
     try {
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
-      byte[] bytes = digest.digest(content.getBytes(StandardCharsets.UTF_8));
+      byte[] bytes = digest.digest(content);
       StringBuilder hex = new StringBuilder(bytes.length * 2);
       for (byte b : bytes) {
         hex.append(Character.forDigit((b >> 4) & 0xF, 16));

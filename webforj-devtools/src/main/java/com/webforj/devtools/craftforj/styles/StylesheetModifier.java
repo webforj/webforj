@@ -1,16 +1,15 @@
 package com.webforj.devtools.craftforj.styles;
 
 import com.webforj.devtools.craftforj.action.CraftforjActionException;
+import com.webforj.devtools.craftforj.history.ProjectFileWriter;
 import com.webforj.devtools.craftforj.styles.model.RegionPlacement;
 import com.webforj.devtools.craftforj.styles.model.StylesheetChange;
 import com.webforj.devtools.craftforj.styles.model.StylesheetResult;
 import com.webforj.devtools.craftforj.styles.model.StylesheetWriteResult;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
@@ -317,23 +316,7 @@ public class StylesheetModifier {
 
   private void writeAtomic(Path file, String content) {
     try {
-      Path parent = file.toAbsolutePath().getParent();
-      if (parent != null) {
-        Files.createDirectories(parent);
-      }
-
-      Path temp = Files.createTempFile(parent, file.getFileName().toString(), ".tmp");
-      try {
-        Files.writeString(temp, content, StandardCharsets.UTF_8);
-        try {
-          Files.move(temp, file, StandardCopyOption.REPLACE_EXISTING,
-              StandardCopyOption.ATOMIC_MOVE);
-        } catch (AtomicMoveNotSupportedException e) {
-          Files.move(temp, file, StandardCopyOption.REPLACE_EXISTING);
-        }
-      } finally {
-        Files.deleteIfExists(temp);
-      }
+      ProjectFileWriter.writeAtomic(file, content);
     } catch (IOException e) {
       throw new CraftforjActionException("Failed to write stylesheet: " + file, e);
     }

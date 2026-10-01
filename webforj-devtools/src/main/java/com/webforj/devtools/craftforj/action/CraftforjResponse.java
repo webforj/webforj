@@ -12,7 +12,8 @@ package com.webforj.devtools.craftforj.action;
  *   "requestId": "unique-id",
  *   "success": true|false,
  *   "data": { ... } | null,
- *   "error": "error message" | null
+ *   "error": "error message" | null,
+ *   "historyId": 7 | null
  * }
  * </pre>
  *
@@ -25,6 +26,7 @@ class CraftforjResponse {
   private final boolean success;
   private final Object data;
   private final String error;
+  private Long historyId;
 
   private CraftforjResponse(String requestId, boolean success, Object data, String error) {
     this.requestId = requestId;
@@ -53,6 +55,15 @@ class CraftforjResponse {
    */
   static CraftforjResponse error(String requestId, String error) {
     return new CraftforjResponse(requestId, false, null, error);
+  }
+
+  /**
+   * Sets the id of the history entry the request made.
+   *
+   * @param historyId the id, or {@code null} when the request changed no project file
+   */
+  void setHistoryId(Long historyId) {
+    this.historyId = historyId;
   }
 
   /**
@@ -89,5 +100,14 @@ class CraftforjResponse {
    */
   String getError() {
     return error;
+  }
+
+  /**
+   * Gets the id of the history entry the request made.
+   *
+   * @return the id, or {@code null} when the request changed no project file
+   */
+  Long getHistoryId() {
+    return historyId;
   }
 }

@@ -1,5 +1,6 @@
 package com.webforj.devtools.craftforj.source.staging;
 
+import com.webforj.devtools.craftforj.history.ProjectFileWriter;
 import com.webforj.devtools.craftforj.source.staging.model.StagedFile;
 import com.webforj.environment.ObjectTable;
 import java.io.IOException;
@@ -134,7 +135,7 @@ public class SourceStagingArea {
           snapshots.put(file.getPath(), Files.readString(target, StandardCharsets.UTF_8));
         }
 
-        Files.writeString(target, file.getContent(), StandardCharsets.UTF_8);
+        ProjectFileWriter.write(target, file.getContent());
         applied.add(file.getPath());
       }
     } catch (IOException e) {
@@ -152,7 +153,7 @@ public class SourceStagingArea {
   private static void restore(Map<String, String> snapshots, List<Path> created) {
     for (Map.Entry<String, String> snapshot : snapshots.entrySet()) {
       try {
-        Files.writeString(Path.of(snapshot.getKey()), snapshot.getValue(), StandardCharsets.UTF_8);
+        ProjectFileWriter.write(Path.of(snapshot.getKey()), snapshot.getValue());
       } catch (IOException e) {
         // Restoring a snapshot failed, remaining snapshots are still attempted
       }
@@ -160,7 +161,7 @@ public class SourceStagingArea {
 
     for (Path path : created) {
       try {
-        Files.deleteIfExists(path);
+        ProjectFileWriter.remove(path);
       } catch (IOException e) {
         // Removing a created file failed, remaining created files are still attempted
       }
