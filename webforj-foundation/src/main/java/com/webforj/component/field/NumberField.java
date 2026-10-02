@@ -130,6 +130,22 @@ public final class NumberField extends DwcFieldInitializer<NumberField, Double>
 
   /**
    * {@inheritDoc}
+   *
+   * @throws IllegalArgumentException if the text is not a number
+   */
+  @Override
+  public NumberField setText(String text) {
+    boolean empty = text == null || text.isEmpty() || "null".equals(text);
+    if (!empty && !isNumber(text)) {
+      throw new IllegalArgumentException(
+          "The text of a number field must be a number, got \"" + text + "\"");
+    }
+
+    return super.setText(text);
+  }
+
+  /**
+   * {@inheritDoc}
    */
   @Override
   public Double getValue() {
@@ -259,6 +275,16 @@ public final class NumberField extends DwcFieldInitializer<NumberField, Double>
       }
     } catch (NumberFormatException e) {
       return null;
+    }
+  }
+
+  private static boolean isNumber(String text) {
+    try {
+      Double.valueOf(text);
+
+      return true;
+    } catch (NumberFormatException e) {
+      return false;
     }
   }
 }

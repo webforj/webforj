@@ -1,6 +1,7 @@
 package com.webforj.component.field;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -151,6 +152,22 @@ class NumberFieldTest {
       doReturn("").when(control).getText();
 
       assertEquals(null, component.getValue());
+    }
+
+    @Test
+    void shouldRejectTextThatIsNoNumber() {
+      IllegalArgumentException failure =
+          assertThrows(IllegalArgumentException.class, () -> component.setText("12,50"));
+
+      assertEquals("The text of a number field must be a number, got \"12,50\"",
+          failure.getMessage());
+    }
+
+    @Test
+    void shouldAcceptEmptyText() throws BBjException {
+      component.setText("");
+
+      verify(control, times(1)).setText("");
     }
 
     @Test
