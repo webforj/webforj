@@ -170,7 +170,8 @@ public abstract class ElementComposite extends Composite<Element> {
    *
    * @param <V> the type of the property
    * @param property the property descriptor
-   * @param fromClient true if the property should be read from the client
+   * @param fromClient true if the property should be read from the client. A component that is not
+   *        attached has no client, so the value held on the server is returned.
    * @param type the type of the property
    *
    * @return The value of the property or attribute or the default value if the property or
@@ -198,7 +199,8 @@ public abstract class ElementComposite extends Composite<Element> {
    *
    * @param <V> the type of the property
    * @param property the property descriptor
-   * @param fromClient true if the property should be read from the client
+   * @param fromClient true if the property should be read from the client. A component that is not
+   *        attached has no client, so the value held on the server is returned.
    *
    * @return the value of the property or attribute or the default value if the property or
    *         attribute is not set.
@@ -457,7 +459,8 @@ public abstract class ElementComposite extends Composite<Element> {
    *
    * @param <V> the type of the property
    * @param property the property descriptor
-   * @param fromClient true if the property should be read from the client
+   * @param fromClient true if the property should be read from the client. A component that is not
+   *        attached has no client, so the value held on the server is returned.
    * @param type the type of the property
    *
    * @return The value of the property, or the default value if not set.
@@ -465,13 +468,14 @@ public abstract class ElementComposite extends Composite<Element> {
   private <V> V getPropertyValue(PropertyDescriptor<V> property, boolean fromClient, Type type) {
     String name = property.getName();
 
-    if (fromClient) {
+    if (fromClient && getElement().isAttached()) {
       return getElement().getProperty(name, type);
-    } else {
-      @SuppressWarnings("unchecked")
-      V result = (V) properties.getOrDefault(name, property.getDefaultValue());
-      return result;
     }
+
+    @SuppressWarnings("unchecked")
+    V result = (V) properties.getOrDefault(name, property.getDefaultValue());
+
+    return result;
   }
 
   /**

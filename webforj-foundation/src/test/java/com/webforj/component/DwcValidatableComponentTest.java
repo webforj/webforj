@@ -1,6 +1,7 @@
 package com.webforj.component;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.basis.bbj.proxies.sysgui.BBjEditBox;
@@ -22,6 +23,13 @@ class DwcValidatableComponentTest {
 
   @InjectMocks
   DwcValidatableComponentMock component;
+
+  @Test
+  void shouldBeValidWhileDetachedAndNeverMarkedInvalid() throws IllegalAccessException {
+    ReflectionUtils.nullifyControl(component);
+
+    assertFalse(component.isInvalid());
+  }
 
   @Test
   void shouldSetGetInvalid() throws IllegalAccessException {

@@ -133,6 +133,22 @@ class ElementCompositeTest {
     }
 
     @Test
+    @DisplayName("should default to the server state when read from the client while detached")
+    void shouldDefaultToServerStateWhenReadFromClientWhileDetached() {
+      PropertyDescriptor<Boolean> opened = PropertyDescriptor.property("opened", false);
+      PropertyDescriptor<Double> position = PropertyDescriptor.property("position", 50d);
+
+      assertFalse(composite.get(opened, true, Boolean.class));
+      assertEquals(50d, composite.get(position, true, Double.class));
+
+      composite.set(opened, true);
+      composite.set(position, 20d);
+
+      assertTrue(composite.get(opened, true, Boolean.class));
+      assertEquals(20d, composite.get(position, true, Double.class));
+    }
+
+    @Test
     @DisplayName("should get properties and attributes from the client")
     void shouldGetPropertiesAndAttributesFromClient() {
       User johnDoe = new User("John", "Doe");
