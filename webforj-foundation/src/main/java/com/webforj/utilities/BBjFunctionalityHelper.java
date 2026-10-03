@@ -3,7 +3,7 @@ package com.webforj.utilities;
 
 /**
  * Class is created in order to streamline some of the BBj-specific methods and implementations that
- * are required for use in DWCJ controls
+ * are required for use in DWCJ controls.
  */
 public final class BBjFunctionalityHelper {
 
@@ -11,7 +11,7 @@ public final class BBjFunctionalityHelper {
 
   /**
    * Returns a byte array with the bytes set corresponding with whether or not it should be enabled
-   * and/or visible on creation
+   * and/or visible on creation.
    *
    * @param visible Boolean control's visibility status
    * @param enabled Boolean control's enabled status

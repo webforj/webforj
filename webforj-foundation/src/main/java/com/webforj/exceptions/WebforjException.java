@@ -1,7 +1,7 @@
 package com.webforj.exceptions;
 
 /**
- * This class is used for reporting DWC application level exceptions
+ * This class is used for reporting DWC application level exceptions.
  *
  * @author Hyyan Abo Fakher
  */

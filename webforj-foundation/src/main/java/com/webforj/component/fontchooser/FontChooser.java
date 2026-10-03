@@ -19,6 +19,12 @@ import java.awt.*;
 import java.util.function.Consumer;
 
 
+/**
+ * A component that lets the user pick a font.
+ *
+ * @author Stephan Wald
+ * @since 0.006
+ */
 public final class FontChooser extends LegacyDwcComponent implements LegacyHasEnable {
 
   private FontChooserApproveEventSink fontChooserApproveEventSink;
@@ -43,6 +49,11 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     }
   }
 
+  /**
+   * Approves the current font selection.
+   *
+   * @return the component itself
+   */
   public FontChooser approveSelection() {
     try {
       bbjFontChooser.approveSelection();
@@ -52,6 +63,11 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     return this;
   }
 
+  /**
+   * Cancels the current font selection.
+   *
+   * @return the component itself
+   */
   public FontChooser cancelSelection() {
     try {
       bbjFontChooser.cancelSelection();
@@ -61,6 +77,11 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     return this;
   }
 
+  /**
+   * Gets the text of the approve button.
+   *
+   * @return the approve button text
+   */
   public String getApproveButtonText() {
     try {
       return bbjFontChooser.getApproveButtonText();
@@ -70,6 +91,11 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     }
   }
 
+  /**
+   * Gets the text of the cancel button.
+   *
+   * @return the cancel button text
+   */
   public String getCancelButtonText() {
     try {
       return bbjFontChooser.getCancelButtonText();
@@ -79,6 +105,11 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     }
   }
 
+  /**
+   * Checks whether the control buttons are shown.
+   *
+   * @return true if the control buttons are shown, false otherwise
+   */
   public boolean isControlButtonsAreShown() {
     try {
       return bbjFontChooser.getControlButtonsAreShown();
@@ -88,6 +119,11 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     }
   }
 
+  /**
+   * Checks whether the fonts are scaled.
+   *
+   * @return true if the fonts are scaled, false otherwise
+   */
   public boolean isFontsScaled() {
     try {
       return bbjFontChooser.getFontsScaled();
@@ -97,6 +133,11 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     }
   }
 
+  /**
+   * Gets the preview message.
+   *
+   * @return the preview message
+   */
   public String getPreviewMessage() {
     try {
       return bbjFontChooser.getPreviewMessage();
@@ -106,6 +147,11 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     }
   }
 
+  /**
+   * Gets the selected font.
+   *
+   * @return the selected font
+   */
   public Font getSelectedFont() {
     try {
       return (Font) bbjFontChooser.getSelectedFont();
@@ -115,6 +161,12 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     }
   }
 
+  /**
+   * Sets the text of the approve button.
+   *
+   * @param text the approve button text
+   * @return the component itself
+   */
   public FontChooser setApproveButtonText(String text) {
     try {
       bbjFontChooser.setApproveButtonText(text);
@@ -124,6 +176,12 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     return this;
   }
 
+  /**
+   * Sets the text of the cancel button.
+   *
+   * @param text the cancel button text
+   * @return the component itself
+   */
   public FontChooser setCancelButtonText(String text) {
     try {
       bbjFontChooser.setCancelButtonText(text);
@@ -133,6 +191,12 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     return this;
   }
 
+  /**
+   * Sets whether the control buttons are shown.
+   *
+   * @param show true to show the control buttons, false to hide them
+   * @return the component itself
+   */
   public FontChooser setControlButtonsAreShown(boolean show) {
     try {
       bbjFontChooser.setControlButtonsAreShown(show);
@@ -142,6 +206,12 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     return this;
   }
 
+  /**
+   * Sets whether the fonts are scaled.
+   *
+   * @param scale true to scale the fonts, false otherwise
+   * @return the component itself
+   */
   public FontChooser setFontsScaled(boolean scale) {
     try {
       bbjFontChooser.setFontsScaled(scale);
@@ -151,6 +221,12 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     return this;
   }
 
+  /**
+   * Sets the preview message.
+   *
+   * @param message the preview message
+   * @return the component itself
+   */
   public FontChooser setPreviewMessage(String message) {
     try {
       bbjFontChooser.setPreviewMessage(message);
@@ -160,6 +236,12 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     return this;
   }
 
+  /**
+   * Sets the selected font.
+   *
+   * @param font the font to select
+   * @return the component itself
+   */
   public FontChooser setSelectedFont(Font font) {
     try {
       bbjFontChooser.setSelectedFont((BBjFont) font);
@@ -169,6 +251,12 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     return this;
   }
 
+  /**
+   * Adds a listener for the approve event.
+   *
+   * @param callback the listener
+   * @return the component itself
+   */
   public FontChooser onFontChooserApprove(Consumer<FontChooserApproveEvent> callback) {
     if (this.fontChooserApproveEventSink == null)
       this.fontChooserApproveEventSink = new FontChooserApproveEventSink(this, callback);
@@ -177,6 +265,12 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     return this;
   }
 
+  /**
+   * Adds a listener for the cancel event.
+   *
+   * @param callback the listener
+   * @return the component itself
+   */
   public FontChooser onFontChooserCancel(Consumer<FontChooserCancelEvent> callback) {
     if (this.fontChooserCancelEventSink == null)
       this.fontChooserCancelEventSink = new FontChooserCancelEventSink(this, callback);
@@ -185,6 +279,12 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     return this;
   }
 
+  /**
+   * Adds a listener for the change event.
+   *
+   * @param callback the listener
+   * @return the component itself
+   */
   public FontChooser onFontChooserChange(Consumer<FontChooserChangeEvent> callback) {
     if (this.fontChooserChangeEventSink == null)
       this.fontChooserChangeEventSink = new FontChooserChangeEventSink(this, callback);

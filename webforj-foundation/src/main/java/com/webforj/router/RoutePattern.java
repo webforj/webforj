@@ -50,10 +50,10 @@ import java.util.regex.Pattern;
  * <ul>
  * <li>Matches: "/product/abc/resource/456/docs"</li>
  * <li>Extracts: identifier="abc", category=null, id="456", path="docs"</li>
- * </ul>
  * <li>Layout segment "@layout" is ignored during matching.</li>
  * </ul>
  * </li>
+ * </ul>
  * </p>
  *
  * @author Hyyan Abo Fakher

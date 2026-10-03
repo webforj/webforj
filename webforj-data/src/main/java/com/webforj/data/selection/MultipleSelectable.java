@@ -1,7 +1,7 @@
 package com.webforj.data.selection;
 
 /**
- * An interface for components that support multiple selection of items by index, key, or item
+ * An interface for components that support multiple selection of items by index, key, or item.
  *
  * <p>
  * This interface introduces methods and properties specific to managing multiple selections within

@@ -15,6 +15,12 @@ import java.util.HashMap;
  */
 public class KeypressEventSink extends AbstractDwcEventSink {
 
+  /**
+   * Creates a new keypress event sink for the given component.
+   *
+   * @param component the component
+   * @param dispatcher the event dispatcher
+   */
   public KeypressEventSink(DwcComponent<?> component, EventDispatcher dispatcher) {
     super(component, dispatcher,
         (component instanceof DwcMaskedField) ? SysGuiEventConstants.ON_INPUT_KEYPRESS
