@@ -11,6 +11,7 @@
 
   <artifactId>webforj-install-maven-plugin</artifactId>
   <name>webforj-install-maven-plugin</name>
+  <description>webforJ install Maven plugin. Internal implementation.</description>
   <packaging>maven-plugin</packaging>
 
   <properties>

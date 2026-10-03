@@ -12,7 +12,7 @@
 
   <artifactId>webforj-hotswap-observer</artifactId>
   <name>${project.artifactId}</name>
-  <description>The java agent that reports every class redefinition of the application virtual machine to the live reload receiver of the running application</description>
+  <description>The java agent that reports every class redefinition of the application virtual machine to the live reload receiver of the running application. Internal implementation.</description>
 
   <!-- The jar travels on a javaagent line of the application virtual machine, so it stays a
        single class with no dependencies and carries its premain entry in the manifest. -->

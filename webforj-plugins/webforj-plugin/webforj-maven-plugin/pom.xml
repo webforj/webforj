@@ -12,6 +12,7 @@
 
   <artifactId>webforj-maven-plugin</artifactId>
   <name>${project.artifactId}</name>
+  <description>webforJ Maven plugin. Internal implementation.</description>
   <packaging>maven-plugin</packaging>
 
 

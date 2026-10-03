@@ -14,7 +14,7 @@
   <packaging>pom</packaging>
   <artifactId>webforj-plugin</artifactId>
   <name>${project.artifactId}</name>
-  <description>webforJ build plugin family: shared foundation plus the per build tool plugins</description>
+  <description>webforJ build plugin family: shared foundation plus the per build tool plugins. Internal implementation.</description>
 
   <modules>
     <module>webforj-plugin-foundation</module>

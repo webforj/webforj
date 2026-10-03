@@ -13,7 +13,7 @@
   <artifactId>webforj-minify-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
   <name>${project.artifactId}</name>
-  <description>Maven plugin for minifying webforJ assets at build time</description>
+  <description>Maven plugin for minifying webforJ assets at build time. Internal implementation.</description>
 
 
   <dependencies>
