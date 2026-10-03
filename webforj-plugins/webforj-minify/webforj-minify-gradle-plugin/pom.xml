@@ -14,7 +14,7 @@
   <artifactId>webforj-minify-gradle-plugin</artifactId>
   <packaging>jar</packaging>
   <name>${project.artifactId}</name>
-  <description>Gradle plugin for minifying webforJ assets at build time</description>
+  <description>Gradle plugin for minifying webforJ assets at build time. Internal implementation.</description>
 
   <properties>
     <gradle.executable>./gradlew</gradle.executable>

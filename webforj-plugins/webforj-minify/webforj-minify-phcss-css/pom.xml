@@ -12,7 +12,7 @@
 
   <artifactId>webforj-minify-phcss-css</artifactId>
   <name>${project.artifactId}</name>
-  <description>CSS minifier implementation using ph-css library</description>
+  <description>CSS minifier implementation using ph-css library. Internal implementation.</description>
 
   <dependencies>
     <!-- Foundation module -->

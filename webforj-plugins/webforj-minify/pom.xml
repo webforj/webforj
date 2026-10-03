@@ -14,7 +14,7 @@
   <packaging>pom</packaging>
   <artifactId>webforj-minify</artifactId>
   <name>${project.artifactId}</name>
-  <description>Build-time asset minification system for webforJ applications</description>
+  <description>Build-time asset minification system for webforJ applications. Internal implementation.</description>
 
   <modules>
     <module>webforj-minify-foundation</module>

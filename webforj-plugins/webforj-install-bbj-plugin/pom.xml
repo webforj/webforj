@@ -16,6 +16,7 @@
 
   <artifactId>webforj-install-bbj-plugin</artifactId>
   <name>webforj-install-bbj-plugin</name>
+  <description>webforJ BBj installer. Internal implementation.</description>
   <packaging>jar</packaging>
 
   <dependencyManagement>

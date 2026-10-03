@@ -12,7 +12,7 @@
 
   <artifactId>webforj-plugin-foundation</artifactId>
   <name>${project.artifactId}</name>
-  <description>Pure Java watch logic shared by every webforJ build plugin and the runtime live reload</description>
+  <description>Pure Java watch logic shared by every webforJ build plugin and the runtime live reload. Internal implementation.</description>
   <dependencies>
     <dependency>
       <groupId>com.interaso</groupId>

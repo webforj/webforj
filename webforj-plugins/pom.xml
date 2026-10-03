@@ -13,6 +13,7 @@
   <packaging>pom</packaging>
   <artifactId>webforj-plugins</artifactId>
   <name>${project.artifactId}</name>
+  <description>webforJ plugins. Internal implementation.</description>
 
   <properties>
     <webforj.maven.version>3.9.16</webforj.maven.version>

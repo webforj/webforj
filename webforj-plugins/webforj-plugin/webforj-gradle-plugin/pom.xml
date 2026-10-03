@@ -14,7 +14,7 @@
   <artifactId>webforj-gradle-plugin</artifactId>
   <packaging>jar</packaging>
   <name>${project.artifactId}</name>
-  <description>Gradle plugin for the webforJ build</description>
+  <description>Gradle plugin for the webforJ build. Internal implementation.</description>
 
   <properties>
     <gradle.executable>./gradlew</gradle.executable>

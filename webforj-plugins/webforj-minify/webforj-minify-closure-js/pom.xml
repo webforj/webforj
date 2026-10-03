@@ -12,7 +12,7 @@
 
   <artifactId>webforj-minify-closure-js</artifactId>
   <name>${project.artifactId}</name>
-  <description>JavaScript minifier implementation using Google Closure Compiler</description>
+  <description>JavaScript minifier implementation using Google Closure Compiler. Internal implementation.</description>
 
   <dependencies>
     <!-- Foundation module -->
