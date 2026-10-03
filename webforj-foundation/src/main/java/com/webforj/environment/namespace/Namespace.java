@@ -34,7 +34,7 @@ import java.util.function.Function;
  */
 //@formatter:off
 public abstract sealed class Namespace permits PrivateNamespace, GlobalNamespace, GroupNamespace {
-//@formatter:on
+  //@formatter:on
   public static final String ON_EVENT = "onEvent";
   private final EventDispatcher dispatcher = new EventDispatcher();
   private final Map<String, NamespaceEventSinkRegistry<NamespaceKeyAccessEvent>> keyAccessRegistries =

@@ -313,7 +313,8 @@ public final class ClasspathPackageScanner {
 
       if (existing != null && !existing.getVersion().equals(decl.getVersion())) {
         warnings.add(String.format(
-            "duplicate @BundlePackage for '%s' with different versions ('%s' vs '%s'). Keeping '%s'.",
+            "duplicate @BundlePackage for '%s' with different versions ('%s' vs '%s')."
+                + " Keeping '%s'.",
             decl.getName(), existing.getVersion(), decl.getVersion(), existing.getVersion()));
       }
     }

@@ -15,7 +15,7 @@ import com.webforj.component.fontchooser.sink.FontChooserCancelEventSink;
 import com.webforj.component.fontchooser.sink.FontChooserChangeEventSink;
 import com.webforj.component.window.Window;
 import com.webforj.concern.legacy.LegacyHasEnable;
-import java.awt.*;
+import java.awt.Font;
 import java.util.function.Consumer;
 
 
@@ -258,10 +258,11 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
    * @return the component itself
    */
   public FontChooser onFontChooserApprove(Consumer<FontChooserApproveEvent> callback) {
-    if (this.fontChooserApproveEventSink == null)
+    if (this.fontChooserApproveEventSink == null) {
       this.fontChooserApproveEventSink = new FontChooserApproveEventSink(this, callback);
-    else
+    } else {
       this.fontChooserApproveEventSink.addCallback(callback);
+    }
     return this;
   }
 
@@ -272,10 +273,11 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
    * @return the component itself
    */
   public FontChooser onFontChooserCancel(Consumer<FontChooserCancelEvent> callback) {
-    if (this.fontChooserCancelEventSink == null)
+    if (this.fontChooserCancelEventSink == null) {
       this.fontChooserCancelEventSink = new FontChooserCancelEventSink(this, callback);
-    else
+    } else {
       this.fontChooserCancelEventSink.addCallback(callback);
+    }
     return this;
   }
 
@@ -286,10 +288,11 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
    * @return the component itself
    */
   public FontChooser onFontChooserChange(Consumer<FontChooserChangeEvent> callback) {
-    if (this.fontChooserChangeEventSink == null)
+    if (this.fontChooserChangeEventSink == null) {
       this.fontChooserChangeEventSink = new FontChooserChangeEventSink(this, callback);
-    else
+    } else {
       this.fontChooserChangeEventSink.addCallback(callback);
+    }
     return this;
   }
 

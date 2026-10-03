@@ -1,7 +1,6 @@
 package com.webforj.bbj.database;
 
 import com.webforj.Environment;
-
 import java.sql.Connection;
 
 /**

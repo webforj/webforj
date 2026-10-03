@@ -6,7 +6,6 @@ import com.webforj.Environment;
 import com.webforj.bridge.ComponentAccessor;
 import com.webforj.component.fontchooser.FontChooser;
 import com.webforj.component.fontchooser.event.FontChooserChangeEvent;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.Consumer;
@@ -53,8 +52,9 @@ public final class FontChooserChangeEventSink {
   public void changeEvent(BBjFileChooserChangeEvent ev) { // NOSONAR
     FontChooserChangeEvent dwcEv = new FontChooserChangeEvent(this.fontChooser);
     Iterator<Consumer<FontChooserChangeEvent>> it = targets.iterator();
-    while (it.hasNext())
+    while (it.hasNext()) {
       it.next().accept(dwcEv);
+    }
   }
 
   public void addCallback(Consumer<FontChooserChangeEvent> callback) {
