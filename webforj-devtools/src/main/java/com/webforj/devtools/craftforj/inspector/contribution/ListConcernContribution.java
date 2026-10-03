@@ -29,16 +29,16 @@ import java.util.logging.Logger;
  * Example:
  * </p>
  *
- * <pre>
- * public class HasClassNameContribution extends ListConcernContribution&lt;HasClassName&lt;?&gt;&gt; {
+ * <pre>{@code
+ * public class HasClassNameContribution extends ListConcernContribution<HasClassName<?>> {
  *   public HasClassNameContribution() {
  *     super(HasClassName.class, "classNames", FeatureCategory.STYLING);
- *     setGetter(c -&gt; null); // Values fetched from DOM
- *     setAddHandler((c, item) -&gt; c.addClassName(item));
- *     setRemoveHandler((c, item) -&gt; c.removeClassName(item));
+ *     setGetter(c -> null); // Values fetched from DOM
+ *     setAddHandler((c, item) -> c.addClassName(item));
+ *     setRemoveHandler((c, item) -> c.removeClassName(item));
  *   }
  * }
- * </pre>
+ * }</pre>
  *
  * @param <T> the concern interface type
  * @author Hyyan Abo Fakher

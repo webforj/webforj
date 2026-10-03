@@ -45,8 +45,8 @@ public abstract class ComponentAccessor {
 
     a = accessor;
     if (a == null) {
-      throw new WebforjRuntimeException(
-          "ComponentAccessor is not initialized. Loading the Window class did not set an accessor.");
+      throw new WebforjRuntimeException("ComponentAccessor is not initialized. "
+          + "Loading the Window class did not set an accessor.");
     }
 
     return a;

@@ -15,11 +15,22 @@ import com.webforj.utilities.BBjFunctionalityHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A component that edits HTML content.
+ *
+ * @author Stephan Wald
+ * @since 0.006
+ */
 public final class HtmlEdit extends LegacyDwcComponent
     implements LegacyHasFocus, LegacyHasEnable, LegacyHasTabTraversal {
 
   private BBjHtmlEdit bbjHtmlEdit;
 
+  /**
+   * The expanses of the component.
+   *
+   * @since 0.008
+   */
   public enum Expanse {
     LARGE, MEDIUM, SMALL, XLARGE, XSMALL
   }
@@ -42,8 +53,7 @@ public final class HtmlEdit extends LegacyDwcComponent
   }
 
   /**
-   * This method returns a List of strings that specifies all available styles in the HtmlEdit
-   * toolbar.
+   * Returns a List of strings that specifies all available styles in the HtmlEdit toolbar.
    *
    * @return List of strings that specifies all available styles in the HtmlEdit toolbar.
    */
@@ -57,7 +67,7 @@ public final class HtmlEdit extends LegacyDwcComponent
   }
 
   /**
-   * This method returns the list of available spell-check languages for a HtmlEdit control.
+   * Returns the list of available spell-check languages for a HtmlEdit control.
    *
    * @return Returns a List of strings of available spell-check languages for a HtmlEdit control.
    */
@@ -71,8 +81,7 @@ public final class HtmlEdit extends LegacyDwcComponent
   }
 
   /**
-   * This method returns a List of strings that specifies all available editor states in the
-   * HTMLEditor toolbar.
+   * Returns a List of strings that specifies all available editor states in the HTMLEditor toolbar.
    *
    * @return Returns a list of strings that specifies all available editor stattes in the HTMLEditor
    *         toolbar.
@@ -88,8 +97,8 @@ public final class HtmlEdit extends LegacyDwcComponent
 
 
   /**
-   * This method returns a boolean that indicates whether this HtmlEdit control is currently set to
-   * use a basic toolbar.
+   * Returns a boolean that indicates whether this HtmlEdit control is currently set to use a basic
+   * toolbar.
    *
    * @return Returns a boolean that indicates whether this HtmlEdit control is currently set to use
    *         a basic toolbar .
@@ -104,8 +113,8 @@ public final class HtmlEdit extends LegacyDwcComponent
   }
 
   /**
-   * This method returns a List of strings that specifies the styles to be included when the
-   * HtmlEdit basic toolbar is selected.
+   * Returns a List of strings that specifies the styles to be included when the HtmlEdit basic
+   * toolbar is selected.
    *
    * @return Returns a List of strings that specifies the styles to be included when the HtmlEdit
    *         basic toolbar is selected.
@@ -120,7 +129,7 @@ public final class HtmlEdit extends LegacyDwcComponent
   }
 
   /**
-   * This method returns a string representing the client type for this HTMLEdit control.
+   * Returns a string representing the client type for this HTMLEdit control.
    *
    * @return Returns a string representing the client type for the HtmlEdit control ("Browser" (BUI
    *         or DWC), "Swing" (basic HTML 3.2), "JavaFX" (WebKit), "Chromium").
@@ -135,7 +144,7 @@ public final class HtmlEdit extends LegacyDwcComponent
   }
 
   /**
-   * This method returns the client version for this BBjHtmlEdit control.
+   * Returns the client version for this BBjHtmlEdit control.
    *
    * @return Returns the version of the HtmlEdit control - the client versions will change over
    *         time.
@@ -150,7 +159,7 @@ public final class HtmlEdit extends LegacyDwcComponent
   }
 
   /**
-   * This method returns the UI locale of an HTMLEdit control.
+   * Returns the UI locale of an HTMLEdit control.
    *
    * @return A string representing the UI locale of the HTMLEdit control.
    */
@@ -159,7 +168,7 @@ public final class HtmlEdit extends LegacyDwcComponent
   }
 
   /**
-   * This method returns the list of available UI Locales for an HTMLEdit control.
+   * Returns the list of available UI Locales for an HTMLEdit control.
    *
    * @return a List of strings representing the available UI locales for an HTMLEdit control.
    */
@@ -173,7 +182,7 @@ public final class HtmlEdit extends LegacyDwcComponent
   }
 
   /**
-   * This method returns the plain text content of an HTMLEditor control, without any HTML markup.
+   * Returns the plain text content of an HTMLEditor control, without any HTML markup.
    *
    * @return A string representing only the plaintext content of the HTML control.
    */
@@ -187,7 +196,7 @@ public final class HtmlEdit extends LegacyDwcComponent
   }
 
   /**
-   * This method returns the spell-check language of an HTMLEdit control.
+   * Returns the spell-check language of an HTMLEdit control.
    *
    * @return A string representing the spell-check language of an HTMLEdit control.
    */
@@ -201,7 +210,7 @@ public final class HtmlEdit extends LegacyDwcComponent
   }
 
   /**
-   * This method returns the Boolean value of a specified state in the HtmlEdit toolbar.
+   * Returns the Boolean value of a specified state in the HtmlEdit toolbar.
    *
    * @param state specifying one of the state names from HTMLEdit::getAvailableStates
    * @return Boolean value of the specified state in the HtmlEdit toolbar.
@@ -216,8 +225,8 @@ public final class HtmlEdit extends LegacyDwcComponent
   }
 
   /**
-   * This method returns a boolean that indicates whether spell-checking is currently enabled on
-   * this HTMLEdit control.
+   * Returns a boolean that indicates whether spell-checking is currently enabled on this HTMLEdit
+   * control.
    *
    * @return a boolean representing whether or not spell-check is enabled on this control.
    */
@@ -231,7 +240,7 @@ public final class HtmlEdit extends LegacyDwcComponent
   }
 
   /**
-   * This method specifies whether this HTMLEdit control should use a basic toolbar
+   * This method specifies whether this HTMLEdit control should use a basic toolbar.
    *
    * @param basicToolbar - Boolean representing whether or not to use a basic toolbar, true for yes,
    *        false for no
@@ -247,7 +256,7 @@ public final class HtmlEdit extends LegacyDwcComponent
   }
 
   /**
-   * This method specifies the styles to be included when the HTMLEdit basic toolbar is used
+   * This method specifies the styles to be included when the HTMLEdit basic toolbar is used.
    *
    * @param styles - A List of styles to be shown when the basic toolbar is selected, should be an
    *        array of Strings
@@ -263,7 +272,7 @@ public final class HtmlEdit extends LegacyDwcComponent
   }
 
   /**
-   * Sets the UI locale of the HTMLEdit control
+   * Sets the UI locale of the HTMLEdit control.
    *
    * @param locale - A String representing the locale you wish to set the HTMLEdit to.
    * @return Returns this
@@ -274,7 +283,7 @@ public final class HtmlEdit extends LegacyDwcComponent
   }
 
   /**
-   * Sets the text of an HtmlEdit control
+   * Sets the text of an HtmlEdit control.
    *
    * @param text - A String representing the text you wish to set.
    * @return Returns this
@@ -289,7 +298,7 @@ public final class HtmlEdit extends LegacyDwcComponent
   }
 
   /**
-   * Sets a specified state in the HtmlEdit toolbar to the specified boolean value
+   * Sets a specified state in the HtmlEdit toolbar to the specified boolean value.
    *
    * @param state - One of the state names from HtmlEdit::getAvailableStates()
    * @param value - Boolean value - true activates the specified state while false deactivates it.
@@ -306,7 +315,7 @@ public final class HtmlEdit extends LegacyDwcComponent
   }
 
   /**
-   * Specifies whether or not spell checking should be enabled in this HtmlEdit control
+   * Specifies whether or not spell checking should be enabled in this HtmlEdit control.
    *
    * @param spellChecked - boolean value - true enables spell checking, false disables it.
    * @return Returns this

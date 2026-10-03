@@ -92,13 +92,13 @@ public class WebforjInstall extends AbstractMojo {
   private String debug;
 
   /**
-   * Optional parameter to put class files in classpath instead of JAR
+   * Optional parameter to put class files in classpath instead of JAR.
    */
   @Parameter(property = "useclassfiles")
   private String useclassfiles;
 
   /**
-   * Optional String pointing to the (in Docker potentially mapped) classes folder name
+   * Optional String pointing to the (in Docker potentially mapped) classes folder name.
    */
   @Parameter(property = "classfolder")
   private String classfolder;

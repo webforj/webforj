@@ -115,7 +115,7 @@ class BindingContextTest {
     // @formatter:off
     context.bind(nameComponent, "name")
         .add();
-    BindingBuilder<AgeComponentMock,Integer, PersonBean, Integer> ageBinding = context.bind(
+    BindingBuilder<AgeComponentMock, Integer, PersonBean, Integer> ageBinding = context.bind(
         ageComponent, "age"
     );
     ageBinding.add();
