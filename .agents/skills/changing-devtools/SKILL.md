@@ -43,3 +43,8 @@ Never crossed, in any shape or form.
 
 - One user action is one step. One request is one step. Apply is one step. A user action is never split into several requests to get finer steps.
 - The server records a step around one action handler, through one project file writer. Write actions themselves carry no history code.
+
+## Public surface
+
+- Nothing in the devtools packages is public API. Classes, type hierarchies, names and methods can change, move or be removed in any release without prior notice. The contracts documented in the public webforJ documentation are the only supported surface.
+- Every devtools package carries a `package-info.java` that states this. A new package gets one.
