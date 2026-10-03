@@ -19,7 +19,9 @@ class RouterUtilsTest {
       "'/example/test', '/example/test'", // with starting slash and subpath
       "'/test/', '/test/'", // with trailing slash
       "'/test/', '///test//'", // with redundant slashes
-      "'/product/:identifier/:category?/resource/:id<[0-9]*>/:path*', 'product/:identifier///:category?/resource//:id<[0-9]*>////:path*'" // complex pattern path
+      "'/product/:identifier/:category?/resource/:id<[0-9]*>/:path*', "
+          + "'product/:identifier///:category?/resource//"
+          + ":id<[0-9]*>////:path*'" // complex pattern path
   })
   // @formatter:on
   void shouldNormalizePath(String expected, String input) {

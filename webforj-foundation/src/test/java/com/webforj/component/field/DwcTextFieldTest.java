@@ -198,7 +198,8 @@ class DwcTextFieldTest {
     }
 
     @Test
-    @DisplayName("getSelectedText when the control throws BBjException a DwcjRuntimeException is thrown")
+    @DisplayName("getSelectedText when the control throws BBjException "
+        + "a DwcjRuntimeException is thrown")
     void getSelectedTextWhenControlThrowsBBjException() throws BBjException {
       doThrow(BBjException.class).when(control).getSelectedText();
       assertThrows(WebforjRuntimeException.class, () -> component.getSelectedText());
