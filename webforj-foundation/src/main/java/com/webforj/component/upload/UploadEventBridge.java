@@ -68,14 +68,17 @@ final class UploadEventBridge {
         "(event.detail && typeof event.detail.loaded === 'number') ? event.detail.loaded : -1");
     opts.addData("totalBytes",
         "(event.detail && typeof event.detail.total === 'number') ? event.detail.total : -1");
-    opts.addData("listTotal",
-        "(event.detail && typeof event.detail.listTotal === 'number') ? event.detail.listTotal : -1");
+    opts.addData("listTotal", "(event.detail && typeof event.detail.listTotal === 'number') "
+        + "? event.detail.listTotal : -1");
     opts.addData("listRemaining",
-        "(event.detail && typeof event.detail.listRemaining === 'number') ? event.detail.listRemaining : -1");
+        "(event.detail && typeof event.detail.listRemaining === 'number') "
+            + "? event.detail.listRemaining : -1");
     opts.addData("listTransferredBytes",
-        "(event.detail && typeof event.detail.listTransferredBytes === 'number') ? event.detail.listTransferredBytes : -1");
+        "(event.detail && typeof event.detail.listTransferredBytes === 'number') "
+            + "? event.detail.listTransferredBytes : -1");
     opts.addData("listTotalBytes",
-        "(event.detail && typeof event.detail.listTotalBytes === 'number') ? event.detail.listTotalBytes : -1");
+        "(event.detail && typeof event.detail.listTotalBytes === 'number') "
+            + "? event.detail.listTotalBytes : -1");
     opts.addData("listEntries",
         "(event.detail && Array.isArray(event.detail.entries)) ? event.detail.entries : []");
     opts.addData("message",

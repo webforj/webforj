@@ -45,6 +45,15 @@ public final class KotlinFactory {
     return new TextField(type, label, value);
   }
 
+  /**
+   * Creates a text field from the given arguments. Arguments that are null are not applied.
+   *
+   * @param label the label
+   * @param value the value
+   * @param placeholder the placeholder
+   * @param type the type
+   * @return the new text field
+   */
   public static TextField newTextField(String label, String value, String placeholder,
       TextField.Type type) {
     if (placeholder != null && value != null && label != null) {

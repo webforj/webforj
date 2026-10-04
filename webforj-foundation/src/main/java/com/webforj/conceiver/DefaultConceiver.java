@@ -76,11 +76,10 @@ public class DefaultConceiver implements Conceiver {
             && parameterTypes[1] == Map.class) {
           event = (E) constructor.newInstance(component, data); // NOSONAR
           break;
-        }
-        // else if inner class
-        else if (parameterTypes.length == 3 && Component.class.isAssignableFrom(parameterTypes[0])
+        } else if (parameterTypes.length == 3 && Component.class.isAssignableFrom(parameterTypes[0])
             && Component.class.isAssignableFrom(parameterTypes[1])
             && parameterTypes[2] == Map.class) {
+          // else if inner class
           event = (E) constructor.newInstance(component, component, data); // NOSONAR
 
           break;

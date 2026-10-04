@@ -52,15 +52,16 @@ public final class RouterDevUtils {
 
     String json = gson.toJson(jsonArray);
     String js = "(function(routesData) {" + "   routesData.forEach(function(route) {"
-        + "       console.groupCollapsed('%cRoute:%c ' + route.path, 'background: #4c47ff; color: white; padding: 2px 6px; border-radius: 5px;', 'color: inherit');"
-        + "       console.info('Path      :', route.path);"
+        + "       console.groupCollapsed('%cRoute:%c ' + route.path, "
+        + "'background: #4c47ff; color: white; padding: 2px 6px; border-radius: 5px;', "
+        + "'color: inherit');" + "       console.info('Path      :', route.path);"
         + "       console.info('Component :', route.component);"
         + "       console.info('Outlet    :', route.outlet);"
         + "       console.info('Frame ID  :', route.FrameId);"
         + "       console.info('Priority  :', route.priority);" + "       console.groupEnd();"
-        + "   });"
-        + "   console.info('%cTotal routes:%c ' + routesData.length, 'background: #28a745; color: white; padding: 2px 6px; border-radius: 5px;', 'color: inherit');"
-        + "})(" + json + ");";
+        + "   });" + "   console.info('%cTotal routes:%c ' + routesData.length, "
+        + "'background: #28a745; color: white; padding: 2px 6px; border-radius: 5px;', "
+        + "'color: inherit');" + "})(" + json + ");";
 
     Page.getCurrent().executeJsVoidAsync(js);
   }
@@ -85,8 +86,8 @@ public final class RouterDevUtils {
 
     js.append("(function() {").append("   console.groupCollapsed('%cNavigation:%c ' + '")
         .append(location.getFullURI())
-        .append(
-            "', 'background: #008080; color: white; padding: 2px 6px; border-radius: 5px;', 'color: inherit');")
+        .append("', 'background: #008080; color: white; padding: 2px 6px; border-radius: 5px;', "
+            + "'color: inherit');")
         .append("   console.info('Component :', '").append(component.getName()).append("');")
 
         // Navigation Options group

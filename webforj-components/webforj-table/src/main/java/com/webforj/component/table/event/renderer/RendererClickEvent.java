@@ -1,8 +1,8 @@
 package com.webforj.component.table.event.renderer;
 
-import java.util.Map;
 import com.webforj.component.table.Table;
 import com.webforj.component.table.event.cell.TableCellEvent;
+import java.util.Map;
 
 /**
  * Represents a renderer click event.

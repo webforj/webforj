@@ -4,8 +4,8 @@ import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.event.BBjMouseEvent;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import com.webforj.component.DwcComponent;
-import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.component.event.MouseEnterEvent;
+import com.webforj.dispatcher.EventDispatcher;
 import java.util.HashMap;
 
 /**

@@ -21,6 +21,11 @@ public class BrowserProperties {
    */
   private HostType host = HostType.LOCALHOST;
 
+  /**
+   * The host types used in the browser URL.
+   *
+   * @since 25.03
+   */
   public enum HostType {
     LOCALHOST, HOSTNAME, IP_ADDRESS
   }

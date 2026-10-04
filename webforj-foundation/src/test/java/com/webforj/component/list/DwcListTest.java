@@ -346,7 +346,8 @@ class DwcListTest {
     }
 
     @Test
-    @DisplayName("should throw IllegalArgumentException when the given item is not in the list or given index is out of bounds")
+    @DisplayName("should throw IllegalArgumentException when the given item is not in the list "
+        + "or given index is out of bounds")
     void shouldThrowIllegalArgumentExceptionOnInvalidItemOrIndex() {
       component.add("key-1", "value-1");
       component.add("key-2", "value-2");

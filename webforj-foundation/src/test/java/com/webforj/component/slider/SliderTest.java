@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import com.basis.bbj.proxies.sysgui.BBjSlider;
 import com.basis.startup.type.BBjException;
 import com.webforj.component.ReflectionUtils;

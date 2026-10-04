@@ -27,7 +27,8 @@ public @interface AppProfile {
   String DEFAULT_BACKGROUND_COLOR = "#f8fafc";
   String DEFAULT_START_URL = ".";
   String DEFAULT_VIEWPORT =
-      "viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no";
+      "viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, "
+          + "maximum-scale=1.0, user-scalable=no";
   String DEFAULT_ICON_SRC = "icons://icon.png";
 
   /**
