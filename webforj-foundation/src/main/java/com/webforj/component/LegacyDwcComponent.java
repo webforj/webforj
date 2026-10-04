@@ -28,8 +28,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * The base class of the legacy DWC components.
- *
  * @deprecated Use {@link DwcComponent} instead.
  *
  * @see Component

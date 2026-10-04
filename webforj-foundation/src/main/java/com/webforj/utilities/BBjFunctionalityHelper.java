@@ -3,7 +3,7 @@ package com.webforj.utilities;
 
 /**
  * Class is created in order to streamline some of the BBj-specific methods and implementations that
- * are required for use in DWCJ controls.
+ * are required for use in webforJ components.
  */
 public final class BBjFunctionalityHelper {
 
