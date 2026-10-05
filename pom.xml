@@ -30,7 +30,7 @@
     <webforj.commons-lang3.version>3.20.0</webforj.commons-lang3.version>
     <webforj.exec-maven-plugin.version>3.6.4</webforj.exec-maven-plugin.version>
     <webforj.gson.version>2.14.0</webforj.gson.version>
-    <webforj.guava.version>33.7.1-jre</webforj.guava.version>
+    <webforj.guava.version>33.7.2-jre</webforj.guava.version>
     <webforj.jakarta-servlet.version>6.1.0</webforj.jakarta-servlet.version>
     <webforj.javaparser.version>3.27.1</webforj.javaparser.version>
     <webforj.jsoup.version>1.23.2</webforj.jsoup.version>
