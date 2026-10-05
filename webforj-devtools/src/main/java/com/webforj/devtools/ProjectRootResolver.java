@@ -1,4 +1,4 @@
-package com.webforj.devtools.craftforj;
+package com.webforj.devtools;
 
 import com.typesafe.config.Config;
 import java.nio.file.Files;
@@ -9,22 +9,33 @@ import java.util.List;
  * Resolves the root directory of the running project.
  *
  * <p>
- * The configured {@value #KEY_PROJECT_ROOT} always wins. Without it, the root is derived from the
- * code source of an anchor class by walking up from the class location until a directory holds a
- * build file, which covers exploded Maven and Gradle runs alike. A jar deployment, such as an app
- * installed into BBjServices, carries no relation to the project on disk, so derivation fails there
- * and the JVM working directory is the last resort.
+ * The configured {@value #KEY_PROJECT_ROOT} always wins, and the former key is still read when it
+ * is absent. Without a configured value, the root is derived from the code source of an anchor
+ * class by walking up from the class location until a directory holds a build file, which covers
+ * exploded Maven and Gradle runs alike. A jar deployment, such as an app installed into
+ * BBjServices, carries no relation to the project on disk, so derivation fails there and the JVM
+ * working directory is the last resort.
  * </p>
  *
  * @author Hyyan Abo Fakher
- * @since 26.02
+ * @since 26.03
  */
 public final class ProjectRootResolver {
 
   /**
    * The configuration key naming the project root directory on disk.
    */
-  public static final String KEY_PROJECT_ROOT = "webforj.devtools.craftforj.project-root";
+  public static final String KEY_PROJECT_ROOT = "webforj.devtools.project-root";
+
+  /**
+   * The former configuration key of the project root directory, read when
+   * {@value #KEY_PROJECT_ROOT} is absent.
+   *
+   * @deprecated use {@link #KEY_PROJECT_ROOT} instead
+   */
+  @Deprecated(since = "26.03")
+  public static final String DEPRECATED_KEY_PROJECT_ROOT =
+      "webforj.devtools.craftforj.project-root";
 
   private static final System.Logger LOGGER = System.getLogger(ProjectRootResolver.class.getName());
   private static final List<String> BUILD_MARKERS = List.of("pom.xml", "build.gradle",
@@ -60,11 +71,22 @@ public final class ProjectRootResolver {
    * @return the configured directory, or {@code null} when absent or unusable
    */
   static Path readConfiguredRoot(Config config) {
-    if (config == null || !config.hasPath(KEY_PROJECT_ROOT) || config.getIsNull(KEY_PROJECT_ROOT)) {
+    if (config == null) {
       return null;
     }
 
-    String value = config.getString(KEY_PROJECT_ROOT).trim();
+    String key = KEY_PROJECT_ROOT;
+    if (!hasValue(config, key)) {
+      key = DEPRECATED_KEY_PROJECT_ROOT;
+      if (!hasValue(config, key)) {
+        return null;
+      }
+
+      LOGGER.log(System.Logger.Level.WARNING, "The setting {0} is deprecated, use {1}", key,
+          KEY_PROJECT_ROOT);
+    }
+
+    String value = config.getString(key).trim();
     if (value.isEmpty()) {
       return null;
     }
@@ -72,7 +94,7 @@ public final class ProjectRootResolver {
     Path root = Path.of(value).toAbsolutePath().normalize();
     if (!Files.isDirectory(root)) {
       LOGGER.log(System.Logger.Level.WARNING,
-          "The configured {0} is not a directory and is ignored, {1}", KEY_PROJECT_ROOT, root);
+          "The configured {0} is not a directory and is ignored, {1}", key, root);
 
       return null;
     }
@@ -108,6 +130,10 @@ public final class ProjectRootResolver {
     }
 
     return null;
+  }
+
+  private static boolean hasValue(Config config, String key) {
+    return config.hasPath(key) && !config.getIsNull(key);
   }
 
   private static boolean isProjectRoot(Path directory) {

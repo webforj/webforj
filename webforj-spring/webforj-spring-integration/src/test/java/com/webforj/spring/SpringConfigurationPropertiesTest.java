@@ -30,6 +30,13 @@ class SpringConfigurationPropertiesTest {
   }
 
   @Test
+  void shouldHandleDevtoolsProjectRoot() {
+    properties.getDevtools().setProjectRoot("project");
+
+    assertEquals("project", properties.getDevtools().getProjectRoot());
+  }
+
+  @Test
   void shouldHandleEntryProperty() {
     String entry = "com.example.MyApp";
     properties.setEntry(entry);

@@ -26,6 +26,7 @@ import com.webforj.App;
 import com.webforj.Environment;
 import com.webforj.Page;
 import com.webforj.Request;
+import com.webforj.devtools.ProjectRootResolver;
 import com.webforj.devtools.craftforj.action.CraftforjActionHandler;
 import com.webforj.devtools.craftforj.action.CraftforjActionRegistry;
 import com.webforj.devtools.craftforj.appinfo.action.GetAppInfoAction;

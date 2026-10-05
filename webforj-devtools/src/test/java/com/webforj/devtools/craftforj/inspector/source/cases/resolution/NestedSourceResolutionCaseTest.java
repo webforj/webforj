@@ -7,7 +7,7 @@ import static org.mockito.Mockito.mockStatic;
 import com.devtoolsapplayoutspring.views.ResolvedButtonView;
 import com.webforj.component.ComponentSourceRegistry.SourcePoint;
 import com.webforj.component.button.Button;
-import com.webforj.devtools.craftforj.ProjectRootResolver;
+import com.webforj.devtools.ProjectRootResolver;
 import com.webforj.devtools.craftforj.inspector.source.SourceCodeModifier;
 import com.webforj.devtools.craftforj.inspector.source.cases.support.SourceWriteFixture;
 import com.webforj.devtools.craftforj.inspector.source.model.ChangeRequest;
