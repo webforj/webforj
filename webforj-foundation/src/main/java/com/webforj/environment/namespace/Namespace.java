@@ -37,9 +37,11 @@ public abstract sealed class Namespace permits PrivateNamespace, GlobalNamespace
   //@formatter:on
   public static final String ON_EVENT = "onEvent";
   private final EventDispatcher dispatcher = new EventDispatcher();
-  private final Map<String, NamespaceEventSinkRegistry<NamespaceKeyAccessEvent>> keyAccessRegistries =
+  private final Map<String, NamespaceEventSinkRegistry<NamespaceKeyAccessEvent>>
+      keyAccessRegistries =
       new HashMap<>();
-  private final Map<String, NamespaceEventSinkRegistry<NamespaceKeyChangeEvent>> keyChangeRegistries =
+  private final Map<String, NamespaceEventSinkRegistry<NamespaceKeyChangeEvent>>
+      keyChangeRegistries =
       new HashMap<>();
   private BBjNamespace ns;
 

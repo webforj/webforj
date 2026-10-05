@@ -338,8 +338,8 @@ public class Paginator {
 
   private void handleRepositoryCommit(RepositoryCommitEvent<?> ev) {
     if (!ev.isSingleCommit() && !isUpdating) {
-      int offset = repository.getOffset();
-      int limit = repository.getLimit();
+      final int offset = repository.getOffset();
+      final int limit = repository.getLimit();
 
       repository.setOffset(0);
       repository.setLimit(0);

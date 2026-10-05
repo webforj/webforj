@@ -117,6 +117,7 @@ public class Location implements Serializable {
    *
    * @return the full URI string
    */
+  @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
   public String getFullURI() {
     StringBuilder uriBuilder = new StringBuilder(segments.getPath());
     String query = parameters.getQueryString();

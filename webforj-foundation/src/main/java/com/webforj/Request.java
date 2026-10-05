@@ -124,6 +124,7 @@ public final class Request {
    * @return the IP address of the client that sent the request
    * @since 24.02
    */
+  @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
   public String getIPAddress() {
     try {
       return getEnvironment().getBBjAPI().getThinClient().getClientIPAddress();
@@ -138,6 +139,7 @@ public final class Request {
    * @return the public IP address of the client that sent the request
    * @since 24.02
    */
+  @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
   public String getPublicIPAddress() {
     try {
       return getEnvironment().getBBjAPI().getThinClient().getPublicIPAddress();

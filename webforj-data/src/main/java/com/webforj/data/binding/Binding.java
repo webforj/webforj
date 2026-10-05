@@ -789,8 +789,8 @@ public class Binding<C extends ValueAware<C, ComponentValueT>, ComponentValueT, 
   private static final Class<?>[] REQUIRED_INDICATOR_ANNOTATIONS = resolveRequiredIndicators();
 
   private static Class<?>[] resolveRequiredIndicators() {
-    String[] names =
-        {"jakarta.validation.constraints.NotNull", "jakarta.validation.constraints.NotEmpty",
+    String[] names = {
+        "jakarta.validation.constraints.NotNull", "jakarta.validation.constraints.NotEmpty",
             "jakarta.validation.constraints.NotBlank", "jakarta.validation.constraints.Size"};
     List<Class<?>> resolved = new ArrayList<>(names.length);
     for (String name : names) {

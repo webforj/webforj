@@ -259,7 +259,8 @@ public final class Upload extends DwcFocusableComponent<Upload>
   private final ComponentEventSinkRegistry<UploadCancelEvent> cancelEventSinkListenerRegistry =
       new ComponentEventSinkRegistry<>(new UploadCancelEventSink(this, getEventDispatcher()),
           UploadCancelEvent.class);
-  private final ComponentEventSinkRegistry<UploadFilterChangeEvent> filterChangeEventSinkListenerRegistry =
+  private final ComponentEventSinkRegistry<UploadFilterChangeEvent>
+      filterChangeEventSinkListenerRegistry =
       new ComponentEventSinkRegistry<>(new UploadFilterChangeEventSink(this, getEventDispatcher()),
           UploadFilterChangeEvent.class);
 
