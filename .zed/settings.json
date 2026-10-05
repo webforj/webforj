@@ -10,6 +10,12 @@
     }
   },
   "lsp": {
+    "checkstyle-lsp": {
+      "settings": {
+        "enabled": true,
+        "version": "14.0.0"
+      }
+    },
     "jdtls": {
       "initialization_options": {
         "settings": {
