@@ -40,6 +40,7 @@ class WebforjConfigBuilder {
    *
    * @return a Config object with all configured values
    */
+  @SuppressWarnings("deprecation")
   public static Config buildConfig(SpringConfigurationProperties properties,
       SpringSecurityConfigurationProperties security) {
     ConfigMapBuilder builder = new ConfigMapBuilder();
@@ -91,6 +92,7 @@ class WebforjConfigBuilder {
 
     // Development tools configuration
     builder.addNested(properties::getDevtools, devtools -> {
+      builder.add("webforj.devtools.project-root", devtools::getProjectRoot);
       builder.addNested(devtools::getCraftforj, craftforj -> {
         builder.add("webforj.devtools.craftforj.enabled", craftforj::getEnabled)
             .addList("webforj.devtools.craftforj.hosts-allowed", craftforj::getHostsAllowed)

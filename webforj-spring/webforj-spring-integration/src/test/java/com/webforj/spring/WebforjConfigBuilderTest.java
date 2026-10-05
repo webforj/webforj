@@ -610,6 +610,14 @@ class WebforjConfigBuilderTest {
     }
 
     @Test
+    void shouldMapTheDevtoolsProjectRoot() {
+      properties.getDevtools().setProjectRoot("/work/my-app");
+      Config config = WebforjConfigBuilder.buildConfig(properties);
+
+      assertEquals("/work/my-app", config.getString("webforj.devtools.project-root"));
+    }
+
+    @Test
     void shouldMergeSourceChanges() {
       properties.getDevtools().getCraftforj().setSourceChanges(false);
       Config config = WebforjConfigBuilder.buildConfig(properties);

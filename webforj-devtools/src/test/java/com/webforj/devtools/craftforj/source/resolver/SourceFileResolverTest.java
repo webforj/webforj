@@ -10,7 +10,7 @@ import static org.mockito.Mockito.when;
 
 import com.typesafe.config.ConfigFactory;
 import com.webforj.Environment;
-import com.webforj.devtools.craftforj.ProjectRootResolver;
+import com.webforj.devtools.ProjectRootResolver;
 import com.webforj.devtools.craftforj.styles.StylesheetResolver;
 import java.nio.file.Files;
 import java.nio.file.Path;

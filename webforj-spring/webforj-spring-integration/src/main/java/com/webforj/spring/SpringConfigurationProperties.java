@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * Webforj boot configuration properties.
@@ -1073,6 +1074,12 @@ public class SpringConfigurationProperties {
   public static class DevTools {
 
     /**
+     * The project root directory on disk. Overrides the derivation from the application class
+     * location, which is needed when the application runs from a jar away from its sources.
+     */
+    private String projectRoot;
+
+    /**
      * craftforJ configuration.
      */
     private Craftforj craftforj = new Craftforj();
@@ -1081,6 +1088,24 @@ public class SpringConfigurationProperties {
      * Live reload configuration.
      */
     private LiveReload livereload = new LiveReload();
+
+    /**
+     * Gets the project root directory.
+     *
+     * @return the project root directory
+     */
+    public String getProjectRoot() {
+      return projectRoot;
+    }
+
+    /**
+     * Sets the project root directory.
+     *
+     * @param projectRoot the project root directory
+     */
+    public void setProjectRoot(String projectRoot) {
+      this.projectRoot = projectRoot;
+    }
 
     /**
      * Gets the craftforJ configuration.
@@ -1199,7 +1224,10 @@ public class SpringConfigurationProperties {
      * Gets the project root directory.
      *
      * @return the project root directory
+     * @deprecated use {@link DevTools#getProjectRoot()} instead
      */
+    @DeprecatedConfigurationProperty(replacement = "webforj.devtools.project-root", since = "26.03")
+    @Deprecated(since = "26.03")
     public String getProjectRoot() {
       return projectRoot;
     }

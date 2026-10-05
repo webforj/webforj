@@ -2,7 +2,7 @@ package com.webforj.devtools.craftforj.source.resolver;
 
 import com.typesafe.config.Config;
 import com.webforj.Environment;
-import com.webforj.devtools.craftforj.ProjectRootResolver;
+import com.webforj.devtools.ProjectRootResolver;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
