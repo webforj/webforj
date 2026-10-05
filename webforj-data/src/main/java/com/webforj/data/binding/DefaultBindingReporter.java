@@ -19,8 +19,8 @@ import java.util.stream.Collectors;
  * @since 24.01
  * @author Hyyan Abo Fakher
  */
-public class DefaultBindingReporter<C extends ValueAware<C, ComponentValueT>, ComponentValueT, B, BeanValueT>
-    implements BindingReporter<C, ComponentValueT, B, BeanValueT> {
+public class DefaultBindingReporter<C extends ValueAware<C, ViewT>, ViewT, B, BeanValueT>
+    implements BindingReporter<C, ViewT, B, BeanValueT> {
   private Function<List<String>, String> formatter;
 
   /**
@@ -57,7 +57,7 @@ public class DefaultBindingReporter<C extends ValueAware<C, ComponentValueT>, Co
   }
 
   @Override
-  public void report(ValidationResult validateResult, Binding<C, ComponentValueT, B, BeanValueT> binding) {
+  public void report(ValidationResult validateResult, Binding<C, ViewT, B, BeanValueT> binding) {
     C component = binding.getComponent();
 
     if (component instanceof InvalidAware) {

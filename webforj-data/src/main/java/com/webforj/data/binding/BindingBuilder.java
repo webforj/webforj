@@ -22,7 +22,7 @@ import java.util.function.Supplier;
  * @since 24.01
  * @author Hyyan Abo Fakher
  */
-public interface BindingBuilder<C extends ValueAware<C, ComponentValueT>, ComponentValueT, B, BeanValueT> {
+public interface BindingBuilder<C extends ValueAware<C, ViewT>, ViewT, B, BeanValueT> {
 
   /**
    * Sets the bean property getter function.
@@ -30,7 +30,7 @@ public interface BindingBuilder<C extends ValueAware<C, ComponentValueT>, Compon
    * @param getter the getter function.
    * @return this binding builder.
    */
-  public BindingBuilder<C, ComponentValueT, B, BeanValueT> useGetter(Function<B, BeanValueT> getter);
+  public BindingBuilder<C, ViewT, B, BeanValueT> useGetter(Function<B, BeanValueT> getter);
 
   /**
    * Sets the bean property setter function.
@@ -38,7 +38,7 @@ public interface BindingBuilder<C extends ValueAware<C, ComponentValueT>, Compon
    * @param setter the setter function.
    * @return this binding builder.
    */
-  public BindingBuilder<C, ComponentValueT, B, BeanValueT> useSetter(BiConsumer<B, BeanValueT> setter);
+  public BindingBuilder<C, ViewT, B, BeanValueT> useSetter(BiConsumer<B, BeanValueT> setter);
 
   /**
    * Sets the bean property getter and setter functions.
@@ -48,8 +48,8 @@ public interface BindingBuilder<C extends ValueAware<C, ComponentValueT>, Compon
    *
    * @return this binding builder.
    */
-  public default BindingBuilder<C, ComponentValueT, B, BeanValueT> useMutator(BiConsumer<B, BeanValueT> setter,
-      Function<B, BeanValueT> getter) {
+  public default BindingBuilder<C, ViewT, B, BeanValueT> useMutator(
+      BiConsumer<B, BeanValueT> setter, Function<B, BeanValueT> getter) {
     return useGetter(getter).useSetter(setter);
   }
 
@@ -61,8 +61,8 @@ public interface BindingBuilder<C extends ValueAware<C, ComponentValueT>, Compon
    *
    * @return this binding builder.
    */
-  public BindingBuilder<C, ComponentValueT, B, BeanValueT> useTransformer(Transformer<ComponentValueT, BeanValueT> transformer,
-      String message);
+  public BindingBuilder<C, ViewT, B, BeanValueT> useTransformer(
+      Transformer<ViewT, BeanValueT> transformer, String message);
 
   /**
    * Sets the transformer to use for transforming the value between the component and the bean with
@@ -76,8 +76,8 @@ public interface BindingBuilder<C extends ValueAware<C, ComponentValueT>, Compon
    *
    * @since 25.12
    */
-  public BindingBuilder<C, ComponentValueT, B, BeanValueT> useTransformer(Transformer<ComponentValueT, BeanValueT> transformer,
-      Supplier<String> messageSupplier);
+  public BindingBuilder<C, ViewT, B, BeanValueT> useTransformer(
+      Transformer<ViewT, BeanValueT> transformer, Supplier<String> messageSupplier);
 
   /**
    * Sets the transformer to use for transforming the value between the component and the bean.
@@ -86,7 +86,8 @@ public interface BindingBuilder<C extends ValueAware<C, ComponentValueT>, Compon
    *
    * @return this binding builder.
    */
-  public default BindingBuilder<C, ComponentValueT, B, BeanValueT> useTransformer(Transformer<ComponentValueT, BeanValueT> transformer) {
+  public default BindingBuilder<C, ViewT, B, BeanValueT> useTransformer(
+      Transformer<ViewT, BeanValueT> transformer) {
     return useTransformer(transformer, (String) null);
   }
 
@@ -106,7 +107,7 @@ public interface BindingBuilder<C extends ValueAware<C, ComponentValueT>, Compon
    *
    * @param readOnly The read-only state.
    */
-  public BindingBuilder<C, ComponentValueT, B, BeanValueT> readOnly(boolean readOnly);
+  public BindingBuilder<C, ViewT, B, BeanValueT> readOnly(boolean readOnly);
 
   /**
    * Sets the read-only state of the binding.
@@ -122,7 +123,7 @@ public interface BindingBuilder<C extends ValueAware<C, ComponentValueT>, Compon
    * component.
    * </p>
    */
-  public default BindingBuilder<C, ComponentValueT, B, BeanValueT> readOnly() {
+  public default BindingBuilder<C, ViewT, B, BeanValueT> readOnly() {
     return readOnly(true);
   }
 
@@ -138,7 +139,7 @@ public interface BindingBuilder<C extends ValueAware<C, ComponentValueT>, Compon
    *
    * @param required The required state.
    */
-  public BindingBuilder<C, ComponentValueT, B, BeanValueT> required(boolean required);
+  public BindingBuilder<C, ViewT, B, BeanValueT> required(boolean required);
 
   /**
    * Sets the required state of the binding.
@@ -150,7 +151,7 @@ public interface BindingBuilder<C extends ValueAware<C, ComponentValueT>, Compon
    * component supports it, providing a validation is still required.
    * </p>
    */
-  public default BindingBuilder<C, ComponentValueT, B, BeanValueT> required() {
+  public default BindingBuilder<C, ViewT, B, BeanValueT> required() {
     return required(true);
   }
 
@@ -160,7 +161,7 @@ public interface BindingBuilder<C extends ValueAware<C, ComponentValueT>, Compon
    * @param validator the validator.
    * @return this binding builder.
    */
-  public BindingBuilder<C, ComponentValueT, B, BeanValueT> useValidator(Validator<BeanValueT> validator);
+  public BindingBuilder<C, ViewT, B, BeanValueT> useValidator(Validator<BeanValueT> validator);
 
   /**
    * Adds a simple boolean validator with a corresponding message.
@@ -170,7 +171,8 @@ public interface BindingBuilder<C extends ValueAware<C, ComponentValueT>, Compon
    * @param message The message to be used in case of validation failure.
    * @return this binding builder.
    */
-  public BindingBuilder<C, ComponentValueT, B, BeanValueT> useValidator(Predicate<BeanValueT> validator, String message);
+  public BindingBuilder<C, ViewT, B, BeanValueT> useValidator(Predicate<BeanValueT> validator,
+      String message);
 
   /**
    * Adds a simple boolean validator with a message supplier. The supplier is invoked each time
@@ -183,7 +185,7 @@ public interface BindingBuilder<C extends ValueAware<C, ComponentValueT>, Compon
    *
    * @since 25.12
    */
-  public BindingBuilder<C, ComponentValueT, B, BeanValueT> useValidator(Predicate<BeanValueT> validator,
+  public BindingBuilder<C, ViewT, B, BeanValueT> useValidator(Predicate<BeanValueT> validator,
       Supplier<String> messageSupplier);
 
   /**
@@ -194,8 +196,8 @@ public interface BindingBuilder<C extends ValueAware<C, ComponentValueT>, Compon
    *
    * @return this binding builder.
    */
-  public BindingBuilder<C, ComponentValueT, B, BeanValueT> useValidatorsList(List<Validator<BeanValueT>> validators,
-      List<String> messages);
+  public BindingBuilder<C, ViewT, B, BeanValueT> useValidatorsList(
+      List<Validator<BeanValueT>> validators, List<String> messages);
 
   /**
    * Adds a list of validators to the binding.
@@ -203,7 +205,8 @@ public interface BindingBuilder<C extends ValueAware<C, ComponentValueT>, Compon
    * @param validators the list of validators.
    * @return this binding builder.
    */
-  public default BindingBuilder<C, ComponentValueT, B, BeanValueT> useValidatorsList(List<Validator<BeanValueT>> validators) {
+  public default BindingBuilder<C, ViewT, B, BeanValueT> useValidatorsList(
+      List<Validator<BeanValueT>> validators) {
     return useValidatorsList(validators, null);
   }
 
@@ -213,14 +216,14 @@ public interface BindingBuilder<C extends ValueAware<C, ComponentValueT>, Compon
    * @param locale the locale to use
    * @return this binding builder.
    */
-  public BindingBuilder<C, ComponentValueT, B, BeanValueT> useJakartaValidator(Locale locale);
+  public BindingBuilder<C, ViewT, B, BeanValueT> useJakartaValidator(Locale locale);
 
   /**
    * Will process the value through the Jakarta Validation API using the default locale.
    *
    * @return this binding builder.
    */
-  public default BindingBuilder<C, ComponentValueT, B, BeanValueT> useJakartaValidator() {
+  public default BindingBuilder<C, ViewT, B, BeanValueT> useJakartaValidator() {
     return useJakartaValidator(Locale.getDefault());
   }
 
@@ -230,7 +233,8 @@ public interface BindingBuilder<C extends ValueAware<C, ComponentValueT>, Compon
    * @param reporter the validation reporter.
    * @return this binding builder.
    */
-  public BindingBuilder<C, ComponentValueT, B, BeanValueT> useReporter(BindingReporter<C, ComponentValueT, B, BeanValueT> reporter);
+  public BindingBuilder<C, ViewT, B, BeanValueT> useReporter(
+      BindingReporter<C, ViewT, B, BeanValueT> reporter);
 
   /**
    * Sets the default validation reporter.
@@ -244,7 +248,8 @@ public interface BindingBuilder<C extends ValueAware<C, ComponentValueT>, Compon
    * @param formatter the function to format the validation messages.
    * @return this binding builder.
    */
-  public BindingBuilder<C, ComponentValueT, B, BeanValueT> useDefaultReporter(Function<List<String>, String> formatter);
+  public BindingBuilder<C, ViewT, B, BeanValueT> useDefaultReporter(
+      Function<List<String>, String> formatter);
 
   /**
    * Sets the default validation reporter.
@@ -259,7 +264,7 @@ public interface BindingBuilder<C extends ValueAware<C, ComponentValueT>, Compon
    *
    * @return this binding builder.
    */
-  public default BindingBuilder<C, ComponentValueT, B, BeanValueT> useDefaultReporter() {
+  public default BindingBuilder<C, ViewT, B, BeanValueT> useDefaultReporter() {
     return useDefaultReporter(null);
   }
 
@@ -276,7 +281,7 @@ public interface BindingBuilder<C extends ValueAware<C, ComponentValueT>, Compon
    * @param autoValidate whether to validate on each change.
    * @return this binding builder.
    */
-  public BindingBuilder<C, ComponentValueT, B, BeanValueT> autoValidate(boolean autoValidate);
+  public BindingBuilder<C, ViewT, B, BeanValueT> autoValidate(boolean autoValidate);
 
   /**
    * Monitors the component for changes and validates the value on each change based on the
@@ -290,7 +295,7 @@ public interface BindingBuilder<C extends ValueAware<C, ComponentValueT>, Compon
    *
    * @return this binding builder.
    */
-  public default BindingBuilder<C, ComponentValueT, B, BeanValueT> autoValidate() {
+  public default BindingBuilder<C, ViewT, B, BeanValueT> autoValidate() {
     return autoValidate(true);
   }
 

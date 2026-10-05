@@ -10,7 +10,7 @@ import com.webforj.data.validation.server.ValidationResult;
  * @author Hyyan Abo Fakher
  */
 @FunctionalInterface
-public interface BindingReporter<C extends ValueAware<C, ComponentValueT>, ComponentValueT, B, V> {
+public interface BindingReporter<C extends ValueAware<C, ViewT>, ViewT, B, V> {
 
   /**
    * Reports the validation result.
@@ -18,5 +18,5 @@ public interface BindingReporter<C extends ValueAware<C, ComponentValueT>, Compo
    * @param result the validation result.
    * @param binding the binding that was validated.
    */
-  void report(ValidationResult result, Binding<C, ComponentValueT, B, V> binding);
+  void report(ValidationResult result, Binding<C, ViewT, B, V> binding);
 }

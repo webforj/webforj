@@ -15,10 +15,11 @@ import java.util.EventObject;
  * @since 24.01
  * @author Hyyan Abo Fakher
  */
-public class BindingValidateEvent<C extends ValueAware<C, ComponentValueT>, ComponentValueT, B, BeanValueT> extends EventObject {
-  private final transient Binding<C, ComponentValueT, B, BeanValueT> binding;
+public class BindingValidateEvent<C extends ValueAware<C, ViewT>, ViewT, B, BeanValueT>
+    extends EventObject {
+  private final transient Binding<C, ViewT, B, BeanValueT> binding;
   private final transient ValidationResult validationResult;
-  private final transient ComponentValueT value;
+  private final transient ViewT value;
 
   /**
    * Creates a new instance of {@code BindingValidateEvent}.
@@ -27,8 +28,8 @@ public class BindingValidateEvent<C extends ValueAware<C, ComponentValueT>, Comp
    * @param validationResult The validation result.
    * @param value The value of the binding.
    */
-  public BindingValidateEvent(Binding<C, ComponentValueT, B, BeanValueT> source, ValidationResult validationResult,
-      ComponentValueT value) {
+  public BindingValidateEvent(Binding<C, ViewT, B, BeanValueT> source,
+      ValidationResult validationResult, ViewT value) {
     super(source);
     this.binding = source;
     this.validationResult = validationResult;
@@ -40,7 +41,7 @@ public class BindingValidateEvent<C extends ValueAware<C, ComponentValueT>, Comp
    *
    * @return The field binding.
    */
-  public Binding<C, ComponentValueT, B, BeanValueT> getBinding() {
+  public Binding<C, ViewT, B, BeanValueT> getBinding() {
     return binding;
   }
 
@@ -58,7 +59,7 @@ public class BindingValidateEvent<C extends ValueAware<C, ComponentValueT>, Comp
    *
    * @return The value of the field binding.
    */
-  public ComponentValueT getValue() {
+  public ViewT getValue() {
     return value;
   }
 }
