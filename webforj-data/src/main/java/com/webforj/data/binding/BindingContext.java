@@ -205,7 +205,7 @@ public class BindingContext<B> implements LocaleAware<BindingContext<B>> {
    *
    * @param <C> The type of the UI component
    * @param <V> The type of the value
-   * @param <BV> The type of the bean value
+   * @param <BeanValueT> The type of the bean value
    *
    * @param component The UI component to bind
    * @param property The bean property to bind
@@ -213,8 +213,8 @@ public class BindingContext<B> implements LocaleAware<BindingContext<B>> {
    *
    * @return The binding context.
    */
-  public <C extends ValueAware<C, V>, V, BV> BindingBuilder<C, V, B, BV> bind(C component,
-      String property, Class<BV> beanValueClass) {
+  public <C extends ValueAware<C, V>, V, BeanValueT> BindingBuilder<C, V, B, BeanValueT> bind(C component,
+      String property, Class<BeanValueT> beanValueClass) {
     return new FieldBindingBuilderImpl<>(component, property);
   }
 
@@ -654,10 +654,10 @@ public class BindingContext<B> implements LocaleAware<BindingContext<B>> {
     return results;
   }
 
-  private final class FieldBindingBuilderImpl<C extends ValueAware<C, CV>, CV, BV>
-      implements BindingBuilder<C, CV, B, BV> {
+  private final class FieldBindingBuilderImpl<C extends ValueAware<C, ComponentValueT>, ComponentValueT, BeanValueT>
+      implements BindingBuilder<C, ComponentValueT, B, BeanValueT> {
 
-    private Binding<C, CV, B, BV> fieldBinding;
+    private Binding<C, ComponentValueT, B, BeanValueT> fieldBinding;
     private String property;
     private C component;
     private boolean isUsingJakartaValidator = false;
@@ -707,68 +707,68 @@ public class BindingContext<B> implements LocaleAware<BindingContext<B>> {
     }
 
     @Override
-    public BindingBuilder<C, CV, B, BV> useGetter(Function<B, BV> getter) {
+    public BindingBuilder<C, ComponentValueT, B, BeanValueT> useGetter(Function<B, BeanValueT> getter) {
       fieldBinding.setGetter(getter);
       return this;
     }
 
     @Override
-    public BindingBuilder<C, CV, B, BV> useSetter(BiConsumer<B, BV> setter) {
+    public BindingBuilder<C, ComponentValueT, B, BeanValueT> useSetter(BiConsumer<B, BeanValueT> setter) {
       fieldBinding.setSetter(setter);
       return this;
     }
 
     @Override
-    public BindingBuilder<C, CV, B, BV> useTransformer(Transformer<CV, BV> transformer,
+    public BindingBuilder<C, ComponentValueT, B, BeanValueT> useTransformer(Transformer<ComponentValueT, BeanValueT> transformer,
         String message) {
       fieldBinding.setTransformer(transformer, message);
       return this;
     }
 
     @Override
-    public BindingBuilder<C, CV, B, BV> useTransformer(Transformer<CV, BV> transformer,
+    public BindingBuilder<C, ComponentValueT, B, BeanValueT> useTransformer(Transformer<ComponentValueT, BeanValueT> transformer,
         Supplier<String> messageSupplier) {
       fieldBinding.setTransformer(transformer, messageSupplier);
       return this;
     }
 
     @Override
-    public BindingBuilder<C, CV, B, BV> readOnly(boolean readOnly) {
+    public BindingBuilder<C, ComponentValueT, B, BeanValueT> readOnly(boolean readOnly) {
       fieldBinding.setReadOnly(readOnly);
       return this;
     }
 
     @Override
-    public BindingBuilder<C, CV, B, BV> required(boolean required) {
+    public BindingBuilder<C, ComponentValueT, B, BeanValueT> required(boolean required) {
       fieldBinding.setRequired(required);
       return this;
     }
 
     @Override
-    public BindingBuilder<C, CV, B, BV> useValidator(Validator<BV> validator) {
+    public BindingBuilder<C, ComponentValueT, B, BeanValueT> useValidator(Validator<BeanValueT> validator) {
       fieldBinding.addValidator(validator);
       return this;
     }
 
     @Override
-    public BindingBuilder<C, CV, B, BV> useValidator(Predicate<BV> validator, String message) {
+    public BindingBuilder<C, ComponentValueT, B, BeanValueT> useValidator(Predicate<BeanValueT> validator, String message) {
       fieldBinding.addValidator(Validator.of(validator, message));
       return this;
     }
 
     @Override
-    public BindingBuilder<C, CV, B, BV> useValidator(Predicate<BV> validator,
+    public BindingBuilder<C, ComponentValueT, B, BeanValueT> useValidator(Predicate<BeanValueT> validator,
         Supplier<String> messageSupplier) {
       fieldBinding.addValidator(Validator.of(validator, messageSupplier));
       return this;
     }
 
     @Override
-    public BindingBuilder<C, CV, B, BV> useValidatorsList(List<Validator<BV>> validators,
+    public BindingBuilder<C, ComponentValueT, B, BeanValueT> useValidatorsList(List<Validator<BeanValueT>> validators,
         List<String> messages) {
       List<String> messagesCopy = new ArrayList<>(messages);
 
-      for (Validator<BV> validator : validators) {
+      for (Validator<BeanValueT> validator : validators) {
         if (messagesCopy.isEmpty()) {
           fieldBinding.addValidator(validator);
         } else {
@@ -781,7 +781,7 @@ public class BindingContext<B> implements LocaleAware<BindingContext<B>> {
     }
 
     @Override
-    public BindingBuilder<C, CV, B, BV> useJakartaValidator(Locale locale) {
+    public BindingBuilder<C, ComponentValueT, B, BeanValueT> useJakartaValidator(Locale locale) {
       if (!(property != null && !property.isEmpty())) {
         return this;
       }
@@ -797,19 +797,19 @@ public class BindingContext<B> implements LocaleAware<BindingContext<B>> {
     }
 
     @Override
-    public BindingBuilder<C, CV, B, BV> useReporter(BindingReporter<C, CV, B, BV> reporter) {
+    public BindingBuilder<C, ComponentValueT, B, BeanValueT> useReporter(BindingReporter<C, ComponentValueT, B, BeanValueT> reporter) {
       fieldBinding.setReporter(reporter);
       return this;
     }
 
     @Override
-    public BindingBuilder<C, CV, B, BV> useDefaultReporter(
+    public BindingBuilder<C, ComponentValueT, B, BeanValueT> useDefaultReporter(
         Function<List<String>, String> formatter) {
       return useReporter(new DefaultBindingReporter<>(formatter));
     }
 
     @Override
-    public BindingBuilder<C, CV, B, BV> autoValidate(boolean autoValidationOnChange) {
+    public BindingBuilder<C, ComponentValueT, B, BeanValueT> autoValidate(boolean autoValidationOnChange) {
       fieldBinding.setAutoValidate(autoValidationOnChange);
       return this;
     }

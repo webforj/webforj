@@ -7,13 +7,13 @@ import java.util.function.Function;
  * Represents a transformer that can be used to transform values between the model and the component
  * presentation.
  *
- * @param <CV> The type of the view value.
- * @param <MV> The type of the model value.
+ * @param <ComponentValueT> The type of the view value.
+ * @param <ModelValueT> The type of the model value.
  *
  * @since 24.01
  * @author Hyyan Abo Fakher
  */
-public interface Transformer<CV, MV> {
+public interface Transformer<ComponentValueT, ModelValueT> {
 
   /**
    * Transforms the given view value to the model value.
@@ -22,7 +22,7 @@ public interface Transformer<CV, MV> {
    * @return The model value.
    * @throws TransformationException If there is a problem with the transformation.
    */
-  public MV transformToModel(CV viewValue);
+  public ModelValueT transformToModel(ComponentValueT viewValue);
 
   /**
    * Transforms the given model value to the view value.
@@ -31,23 +31,23 @@ public interface Transformer<CV, MV> {
    * @return The component value.
    * @throws TransformationException If there is a problem with the transformation.
    */
-  public CV transformToComponent(MV modelValue);
+  public ComponentValueT transformToComponent(ModelValueT modelValue);
 
   /**
    * Returns a transformer that uses the given functions to transform the values.
    *
-   * @param <CV> The type of the view value.
-   * @param <MV> The type of the model value.
+   * @param <ComponentValueT> The type of the view value.
+   * @param <ModelValueT> The type of the model value.
    *
    * @param toModel The function to use to transform the view value to the model value.
    * @param toView The function to use to transform the model value to the view value.
    *
    * @return The transformer.
    */
-  public static <CV, MV> Transformer<CV, MV> of(Function<CV, MV> toModel, Function<MV, CV> toView) {
-    return new Transformer<CV, MV>() {
+  public static <ComponentValueT, ModelValueT> Transformer<ComponentValueT, ModelValueT> of(Function<ComponentValueT, ModelValueT> toModel, Function<ModelValueT, ComponentValueT> toView) {
+    return new Transformer<ComponentValueT, ModelValueT>() {
       @Override
-      public MV transformToModel(CV viewValue) {
+      public ModelValueT transformToModel(ComponentValueT viewValue) {
         try {
           return toModel.apply(viewValue);
         } catch (Exception e) {
@@ -56,7 +56,7 @@ public interface Transformer<CV, MV> {
       }
 
       @Override
-      public CV transformToComponent(MV modelValue) {
+      public ComponentValueT transformToComponent(ModelValueT modelValue) {
         try {
           return toView.apply(modelValue);
         } catch (Exception e) {

@@ -49,34 +49,34 @@ import java.util.function.Supplier;
  * @param <C> the type of the UI component implementing {@link ValueAware}, capable of displaying
  *        and updating a value of type V.
  * @param <B> the type of the bean from which the value is being synchronized.
- * @param <BV> the type of the value that is being bound.
+ * @param <BeanValueT> the type of the value that is being bound.
  *
  * @since 24.01
  * @author Hyyan Abo Fakher
  */
-public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
+public class Binding<C extends ValueAware<C, ComponentValueT>, ComponentValueT, B, BeanValueT> {
   private final EventDispatcher dispatcher = new EventDispatcher();
   private final Class<B> beanClass;
   private final C component;
-  private Function<B, BV> getter;
-  private BiConsumer<B, BV> setter;
+  private Function<B, BeanValueT> getter;
+  private BiConsumer<B, BeanValueT> setter;
   private String property;
-  private Transformer<CV, BV> transformer;
+  private Transformer<ComponentValueT, BeanValueT> transformer;
   private Supplier<String> transformerMessageSupplier;
-  private final List<Validator<BV>> validators = new ArrayList<>();
-  private BindingReporter<C, CV, B, BV> validateReporter;
+  private final List<Validator<BeanValueT>> validators = new ArrayList<>();
+  private BindingReporter<C, ComponentValueT, B, BeanValueT> validateReporter;
   private boolean autoValidate = false;
-  private ListenerRegistration<ValueChangeEvent<CV>> valueChangeListener;
+  private ListenerRegistration<ValueChangeEvent<ComponentValueT>> valueChangeListener;
   private boolean readOnly = false;
   private boolean required = false;
   private boolean autoWrite = false;
   private B autoWriteBean = null;
-  private CV cachedValue;
+  private ComponentValueT cachedValue;
   private boolean isValueCached = false;
   private Class<?> lastBeanClassForGetter;
-  private Function<B, BV> cachedGetter;
+  private Function<B, BeanValueT> cachedGetter;
   private Class<?> lastBeanClassForSetter;
-  private BiConsumer<B, BV> cachedSetter;
+  private BiConsumer<B, BeanValueT> cachedSetter;
 
   /**
    * Constructs a new FieldBinding.
@@ -124,7 +124,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    * @param getter the getter.
    * @return this binding itself.
    */
-  public Binding<C, CV, B, BV> setGetter(Function<B, BV> getter) {
+  public Binding<C, ComponentValueT, B, BeanValueT> setGetter(Function<B, BeanValueT> getter) {
     this.getter = getter;
     return this;
   }
@@ -140,7 +140,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    * @return the getter.
    * @see #setGetter(Function)
    */
-  public Optional<Function<B, BV>> getGetter() {
+  public Optional<Function<B, BeanValueT>> getGetter() {
     return Optional.ofNullable(getter);
   }
 
@@ -157,7 +157,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    * @param setter the setter.
    * @return this binding itself.
    */
-  public Binding<C, CV, B, BV> setSetter(BiConsumer<B, BV> setter) {
+  public Binding<C, ComponentValueT, B, BeanValueT> setSetter(BiConsumer<B, BeanValueT> setter) {
     this.setter = setter;
     return this;
   }
@@ -172,7 +172,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    *
    * @return the setter.
    */
-  public Optional<BiConsumer<B, BV>> getSetter() {
+  public Optional<BiConsumer<B, BeanValueT>> getSetter() {
     return Optional.ofNullable(setter);
   }
 
@@ -190,7 +190,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    *
    * @return this binding itself.
    */
-  public Binding<C, CV, B, BV> setTransformer(Transformer<CV, BV> transformer, String message) {
+  public Binding<C, ComponentValueT, B, BeanValueT> setTransformer(Transformer<ComponentValueT, BeanValueT> transformer, String message) {
     this.transformer = transformer;
     this.transformerMessageSupplier = message != null ? () -> message : null;
     return this;
@@ -213,7 +213,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    *
    * @since 25.12
    */
-  public Binding<C, CV, B, BV> setTransformer(Transformer<CV, BV> transformer,
+  public Binding<C, ComponentValueT, B, BeanValueT> setTransformer(Transformer<ComponentValueT, BeanValueT> transformer,
       Supplier<String> messageSupplier) {
     this.transformer = transformer;
     this.transformerMessageSupplier = messageSupplier;
@@ -233,7 +233,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    *
    * @return this binding itself.
    */
-  public Binding<C, CV, B, BV> setTransformer(Transformer<CV, BV> transformer) {
+  public Binding<C, ComponentValueT, B, BeanValueT> setTransformer(Transformer<ComponentValueT, BeanValueT> transformer) {
     this.transformer = transformer;
     this.transformerMessageSupplier = null;
     return this;
@@ -244,7 +244,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    *
    * @return the transformer.
    */
-  public Optional<Transformer<CV, BV>> getTransformer() {
+  public Optional<Transformer<ComponentValueT, BeanValueT>> getTransformer() {
     return Optional.ofNullable(transformer);
   }
 
@@ -266,7 +266,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    * @return this binding itself.
    */
   @SuppressWarnings("squid:S3740")
-  public Binding<C, CV, B, BV> setReadOnly(boolean readOnly) {
+  public Binding<C, ComponentValueT, B, BeanValueT> setReadOnly(boolean readOnly) {
     this.readOnly = readOnly;
     if (component instanceof ReadOnlyAware readonlyAware) {
       readonlyAware.setReadOnly(readOnly);
@@ -298,7 +298,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    * @return this binding itself.
    */
   @SuppressWarnings("squid:S3740")
-  public Binding<C, CV, B, BV> setRequired(boolean required) {
+  public Binding<C, ComponentValueT, B, BeanValueT> setRequired(boolean required) {
     this.required = required;
     updateClientAutoValidation(!required);
 
@@ -331,7 +331,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    * @param validator The validator to add.
    * @return this binding itself.
    */
-  public Binding<C, CV, B, BV> addValidator(Validator<BV> validator) {
+  public Binding<C, ComponentValueT, B, BeanValueT> addValidator(Validator<BeanValueT> validator) {
     validators.add(validator);
     return this;
   }
@@ -348,7 +348,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    *
    * @see #addValidator(Validator)
    */
-  public Binding<C, CV, B, BV> setValidators(List<Validator<BV>> validators) {
+  public Binding<C, ComponentValueT, B, BeanValueT> setValidators(List<Validator<BeanValueT>> validators) {
     this.validators.clear();
     this.validators.addAll(validators);
     return this;
@@ -359,7 +359,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    *
    * @return the list of validators.
    */
-  public List<Validator<BV>> getValidators() {
+  public List<Validator<BeanValueT>> getValidators() {
     return validators;
   }
 
@@ -371,7 +371,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    *
    * @return the validation result.
    */
-  public ValidationResult validate(CV value, boolean report) {
+  public ValidationResult validate(ComponentValueT value, boolean report) {
     if (isReadOnly()) {
       return ValidationResult.valid();
     }
@@ -381,12 +381,12 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
     ValidationResult result;
 
     try {
-      BV transformedValue = null;
+      BeanValueT transformedValue = null;
       transformedValue =
           getTransformer().map(t -> t.transformToModel(value)).orElse(tryCastingToBeanValue(value));
 
       List<String> messages = new ArrayList<>();
-      for (Validator<BV> validator : validators) {
+      for (Validator<BeanValueT> validator : validators) {
         if (validator instanceof BeanAware) {
           ((BeanAware<B>) validator).setBeanClass(beanClass);
         }
@@ -445,8 +445,8 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
    */
-  public ListenerRegistration<BindingValidateEvent<C, CV, B, BV>> addValidateListener(
-      EventListener<BindingValidateEvent<C, CV, B, BV>> listener) {
+  public ListenerRegistration<BindingValidateEvent<C, ComponentValueT, B, BeanValueT>> addValidateListener(
+      EventListener<BindingValidateEvent<C, ComponentValueT, B, BeanValueT>> listener) {
     return dispatcher.addListener(BindingValidateEvent.class, listener);
   }
 
@@ -456,8 +456,8 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    * @param listener the event listener to be added
    * @return @return A registration object for removing the event listener
    */
-  public ListenerRegistration<BindingValidateEvent<C, CV, B, BV>> onValidate(
-      EventListener<BindingValidateEvent<C, CV, B, BV>> listener) {
+  public ListenerRegistration<BindingValidateEvent<C, ComponentValueT, B, BeanValueT>> onValidate(
+      EventListener<BindingValidateEvent<C, ComponentValueT, B, BeanValueT>> listener) {
     return addValidateListener(listener);
   }
 
@@ -474,7 +474,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    * @param autoValidate whether to validate on each change.
    * @return this binding builder.
    */
-  public Binding<C, CV, B, BV> setAutoValidate(boolean autoValidate) {
+  public Binding<C, ComponentValueT, B, BeanValueT> setAutoValidate(boolean autoValidate) {
     if (valueChangeListener == null) {
       valueChangeListener = component.addValueChangeListener(this::handleValueChange);
     }
@@ -506,7 +506,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    * @param bean The bean instance to write to.
    * @return this binding itself.
    */
-  public Binding<C, CV, B, BV> setAutoWrite(B bean) {
+  public Binding<C, ComponentValueT, B, BeanValueT> setAutoWrite(B bean) {
     if (valueChangeListener == null) {
       valueChangeListener = component.addValueChangeListener(this::handleValueChange);
     }
@@ -536,7 +536,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    * @param reporter The reporter to add.
    * @return this binding itself.
    */
-  public Binding<C, CV, B, BV> setReporter(BindingReporter<C, CV, B, BV> reporter) {
+  public Binding<C, ComponentValueT, B, BeanValueT> setReporter(BindingReporter<C, ComponentValueT, B, BeanValueT> reporter) {
     this.validateReporter = reporter;
     return this;
   }
@@ -546,7 +546,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    *
    * @return the validation reporter.
    */
-  public BindingReporter<C, CV, B, BV> getReporter() {
+  public BindingReporter<C, ComponentValueT, B, BeanValueT> getReporter() {
     return validateReporter;
   }
 
@@ -561,10 +561,10 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    * @param bean The bean instance to read from.
    * @throws TransformationException if the value cannot be transformed to the component's type.
    */
-  public Binding<C, CV, B, BV> read(B bean) {
+  public Binding<C, ComponentValueT, B, BeanValueT> read(B bean) {
     doGetGetter(bean).ifPresent(g -> {
-      BV value = g.apply(bean);
-      CV transformedValue = getTransformer().map(t -> t.transformToComponent(value))
+      BeanValueT value = g.apply(bean);
+      ComponentValueT transformedValue = getTransformer().map(t -> t.transformToComponent(value))
           .orElseGet(() -> tryCastingToComponentValue(value));
       component.setValue(transformedValue);
     });
@@ -596,7 +596,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
       try {
         result[0] = validate(cachedValue, true);
         if (result[0].isValid()) {
-          BV transformedValue = getTransformer().map(t -> t.transformToModel(cachedValue))
+          BeanValueT transformedValue = getTransformer().map(t -> t.transformToModel(cachedValue))
               .orElseGet(() -> tryCastingToBeanValue(cachedValue));
           s.accept(bean, transformedValue);
         }
@@ -624,11 +624,11 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
     return write(bean, false);
   }
 
-  void handleValueChange(ValueChangeEvent<CV> event) {
+  void handleValueChange(ValueChangeEvent<ComponentValueT> event) {
     boolean shouldAutoValidate = isAutoValidate();
     boolean shouldAutoWrite = isAutoWrite();
     ValidationResult result = null;
-    CV value = event.getValue();
+    ComponentValueT value = event.getValue();
 
     if (shouldAutoValidate || shouldAutoWrite) {
       result = validate(value, shouldAutoValidate);
@@ -654,7 +654,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
     return e.getMessage();
   }
 
-  private Optional<Function<B, BV>> doGetGetter(B bean) {
+  private Optional<Function<B, BeanValueT>> doGetGetter(B bean) {
     if (getter != null) {
       return getGetter();
     }
@@ -669,7 +669,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
   }
 
   @SuppressWarnings("unchecked")
-  private Function<B, BV> resolveGetter(Class<?> beanClass) {
+  private Function<B, BeanValueT> resolveGetter(Class<?> beanClass) {
     try {
       BeanIntrospection.Property prop = BeanIntrospection.of(beanClass).getProperty(property);
       if (prop == null) {
@@ -677,7 +677,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
             "Property '" + property + "' not found on bean class '" + beanClass.getName() + "'.");
       }
 
-      return b -> (BV) prop.read(b);
+      return b -> (BeanValueT) prop.read(b);
 
     } catch (IntrospectionException e) {
       throw new MutatorException("Failed to resolve getter for property '" + property
@@ -686,7 +686,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
     }
   }
 
-  private Optional<BiConsumer<B, BV>> doGetSetter(B bean) {
+  private Optional<BiConsumer<B, BeanValueT>> doGetSetter(B bean) {
     if (setter != null) {
       return getSetter();
     }
@@ -700,7 +700,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
     return Optional.ofNullable(cachedSetter);
   }
 
-  private BiConsumer<B, BV> resolveSetter(Class<?> beanClass) {
+  private BiConsumer<B, BeanValueT> resolveSetter(Class<?> beanClass) {
     try {
       BeanIntrospection.Property prop = BeanIntrospection.of(beanClass).getProperty(property);
       if (prop == null) {
@@ -717,18 +717,18 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
   }
 
   @SuppressWarnings("unchecked")
-  private BV tryCastingToBeanValue(Object value) {
+  private BeanValueT tryCastingToBeanValue(Object value) {
     try {
-      return (BV) value;
+      return (BeanValueT) value;
     } catch (ClassCastException e) {
       throw new TransformationException("Failed to cast value to model type.", e);
     }
   }
 
   @SuppressWarnings("unchecked")
-  private CV tryCastingToComponentValue(Object value) {
+  private ComponentValueT tryCastingToComponentValue(Object value) {
     try {
-      return (CV) value;
+      return (ComponentValueT) value;
     } catch (ClassCastException e) {
       throw new TransformationException("Failed to cast value to view type.", e);
     }
