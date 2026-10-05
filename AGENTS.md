@@ -14,6 +14,7 @@ Nothing below happens without the maintainer's explicit words for that exact act
 | Action | Needs |
 |--------|-------|
 | writing code after a design discussion | a plain go ("go", "build it", "do it") |
+| starting an agent on code | a go for that work |
 | building, installing, starting an app | a go for that work |
 | adding any dependency | approval of that exact library by name, see `proposing-libraries` |
 | any public API added to webforJ | approval of that exact API |
@@ -23,6 +24,7 @@ Nothing below happens without the maintainer's explicit words for that exact act
 
 - Cuts, corrections and answers to a design question are input, not a go. Present the corrected design and wait.
 - One approval covers one action. It never carries to the next commit, the next build or the next session.
+- Apply one plan step, then wait for review and iterate on that step until its commit is done. Only then move to the next step.
 - "Do not wait for input" never covers the choice of a library.
 - A stop order stops everything at once: agents, builds, edits. Nothing new starts until the maintainer says so.
 - Never write that work "has started" unless it was ordered.
@@ -110,7 +112,15 @@ The maintainer owns the index, the history and the remote.
 - Every task lives in its own worktree on its own branch from the remote main. One feature, one worktree, one PR, only that task's changes.
 - A worktree carries a `handoff.md` at its root, current before reporting done: branch and base, what it is, what to read first, build and test commands, how to try it, where the evidence is, known limits, merge order. It is never committed.
 
+## Publishing
+
+- Maven Central publishing stays manual: `autoPublish` remains false and is never changed. The maintainer approves every final release there, because a Central release cannot be taken back.
+- Every other outlet of the same build (GitHub mirrors, tags) is published at once by the same run. A GitHub tag can be reverted if the Central release is not approved.
+
 ## The maintainer's machine
+
+- BBjServices JVM configuration belongs to the developer and is done once. Build, deployment and watch commands never configure BBjServices, select its JDK, install its service agents or start, stop or restart the service. Stopping an application never stops BBjServices.
+- Everything of a development run lives and dies with the build run: live reload, craftforJ, push and every other devtools feature. Once the build run stops, nothing of it is left, nothing keeps running and nothing waits for the next run, in any container.
 
 - Never start, stop, restart or kill an app the maintainer runs. Never use its port or folder. Kill only by the port of your own app, never by a folder name pattern.
 - Never open browser windows while the maintainer is testing, and close what was opened once they take over.

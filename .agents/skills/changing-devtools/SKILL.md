@@ -48,3 +48,9 @@ Never crossed, in any shape or form.
 
 - Nothing in the devtools packages is public API. Classes, type hierarchies, names and methods can change, move or be removed in any release without prior notice. The contracts documented in the public webforJ documentation are the only supported surface.
 - Every devtools package carries a `package-info.java` that states this. A new package gets one.
+
+## Hotswap tools
+
+- The devtools exist on the developer's machine only. The build plugin is the sole channel that puts them on a development classpath, in every container, and a deployment never carries them. An application never declares them to get the development loop.
+- webforJ never bundles, mirrors or redistributes a hotswap tool. The build plugin downloads it from its publisher at the developer's opt in. No pom names a tool in any scope and no tool type appears in webforJ source.
+- A tool is addressed only through public documented entry points, by name, from its own receiver in the MIT devtools jar, and never from BBj or any proprietary artifact. Everything works when the tool is absent.
