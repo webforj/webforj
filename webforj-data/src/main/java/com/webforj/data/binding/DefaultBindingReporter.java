@@ -14,13 +14,13 @@ import java.util.stream.Collectors;
  * @param <C> the type of the UI component implementing {@link ValueAware}, capable of displaying
  *        and updating a value of type V.
  * @param <B> the type of the bean from which the value is being synchronized.
- * @param <BV> the type of the value that is being bound.
+ * @param <BeanValueT> the type of the value that is being bound.
  *
  * @since 24.01
  * @author Hyyan Abo Fakher
  */
-public class DefaultBindingReporter<C extends ValueAware<C, CV>, CV, B, BV>
-    implements BindingReporter<C, CV, B, BV> {
+public class DefaultBindingReporter<C extends ValueAware<C, ViewT>, ViewT, B, BeanValueT>
+    implements BindingReporter<C, ViewT, B, BeanValueT> {
   private Function<List<String>, String> formatter;
 
   /**
@@ -57,7 +57,7 @@ public class DefaultBindingReporter<C extends ValueAware<C, CV>, CV, B, BV>
   }
 
   @Override
-  public void report(ValidationResult validateResult, Binding<C, CV, B, BV> binding) {
+  public void report(ValidationResult validateResult, Binding<C, ViewT, B, BeanValueT> binding) {
     C component = binding.getComponent();
 
     if (component instanceof InvalidAware) {

@@ -19,16 +19,16 @@ public final class BBjFunctionalityHelper {
    */
   public static byte[] buildStandardCreationFlags(Boolean visible, Boolean enabled) {
 
-    byte bFlag = (byte) 0x00;
+    byte flags = (byte) 0x00;
 
     if (Boolean.FALSE.equals(visible)) {
-      bFlag += (byte) 0x10;
+      flags += (byte) 0x10;
     }
     if (Boolean.FALSE.equals(enabled)) {
-      bFlag += (byte) 0x01;
+      flags += (byte) 0x01;
     }
 
-    return new byte[] {(byte) 0x00, bFlag};
+    return new byte[] {(byte) 0x00, flags};
 
   }
 }

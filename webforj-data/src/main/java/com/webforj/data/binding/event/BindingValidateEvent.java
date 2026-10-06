@@ -10,15 +10,16 @@ import java.util.EventObject;
  *
  * @param <C> The type of the component which the binding is bound to.
  * @param <B> The type of the bean which the binding is bound to.
- * @param <BV> The type of the value of the binding.
+ * @param <BeanValueT> The type of the value of the binding.
  *
  * @since 24.01
  * @author Hyyan Abo Fakher
  */
-public class BindingValidateEvent<C extends ValueAware<C, CV>, CV, B, BV> extends EventObject {
-  private final transient Binding<C, CV, B, BV> binding;
+public class BindingValidateEvent<C extends ValueAware<C, ViewT>, ViewT, B, BeanValueT>
+    extends EventObject {
+  private final transient Binding<C, ViewT, B, BeanValueT> binding;
   private final transient ValidationResult validationResult;
-  private final transient CV value;
+  private final transient ViewT value;
 
   /**
    * Creates a new instance of {@code BindingValidateEvent}.
@@ -27,8 +28,8 @@ public class BindingValidateEvent<C extends ValueAware<C, CV>, CV, B, BV> extend
    * @param validationResult The validation result.
    * @param value The value of the binding.
    */
-  public BindingValidateEvent(Binding<C, CV, B, BV> source, ValidationResult validationResult,
-      CV value) {
+  public BindingValidateEvent(Binding<C, ViewT, B, BeanValueT> source,
+      ValidationResult validationResult, ViewT value) {
     super(source);
     this.binding = source;
     this.validationResult = validationResult;
@@ -40,7 +41,7 @@ public class BindingValidateEvent<C extends ValueAware<C, CV>, CV, B, BV> extend
    *
    * @return The field binding.
    */
-  public Binding<C, CV, B, BV> getBinding() {
+  public Binding<C, ViewT, B, BeanValueT> getBinding() {
     return binding;
   }
 
@@ -58,7 +59,7 @@ public class BindingValidateEvent<C extends ValueAware<C, CV>, CV, B, BV> extend
    *
    * @return The value of the field binding.
    */
-  public CV getValue() {
+  public ViewT getValue() {
     return value;
   }
 }

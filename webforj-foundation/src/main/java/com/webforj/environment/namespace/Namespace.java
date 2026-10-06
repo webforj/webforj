@@ -37,9 +37,9 @@ public abstract sealed class Namespace permits PrivateNamespace, GlobalNamespace
   //@formatter:on
   public static final String ON_EVENT = "onEvent";
   private final EventDispatcher dispatcher = new EventDispatcher();
-  private final Map<String, NamespaceEventSinkRegistry<NamespaceKeyAccessEvent>> keyAccessRegistries =
+  private final Map<String, NamespaceEventSinkRegistry<NamespaceKeyAccessEvent>> keyAccessSinks =
       new HashMap<>();
-  private final Map<String, NamespaceEventSinkRegistry<NamespaceKeyChangeEvent>> keyChangeRegistries =
+  private final Map<String, NamespaceEventSinkRegistry<NamespaceKeyChangeEvent>> keyChangeSinks =
       new HashMap<>();
   private BBjNamespace ns;
 
@@ -368,7 +368,7 @@ public abstract sealed class Namespace permits PrivateNamespace, GlobalNamespace
       EventListener<NamespaceKeyAccessEvent> listener) {
     // create a sink for each key
     NamespaceEventSinkRegistry<NamespaceKeyAccessEvent> registry =
-        keyAccessRegistries.computeIfAbsent(key, k -> {
+        keyAccessSinks.computeIfAbsent(key, k -> {
           NamespaceKeyAccessEventSink sink = new NamespaceKeyAccessEventSink(this, key, dispatcher);
           return new NamespaceEventSinkRegistry<>(sink, NamespaceKeyAccessEvent.class);
         });
@@ -399,7 +399,7 @@ public abstract sealed class Namespace permits PrivateNamespace, GlobalNamespace
       EventListener<NamespaceKeyChangeEvent> listener) {
     // create a sink for each key
     NamespaceEventSinkRegistry<NamespaceKeyChangeEvent> registry =
-        keyChangeRegistries.computeIfAbsent(key, k -> {
+        keyChangeSinks.computeIfAbsent(key, k -> {
           NamespaceKeyChangeEventSink sink = new NamespaceKeyChangeEventSink(this, key, dispatcher);
           return new NamespaceEventSinkRegistry<>(sink, NamespaceKeyChangeEvent.class);
         });
