@@ -21,7 +21,7 @@ final class BBjShipServletResourcesTest extends AdministratorRequest {
     when(request.getMethod()).thenReturn("GET");
     when(request.getPathInfo()).thenReturn(path);
 
-    BBjShipServlet.handle(request, response, plugin, sessions);
+    BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
     verify(response).setStatus(404);
     verify(response).setContentType("application/problem+json");
@@ -43,7 +43,7 @@ final class BBjShipServletResourcesTest extends AdministratorRequest {
     when(request.getMethod()).thenReturn(method);
     when(request.getPathInfo()).thenReturn(path);
 
-    BBjShipServlet.handle(request, response, plugin, sessions);
+    BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
     verify(response).setStatus(405);
     verify(response).setHeader("Allow", allow);
@@ -64,7 +64,7 @@ final class BBjShipServletResourcesTest extends AdministratorRequest {
     when(request.getMethod()).thenReturn("PUT");
     when(request.getPathInfo()).thenReturn("/applications/" + name);
 
-    BBjShipServlet.handle(request, response, plugin, sessions);
+    BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
     verify(response).setStatus(400);
     verify(response).setContentType("application/problem+json");
@@ -86,7 +86,7 @@ final class BBjShipServletResourcesTest extends AdministratorRequest {
     when(request.getMethod()).thenReturn("PUT");
     when(request.getPathInfo()).thenReturn("/applications/" + name);
 
-    BBjShipServlet.handle(request, response, plugin, sessions);
+    BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
     verify(response).setStatus(400);
     assertEquals("""

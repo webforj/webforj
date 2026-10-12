@@ -61,7 +61,7 @@ final class BBjShipServletPublishedApplicationsTest extends AdministratorRequest
     when(request.getPathInfo()).thenReturn("/applications/hello-app");
     when(request.getInputStream()).thenReturn(upload);
 
-    BBjShipServlet.handle(request, response, plugin, sessions);
+    BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
     verify(response).setStatus(200);
     verify(response).setHeader("Location", "/webapp/hello-app");
@@ -81,7 +81,7 @@ final class BBjShipServletPublishedApplicationsTest extends AdministratorRequest
     when(request.getPathInfo()).thenReturn("/applications/second-app");
     when(request.getInputStream()).thenReturn(upload);
 
-    BBjShipServlet.handle(request, response, plugin, sessions);
+    BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
     verify(response).setStatus(409);
     verify(configuration, never()).createApplication();
@@ -100,7 +100,7 @@ final class BBjShipServletPublishedApplicationsTest extends AdministratorRequest
     when(request.getMethod()).thenReturn("DELETE");
     when(request.getPathInfo()).thenReturn("/applications/hello-app");
 
-    BBjShipServlet.handle(request, response, plugin, sessions);
+    BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
     verify(response).setStatus(204);
     verify(response, never()).setContentType(anyString());

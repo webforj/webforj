@@ -12,6 +12,8 @@ import java.net.ServerSocket;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -29,6 +31,7 @@ public final class WebServer implements AutoCloseable {
 
   private final HttpServer server;
   private final int port;
+  private final List<String> requests = new CopyOnWriteArrayList<>();
 
   private WebServer(HttpServer server) {
     this(server, server.getAddress().getPort());
@@ -77,6 +80,43 @@ public final class WebServer implements AutoCloseable {
     try (ServerSocket socket = new ServerSocket(0, 1, InetAddress.getLoopbackAddress())) {
       return socket.getLocalPort();
     }
+  }
+
+  /**
+   * Starts a server that answers the version and every undeployment like BBjShip, recording the
+   * method and path of each undeployment request.
+   */
+  public static WebServer startServingBBjShipUndeployments(String authorization, String version)
+      throws IOException {
+    HttpServer server =
+        HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 0);
+    WebServer web = new WebServer(server);
+    server.createContext("/webforj-bbjship/version", exchange -> {
+      byte[] body = """
+          {"version": "%s"}""".formatted(version).getBytes(StandardCharsets.UTF_8);
+      exchange.getResponseHeaders().set("Content-Type", "application/json");
+      exchange.sendResponseHeaders(200, body.length);
+      exchange.getResponseBody().write(body);
+      exchange.close();
+    });
+    server.createContext("/webforj-bbjship/applications/", exchange -> {
+      web.requests.add(exchange.getRequestMethod() + " " + exchange.getRequestURI().getPath() + " "
+          + exchange.getRequestHeaders().getFirst("Authorization"));
+      exchange.sendResponseHeaders(
+          authorization.equals(exchange.getRequestHeaders().getFirst("Authorization")) ? 204 : 401,
+          -1);
+      exchange.close();
+    });
+    server.start();
+
+    return web;
+  }
+
+  /**
+   * Returns the undeployment requests received, each as method, path and authorization.
+   */
+  public List<String> getRequests() {
+    return List.copyOf(requests);
   }
 
   /**

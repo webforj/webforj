@@ -128,7 +128,7 @@ public final class BBjShipServlet {
   public static void handle(HttpServletRequest request, HttpServletResponse response)
       throws IOException {
     BBjShipPlugin plugin = new BBjShipPlugin(Path.of(System.getProperty("basis.BBjHome")));
-    handle(request, response, plugin, new AdminSessionFactory() {
+    handle(request, response, plugin, new BBjServicesClasspathRelease(), new AdminSessionFactory() {
 
       /**
        * {@inheritDoc}
@@ -149,7 +149,7 @@ public final class BBjShipServlet {
   }
 
   static void handle(HttpServletRequest request, HttpServletResponse response, BBjShipPlugin plugin,
-      AdminSessionFactory sessions) throws IOException {
+      ClasspathRelease release, AdminSessionFactory sessions) throws IOException {
     Optional<BBjAdminBase> session = readCredentials(request.getHeader(HttpHeaders.AUTHORIZATION))
         .flatMap(credentials -> openSession(credentials, sessions));
     if (session.isEmpty()) {
@@ -161,7 +161,7 @@ public final class BBjShipServlet {
 
     BBjAdminBase admin = session.get();
     try {
-      handleOperation(request, response, plugin, admin);
+      handleOperation(request, response, plugin, release, admin);
     } catch (DeploymentException refused) {
       writeProblem(response, toProblem(refused), refused.getMessage());
     } catch (IOException | RuntimeException failure) {
@@ -174,7 +174,7 @@ public final class BBjShipServlet {
   }
 
   private static void handleOperation(HttpServletRequest request, HttpServletResponse response,
-      BBjShipPlugin plugin, BBjAdminBase admin) throws IOException {
+      BBjShipPlugin plugin, ClasspathRelease release, BBjAdminBase admin) throws IOException {
     String method = request.getMethod();
     String path = request.getPathInfo();
     if (VERSION_PATH.equals(path)) {
@@ -214,7 +214,7 @@ public final class BBjShipServlet {
 
     String root = plugin.getDeployments().toString();
     if (DELETE.equals(method)) {
-      DeploymentInstaller.undeploy(publishName, root, admin);
+      DeploymentInstaller.undeploy(publishName, root, admin, release);
       response.setStatus(HttpServletResponse.SC_NO_CONTENT);
       return;
     }

@@ -22,7 +22,7 @@ final class BBjShipServletVersionTest extends AdministratorRequest {
     when(request.getMethod()).thenReturn("GET");
     when(request.getPathInfo()).thenReturn("/version");
 
-    BBjShipServlet.handle(request, response, plugin, sessions);
+    BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
     verify(response).setStatus(200);
     verify(response).setContentType("application/json");
@@ -44,7 +44,7 @@ final class BBjShipServletVersionTest extends AdministratorRequest {
     when(request.getMethod()).thenReturn("GET");
     when(request.getPathInfo()).thenReturn("/version");
 
-    BBjShipServlet.handle(request, response, plugin, sessions);
+    BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
     verify(response).setStatus(500);
     verify(admin).release();
@@ -55,7 +55,7 @@ final class BBjShipServletVersionTest extends AdministratorRequest {
     when(request.getMethod()).thenReturn("GET");
     when(request.getPathInfo()).thenReturn("/version");
 
-    BBjShipServlet.handle(request, response, plugin, sessions);
+    BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
     verify(response).setStatus(500);
     verify(admin).release();

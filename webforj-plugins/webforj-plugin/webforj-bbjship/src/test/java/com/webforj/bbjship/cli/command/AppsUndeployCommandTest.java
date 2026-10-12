@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -14,6 +15,7 @@ import com.basis.api.admin.BBjAdminAppDeploymentConfiguration;
 import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
 import com.webforj.bbjship.cli.BBjShipCli;
+import com.webforj.bbjship.cli.admin.WebServer;
 import com.webforj.plugin.foundation.bbj.DeploymentArchive;
 import com.webforj.plugin.foundation.bbj.HelloApp;
 import java.io.ByteArrayOutputStream;
@@ -34,7 +36,9 @@ class AppsUndeployCommandTest {
   @TempDir
   Path temporary;
 
+  private Path home;
   private Path deployments;
+  private BBjServices services;
   private ByteArrayOutputStream output;
   private BBjAdminBase admin;
   private BBjAdminAppDeploymentConfiguration configuration;
@@ -42,11 +46,11 @@ class AppsUndeployCommandTest {
 
   @BeforeEach
   void initBBjShipWithHelloAppAndShopDeployed() throws Exception {
-    Path home = Home.createCopy(temporary.resolve("bbx"));
+    home = Home.createCopy(temporary.resolve("bbx"));
     Path archive = HelloApp.writeArchive(HelloApp.createCopy(temporary.resolve("hello-app")),
         temporary.resolve("hello-app.zip"));
     deployments = home.resolve("plugins/.webforj-bbjship-deployments/deployments");
-    BBjServices services = new BBjServices();
+    services = new BBjServices();
     services.addBBjShipConfiguration(home);
     admin = services.getAdmin();
     configuration = mock(BBjAdminAppDeploymentConfiguration.class);
@@ -102,6 +106,77 @@ class AppsUndeployCommandTest {
         """, output.toString(StandardCharsets.UTF_8));
     assertFalse(Files.exists(deployments.resolve("hello-app")));
     assertFalse(Files.exists(deployments.resolve("shop")));
+  }
+
+  @Test
+  void shouldUndeployThroughTheEndpointWhileItAnswers() throws Exception {
+    try (WebServer web =
+        WebServer.startServingBBjShipUndeployments("Basic YWRtaW46YWRtaW4xMjM=", "26.03")) {
+      services.addContext("webforj-bbjship", """
+          {
+            "STOP": {"EXECUTOR": "CONTEXT:webforj-bbjship", "DATA": {"ACTION": "STOP"},
+              "ENABLED": true},
+            "HTTP port": %d,
+            "Document Base": "%s"
+          }""".formatted(web.getPort(),
+          home.resolve("plugins/.webforj-bbjship-deployments/htdocs")));
+
+      int status = cli.run("apps", "undeploy", "hello-app");
+
+      assertEquals(0, status);
+      assertEquals(FACTORY_ACCOUNT_WARNING + "\n" + "Undeployed hello-app\n",
+          output.toString(StandardCharsets.UTF_8));
+      assertEquals(
+          List.of("DELETE /webforj-bbjship/applications/hello-app Basic YWRtaW46YWRtaW4xMjM="),
+          web.getRequests());
+    }
+
+    verify(configuration, never()).removeApplication("hello-app");
+    assertTrue(Files.isDirectory(deployments.resolve("hello-app")));
+  }
+
+  @Test
+  void shouldUndeployThroughTheAdministrationSessionWhenTheEndpointRefuses() throws Exception {
+    try (WebServer web = WebServer.startServingBBjShipUndeployments("Basic other", "26.03")) {
+      services.addContext("webforj-bbjship", """
+          {
+            "STOP": {"EXECUTOR": "CONTEXT:webforj-bbjship", "DATA": {"ACTION": "STOP"},
+              "ENABLED": true},
+            "HTTP port": %d,
+            "Document Base": "%s"
+          }""".formatted(web.getPort(),
+          home.resolve("plugins/.webforj-bbjship-deployments/htdocs")));
+
+      int status = cli.run("apps", "undeploy", "hello-app");
+
+      assertEquals(0, status);
+      assertEquals(1, web.getRequests().size());
+    }
+
+    assertEquals(FACTORY_ACCOUNT_WARNING + "\n" + "Undeployed hello-app\n",
+        output.toString(StandardCharsets.UTF_8));
+    verify(configuration).removeApplication("hello-app");
+    assertFalse(Files.exists(deployments.resolve("hello-app")));
+  }
+
+  @Test
+  void shouldUndeployThroughTheAdministrationSessionWhenTheContextBelongsToAnotherApplication()
+      throws Exception {
+    services.addContext("webforj-bbjship", """
+        {
+          "STOP": {"EXECUTOR": "CONTEXT:webforj-bbjship", "DATA": {"ACTION": "STOP"},
+            "ENABLED": true},
+          "HTTP port": 8899,
+          "Document Base": "%s"
+        }""".formatted(temporary.resolve("other-application/htdocs")));
+
+    int status = cli.run("apps", "undeploy", "hello-app");
+
+    assertEquals(0, status);
+    assertEquals(FACTORY_ACCOUNT_WARNING + "\n" + "Undeployed hello-app\n",
+        output.toString(StandardCharsets.UTF_8));
+    verify(configuration).removeApplication("hello-app");
+    assertFalse(Files.exists(deployments.resolve("hello-app")));
   }
 
   @Test

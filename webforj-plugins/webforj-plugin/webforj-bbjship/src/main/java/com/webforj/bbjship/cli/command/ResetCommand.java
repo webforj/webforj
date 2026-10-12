@@ -14,6 +14,7 @@ import com.webforj.plugin.foundation.bbj.FileTree;
 import com.webforj.plugin.foundation.bbj.ServicesProperties;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -122,8 +123,9 @@ public final class ResetCommand implements Callable<Integer> {
         return 1;
       }
 
+      Optional<URI> endpoint = session.findUndeployEndpoint(admin);
       for (PublishedApplication application : applications) {
-        Optional<String> kept = DeploymentInstaller.undeploy(application.getName(), root, admin);
+        Optional<String> kept = session.undeploy(admin, endpoint, application.getName());
         showStep("Undeployed", application.getName());
         kept.ifPresent(out::println);
       }

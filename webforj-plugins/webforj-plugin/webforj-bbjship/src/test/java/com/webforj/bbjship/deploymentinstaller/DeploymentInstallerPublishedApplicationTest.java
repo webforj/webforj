@@ -4,11 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertLinesMatch;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -19,12 +21,15 @@ import com.basis.api.admin.BBjAdminAppDeploymentApplication;
 import com.basis.api.admin.BBjAdminAppDeploymentConfiguration;
 import com.basis.api.admin.BBjAdminBBjProcess;
 import com.basis.api.admin.BBjAdminBase;
+import com.basis.api.admin.BBjAdminException;
 import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
+import com.webforj.bbjship.ClasspathRelease;
 import com.webforj.bbjship.DeploymentInstaller;
 import com.webforj.bbjship.DeploymentInstaller.DeploymentResult;
 import com.webforj.plugin.foundation.bbj.DeploymentArchive;
 import com.webforj.plugin.foundation.bbj.HelloApp;
 import java.io.ByteArrayInputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -215,6 +220,68 @@ final class DeploymentInstallerPublishedApplicationTest {
     }
 
     assertTrue(Files.isRegularFile(other.resolve("application.jar")));
+  }
+
+  @Test
+  void shouldReleaseTheFilesOfTheClasspathAfterItsSessionsEndedAndBeforeTheRemoval()
+      throws Exception {
+    BBjAdminBBjProcess owned = mock(BBjAdminBBjProcess.class);
+    when(owned.getString(BBjAdminBBjProcess.SSCP_NAME)).thenReturn(CLASSPATH_NAME);
+    when(admin.getBBjProcesses()).thenReturn(List.of(owned));
+    Files.writeString(root.resolve("hello-app/current"), previous.getFileName().toString());
+    ClasspathRelease release = mock(ClasspathRelease.class);
+    Closeable hold = mock(Closeable.class);
+    when(release.find(CLASSPATH_NAME)).thenReturn(hold);
+    doAnswer(call -> {
+      assertTrue(Files.isRegularFile(previous.resolve("application.jar")));
+      return null;
+    }).when(hold).close();
+    String destination = root.toString();
+
+    Optional<String> kept = assertDoesNotThrow(
+        () -> DeploymentInstaller.undeploy("hello-app", destination, admin, release));
+
+    assertEquals(Optional.empty(), kept);
+    InOrder order = inOrder(release, configuration, owned, admin, hold);
+    order.verify(release).find(CLASSPATH_NAME);
+    order.verify(configuration).removeApplication("hello-app");
+    order.verify(owned).terminate();
+    order.verify(admin).setClasspath(CLASSPATH_NAME, null);
+    order.verify(admin).commit();
+    order.verify(hold).close();
+    assertFalse(Files.exists(root.resolve("hello-app")));
+  }
+
+  @Test
+  void shouldReleaseTheFilesWhenTheUnregistrationFails() throws Exception {
+    Files.writeString(root.resolve("hello-app/current"), previous.getFileName().toString());
+    doThrow(new BBjAdminException("refused")).when(admin).setClasspath(CLASSPATH_NAME, null);
+    ClasspathRelease release = mock(ClasspathRelease.class);
+    Closeable hold = mock(Closeable.class);
+    when(release.find(CLASSPATH_NAME)).thenReturn(hold);
+    String destination = root.toString();
+
+    assertThrows(IOException.class,
+        () -> DeploymentInstaller.undeploy("hello-app", destination, admin, release));
+
+    verify(hold).close();
+    assertTrue(Files.isRegularFile(previous.resolve("application.jar")));
+  }
+
+  @Test
+  void shouldRemoveTheFolderWhenTheReleaseFails() throws Exception {
+    Files.writeString(root.resolve("hello-app/current"), previous.getFileName().toString());
+    ClasspathRelease release = mock(ClasspathRelease.class);
+    Closeable hold = mock(Closeable.class);
+    when(release.find(CLASSPATH_NAME)).thenReturn(hold);
+    doThrow(new IOException("already closed")).when(hold).close();
+    String destination = root.toString();
+
+    Optional<String> kept = assertDoesNotThrow(
+        () -> DeploymentInstaller.undeploy("hello-app", destination, admin, release));
+
+    assertEquals(Optional.empty(), kept);
+    assertFalse(Files.exists(root.resolve("hello-app")));
   }
 
   @Test

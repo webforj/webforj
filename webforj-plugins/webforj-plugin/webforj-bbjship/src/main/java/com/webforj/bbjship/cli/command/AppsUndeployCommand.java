@@ -8,6 +8,7 @@ import com.webforj.bbjship.cli.option.CredentialOptions;
 import com.webforj.bbjship.model.PublishedApplication;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
@@ -62,9 +63,10 @@ public final class AppsUndeployCommand implements Callable<Integer> {
     BBjAdminBase admin = session.openAdmin(credentials, OptionalInt.empty(), OptionalInt.empty());
     try {
       boolean found = false;
+      Optional<URI> endpoint = session.findUndeployEndpoint(admin);
       for (PublishedApplication application : DeploymentInstaller.findApplications(root, admin)) {
         if (target.all || application.getName().equals(target.name)) {
-          Optional<String> kept = DeploymentInstaller.undeploy(application.getName(), root, admin);
+          Optional<String> kept = session.undeploy(admin, endpoint, application.getName());
           out.println(spec.commandLine().getColorScheme()
               .apply("Undeployed", List.of(Style.fg_green)).concat(" " + application.getName()));
           kept.ifPresent(out::println);

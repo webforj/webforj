@@ -2,14 +2,26 @@ package com.webforj.bbjship.cli.admin;
 
 import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.BBjAdminException;
+import com.webforj.bbjship.DeploymentInstaller;
 import com.webforj.bbjship.cli.option.CredentialOptions;
 import com.webforj.plugin.foundation.bbj.model.BBjCredentials;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Duration;
+import java.util.Base64;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.OptionalInt;
 import picocli.CommandLine.ParameterException;
 
@@ -21,6 +33,10 @@ import picocli.CommandLine.ParameterException;
  * @since 26.03
  */
 public final class BBjShipSession {
+
+  private static final Logger LOGGER = System.getLogger(BBjShipSession.class.getName());
+  private static final Duration ENDPOINT_TIMEOUT = Duration.ofSeconds(30);
+  private static final int HTTP_NO_CONTENT = 204;
 
   private final BBjShipPlugin plugin;
   private final InputStream input;
@@ -86,6 +102,50 @@ public final class BBjShipSession {
    */
   public BBjShipContexts createContexts(BBjAdminBase admin) {
     return new BBjShipContexts(admin, plugin, answerDeadline);
+  }
+
+  /**
+   * Finds the BBjShip endpoint of this machine an undeploy can be sent to, so that it runs inside
+   * BBjServices and releases the files of the application before their removal.
+   *
+   * @param admin the administration session
+   *
+   * @return the HTTP address of the endpoint, empty when there is none, it belongs to another
+   *         application or BBjServices does not answer for it
+   */
+  public Optional<URI> findUndeployEndpoint(BBjAdminBase admin) {
+    try {
+      return createContexts(admin).getAddresses().stream()
+          .filter(address -> "http".equals(address.getScheme())).findFirst();
+    } catch (IOException | BBjAdminException unavailable) {
+      LOGGER.log(Level.DEBUG, "The BBjShip endpoint is not available for an undeployment",
+          unavailable);
+      return Optional.empty();
+    }
+  }
+
+  /**
+   * Undeploys an application. With an endpoint, the undeploy is sent to it and runs inside
+   * BBjServices, which releases the files of the application before their removal. When the
+   * endpoint does not answer, or without one, it runs through the administration session, and a
+   * folder whose files cannot be removed stays.
+   *
+   * @param admin the administration session
+   * @param endpoint the endpoint of {@link #findUndeployEndpoint(BBjAdminBase)}
+   * @param publishName the published application name
+   *
+   * @return the report naming the folder that stayed and why, empty when it is removed
+   * @throws IOException if the application is not deployed by BBjShip or the unregistration fails
+   */
+  public Optional<String> undeploy(BBjAdminBase admin, Optional<URI> endpoint, String publishName)
+      throws IOException {
+    String root = plugin.getDeployments().toString();
+    if (endpoint.isPresent() && (isUndeployedThroughEndpoint(endpoint.get(), publishName)
+        || isUndeployed(admin, root, publishName))) {
+      return Optional.empty();
+    }
+
+    return DeploymentInstaller.undeploy(publishName, root, admin);
   }
 
   /**
@@ -155,5 +215,45 @@ public final class BBjShipSession {
     this.credentials = resolved;
 
     return admin;
+  }
+
+  private boolean isUndeployedThroughEndpoint(URI endpoint, String publishName) throws IOException {
+    HttpRequest request = HttpRequest
+        .newBuilder(URI.create(endpoint + "/applications/"
+            + URLEncoder.encode(publishName, StandardCharsets.UTF_8).replace("+", "%20")))
+        .DELETE().header("Authorization", formatAuthorization()).timeout(ENDPOINT_TIMEOUT).build();
+    try (HttpClient client = HttpClient.newBuilder().connectTimeout(ENDPOINT_TIMEOUT).build()) {
+      HttpResponse<Void> answer = client.send(request, BodyHandlers.discarding());
+      if (answer.statusCode() == HTTP_NO_CONTENT) {
+        return true;
+      }
+
+      LOGGER.log(Level.DEBUG, "The BBjShip endpoint answered HTTP " + answer.statusCode()
+          + " for the undeployment of " + publishName);
+    } catch (IOException unanswered) {
+      // The endpoint is registered but does not answer, the undeploy runs through the
+      // administration session instead
+      LOGGER.log(Level.DEBUG,
+          "The BBjShip endpoint did not answer for the undeployment of " + publishName, unanswered);
+    } catch (InterruptedException interruption) {
+      Thread.currentThread().interrupt();
+      throw new IOException("The undeployment of " + publishName + " was interrupted",
+          interruption);
+    }
+
+    return false;
+  }
+
+  private String formatAuthorization() {
+    return "Basic " + Base64.getEncoder()
+        .encodeToString((credentials.getUsername() + ":" + credentials.getPassword())
+            .getBytes(StandardCharsets.UTF_8));
+  }
+
+  private static boolean isUndeployed(BBjAdminBase admin, String root, String publishName)
+      throws IOException {
+    // An endpoint that did not answer in time may have finished the undeploy after all
+    return DeploymentInstaller.findApplications(root, admin).stream()
+        .noneMatch(application -> publishName.equals(application.getName()));
   }
 }

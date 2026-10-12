@@ -61,7 +61,7 @@ final class BBjShipServletDevelopmentTest extends AdministratorRequest {
     when(request.getMethod()).thenReturn("PUT");
     when(request.getInputStream()).thenReturn(upload);
 
-    BBjShipServlet.handle(request, response, plugin, sessions);
+    BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
     verify(response).setStatus(201);
     verify(response).setHeader("Location", "/webapp/hello-app");
@@ -84,7 +84,7 @@ final class BBjShipServletDevelopmentTest extends AdministratorRequest {
     when(request.getMethod()).thenReturn("PUT");
     when(request.getInputStream()).thenReturn(upload);
 
-    BBjShipServlet.handle(request, response, plugin, sessions);
+    BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
     verify(response).setStatus(403);
     verify(admin, never()).commit();
@@ -111,7 +111,7 @@ final class BBjShipServletDevelopmentTest extends AdministratorRequest {
     when(request.getMethod()).thenReturn("PUT");
     when(request.getInputStream()).thenReturn(upload);
 
-    BBjShipServlet.handle(request, response, plugin, sessions);
+    BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
     verify(response).setStatus(400);
     assertEquals("""
@@ -135,7 +135,7 @@ final class BBjShipServletDevelopmentTest extends AdministratorRequest {
     when(request.getMethod()).thenReturn("PUT");
     when(request.getInputStream()).thenReturn(upload);
 
-    BBjShipServlet.handle(request, response, plugin, sessions);
+    BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
     verify(response).setStatus(400);
     assertEquals("""
@@ -171,7 +171,7 @@ final class BBjShipServletDevelopmentTest extends AdministratorRequest {
     when(request.getMethod()).thenReturn("PUT");
     when(request.getInputStream()).thenReturn(upload);
 
-    BBjShipServlet.handle(request, response, plugin, sessions);
+    BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
     verify(response).setStatus(409);
     verify(admin, never()).commit();
@@ -206,7 +206,7 @@ final class BBjShipServletDevelopmentTest extends AdministratorRequest {
         .thenReturn(new BBjAdminAdapterList<>(List.of(classFolder.toString())));
     when(request.getMethod()).thenReturn("DELETE");
 
-    BBjShipServlet.handle(request, response, plugin, sessions);
+    BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
     verify(response).setStatus(204);
     verify(configuration).removeApplication("hello-app");

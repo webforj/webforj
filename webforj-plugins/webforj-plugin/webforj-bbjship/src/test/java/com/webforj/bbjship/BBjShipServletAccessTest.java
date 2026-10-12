@@ -30,7 +30,7 @@ final class BBjShipServletAccessTest extends AdministratorRequest {
     when(request.getPathInfo()).thenReturn("/version");
     when(sessions.create("administrator", "secret:password")).thenReturn(admin);
 
-    BBjShipServlet.handle(request, response, plugin, sessions);
+    BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
     verify(sessions).create("administrator", "secret:password");
     verify(response).setStatus(200);
@@ -47,7 +47,7 @@ final class BBjShipServletAccessTest extends AdministratorRequest {
     when(request.getPathInfo()).thenReturn("/version");
     when(sessions.create("c2VjcmV0")).thenReturn(admin);
 
-    BBjShipServlet.handle(request, response, plugin, sessions);
+    BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
     verify(sessions).create("c2VjcmV0");
     verify(sessions, never()).create(anyString(), anyString());
@@ -65,7 +65,7 @@ final class BBjShipServletAccessTest extends AdministratorRequest {
     when(request.getMethod()).thenReturn("GET");
     when(request.getPathInfo()).thenReturn("/version");
 
-    BBjShipServlet.handle(request, response, plugin, sessions);
+    BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
     verify(response).setStatus(401);
     verify(response).setHeader("WWW-Authenticate",
@@ -90,7 +90,7 @@ final class BBjShipServletAccessTest extends AdministratorRequest {
     when(sessions.create("administrator", "wrong"))
         .thenThrow(new BBjAdminException("Invalid user or password"));
 
-    BBjShipServlet.handle(request, response, plugin, sessions);
+    BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
     verify(response).setStatus(401);
     verify(response).setHeader("WWW-Authenticate",
@@ -111,7 +111,7 @@ final class BBjShipServletAccessTest extends AdministratorRequest {
     when(request.getPathInfo()).thenReturn("/version");
     when(sessions.create("ZXhwaXJlZA")).thenThrow(new BBjAdminException("Invalid token"));
 
-    BBjShipServlet.handle(request, response, plugin, sessions);
+    BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
     verify(response).setStatus(401);
     verify(response).setHeader("WWW-Authenticate",

@@ -13,6 +13,7 @@ import com.webforj.plugin.foundation.bbj.DeploymentArchive;
 import com.webforj.plugin.foundation.bbj.DeploymentArchive.ArchiveSizeException;
 import com.webforj.plugin.foundation.bbj.FileTree;
 import com.webforj.plugin.foundation.bbj.PublishNamePolicy;
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -121,13 +122,33 @@ public final class DeploymentInstaller {
    *         name
    * @throws IOException if the deployment root cannot be locked or the unregistration fails
    */
-  @SuppressWarnings("try")
   public static synchronized Optional<String> undeploy(String publishName, String root,
       BBjAdminBase admin) throws IOException {
+    return undeploy(publishName, root, admin, ClasspathRelease.NONE);
+  }
+
+  /**
+   * Undeploys an application and removes the files owned by BBjShip, releasing the files the
+   * process holds open for its classpath first. The application is always unregistered, a folder
+   * whose files cannot be removed stays.
+   *
+   * @param publishName the published application name
+   * @param root the deployment root path
+   * @param admin the authenticated administration API
+   * @param release the release of the files this process holds open for a classpath
+   *
+   * @return the report naming the folder that stayed and why, empty when it is removed
+   * @throws DeploymentException if the name is invalid or BBjShip published no application of that
+   *         name
+   * @throws IOException if the deployment root cannot be locked or the unregistration fails
+   */
+  @SuppressWarnings("try")
+  public static synchronized Optional<String> undeploy(String publishName, String root,
+      BBjAdminBase admin, ClasspathRelease release) throws IOException {
     applyNameValidation(publishName);
     Path deployments = Path.of(root).toAbsolutePath().normalize();
     try (FileChannel lock = openLock(deployments)) {
-      return applyRemoval(publishName, deployments, admin);
+      return applyRemoval(publishName, deployments, admin, release);
     }
   }
 
@@ -334,9 +355,10 @@ public final class DeploymentInstaller {
   }
 
   private static Optional<String> applyRemoval(String publishName, Path deployments,
-      BBjAdminBase admin) throws IOException {
+      BBjAdminBase admin, ClasspathRelease release) throws IOException {
     String classpathName = CLASSPATH_PREFIX + publishName;
     Optional<Path> directory;
+    Closeable hold;
     try {
       BBjAdminAppDeploymentConfiguration configuration = admin.getRemoteConfiguration();
       BBjAdminAppDeploymentApplication application = findApplication(configuration, publishName);
@@ -353,12 +375,21 @@ public final class DeploymentInstaller {
           : new DeploymentRegistration(application.getProperties(), application.getArguments(),
               application.getJavaArguments());
 
-      applyUnregistration(admin, configuration, publishName, previousClasspath,
-          previousRegistration);
+      // The hold is found while the classpath is still registered and closed once every session
+      // of the application has ended and the classpath is gone, so no session loads from it
+      hold = release.find(classpathName);
+      try {
+        applyUnregistration(admin, configuration, publishName, previousClasspath,
+            previousRegistration);
+      } catch (IOException | RuntimeException failure) {
+        closeHold(hold, classpathName);
+        throw failure;
+      }
     } catch (BBjAdminException | RuntimeException failure) {
       throw toDeploymentFailure(publishName, failure);
     }
 
+    closeHold(hold, classpathName);
     if (directory.isEmpty()) {
       return Optional.empty();
     }
@@ -377,6 +408,16 @@ public final class DeploymentInstaller {
     }
 
     return Optional.empty();
+  }
+
+  private static void closeHold(Closeable hold, String classpathName) {
+    try {
+      hold.close();
+    } catch (IOException | RuntimeException failure) {
+      // The removal is attempted either way, the folder report names what stayed
+      LOGGER.log(Level.DEBUG,
+          "The files of the BBj classpath " + classpathName + " could not be released", failure);
+    }
   }
 
   private static FileChannel openLock(Path deployments) throws IOException {
