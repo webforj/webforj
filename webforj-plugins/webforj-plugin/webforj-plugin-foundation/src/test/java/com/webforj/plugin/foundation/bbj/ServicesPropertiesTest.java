@@ -285,6 +285,13 @@ class ServicesPropertiesTest {
         """, Optional.of(Path.of("/opt/jbr/bin/java"))), Arguments.of("""
         basis.java.jvm.Default=/opt/zulu/bin/java
         """, Optional.of(Path.of("/opt/zulu/bin/java"))), Arguments.of("""
+        basis.java.jvm.BBjServices=/jdk/jbr/bin/server/jvm.dll
+        basis.java.jvm.Default=/jdk/zulu/bin/server/jvm.dll
+        """, Optional.of(Path.of("/jdk/jbr/bin/java.exe"))), Arguments.of("""
+        basis.java.jvm.Default=/jdk/zulu/bin/client/JVM.DLL
+        """, Optional.of(Path.of("/jdk/zulu/bin/java.exe"))), Arguments.of("""
+        basis.java.jvm.Default=jvm.dll
+        """, Optional.of(Path.of("jvm.dll"))), Arguments.of("""
         basis.cacheDirectory=/opt/bbx/cache
         """, Optional.empty()));
   }

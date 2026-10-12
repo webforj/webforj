@@ -42,6 +42,8 @@ public final class ServicesProperties {
   static final String DEFAULT_FILE = "cfg/BBj.properties";
 
   private static final String OPTIONS_FILE_PREFIX = "-XX:VMOptionsFile=";
+  private static final String WINDOWS_LIBRARY = "jvm.dll";
+  private static final String WINDOWS_EXECUTABLE = "java.exe";
 
   private final Path file;
   private final Path backupDirectory;
@@ -95,21 +97,23 @@ public final class ServicesProperties {
   }
 
   /**
-   * Gets the java executable BBjServices runs on.
+   * Gets the java executable BBjServices runs on. A virtual machine library named on Windows
+   * resolves to the java executable of its Java home.
    *
    * @return the java executable, empty when the file names none
    */
   public Optional<Path> getJavaExecutable() {
-    return readPath(JAVA_EXECUTABLE_KEY);
+    return readPath(JAVA_EXECUTABLE_KEY).map(ServicesProperties::toExecutable);
   }
 
   /**
-   * Gets the default java executable of BBj.
+   * Gets the default java executable of BBj. A virtual machine library named on Windows resolves to
+   * the java executable of its Java home.
    *
    * @return the java executable, empty when the file names none
    */
   public Optional<Path> getDefaultJavaExecutable() {
-    return readPath(DEFAULT_JAVA_EXECUTABLE_KEY);
+    return readPath(DEFAULT_JAVA_EXECUTABLE_KEY).map(ServicesProperties::toExecutable);
   }
 
   /**
@@ -219,5 +223,17 @@ public final class ServicesProperties {
 
   private static Path resolveBackup(Path file, Path backupDirectory) {
     return backupDirectory.resolve(file.getFileName() + BACKUP_SUFFIX);
+  }
+
+  private static Path toExecutable(Path java) {
+    // BBj on Windows names the virtual machine library, <java home>\bin\server\jvm.dll, in place
+    // of the executable. The executable of that Java home is <java home>\bin\java.exe
+    Path name = java.getFileName();
+    Path bin = java.getParent() == null ? null : java.getParent().getParent();
+    if (name == null || bin == null || !name.toString().equalsIgnoreCase(WINDOWS_LIBRARY)) {
+      return java;
+    }
+
+    return bin.resolve(WINDOWS_EXECUTABLE);
   }
 }

@@ -31,6 +31,7 @@ import java.util.function.LongFunction;
 public final class BBjShipServices {
 
   private static final String SERVICE = "BBjServices";
+  private static final String SECONDS = " seconds";
   private static final int ADMIN_PORT = 2002;
   private static final int PROBE_TIMEOUT_MILLIS = 1000;
   private static final Duration STOP_TIMEOUT = Duration.ofSeconds(180);
@@ -63,7 +64,8 @@ public final class BBjShipServices {
 
   /**
    * Shuts BBjServices down, waits until its process has ended and none of its ports accepts a
-   * connection, and starts it again with the program the BBj installation ships.
+   * connection, starts it again with the program the BBj installation ships and waits until the
+   * administration port accepts a connection.
    *
    * <p>
    * The ports are the administration port and the ports of the BBjShip context. The administration
@@ -93,30 +95,22 @@ public final class BBjShipServices {
         admin.release();
       }
 
-      long start = System.nanoTime();
-      long deadline = start + stopTimeout.toNanos();
-      long interval = progressInterval.toNanos();
-      long report = interval;
+      Progress progress = new Progress("Waiting for BBjServices to stop, ");
+      long deadline = System.nanoTime() + stopTimeout.toNanos();
       Optional<ProcessHandle> process =
           processId.isPresent() ? processLookup.apply(processId.getAsLong()) : Optional.empty();
       while (process.filter(ProcessHandle::isAlive).isPresent()
           || ports.stream().anyMatch(portProbe::test)) {
         if (System.nanoTime() - deadline >= 0) {
           throw new IOException(
-              "BBjServices did not stop within " + stopTimeout.toSeconds() + " seconds");
+              "BBjServices did not stop within " + stopTimeout.toSeconds() + SECONDS);
         }
 
         Thread.sleep(pollInterval);
-        long elapsed = System.nanoTime() - start;
-        if (elapsed >= report) {
-          log.accept("Waiting for BBjServices to stop, " + TimeUnit.NANOSECONDS.toSeconds(elapsed)
-              + " seconds");
-          report = elapsed - elapsed % interval + interval;
-        }
+        progress.update();
       }
 
-      log.accept("BBjServices stopped after "
-          + TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - start) + " seconds");
+      log.accept("BBjServices stopped after " + progress.getSeconds() + SECONDS);
       startServices(command);
     } catch (InterruptedException interruption) {
       Thread.currentThread().interrupt();
@@ -125,7 +119,8 @@ public final class BBjShipServices {
   }
 
   /**
-   * Starts BBjServices with the program the BBj installation ships.
+   * Starts BBjServices with the program the BBj installation ships and waits until the
+   * administration port accepts a connection.
    *
    * @throws IOException if the start program is missing, BBjServices does not start in time, the
    *         start program fails or the start is interrupted
@@ -222,24 +217,46 @@ public final class BBjShipServices {
       return List.of(readProgram(bin.resolve("bbjservices")));
     }
 
-    if (programLauncher.start(SERVICE_QUERY, home, programTimeout).equals(OptionalInt.of(0))) {
+    if (runProgram(SERVICE_QUERY).equals(OptionalInt.of(0))) {
       return SERVICE_START;
     }
 
     return List.of(readProgram(bin.resolve("BBjServices.exe")), "-noservice");
   }
 
-  private void startServices(List<String> command) throws IOException, InterruptedException {
-    OptionalInt exit = programLauncher.start(command, plugin.getHome(), programTimeout);
-    if (exit.isEmpty()) {
-      throw new IOException(
-          "BBjServices did not start within " + programTimeout.toSeconds() + " seconds");
+  private OptionalInt runProgram(List<String> command) throws IOException, InterruptedException {
+    Process process = programLauncher.start(command, plugin.getHome());
+    if (!process.waitFor(programTimeout.toMillis(), TimeUnit.MILLISECONDS)) {
+      return OptionalInt.empty();
     }
 
-    if (exit.getAsInt() != 0) {
-      throw new IOException(
-          "BBjServices did not start. The program ended with exit code " + exit.getAsInt());
+    return OptionalInt.of(process.exitValue());
+  }
+
+  private void startServices(List<String> command) throws IOException, InterruptedException {
+    // The start script of a Unix installation ends once BBjServices runs in the background, the
+    // Windows program outside the service keeps running in the foreground. Either way BBjServices
+    // has started once its administration port accepts a connection, and a program that ends
+    // with an error before that has failed
+    Process process = programLauncher.start(command, plugin.getHome());
+    Progress progress = new Progress("Waiting for BBjServices to start, ");
+    long deadline = System.nanoTime() + programTimeout.toNanos();
+    while (!isRunning()) {
+      if (!process.isAlive() && process.exitValue() != 0) {
+        throw new IOException(
+            "BBjServices did not start. The program ended with exit code " + process.exitValue());
+      }
+
+      if (System.nanoTime() - deadline >= 0) {
+        throw new IOException(
+            "BBjServices did not start within " + programTimeout.toSeconds() + SECONDS);
+      }
+
+      Thread.sleep(pollInterval);
+      progress.update();
     }
+
+    log.accept("BBjServices started after " + progress.getSeconds() + SECONDS);
   }
 
   private static String readProgram(Path program) throws IOException {
@@ -259,14 +276,37 @@ public final class BBjShipServices {
     }
   }
 
-  private static OptionalInt startProcess(List<String> command, Path directory, Duration timeout)
-      throws IOException, InterruptedException {
-    Process process = new ProcessBuilder(command).directory(directory.toFile())
+  private static Process startProcess(List<String> command, Path directory) throws IOException {
+    return new ProcessBuilder(command).directory(directory.toFile())
         .redirectOutput(Redirect.DISCARD).redirectError(Redirect.DISCARD).start();
-    if (!process.waitFor(timeout.toMillis(), TimeUnit.MILLISECONDS)) {
-      return OptionalInt.empty();
+  }
+
+  /**
+   * Reports a wait for BBjServices at the progress interval.
+   *
+   * @author Hyyan Abo Fakher
+   * @since 26.03
+   */
+  private final class Progress {
+
+    private final String message;
+    private final long start = System.nanoTime();
+    private long report = progressInterval.toNanos();
+
+    private Progress(String message) {
+      this.message = message;
     }
 
-    return OptionalInt.of(process.exitValue());
+    private void update() {
+      long elapsed = System.nanoTime() - start;
+      if (elapsed >= report) {
+        log.accept(message + TimeUnit.NANOSECONDS.toSeconds(elapsed) + SECONDS);
+        report = elapsed - elapsed % progressInterval.toNanos() + progressInterval.toNanos();
+      }
+    }
+
+    private long getSeconds() {
+      return TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - start);
+    }
   }
 }

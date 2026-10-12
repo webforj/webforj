@@ -2,6 +2,7 @@ package com.webforj.bbjship.cli.admin;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doAnswer;
@@ -15,6 +16,8 @@ import com.basis.api.admin.BBjAdminException;
 import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
 import com.webforj.plugin.foundation.bbj.model.BBjCredentials;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -24,9 +27,9 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,6 +41,7 @@ class BBjShipServicesTest extends EmptyWebAppServer {
 
   private List<String> events;
   private BBjShipServices services;
+  private boolean started;
 
   @BeforeEach
   void initStoppedServicesOnTheBBjHomeFixture() throws Exception {
@@ -46,7 +50,7 @@ class BBjShipServicesTest extends EmptyWebAppServer {
     doAnswer(call -> events.add("release")).when(admin).release();
     services = new BBjShipServices(plugin);
     services.setOperatingSystem("Mac OS X");
-    services.setPortProbe(port -> false);
+    services.setPortProbe(port -> started);
     services.setProcessLookup(pid -> {
       events.add("process " + pid);
       return Optional.empty();
@@ -54,32 +58,27 @@ class BBjShipServicesTest extends EmptyWebAppServer {
     services.setPollInterval(Duration.ofMillis(1));
     services.setStopTimeout(Duration.ofMillis(5));
     services.setProgramTimeout(Duration.ofMillis(5));
-    services.setProgramLauncher((command, directory, timeout) -> {
-      events.add(String.join(" ", command));
-      return OptionalInt.of(0);
-    });
+    services.setProgramLauncher((command, directory) -> launch(command, endedProcess(0)));
   }
 
   @Test
   void shouldStartTheScriptInTheHomeOnceBbjServicesIsGone() throws Exception {
-    Deque<Boolean> answers = new ArrayDeque<>(List.of(true, true, false));
+    Deque<Boolean> answers = new ArrayDeque<>(List.of(true, true, false, true));
     services.setPortProbe(port -> {
       events.add("probe " + port);
       return answers.pop();
     });
     List<Object> launch = new ArrayList<>();
-    services.setProgramLauncher((command, directory, timeout) -> {
-      events.add(String.join(" ", command));
+    services.setProgramLauncher((command, directory) -> {
       launch.add(directory);
-      launch.add(timeout);
-      return OptionalInt.of(0);
+      return launch(command, endedProcess(0));
     });
 
     services.restart(admin, OptionalLong.empty());
 
     assertEquals(List.of("shutdown", "release", "probe 2002", "probe 2002", "probe 2002",
-        home.resolve("bin/bbjservices").toString()), events);
-    assertEquals(List.of(home, Duration.ofMillis(5)), launch);
+        home.resolve("bin/bbjservices").toString(), "probe 2002"), events);
+    assertEquals(List.of(home), launch);
   }
 
   @Test
@@ -91,7 +90,7 @@ class BBjShipServicesTest extends EmptyWebAppServer {
         {"HTTP port": 8888, "SSL port": 8443, "Document Base": "%s"}"""
         .formatted(home.resolve("plugins/.webforj-bbjship-deployments/htdocs")));
     Map<Integer, Deque<Boolean>> answers =
-        Map.of(2002, new ArrayDeque<>(List.of(true, false, false, false)), 8888,
+        Map.of(2002, new ArrayDeque<>(List.of(true, false, false, false, true)), 8888,
             new ArrayDeque<>(List.of(true, true, false)), 8443, new ArrayDeque<>(List.of(false)));
     services.setPortProbe(port -> {
       events.add("probe " + port);
@@ -103,7 +102,7 @@ class BBjShipServicesTest extends EmptyWebAppServer {
 
     assertEquals(List.of("shutdown", "release", "probe 2002", "probe 2002", "probe 8888",
         "probe 2002", "probe 8888", "probe 2002", "probe 8888", "probe 8443",
-        home.resolve("bin/bbjservices").toString()), events);
+        home.resolve("bin/bbjservices").toString(), "probe 2002"), events);
   }
 
   @Test
@@ -120,23 +119,59 @@ class BBjShipServicesTest extends EmptyWebAppServer {
     });
     services.setPortProbe(port -> {
       events.add("probe " + port);
-      return false;
+      return started;
     });
     services.setStopTimeout(Duration.ofMillis(5000));
 
     services.restart(admin, OptionalLong.of(42));
 
     assertEquals(List.of("shutdown", "release", "process 42", "alive true", "alive true",
-        "alive false", "probe 2002", home.resolve("bin/bbjservices").toString()), events);
+        "alive false", "probe 2002", home.resolve("bin/bbjservices").toString(), "probe 2002"),
+        events);
   }
 
   @Test
-  void shouldReportTheWaitUntilBbjServicesHasStopped() throws Exception {
+  void shouldWaitForTheAdministrationPortAfterTheStartScriptHasEnded() throws Exception {
+    Deque<Boolean> answers = new ArrayDeque<>(List.of(false, false, false, true));
+    services.setPortProbe(port -> {
+      events.add("probe " + port);
+      return answers.pop();
+    });
+    services.setProgramTimeout(Duration.ofMillis(5000));
+
+    services.restart(admin, OptionalLong.empty());
+
+    assertEquals(List.of("shutdown", "release", "probe 2002",
+        home.resolve("bin/bbjservices").toString(), "probe 2002", "probe 2002", "probe 2002"),
+        events);
+  }
+
+  @Test
+  void shouldWaitForTheAdministrationPortWhileTheStartProgramKeepsRunning() throws Exception {
+    Deque<Boolean> answers = new ArrayDeque<>(List.of(false, false, true));
+    services.setPortProbe(port -> {
+      events.add("probe " + port);
+      return answers.pop();
+    });
+    services.setProgramLauncher((command, directory) -> launch(command, runningProcess()));
+    services.setProgramTimeout(Duration.ofMillis(5000));
+
+    services.restart(admin, OptionalLong.empty());
+
+    assertEquals(List.of("shutdown", "release", "probe 2002",
+        home.resolve("bin/bbjservices").toString(), "probe 2002", "probe 2002"), events);
+  }
+
+  @Test
+  void shouldReportTheWaitUntilBbjServicesHasStoppedAndStarted() throws Exception {
     Deque<Boolean> answers = new ArrayDeque<>(List.of(true, true, false));
     ProcessHandle process = mock(ProcessHandle.class);
     when(process.isAlive()).thenAnswer(call -> answers.pop());
     services.setProcessLookup(pid -> Optional.of(process));
+    Deque<Boolean> ports = new ArrayDeque<>(List.of(false, false, true));
+    services.setPortProbe(port -> ports.pop());
     services.setStopTimeout(Duration.ofMillis(5000));
+    services.setProgramTimeout(Duration.ofMillis(5000));
     services.setProgressInterval(Duration.ofMillis(1));
     List<String> log = new ArrayList<>();
     services.setLog(log::add);
@@ -145,7 +180,8 @@ class BBjShipServicesTest extends EmptyWebAppServer {
 
     assertEquals(
         List.of("Waiting for BBjServices to stop, 0 seconds",
-            "Waiting for BBjServices to stop, 0 seconds", "BBjServices stopped after 0 seconds"),
+            "Waiting for BBjServices to stop, 0 seconds", "BBjServices stopped after 0 seconds",
+            "Waiting for BBjServices to start, 0 seconds", "BBjServices started after 0 seconds"),
         log);
   }
 
@@ -234,15 +270,16 @@ class BBjShipServicesTest extends EmptyWebAppServer {
 
   @Test
   void shouldFailAndKeepTheInterruptWhenTheStartIsInterrupted() {
-    InterruptedException interruption = new InterruptedException();
-    services.setProgramLauncher((command, directory, timeout) -> {
-      throw interruption;
+    services.setProgramLauncher((command, directory) -> launch(command, runningProcess()));
+    services.setPortProbe(port -> {
+      Thread.currentThread().interrupt();
+      return false;
     });
 
     IOException failure = assertThrows(IOException.class, services::start);
 
     assertEquals("BBjServices start was interrupted", failure.getMessage());
-    assertEquals(interruption, failure.getCause());
+    assertInstanceOf(InterruptedException.class, failure.getCause());
     assertTrue(Thread.interrupted());
   }
 
@@ -259,10 +296,8 @@ class BBjShipServicesTest extends EmptyWebAppServer {
   @Test
   void shouldStartTheWindowsProgramWithoutServiceWhenNoServiceExists() throws Exception {
     services.setOperatingSystem("Windows 11");
-    services.setProgramLauncher((command, directory, timeout) -> {
-      events.add(String.join(" ", command));
-      return OptionalInt.of(command.get(0).equals("sc") ? 1060 : 0);
-    });
+    services.setProgramLauncher((command, directory) -> launch(command,
+        command.get(0).equals("sc") ? endedProcess(1060) : runningProcess()));
     Path program = Files.createFile(home.resolve("bin/BBjServices.exe"));
 
     services.restart(admin, OptionalLong.empty());
@@ -286,10 +321,7 @@ class BBjShipServicesTest extends EmptyWebAppServer {
   @Test
   void shouldFailBeforeTheShutdownWhenTheWindowsProgramIsMissing() {
     services.setOperatingSystem("Windows 11");
-    services.setProgramLauncher((command, directory, timeout) -> {
-      events.add(String.join(" ", command));
-      return OptionalInt.of(1060);
-    });
+    services.setProgramLauncher((command, directory) -> launch(command, endedProcess(1060)));
 
     IOException failure =
         assertThrows(IOException.class, () -> services.restart(admin, OptionalLong.empty()));
@@ -297,6 +329,19 @@ class BBjShipServicesTest extends EmptyWebAppServer {
     assertEquals("BBjServices start program is missing: " + home.resolve("bin/BBjServices.exe"),
         failure.getMessage());
     assertEquals(List.of("sc query BBjServices", "release"), events);
+  }
+
+  @Test
+  void shouldStartTheWindowsProgramWhenTheServiceQueryDoesNotEnd() throws Exception {
+    services.setOperatingSystem("Windows 11");
+    services.setProgramLauncher((command, directory) -> launch(command,
+        command.get(0).equals("sc") ? runningProcess() : endedProcess(0)));
+    Path program = Files.createFile(home.resolve("bin/BBjServices.exe"));
+
+    services.restart(admin, OptionalLong.empty());
+
+    assertEquals(List.of("sc query BBjServices", "shutdown", "release", program + " -noservice"),
+        events);
   }
 
   @Test
@@ -324,8 +369,8 @@ class BBjShipServicesTest extends EmptyWebAppServer {
 
   @ParameterizedTest
   @MethodSource("provideFailedStarts")
-  void shouldFailWhenTheStartProgramFails(OptionalInt answer, String message) {
-    services.setProgramLauncher((command, directory, timeout) -> answer);
+  void shouldFailWhenTheStartProgramFails(Process program, String message) {
+    services.setProgramLauncher((command, directory) -> program);
 
     IOException failure =
         assertThrows(IOException.class, () -> services.restart(admin, OptionalLong.empty()));
@@ -335,16 +380,16 @@ class BBjShipServicesTest extends EmptyWebAppServer {
 
   @Test
   void shouldFailAndKeepTheInterruptWhenTheRestartIsInterrupted() {
-    InterruptedException interruption = new InterruptedException();
-    services.setProgramLauncher((command, directory, timeout) -> {
-      throw interruption;
+    services.setPortProbe(port -> {
+      Thread.currentThread().interrupt();
+      return false;
     });
 
     IOException failure =
         assertThrows(IOException.class, () -> services.restart(admin, OptionalLong.empty()));
 
     assertEquals("BBjServices restart was interrupted", failure.getMessage());
-    assertEquals(interruption, failure.getCause());
+    assertInstanceOf(InterruptedException.class, failure.getCause());
     assertTrue(Thread.interrupted());
   }
 
@@ -360,6 +405,21 @@ class BBjShipServicesTest extends EmptyWebAppServer {
     assertFalse(services.isRunning());
   }
 
+  private Process launch(List<String> command, Process process) {
+    events.add(String.join(" ", command));
+    started = !command.get(0).equals("sc");
+
+    return process;
+  }
+
+  private static Process endedProcess(int exit) {
+    return new Program(false, exit);
+  }
+
+  private static Process runningProcess() {
+    return new Program(true, 0);
+  }
+
   private static Stream<Arguments> provideVersionAnswers() {
     return Stream.of(Arguments.of("""
         {"version": "26.03-SNAPSHOT", "javaArguments": [], "pid": 42}""", OptionalLong.of(42)),
@@ -373,8 +433,64 @@ class BBjShipServicesTest extends EmptyWebAppServer {
 
   private static Stream<Arguments> provideFailedStarts() {
     return Stream.of(
-        Arguments.of(OptionalInt.of(3),
+        Arguments.of(endedProcess(3),
             "BBjServices did not start. The program ended with exit code 3"),
-        Arguments.of(OptionalInt.empty(), "BBjServices did not start within 0 seconds"));
+        Arguments.of(runningProcess(), "BBjServices did not start within 0 seconds"),
+        Arguments.of(endedProcess(0), "BBjServices did not start within 0 seconds"));
+  }
+
+  private static final class Program extends Process {
+
+    private final boolean alive;
+    private final int exit;
+
+    private Program(boolean alive, int exit) {
+      this.alive = alive;
+      this.exit = exit;
+    }
+
+    @Override
+    public OutputStream getOutputStream() {
+      return OutputStream.nullOutputStream();
+    }
+
+    @Override
+    public InputStream getInputStream() {
+      return InputStream.nullInputStream();
+    }
+
+    @Override
+    public InputStream getErrorStream() {
+      return InputStream.nullInputStream();
+    }
+
+    @Override
+    public int waitFor() {
+      return exitValue();
+    }
+
+    @Override
+    public boolean waitFor(long timeout, TimeUnit unit) {
+      return !alive;
+    }
+
+    @Override
+    public int exitValue() {
+      if (alive) {
+        throw new IllegalThreadStateException();
+      }
+
+      return exit;
+    }
+
+    @Override
+    public boolean isAlive() {
+      return alive;
+    }
+
+    @Override
+    public void destroy() {
+      throw new UnsupportedOperationException();
+    }
   }
 }
