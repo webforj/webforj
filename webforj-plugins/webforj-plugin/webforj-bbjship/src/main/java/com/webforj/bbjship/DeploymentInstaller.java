@@ -29,6 +29,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -469,26 +470,26 @@ public final class DeploymentInstaller {
       throw new DeploymentException(Reason.INVALID_ARCHIVE, CLASS_FOLDER_REFUSAL);
     }
 
-    List<Path> folders = new ArrayList<>();
-    for (String entry : value.split(File.pathSeparator, -1)) {
-      folders.add(readClassFolder(entry.strip(), value));
+    List<String> entries =
+        Arrays.stream(value.split(File.pathSeparator, -1)).map(String::strip).toList();
+    List<Path> folders = entries.stream().map(DeploymentInstaller::findClassFolder)
+        .flatMap(Optional::stream).toList();
+    if (folders.size() != entries.size()) {
+      throw new DeploymentException(Reason.INVALID_ARCHIVE, CLASS_FOLDER_REFUSAL + ": " + value);
     }
 
-    return List.copyOf(folders);
+    return folders;
   }
 
-  private static Path readClassFolder(String entry, String value) throws DeploymentException {
+  private static Optional<Path> findClassFolder(String entry) {
     try {
       Path folder = Path.of(entry);
-      if (folder.isAbsolute() && Files.isDirectory(folder)) {
-        return folder;
-      }
-    } catch (InvalidPathException invalid) {
-      throw new DeploymentException(Reason.INVALID_ARCHIVE, CLASS_FOLDER_REFUSAL + ": " + value,
-          invalid);
-    }
 
-    throw new DeploymentException(Reason.INVALID_ARCHIVE, CLASS_FOLDER_REFUSAL + ": " + value);
+      return folder.isAbsolute() && Files.isDirectory(folder) ? Optional.of(folder)
+          : Optional.empty();
+    } catch (InvalidPathException invalid) {
+      return Optional.empty();
+    }
   }
 
   private static void writeStaging(InputStream archive, Path upload, Path staging)

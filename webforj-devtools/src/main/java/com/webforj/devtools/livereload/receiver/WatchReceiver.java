@@ -13,10 +13,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -241,23 +243,27 @@ public class WatchReceiver implements LiveReloadReceiver {
 
   private static boolean isSwappable(String path) {
     String lower = path.toLowerCase(Locale.ROOT);
-    return isServed(path)
+    return resolveServed(path).isPresent()
         && (lower.endsWith(CSS_EXTENSION) || IMAGE_EXTENSIONS.stream().anyMatch(lower::endsWith));
   }
 
-  private static boolean isServed(String path) {
+  private static Optional<Path> resolveServed(String path) {
     if (path.startsWith("/") || path.indexOf('\\') >= 0) {
-      return false;
+      return Optional.empty();
     }
 
     try {
       Path resolved = SERVED_ROOT.resolve(path).normalize();
+      if (resolved.equals(SERVED_ROOT) || !resolved.startsWith(SERVED_ROOT)) {
+        return Optional.empty();
+      }
 
-      return !resolved.equals(SERVED_ROOT) && resolved.startsWith(SERVED_ROOT);
+      return Optional.of(SERVED_ROOT.relativize(resolved));
     } catch (InvalidPathException e) {
-      return false;
+      return Optional.empty();
     }
   }
+
 
   private static String getResourceType(String path) {
     return isStylesheet(path) ? "css" : "image";
@@ -291,12 +297,23 @@ public class WatchReceiver implements LiveReloadReceiver {
   }
 
   private static String readStylesheet(String path) {
-    try (InputStream stream =
-        WatchReceiver.class.getClassLoader().getResourceAsStream(SERVED_DIRECTORY + path)) {
+    Optional<Path> served = resolveServed(path);
+    if (served.isEmpty()) {
+      return null;
+    }
+
+    String name = SERVED_DIRECTORY + String.join("/", toSegments(served.get()));
+    try (InputStream stream = WatchReceiver.class.getClassLoader().getResourceAsStream(name)) {
       return stream == null ? null : new String(stream.readAllBytes(), StandardCharsets.UTF_8);
     } catch (IOException e) {
       return null;
     }
+  }
+
+  private static List<String> toSegments(Path path) {
+    List<String> segments = new ArrayList<>();
+    path.forEach(segment -> segments.add(segment.toString()));
+    return segments;
   }
 
   private static boolean isStylesheet(String path) {

@@ -3,8 +3,9 @@ package com.webforj.plugin.foundation.hotswap;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Writes and reads the options file a shared container virtual machine reads its hotswap arguments
@@ -34,12 +35,15 @@ public final class ContainerOptionsFile {
    * @throws IOException if a line holds a double quote or the file cannot be written
    */
   public static boolean write(Path directory, List<String> lines) throws IOException {
-    List<String> formatted = new ArrayList<>();
-    for (String line : lines) {
-      formatted.add(formatLine(line));
+    Optional<String> quoted = lines.stream().filter(line -> line.indexOf('"') >= 0).findFirst();
+    if (quoted.isPresent()) {
+      throw new IOException("the options file cannot contain a double quote: " + quoted.get());
     }
 
-    return writeContent(getFile(directory), String.join("\n", formatted) + "\n");
+    String content = lines.stream().map(ContainerOptionsFile::formatLine)
+        .collect(Collectors.joining("\n", "", "\n"));
+
+    return writeContent(getFile(directory), content);
   }
 
   /**
@@ -99,11 +103,7 @@ public final class ContainerOptionsFile {
     return "-XX:VMOptionsFile=" + getFile(directory).toAbsolutePath();
   }
 
-  private static String formatLine(String line) throws IOException {
-    if (line.indexOf('"') >= 0) {
-      throw new IOException("the options file cannot contain a double quote: " + line);
-    }
-
+  private static String formatLine(String line) {
     for (int index = 0; index < line.length(); index++) {
       if (Character.isWhitespace(line.charAt(index))) {
         return "\"" + line + "\"";

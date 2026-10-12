@@ -129,7 +129,9 @@ public final class BBjShipContexts {
    * @param plugin the BBjShip plugin of the BBj installation
    */
   public BBjShipContexts(BBjAdminBase admin, BBjShipPlugin plugin) {
-    this(admin, plugin, ANSWER_DEADLINE);
+    this.admin = Objects.requireNonNull(admin);
+    this.plugin = Objects.requireNonNull(plugin);
+    this.answerDeadline = ANSWER_DEADLINE;
   }
 
   BBjShipContexts(BBjAdminBase admin, BBjShipPlugin plugin, Duration answerDeadline) {
@@ -683,19 +685,31 @@ public final class BBjShipContexts {
      * {@inheritDoc}
      */
     @Override
-    public void checkServerTrusted(X509Certificate[] chain, String authType) {}
+    @SuppressWarnings("java:S4830")
+    public void checkServerTrusted(X509Certificate[] chain, String authType) {
+      // The request goes to localhost only and carries no credentials. BBj serves a self signed
+      // certificate there, so every server certificate is accepted.
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void checkServerTrusted(X509Certificate[] chain, String authType, Socket socket) {}
+    @SuppressWarnings("java:S4830")
+    public void checkServerTrusted(X509Certificate[] chain, String authType, Socket socket) {
+      // The request goes to localhost only and carries no credentials. BBj serves a self signed
+      // certificate there, so every server certificate is accepted.
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void checkServerTrusted(X509Certificate[] chain, String authType, SSLEngine engine) {}
+    @SuppressWarnings("java:S4830")
+    public void checkServerTrusted(X509Certificate[] chain, String authType, SSLEngine engine) {
+      // The request goes to localhost only and carries no credentials. BBj serves a self signed
+      // certificate there, so every server certificate is accepted.
+    }
 
     /**
      * {@inheritDoc}
