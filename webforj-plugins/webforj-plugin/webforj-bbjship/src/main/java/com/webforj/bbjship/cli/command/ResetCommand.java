@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
@@ -122,8 +123,9 @@ public final class ResetCommand implements Callable<Integer> {
       }
 
       for (PublishedApplication application : applications) {
-        DeploymentInstaller.undeploy(application.getName(), root, admin);
+        Optional<String> kept = DeploymentInstaller.undeploy(application.getName(), root, admin);
         showStep("Undeployed", application.getName());
+        kept.ifPresent(out::println);
       }
 
       if (development) {
@@ -155,7 +157,7 @@ public final class ResetCommand implements Callable<Integer> {
     } catch (IOException held) {
       // Windows refuses to delete a jar the BBjServices virtual machine has open. Everything is
       // unregistered by now, the folder is reported and the reset ends as done
-      out.println("Not removed: " + plugin.getRuntime());
+      out.println(DeploymentInstaller.formatKeptFolder(plugin.getRuntime(), held));
     }
 
     showStep("Reset", "BBjShip");

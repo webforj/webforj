@@ -116,13 +116,13 @@ public final class DeploymentInstaller {
    * @param root the deployment root path
    * @param admin the authenticated administration API
    *
-   * @return the folder of the application that stayed, empty when it is removed
+   * @return the report naming the folder that stayed and why, empty when it is removed
    * @throws DeploymentException if the name is invalid or BBjShip published no application of that
    *         name
-   * @throws IOException if the deployment root cannot be locked
+   * @throws IOException if the deployment root cannot be locked or the unregistration fails
    */
   @SuppressWarnings("try")
-  public static synchronized Optional<Path> undeploy(String publishName, String root,
+  public static synchronized Optional<String> undeploy(String publishName, String root,
       BBjAdminBase admin) throws IOException {
     applyNameValidation(publishName);
     Path deployments = Path.of(root).toAbsolutePath().normalize();
@@ -333,7 +333,7 @@ public final class DeploymentInstaller {
     return previousDirectory == null ? DeploymentResult.CREATED : DeploymentResult.REPLACED;
   }
 
-  private static Optional<Path> applyRemoval(String publishName, Path deployments,
+  private static Optional<String> applyRemoval(String publishName, Path deployments,
       BBjAdminBase admin) throws IOException {
     String classpathName = CLASSPATH_PREFIX + publishName;
     Optional<Path> directory;
@@ -371,8 +371,9 @@ public final class DeploymentInstaller {
     } catch (IOException held) {
       // Windows refuses to delete a jar the BBjServices virtual machine has open, and BBjServices
       // keeps the jars of a removed classpath open until it restarts
-      LOGGER.log(Level.DEBUG, "Not removed: " + folder, held);
-      return Optional.of(folder);
+      String report = formatKeptFolder(folder, held);
+      LOGGER.log(Level.DEBUG, report, held);
+      return Optional.of(report);
     }
 
     return Optional.empty();
@@ -911,6 +912,18 @@ public final class DeploymentInstaller {
             + ". The next deployment of this name removes it", failure);
       }
     }
+  }
+
+  /**
+   * Formats the report of a folder that stayed because its files could not be removed.
+   *
+   * @param folder the folder that stayed
+   * @param failure the removal failure
+   *
+   * @return the report
+   */
+  public static String formatKeptFolder(Path folder, IOException failure) {
+    return "Not removed: " + folder + ". " + failure.getMessage();
   }
 
   private static void removeDeploymentDirectory(Path directory) throws IOException {

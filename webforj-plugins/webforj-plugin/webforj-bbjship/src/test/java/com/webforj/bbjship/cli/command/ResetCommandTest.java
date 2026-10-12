@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -293,29 +294,39 @@ class ResetCommandTest {
 
   @Test
   void shouldReportTheRuntimeFolderWhoseFilesCannotBeRemovedAndEndAsDone() throws Exception {
+    assumeTrue(deployments.getFileSystem().supportedFileAttributeViews().contains("posix"),
+        "The removal failure needs a posix file system");
     Path held = deployments.resolve("inventory/0b8f4f0e-3f5c-4a8e-9a49-5d1a6f3c2b10/bbj");
     assertTrue(held.toFile().setWritable(false));
     BBjShipCli cli = createCli(home, admin, "y\n");
 
-    int status = cli.run("reset");
+    int status;
+    try {
+      status = cli.run("reset");
+    } finally {
+      assertTrue(held.toFile().setWritable(true));
+    }
 
-    assertTrue(held.toFile().setWritable(true));
     assertEquals(0, status);
-    assertEquals(FACTORY_ACCOUNT_WARNING + "\n" + """
-        This resets BBjShip on this machine:
-          undeploy inventory
-          undeploy proof-app
-          disable development runs
-          remove the BBjShip HTTP endpoint and assets
-        Continue? [y/N]
-        Undeployed inventory
-        Undeployed proof-app
-        Disabled development runs
-        Disabled the BBjShip HTTP endpoint
-        Removed the BBjShip assets
-        Not removed: %s
-        Reset BBjShip
-        """.formatted(home.resolve("plugins/.webforj-bbjship-deployments")),
+    assertEquals(
+        FACTORY_ACCOUNT_WARNING + "\n"
+            + """
+                This resets BBjShip on this machine:
+                  undeploy inventory
+                  undeploy proof-app
+                  disable development runs
+                  remove the BBjShip HTTP endpoint and assets
+                Continue? [y/N]
+                Undeployed inventory
+                Not removed: %s. %s
+                Undeployed proof-app
+                Disabled development runs
+                Disabled the BBjShip HTTP endpoint
+                Removed the BBjShip assets
+                Not removed: %s. %s
+                Reset BBjShip
+                """.formatted(deployments.resolve("inventory"), held.resolve("webforj.bbj"),
+                home.resolve("plugins/.webforj-bbjship-deployments"), held.resolve("webforj.bbj")),
         output.toString(StandardCharsets.UTF_8));
     verify(configuration).removeApplication("inventory");
     verify(configuration).removeApplication("proof-app");

@@ -22,7 +22,6 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
 import java.util.OptionalInt;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -239,22 +238,12 @@ class BBjShipContextsEnableTest extends EmptyWebAppServer {
     when(server.getContextInfo("webforj-bbjship")).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA))
         .thenReturn(CREATED.formatted("webforj-bbjship", ""));
-    contexts = new BBjShipContexts(admin, plugin, Duration.ofSeconds(10));
-    int httpPort = WebServer.findClosedPort();
+    WebServer web = WebServer.startServingBBjShipAfterClosing(3);
+    int httpPort = web.getPort();
     OptionalInt sslPort = OptionalInt.empty();
-    CompletableFuture<WebServer> web = CompletableFuture.supplyAsync(() -> {
-      try {
-        Thread.sleep(Duration.ofMillis(600));
-        return WebServer.startServingBBjShipOn(httpPort);
-      } catch (IOException | InterruptedException failure) {
-        throw new IllegalStateException(failure);
-      }
-    });
 
-    try {
+    try (web) {
       assertDoesNotThrow(() -> contexts.enable(httpPort, sslPort, false));
-    } finally {
-      web.join().close();
     }
 
     verify(server, never()).removeContext(anyString());

@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsServer;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -27,9 +28,15 @@ public final class WebServer implements AutoCloseable {
   private static final char[] KEY_STORE_PASSWORD = "changeit".toCharArray();
 
   private final HttpServer server;
+  private final int port;
 
   private WebServer(HttpServer server) {
+    this(server, server.getAddress().getPort());
+  }
+
+  private WebServer(HttpServer server, int port) {
     this.server = server;
+    this.port = port;
   }
 
   /**
@@ -76,7 +83,7 @@ public final class WebServer implements AutoCloseable {
    * Returns the port the server listens on.
    */
   public int getPort() {
-    return server.getAddress().getPort();
+    return port;
   }
 
   /**
@@ -87,10 +94,31 @@ public final class WebServer implements AutoCloseable {
     server.stop(0);
   }
 
-  static WebServer startServingBBjShipOn(int port) throws IOException {
-    return startServing(
-        HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), port), 0),
-        CHALLENGE, 0);
+  static WebServer startServingBBjShipAfterClosing(int connections) throws IOException {
+    ServerSocket closing = new ServerSocket();
+    closing.setReuseAddress(true);
+    closing.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
+    int port = closing.getLocalPort();
+    HttpServer server = HttpServer.create();
+    addBBjShipContexts(server, CHALLENGE, 0);
+    Thread.ofPlatform().daemon().start(() -> {
+      try (closing) {
+        for (int closed = 0; closed < connections; closed++) {
+          closing.accept().close();
+        }
+      } catch (IOException failure) {
+        throw new UncheckedIOException(failure);
+      }
+
+      try {
+        server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), port), 0);
+        server.start();
+      } catch (IOException failure) {
+        throw new UncheckedIOException(failure);
+      }
+    });
+
+    return new WebServer(server, port);
   }
 
   static WebServer startServingBBjShipWith(String challenge, int notFoundAnswers)
@@ -135,6 +163,13 @@ public final class WebServer implements AutoCloseable {
   }
 
   private static WebServer startServing(HttpServer server, String challenge, int notFoundAnswers) {
+    addBBjShipContexts(server, challenge, notFoundAnswers);
+    server.start();
+
+    return new WebServer(server);
+  }
+
+  private static void addBBjShipContexts(HttpServer server, String challenge, int notFoundAnswers) {
     AtomicInteger notFound = new AtomicInteger(notFoundAnswers);
     server.createContext("/", exchange -> {
       exchange.sendResponseHeaders(404, -1);
@@ -153,8 +188,5 @@ public final class WebServer implements AutoCloseable {
       exchange.getResponseBody().write(PROBLEM.getBytes(StandardCharsets.UTF_8));
       exchange.close();
     });
-    server.start();
-
-    return new WebServer(server);
   }
 }

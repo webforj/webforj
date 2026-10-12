@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertLinesMatch;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -218,15 +219,25 @@ final class DeploymentInstallerPublishedApplicationTest {
 
   @Test
   void shouldUndeployAndKeepTheFolderWhoseFilesCannotBeRemoved() throws Exception {
+    assumeTrue(root.getFileSystem().supportedFileAttributeViews().contains("posix"),
+        "The removal failure needs a posix file system");
     Files.writeString(root.resolve("hello-app/current"), previous.getFileName().toString());
     assertTrue(previous.resolve("bbj").toFile().setWritable(false));
     String destination = root.toString();
 
-    Optional<Path> kept =
-        assertDoesNotThrow(() -> DeploymentInstaller.undeploy("hello-app", destination, admin));
+    Optional<String> kept;
+    try {
+      kept =
+          assertDoesNotThrow(() -> DeploymentInstaller.undeploy("hello-app", destination, admin));
+    } finally {
+      assertTrue(previous.resolve("bbj").toFile().setWritable(true));
+    }
 
-    assertTrue(previous.resolve("bbj").toFile().setWritable(true));
-    assertEquals(Optional.of(root.toRealPath().resolve("hello-app")), kept);
+    assertEquals(
+        Optional
+            .of("Not removed: " + root.toRealPath().resolve("hello-app") + ". " + root.toRealPath()
+                .resolve("hello-app").resolve(previous.getFileName()).resolve("bbj/webforj.bbj")),
+        kept);
     verify(configuration).removeApplication("hello-app");
     verify(admin).setClasspath(CLASSPATH_NAME, null);
     verify(admin).commit();

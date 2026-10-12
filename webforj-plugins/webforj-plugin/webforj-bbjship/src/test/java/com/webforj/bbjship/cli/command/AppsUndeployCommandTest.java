@@ -4,6 +4,7 @@ import static com.webforj.plugin.foundation.bbj.model.BBjCredentials.FACTORY_ACC
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -105,18 +106,25 @@ class AppsUndeployCommandTest {
 
   @Test
   void shouldReportTheFolderWhoseFilesCannotBeRemoved() throws Exception {
+    assumeTrue(deployments.getFileSystem().supportedFileAttributeViews().contains("posix"),
+        "The removal failure needs a posix file system");
     Path held = deployments.resolve("hello-app/0b8f4f0e-3f5c-4a8e-9a49-5d1a6f3c2b10/bbj");
     assertTrue(held.toFile().setWritable(false));
 
-    int status = cli.run("apps", "undeploy", "--all");
+    int status;
+    try {
+      status = cli.run("apps", "undeploy", "--all");
+    } finally {
+      assertTrue(held.toFile().setWritable(true));
+    }
 
-    assertTrue(held.toFile().setWritable(true));
     assertEquals(0, status);
     assertEquals(FACTORY_ACCOUNT_WARNING + "\n" + """
         Undeployed hello-app
+        Not removed: %s. %s
         Undeployed shop
-        Not removed: %s
-        """.formatted(deployments.resolve("hello-app")), output.toString(StandardCharsets.UTF_8));
+        """.formatted(deployments.resolve("hello-app"), held.resolve("webforj.bbj")),
+        output.toString(StandardCharsets.UTF_8));
     verify(configuration).removeApplication("hello-app");
     assertTrue(Files.isRegularFile(held.resolve("webforj.bbj")));
     assertFalse(Files.exists(deployments.resolve("shop")));
