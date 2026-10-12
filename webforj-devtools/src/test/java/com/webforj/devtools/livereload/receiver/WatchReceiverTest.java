@@ -25,6 +25,8 @@ import java.util.concurrent.CountDownLatch;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class WatchReceiverTest {
 
@@ -160,6 +162,17 @@ class WatchReceiverTest {
     verify(server).sendResourceUpdateMessage("css", "watch-receiver/served.css",
         "body { color: red; }\n");
     verify(server, never()).sendReloadMessage();
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void shouldReloadForStylesheetOutsideTheServedFolder(boolean hotSwap) {
+    LiveReloadServer server = runningServer();
+
+    new WatchReceiver(server, hotSwap).handleLine("REBUILD ../outside.css");
+
+    verify(server).sendReloadMessage();
+    verify(server, never()).sendResourceUpdateMessage(any(), any(), any());
   }
 
   @Test

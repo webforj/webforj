@@ -12,6 +12,7 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -239,7 +240,13 @@ public class WatchReceiver implements LiveReloadReceiver {
 
   private static boolean isSwappable(String path) {
     String lower = path.toLowerCase(Locale.ROOT);
-    return lower.endsWith(CSS_EXTENSION) || IMAGE_EXTENSIONS.stream().anyMatch(lower::endsWith);
+    return isServed(path)
+        && (lower.endsWith(CSS_EXTENSION) || IMAGE_EXTENSIONS.stream().anyMatch(lower::endsWith));
+  }
+
+  private static boolean isServed(String path) {
+    return !path.startsWith("/") && path.indexOf('\\') < 0
+        && Arrays.stream(path.split("/")).noneMatch(".."::equals);
   }
 
   private static String getResourceType(String path) {
