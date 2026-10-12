@@ -26,27 +26,20 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class WatchReceiverTest {
 
-  @Test
-  void shouldHotSwapStylesheetChange() {
+  @ParameterizedTest
+  @CsvSource({"styles/app.css, css", "assets/logo.png, image"})
+  void shouldHotSwapSwappableChange(String path, String type) {
     LiveReloadServer server = runningServer();
 
-    new WatchReceiver(server, true).handleLine("REBUILD styles/app.css");
+    new WatchReceiver(server, true).handleLine("REBUILD " + path);
 
-    verify(server).sendResourceUpdateMessage(eq("css"), eq("styles/app.css"), isNull());
+    verify(server).sendResourceUpdateMessage(eq(type), eq(path), isNull());
     verify(server, never()).sendReloadMessage();
-  }
-
-  @Test
-  void shouldHotSwapAnImageChange() {
-    LiveReloadServer server = runningServer();
-
-    new WatchReceiver(server, true).handleLine("REBUILD assets/logo.png");
-
-    verify(server).sendResourceUpdateMessage(eq("image"), eq("assets/logo.png"), isNull());
   }
 
   @Test

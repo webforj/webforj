@@ -43,6 +43,8 @@ public class MigrateInstallPluginSettings
   private static final String DEPLOYMENT_PATH = "/webforj-bbjship";
   private static final String POM = "pom.xml";
   private static final String ARTIFACT_ID = "artifactId";
+  private static final String PLUGIN = "plugin";
+  private static final String CONFIGURATION_TAG = "configuration";
   private static final Path CONFIGURATION = Path.of("src/main/resources/webforj.conf");
   private static final String ENGINE_DEPENDENCY = """
       <dependency>
@@ -180,9 +182,9 @@ public class MigrateInstallPluginSettings
       return Optional.empty();
     }
 
-    for (Xml.Tag plugin : plugins.getChildren("plugin")) {
+    for (Xml.Tag plugin : plugins.getChildren(PLUGIN)) {
       if (plugin.getChildValue(ARTIFACT_ID).filter(INSTALL_PLUGIN::equals).isPresent()) {
-        Xml.Tag configuration = plugin.getChild("configuration").orElse(null);
+        Xml.Tag configuration = plugin.getChild(CONFIGURATION_TAG).orElse(null);
         InstallSettings settings = new InstallSettings();
         if (configuration != null) {
           settings.deployUrl = configuration.getChildValue("deployurl").orElse(null);
@@ -194,7 +196,7 @@ public class MigrateInstallPluginSettings
           settings.token = configuration.getChildValue("token").orElse(null);
         }
 
-        settings.merged = plugins.getChildren("plugin").stream().anyMatch(
+        settings.merged = plugins.getChildren(PLUGIN).stream().anyMatch(
             other -> other.getChildValue(ARTIFACT_ID).filter(BUILD_PLUGIN::equals).isPresent());
 
         settings.version = document.getRoot().getChild("dependencies")
@@ -244,56 +246,65 @@ public class MigrateInstallPluginSettings
     @Override
     public Xml.Tag visitTag(Xml.Tag tag, ExecutionContext ctx) {
       Xml.Tag visited = super.visitTag(tag, ctx);
-      if ("dependencies".equals(visited.getName()) && isProjectChild()
-          && visited.getChildren("dependency").stream().noneMatch(dependency -> dependency
-              .getChildValue(ARTIFACT_ID).filter("webforj-engine"::equals).isPresent())) {
-        String version =
-            settings.version == null ? "" : "<version>" + settings.version + "</version>";
-        doAfterVisit(
-            new AddToTagVisitor<>(visited, Xml.Tag.build(ENGINE_DEPENDENCY.formatted(version))));
-      }
-
-      if (!"plugin".equals(visited.getName())) {
-        return visited;
-      }
-
-      if (isPlugin(visited, INSTALL_PLUGIN)) {
-        if (settings.merged) {
-          doAfterVisit(new RemoveContentVisitor<>(visited, true, true));
-
-          return visited;
-        }
-
-        if (visited.getChild("configuration").flatMap(c -> c.getChild("hotswap")).isPresent()) {
-          return visited;
-        }
-
-        visited.getChild("executions").ifPresent(
-            executions -> doAfterVisit(new RemoveContentVisitor<>(executions, true, true)));
-        Xml.Tag configuration =
-            Xml.Tag.build("<configuration>" + formatSettings() + "</configuration>");
-        Optional<Xml.Tag> existing = visited.getChild("configuration");
-        if (existing.isPresent()) {
-          doAfterVisit(new RemoveContentVisitor<>(existing.get(), true, true));
-        }
-
-        doAfterVisit(new AddToTagVisitor<>(visited, configuration));
+      if ("dependencies".equals(visited.getName()) && isProjectChild()) {
+        addEngine(visited);
+      } else if (isPlugin(visited, INSTALL_PLUGIN)) {
+        migrateInstallPlugin(visited);
       } else if (settings.merged && isPlugin(visited, BUILD_PLUGIN)) {
-        Optional<Xml.Tag> configuration = visited.getChild("configuration");
-        if (configuration.isPresent()) {
-          for (Xml.Tag child : Xml.Tag
-              .build("<configuration>" + formatSettings() + "</configuration>").getChildren()) {
-            if (configuration.get().getChild(child.getName()).isEmpty()) {
-              doAfterVisit(new AddToTagVisitor<>(configuration.get(), child));
-            }
-          }
-        } else {
-          doAfterVisit(new AddToTagVisitor<>(visited,
-              Xml.Tag.build("<configuration>" + formatSettings() + "</configuration>")));
-        }
+        mergeIntoBuildPlugin(visited);
       }
 
       return visited;
+    }
+
+    private void addEngine(Xml.Tag dependencies) {
+      boolean declared =
+          dependencies.getChildren("dependency").stream().anyMatch(dependency -> dependency
+              .getChildValue(ARTIFACT_ID).filter("webforj-engine"::equals).isPresent());
+      if (declared) {
+        return;
+      }
+
+      String version =
+          settings.version == null ? "" : "<version>" + settings.version + "</version>";
+      doAfterVisit(
+          new AddToTagVisitor<>(dependencies, Xml.Tag.build(ENGINE_DEPENDENCY.formatted(version))));
+    }
+
+    private void migrateInstallPlugin(Xml.Tag plugin) {
+      if (settings.merged) {
+        doAfterVisit(new RemoveContentVisitor<>(plugin, true, true));
+        return;
+      }
+
+      Optional<Xml.Tag> existing = plugin.getChild(CONFIGURATION_TAG);
+      if (existing.flatMap(configuration -> configuration.getChild("hotswap")).isPresent()) {
+        return;
+      }
+
+      plugin.getChild("executions").ifPresent(
+          executions -> doAfterVisit(new RemoveContentVisitor<>(executions, true, true)));
+      existing.ifPresent(
+          configuration -> doAfterVisit(new RemoveContentVisitor<>(configuration, true, true)));
+      doAfterVisit(new AddToTagVisitor<>(plugin, createConfiguration()));
+    }
+
+    private void mergeIntoBuildPlugin(Xml.Tag plugin) {
+      Optional<Xml.Tag> existing = plugin.getChild(CONFIGURATION_TAG);
+      if (existing.isEmpty()) {
+        doAfterVisit(new AddToTagVisitor<>(plugin, createConfiguration()));
+        return;
+      }
+
+      for (Xml.Tag child : createConfiguration().getChildren()) {
+        if (existing.get().getChild(child.getName()).isEmpty()) {
+          doAfterVisit(new AddToTagVisitor<>(existing.get(), child));
+        }
+      }
+    }
+
+    private Xml.Tag createConfiguration() {
+      return Xml.Tag.build("<configuration>" + formatSettings() + "</configuration>");
     }
 
     private static boolean isPlugin(Xml.Tag plugin, String artifactId) {

@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 
 /**
@@ -143,12 +144,9 @@ public final class DeployedAssets {
 
   private static AssetResponse readStatic(DeployedApplication application, String path)
       throws IOException {
-    List<String> candidates = new ArrayList<>();
     String folder = path.isEmpty() || path.endsWith("/") ? path : path + "/";
-    for (String index : application.getIndexes()) {
-      candidates.add(folder + index);
-    }
-
+    List<String> candidates = application.getIndexes().stream().map(index -> folder + index)
+        .collect(Collectors.toCollection(ArrayList::new));
     if (!folder.equals(path)) {
       candidates.add(path);
     }

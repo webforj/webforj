@@ -11,8 +11,8 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -54,6 +54,7 @@ public class WatchReceiver implements LiveReloadReceiver {
   private static final Logger logger = LoggerFactory.getLogger("com.webforj.bundle.bun");
   private static final String CSS_EXTENSION = ".css";
   private static final String SERVED_DIRECTORY = "static/frontend/";
+  private static final Path SERVED_ROOT = Path.of(SERVED_DIRECTORY);
   private static final Set<String> IMAGE_EXTENSIONS =
       Set.of(".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".ico");
   private static final int CONNECT_TIMEOUT_MILLIS = 1000;
@@ -245,8 +246,17 @@ public class WatchReceiver implements LiveReloadReceiver {
   }
 
   private static boolean isServed(String path) {
-    return !path.startsWith("/") && path.indexOf('\\') < 0
-        && Arrays.stream(path.split("/")).noneMatch(".."::equals);
+    if (path.startsWith("/") || path.indexOf('\\') >= 0) {
+      return false;
+    }
+
+    try {
+      Path resolved = SERVED_ROOT.resolve(path).normalize();
+
+      return !resolved.equals(SERVED_ROOT) && resolved.startsWith(SERVED_ROOT);
+    } catch (InvalidPathException e) {
+      return false;
+    }
   }
 
   private static String getResourceType(String path) {

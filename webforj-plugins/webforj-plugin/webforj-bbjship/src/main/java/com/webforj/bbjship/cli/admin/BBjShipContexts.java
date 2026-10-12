@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.Predicate;
@@ -132,8 +133,8 @@ public final class BBjShipContexts {
   }
 
   BBjShipContexts(BBjAdminBase admin, BBjShipPlugin plugin, Duration answerDeadline) {
-    this.admin = admin;
-    this.plugin = plugin;
+    this.admin = Objects.requireNonNull(admin);
+    this.plugin = Objects.requireNonNull(plugin);
     this.answerDeadline = answerDeadline;
   }
 

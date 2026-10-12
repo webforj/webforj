@@ -52,14 +52,8 @@ public final class ContainerOptionsFile {
    * @throws IOException if the file cannot be read
    */
   public static List<String> readLines(Path directory) throws IOException {
-    List<String> lines = new ArrayList<>();
-    for (String line : Files.readAllLines(getFile(directory))) {
-      if (!line.isBlank()) {
-        lines.add(parseLine(line.strip()));
-      }
-    }
-
-    return List.copyOf(lines);
+    return Files.readAllLines(getFile(directory)).stream().filter(line -> !line.isBlank())
+        .map(line -> parseLine(line.strip())).toList();
   }
 
   /**

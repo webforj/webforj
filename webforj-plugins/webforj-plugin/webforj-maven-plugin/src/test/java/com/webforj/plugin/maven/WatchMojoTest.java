@@ -145,7 +145,8 @@ class WatchMojoTest {
   @Test
   void shouldKeepTheGenericLastGoalLineWithoutDevelopmentRun(@TempDir Path tmp) throws Exception {
     BundlerExecution execution = mock(BundlerExecution.class);
-    when(execution.watch(any(), any(), any())).thenReturn(mock(WatchSession.class));
+    WatchSession watchSession = mock(WatchSession.class);
+    when(execution.watch(any(), any(), any())).thenReturn(watchSession);
     WatchMojo mojo = newMojo(execution, tmp);
     mojo.session = Development.newSession(List.of("compile", "webforj:watch"));
     mojo.mojoExecution = Development.newWatchExecution();
