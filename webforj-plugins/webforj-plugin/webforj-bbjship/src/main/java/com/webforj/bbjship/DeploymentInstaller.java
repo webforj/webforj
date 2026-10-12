@@ -549,23 +549,35 @@ public final class DeploymentInstaller {
 
   private static void applyCaseValidation(BBjAdminAppDeploymentConfiguration configuration,
       Path deployments, String name) throws BBjAdminException, IOException {
-    List<String> existing = new ArrayList<>();
     for (BBjAdminAppDeploymentApplication application : configuration.getApplications()) {
-      existing.add(application.getString(BBjAdminAppDeploymentApplication.NAME));
-    }
-
-    if (Files.isDirectory(deployments)) {
-      try (Stream<Path> folders = Files.list(deployments)) {
-        folders.map(folder -> folder.getFileName().toString()).forEach(existing::add);
+      String other = application.getString(BBjAdminAppDeploymentApplication.NAME);
+      if (isCaseConflict(other, name)) {
+        throw createCaseConflict(other, name);
       }
     }
 
-    for (String other : existing) {
-      if (other != null && !other.equals(name) && other.equalsIgnoreCase(name)) {
-        throw new DeploymentException(Reason.NAME_CONFLICT, "Published BBj application " + other
-            + " differs from " + name + " only by letter case. Choose another publish name");
-      }
+    if (!Files.isDirectory(deployments)) {
+      return;
     }
+
+    Optional<String> conflict;
+    try (Stream<Path> folders = Files.list(deployments)) {
+      conflict = folders.map(folder -> folder.getFileName().toString())
+          .filter(other -> isCaseConflict(other, name)).findFirst();
+    }
+
+    if (conflict.isPresent()) {
+      throw createCaseConflict(conflict.get(), name);
+    }
+  }
+
+  private static boolean isCaseConflict(String other, String name) {
+    return other != null && !other.equals(name) && other.equalsIgnoreCase(name);
+  }
+
+  private static DeploymentException createCaseConflict(String other, String name) {
+    return new DeploymentException(Reason.NAME_CONFLICT, "Published BBj application " + other
+        + " differs from " + name + " only by letter case. Choose another publish name");
   }
 
   private static void applyEntryValidation(ApplicationConfiguration configuration, Path deployments,
