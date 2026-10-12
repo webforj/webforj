@@ -127,6 +127,7 @@ final class DeploymentInstallerFailureTest {
       case SET_CLASSPATH ->
         doThrow(primary).doNothing().when(admin).setClasspath(anyString(), any());
       case COMMIT -> doThrow(primary).doNothing().when(admin).commit();
+      default -> throw new IllegalArgumentException(point.name());
     }
 
     InputStream upload = new ByteArrayInputStream(Files.readAllBytes(archive));
@@ -169,6 +170,7 @@ final class DeploymentInstallerFailureTest {
         doNothing().doThrow(cleanup).when(admin).setClasspath(anyString(), any());
       case COMMIT -> doNothing().doThrow(cleanup).when(admin).commit();
       case RESTORE_APPLICATION -> doThrow(cleanup).when(restored).commit();
+      default -> throw new IllegalArgumentException(point.name());
     }
 
     InputStream upload = new ByteArrayInputStream(Files.readAllBytes(archive));

@@ -90,7 +90,7 @@ class WebforjLifecycleParticipantTest {
   }
 
   @Test
-  void shouldBindBbjGoalsWhenTheConfigurationHasABbjChild() {
+  void shouldBindBbjGoalsWhenTheConfigurationHasBbjChild() {
     MavenProject project = projectWithPlugin();
     Plugin plugin = webforjPlugin(project);
     plugin.setConfiguration(createBbjConfiguration());
@@ -104,7 +104,7 @@ class WebforjLifecycleParticipantTest {
   }
 
   @Test
-  void shouldNotBindBbjGoalsWithoutABbjChild() {
+  void shouldNotBindBbjGoalsWithoutBbjChild() {
     MavenProject project = projectWithPlugin();
     Plugin plugin = webforjPlugin(project);
     Xpp3Dom configuration = new Xpp3Dom("configuration");
@@ -117,7 +117,7 @@ class WebforjLifecycleParticipantTest {
   }
 
   @Test
-  void shouldNotBindBbjGoalsWithANullConfiguration() {
+  void shouldNotBindBbjGoalsWithNullConfiguration() {
     MavenProject project = projectWithPlugin();
     Plugin plugin = webforjPlugin(project);
     plugin.setConfiguration(null);

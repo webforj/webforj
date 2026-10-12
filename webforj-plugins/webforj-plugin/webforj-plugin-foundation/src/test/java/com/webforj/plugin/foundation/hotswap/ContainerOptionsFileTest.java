@@ -36,7 +36,7 @@ class ContainerOptionsFileTest {
   }
 
   @Test
-  void shouldRefuseALineHoldingADoubleQuote() {
+  void shouldRefuseLineHoldingDoubleQuote() {
     Path directory = temporary.resolve("shared");
     List<String> lines = List.of("-javaagent:/home/dev/agent\".jar");
 

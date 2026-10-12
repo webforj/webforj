@@ -310,7 +310,7 @@ class ResetCommandTest {
   }
 
   @Test
-  void shouldPlanTheRemovalOfTheRuntimeFolderThatHoldsAPreservedInstallation() throws Exception {
+  void shouldPlanTheRemovalOfTheRuntimeFolderThatHoldsPreservedInstallation() throws Exception {
     Path emptyHome = Home.createCopy(temporary.resolve("empty-bbx"));
     Path preserved = Files.createDirectories(emptyHome
         .resolve("plugins/.webforj-bbjship-deployments/.webforj-2041/previous/webforj-bbjship"));

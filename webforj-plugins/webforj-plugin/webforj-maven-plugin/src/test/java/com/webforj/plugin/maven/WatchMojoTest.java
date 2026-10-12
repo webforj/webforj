@@ -388,11 +388,11 @@ class WatchMojoTest {
 
     @Test
     void shouldHandTheHotswapSettingsToTheSetup() throws Exception {
-      Path java = temporary.resolve("jdk/bin/java");
       mojo.bbj.setHome(temporary.resolve("bbx").toFile());
       mojo.bbj.setProperties(temporary.resolve("bbx/cfg/BBj.properties").toFile());
       mojo.session = newSession(List.of("compile", "webforj:watch"));
       Toolchain toolchain = mock(Toolchain.class);
+      Path java = temporary.resolve("jdk/bin/java");
       when(toolchain.findTool("java")).thenReturn(java.toString());
       when(toolchainManager.getToolchainFromBuildContext("jdk", mojo.session))
           .thenReturn(toolchain);
@@ -633,7 +633,7 @@ class WatchMojoTest {
     }
 
     @Test
-    void shouldHandTheToolchainJavaToTheHotswapCheckOfAProjectWithRunner() throws Exception {
+    void shouldHandTheToolchainJavaToTheHotswapCheckOfProjectWithRunner() throws Exception {
       Plugin runner = new Plugin();
       runner.setArtifactId("spring-boot-maven-plugin");
       mojo.project.getBuild().addPlugin(runner);
@@ -665,7 +665,7 @@ class WatchMojoTest {
     }
 
     @Test
-    void shouldKeepTheJavaSettingsOfBbjServicesForAProjectWithRunner() throws Exception {
+    void shouldKeepTheJavaSettingsOfBbjServicesForProjectWithRunner() throws Exception {
       Plugin runner = new Plugin();
       runner.setArtifactId("spring-boot-maven-plugin");
       mojo.project.getBuild().addPlugin(runner);

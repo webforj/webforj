@@ -36,7 +36,7 @@ class RemoteEnableCommandTest {
   @Test
   void shouldServeTheBbjShipContextAndConfirm() throws Exception {
     Path home = Home.createCopy(temporary.resolve("bbx"));
-    Path plugin = home.resolve("plugins/webforj-bbjship");
+    final Path plugin = home.resolve("plugins/webforj-bbjship");
     Path runtime = home.resolve("plugins/.webforj-bbjship-deployments");
     BBjServices services = new BBjServices();
     services.addBBjShipConfiguration(home);
@@ -176,7 +176,7 @@ class RemoteEnableCommandTest {
   @Test
   void shouldMoveTheAssetsContextToTheNewPortsOfTheBbjShipContext() throws Exception {
     Path home = Home.createCopy(temporary.resolve("bbx"));
-    Path plugin = home.resolve("plugins/webforj-bbjship");
+    final Path plugin = home.resolve("plugins/webforj-bbjship");
     Path runtime = home.resolve("plugins/.webforj-bbjship-deployments");
     BBjServices services = new BBjServices();
     services.addBBjShipConfiguration(home);

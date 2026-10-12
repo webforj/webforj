@@ -59,7 +59,7 @@ class MavenArtifactsTest {
             new DefaultArtifact("com.webforj:webforj-bbjship:zip:bbj-plugin:26.03-SNAPSHOT")
                 .setFile(bundle.toFile())));
 
-    Path resolved =
+    final Path resolved =
         MavenArtifacts.resolveBBjShipPackage(system, session, repositories, "26.03-SNAPSHOT");
 
     ArgumentCaptor<ArtifactRequest> request = ArgumentCaptor.forClass(ArtifactRequest.class);

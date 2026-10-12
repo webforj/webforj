@@ -80,7 +80,7 @@ class ServicesPropertiesTest {
   }
 
   @Test
-  void shouldRefuseAMissingFile() {
+  void shouldRefuseMissingFile() {
     Path file = temporary.resolve("missing.properties");
 
     IOException failure =
@@ -110,7 +110,7 @@ class ServicesPropertiesTest {
   void shouldApplyTheJavaSettingsAndKeepEveryOtherKeyAndArgument() throws IOException {
     Path file = temporary.resolve("BBj.properties");
     Files.writeString(file, SERVICES_PROPERTIES);
-    byte[] original = Files.readAllBytes(file);
+    final byte[] original = Files.readAllBytes(file);
     ServicesProperties properties = ServicesProperties.load(file, runtime);
 
     properties.applyJavaSettings(OPTIONS_ARGUMENT);
@@ -154,7 +154,7 @@ class ServicesPropertiesTest {
   void shouldWriteTheBackupOnlyOnce() throws IOException {
     Path file = temporary.resolve("BBj.properties");
     Files.writeString(file, SERVICES_PROPERTIES);
-    byte[] original = Files.readAllBytes(file);
+    final byte[] original = Files.readAllBytes(file);
     ServicesProperties.load(file, runtime).applyJavaSettings(OPTIONS_ARGUMENT);
 
     ServicesProperties.load(file, runtime)
@@ -269,7 +269,7 @@ class ServicesPropertiesTest {
   }
 
   @Test
-  void shouldRefuseAHomeThatIsNoBbjInstallation() {
+  void shouldRefuseHomeThatIsNoBbjInstallation() {
     Path home = temporary.resolve("bbx");
 
     IOException failure =

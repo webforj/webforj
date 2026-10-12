@@ -233,6 +233,7 @@ class HotswapAgentAttachmentTest {
   }
 
   @Test
+  @SuppressWarnings("checkstyle:LineLength")
   void shouldWriteTheSharedContainerOptionsAndReturnTheArgument(@TempDir Path tmp)
       throws Exception {
     Path local = Files.write(tmp.resolve("hotswap-agent.jar"), JAR_BYTES);
@@ -276,6 +277,7 @@ class HotswapAgentAttachmentTest {
   }
 
   @Test
+  @SuppressWarnings("checkstyle:LineLength")
   void shouldRewriteTheSharedContainerOptionsForTheLimitedLevel(@TempDir Path tmp)
       throws Exception {
     Path local = Files.write(tmp.resolve("hotswap-agent.jar"), JAR_BYTES);

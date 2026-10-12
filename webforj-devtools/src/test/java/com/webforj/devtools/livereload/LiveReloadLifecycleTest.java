@@ -200,7 +200,7 @@ class LiveReloadLifecycleTest {
 
   @Test
   @Timeout(10)
-  void shouldOpenAClassLoaderOnceInEveryReceiver() throws IOException {
+  void shouldOpenClassLoaderOnceInEveryReceiver() throws IOException {
     ClassLoader loader = new URLClassLoader(new URL[0]);
     LiveReloadLifecycle lifecycle = new LiveReloadLifecycle();
 
@@ -223,7 +223,7 @@ class LiveReloadLifecycleTest {
 
   @Test
   @Timeout(10)
-  void shouldNotOpenAClassLoaderBeforeTheStart() throws IOException {
+  void shouldNotOpenClassLoaderBeforeTheStart() throws IOException {
     ClassLoader loader = new URLClassLoader(new URL[0]);
     LiveReloadLifecycle lifecycle = new LiveReloadLifecycle();
 
@@ -283,7 +283,7 @@ class LiveReloadLifecycleTest {
 
   @Test
   @Timeout(10)
-  void shouldRollBackTheStartWhenAReceiverFailsToStart() throws IOException {
+  void shouldRollBackTheStartWhenReceiverFailsToStart() throws IOException {
     IllegalStateException failure = new IllegalStateException("start failed");
     LiveReloadOptions options =
         new LiveReloadOptions().setEnabled(true).setWebsocketPort(freePort());
@@ -309,7 +309,7 @@ class LiveReloadLifecycleTest {
 
   @Test
   @Timeout(10)
-  void shouldKeepTheStopFailureOfARolledBackStart() throws IOException {
+  void shouldKeepTheStopFailureOfRolledBackStart() throws IOException {
     IllegalStateException startFailure = new IllegalStateException("start failed");
     IllegalStateException stopFailure = new IllegalStateException("stop failed");
     LiveReloadOptions options =

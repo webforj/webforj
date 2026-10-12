@@ -162,7 +162,7 @@ class HotswapInjectionTest {
   @ParameterizedTest
   @CsvSource(value = {"configured directory,,configured directory",
       "configured,property directory,property directory"})
-  void shouldEndTheTaskWhenTheHotswapDirectoryHasASpace(String configured, String property,
+  void shouldEndTheTaskWhenTheHotswapDirectoryHasSpace(String configured, String property,
       String refused, @TempDir Path tmp) throws Exception {
     Path jar = Files.createFile(tmp.resolve("hotswap-agent.jar"));
     extension.hotswap(hotswap -> {

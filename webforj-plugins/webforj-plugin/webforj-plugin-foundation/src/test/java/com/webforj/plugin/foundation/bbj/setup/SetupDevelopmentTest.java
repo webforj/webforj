@@ -92,7 +92,7 @@ class SetupDevelopmentTest {
         basis.java.args.BBjServices=-Xmx1024m %s
         """.formatted(java.toAbsolutePath().normalize(),
         ContainerOptionsFile.getArgument(options)));
-    byte[] original = Files.readAllBytes(file);
+    final byte[] original = Files.readAllBytes(file);
     Path zip =
         BBjShipPlugin.writeZip(BBjShipPlugin.createCopy(temporary.resolve("webforj-bbjship")),
             temporary.resolve("webforj-bbjship.zip"));

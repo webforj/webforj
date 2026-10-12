@@ -52,12 +52,12 @@ class FileTreeTest {
   }
 
   @Test
-  void shouldCreateADirectoryAndAFileOnlyTheOwnerCanRead() throws IOException {
+  void shouldCreateDirectoryAndFileOnlyTheOwnerCanRead() throws IOException {
     assumeTrue(Files.getFileStore(temporary).supportsFileAttributeView("posix"),
         "The file system has no owner permissions");
 
     Path directory = FileTree.createPrivateDirectory(temporary);
-    Path file = FileTree.createPrivateFile(directory, "program", ".log");
+    final Path file = FileTree.createPrivateFile(directory, "program", ".log");
 
     assertEquals(temporary, directory.getParent());
     assertTrue(directory.getFileName().toString().startsWith(".webforj-bbj-setup-"));

@@ -81,7 +81,7 @@ class DevtoolsDeliveryTest {
   }
 
   @Test
-  void shouldRefuseAMissingArtifactId() {
+  void shouldRefuseMissingArtifactId() {
     DevtoolsDelivery.Builder builder =
         DevtoolsDelivery.create().setApplicationClasspath(new ApplicationClasspath(List.of()))
             .setResolver((groupId, artifactId, version) -> List.of());

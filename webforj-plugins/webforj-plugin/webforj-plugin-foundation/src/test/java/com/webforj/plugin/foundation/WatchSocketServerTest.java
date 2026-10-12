@@ -15,7 +15,7 @@ class WatchSocketServerTest {
 
   @Test
   @Timeout(10)
-  void shouldBindAFreeLoopbackPort() throws Exception {
+  void shouldBindFreeLoopbackPort() throws Exception {
     try (WatchSocketServer server = new WatchSocketServer()) {
       server.start();
 

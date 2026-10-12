@@ -20,6 +20,9 @@ public class HelloWorldView extends Composite<FlexLayout> {
   private TextField hello = new TextField("What is your name?");
   private Button btn = new Button("Say Hello");
 
+  /**
+   * Creates the view.
+   */
   public HelloWorldView() {
     self.setDirection(FlexDirection.COLUMN);
     self.setMaxWidth(300);

@@ -155,7 +155,7 @@ class DevelopmentTest {
   }
 
   @Test
-  void shouldRefuseADevelopmentRunWithoutClassFolders() {
+  void shouldRefuseDevelopmentRunWithoutClassFolders() {
     Development.Builder builder = createBuilder();
     List<Path> classFolders = List.of();
 
@@ -166,7 +166,7 @@ class DevelopmentTest {
   }
 
   @Test
-  void shouldRefuseARelativeClassFolder() {
+  void shouldRefuseRelativeClassFolder() {
     Development.Builder builder = createBuilder();
     Path relative = Path.of("build", "resources");
     List<Path> classFolders = List.of(app.resolve("target/classes"), relative);

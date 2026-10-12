@@ -320,7 +320,7 @@ class HotswapInjectionTest {
   }
 
   @Test
-  void shouldEndTheGoalWhenTheHotswapDirectoryHasASpace(@TempDir Path tmp) throws Exception {
+  void shouldEndTheGoalWhenTheHotswapDirectoryHasSpace(@TempDir Path tmp) throws Exception {
     Path directory = tmp.resolve("hotswap directory");
     HotswapInjection injection = HotswapInjection.create().setProject(newProject(tmp, SPRING))
         .setUserProperties(new Properties()).setOptions(hotswapAgentOptions(tmp))
@@ -339,7 +339,7 @@ class HotswapInjectionTest {
       "http://localhost:8888/webforj-bbjship," + SPRING + ",false",
       "http://localhost:8888/webforj-bbjship," + JETTY + ",false", "''," + SPRING + ",false",
       "'',,false"})
-  void shouldRunInTheSharedContainerOnlyForABbjProjectWithoutRunner(String url, String runner,
+  void shouldRunInTheSharedContainerOnlyForBbjProjectWithoutRunner(String url, String runner,
       boolean shared, @TempDir Path tmp) {
     MavenProject project = runner == null ? newProject(tmp) : newProject(tmp, runner);
     HotswapInjection.Builder builder = HotswapInjection.create().setProject(project)

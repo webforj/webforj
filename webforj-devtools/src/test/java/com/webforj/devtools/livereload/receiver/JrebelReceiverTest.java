@@ -22,8 +22,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -275,7 +275,7 @@ class JrebelReceiverTest {
   @Test
   @Timeout(10)
   void shouldLeaveNoThreadBehindWhenTheRegistrationIsRefused() {
-    long before = receiverThreadCount();
+    final long before = receiverThreadCount();
     doThrow(new IllegalStateException("registration is refused")).when(reloader)
         .addClassReloadListener(any());
 

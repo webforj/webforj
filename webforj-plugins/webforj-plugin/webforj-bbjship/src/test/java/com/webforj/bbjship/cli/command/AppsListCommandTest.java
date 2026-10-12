@@ -108,6 +108,7 @@ class AppsListCommandTest {
   }
 
   @Test
+  @SuppressWarnings("checkstyle:LineLength")
   void shouldListEveryClassFolderOfDevelopmentRunWhenVerbose() throws Exception {
     deployHelloAppAndShop();
     Path classes = temporary.resolve("hello-app/src/main/java");

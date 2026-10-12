@@ -81,7 +81,7 @@ class LiveReloadBBjLifecycleTest {
 
   @Test
   @Timeout(10)
-  void shouldNotCountASessionWithLiveReloadDisabled() throws IOException {
+  void shouldNotCountSessionWithLiveReloadDisabled() throws IOException {
     LiveReloadLifecycle lifecycle = new LiveReloadLifecycle();
     SharedLifecycle shared = new SharedLifecycle(lifecycle);
     LiveReloadBBjLifecycle running = new LiveReloadBBjLifecycle(shared);
@@ -189,7 +189,6 @@ class LiveReloadBBjLifecycleTest {
 
   @Test
   void shouldOpenTheClassLoaderForTheFirstSessionAndStopAfterTheLast() {
-    ClassLoader loader = LiveReloadBBjLifecycle.class.getClassLoader();
     LiveReloadLifecycle lifecycle = mock(LiveReloadLifecycle.class);
     when(lifecycle.isRunning()).thenReturn(false, true);
     SharedLifecycle shared = new SharedLifecycle(lifecycle);
@@ -204,6 +203,7 @@ class LiveReloadBBjLifecycleTest {
 
     InOrder order = inOrder(lifecycle);
     order.verify(lifecycle).start(options);
+    ClassLoader loader = LiveReloadBBjLifecycle.class.getClassLoader();
     order.verify(lifecycle).openClassLoader(loader);
     order.verify(lifecycle).stop();
     verify(lifecycle, times(1)).openClassLoader(loader);
@@ -211,8 +211,7 @@ class LiveReloadBBjLifecycleTest {
   }
 
   @Test
-  void shouldStartAgainForASessionAfterTheRunEnded() {
-    ClassLoader loader = LiveReloadBBjLifecycle.class.getClassLoader();
+  void shouldStartAgainForSessionAfterTheRunEnded() {
     LiveReloadLifecycle lifecycle = mock(LiveReloadLifecycle.class);
     when(lifecycle.isRunning()).thenReturn(false, false);
     SharedLifecycle shared = new SharedLifecycle(lifecycle);
@@ -224,6 +223,7 @@ class LiveReloadBBjLifecycleTest {
     second.start(options);
 
     verify(lifecycle, times(2)).start(options);
+    ClassLoader loader = LiveReloadBBjLifecycle.class.getClassLoader();
     verify(lifecycle, times(2)).openClassLoader(loader);
   }
 

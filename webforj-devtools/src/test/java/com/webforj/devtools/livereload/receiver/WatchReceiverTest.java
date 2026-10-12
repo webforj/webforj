@@ -29,7 +29,7 @@ import org.junit.jupiter.api.io.TempDir;
 class WatchReceiverTest {
 
   @Test
-  void shouldHotSwapAStylesheetChange() {
+  void shouldHotSwapStylesheetChange() {
     LiveReloadServer server = runningServer();
 
     new WatchReceiver(server, true).handleLine("REBUILD styles/app.css");
@@ -48,7 +48,7 @@ class WatchReceiverTest {
   }
 
   @Test
-  void shouldReloadOnAScriptChange() {
+  void shouldReloadOnScriptChange() {
     LiveReloadServer server = runningServer();
 
     new WatchReceiver(server, true).handleLine("REBUILD main.js");
@@ -68,7 +68,7 @@ class WatchReceiverTest {
   }
 
   @Test
-  void shouldReloadAStylesheetChangeWhenHotSwapIsOff() {
+  void shouldReloadStylesheetChangeWhenHotSwapIsOff() {
     LiveReloadServer server = runningServer();
 
     new WatchReceiver(server, false).handleLine("REBUILD app.css");
@@ -125,12 +125,12 @@ class WatchReceiverTest {
   }
 
   @Test
-  void shouldReturnNullPortForAMissingFile(@TempDir Path tmp) {
+  void shouldReturnNullPortForMissingFile(@TempDir Path tmp) {
     assertNull(WatchReceiver.readPort(tmp.resolve("absent.port")));
   }
 
   @Test
-  void shouldReturnNullPortForAMalformedFile(@TempDir Path tmp) throws Exception {
+  void shouldReturnNullPortForMalformedFile(@TempDir Path tmp) throws Exception {
     Path portFile = tmp.resolve("watch.port");
     Files.writeString(portFile, "not-a-number", StandardCharsets.UTF_8);
 
@@ -152,7 +152,7 @@ class WatchReceiverTest {
   }
 
   @Test
-  void shouldSendTheContentOfAStylesheetWhenHotSwapIsOff() {
+  void shouldSendTheContentOfStylesheetWhenHotSwapIsOff() {
     LiveReloadServer server = runningServer();
 
     new WatchReceiver(server, false).handleLine("REBUILD watch-receiver/served.css");
@@ -163,7 +163,7 @@ class WatchReceiverTest {
   }
 
   @Test
-  void shouldReloadOnceForAStylesheetAndAnImageWhenHotSwapIsOff() {
+  void shouldReloadOnceForStylesheetAndAnImageWhenHotSwapIsOff() {
     LiveReloadServer server = runningServer();
 
     new WatchReceiver(server, false)

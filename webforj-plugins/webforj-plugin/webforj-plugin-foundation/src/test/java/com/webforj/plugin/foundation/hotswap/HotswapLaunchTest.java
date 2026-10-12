@@ -148,7 +148,7 @@ class HotswapLaunchTest {
   }
 
   @Test
-  void shouldComposeTheSharedContainerArgumentWithoutABuildDirectory(@TempDir Path tmp)
+  void shouldComposeTheSharedContainerArgumentWithoutBuildDirectory(@TempDir Path tmp)
       throws Exception {
     Path agentJar = Files.createFile(tmp.resolve("hotswap-agent.jar"));
     Path observer = Files.createFile(tmp.resolve("webforj-hotswap-observer.jar"));
@@ -190,7 +190,7 @@ class HotswapLaunchTest {
   }
 
   @Test
-  void shouldRequireTheOptionsDirectoryOfASharedContainer(@TempDir Path tmp) throws Exception {
+  void shouldRequireTheOptionsDirectoryOfSharedContainer(@TempDir Path tmp) throws Exception {
     HotswapLaunch launch = HotswapLaunch.create().setJrebelConfigured(true)
         .setJrebelPath(jrebelLibrary(tmp)).setSharedContainer(true).build();
 
@@ -251,7 +251,7 @@ class HotswapLaunchTest {
   }
 
   @Test
-  void shouldAcceptTheHotswapDirectoryWithWhitespaceWhenJrebelRunsOutsideASharedContainer(
+  void shouldAcceptTheHotswapDirectoryWithWhitespaceWhenJrebelRunsOutsideSharedContainer(
       @TempDir Path tmp) throws Exception {
     Path library = jrebelLibrary(tmp);
     Path directory = tmp.resolve("hotswap directory");
