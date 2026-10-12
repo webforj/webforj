@@ -90,6 +90,62 @@ class WebforjLifecycleParticipantTest {
   }
 
   @Test
+  void shouldBindBbjGoalsWhenTheConfigurationHasABbjChild() {
+    MavenProject project = projectWithPlugin();
+    Plugin plugin = webforjPlugin(project);
+    plugin.setConfiguration(createBbjConfiguration());
+
+    runParticipant(project);
+
+    assertExecution(plugin, "package", "bbj-package");
+    assertExecution(plugin, "install", "bbj-deploy");
+    assertExecution(plugin, "prepare-package", "bundle");
+    assertEquals(5, plugin.getExecutions().size());
+  }
+
+  @Test
+  void shouldNotBindBbjGoalsWithoutABbjChild() {
+    MavenProject project = projectWithPlugin();
+    Plugin plugin = webforjPlugin(project);
+    Xpp3Dom configuration = new Xpp3Dom("configuration");
+    configuration.addChild(new Xpp3Dom("eager"));
+    plugin.setConfiguration(configuration);
+
+    runParticipant(project);
+
+    assertEquals(3, plugin.getExecutions().size());
+  }
+
+  @Test
+  void shouldNotBindBbjGoalsWithANullConfiguration() {
+    MavenProject project = projectWithPlugin();
+    Plugin plugin = webforjPlugin(project);
+    plugin.setConfiguration(null);
+
+    runParticipant(project);
+
+    assertEquals(3, plugin.getExecutions().size());
+  }
+
+  @Test
+  void shouldKeepAnExistingBbjDeployBinding() {
+    MavenProject project = projectWithPlugin();
+    final Plugin plugin = webforjPlugin(project);
+    plugin.setConfiguration(createBbjConfiguration());
+    PluginExecution custom = new PluginExecution();
+    custom.setId("my-deploy");
+    custom.setPhase("deploy");
+    custom.addGoal("bbj-deploy");
+    plugin.addExecution(custom);
+
+    runParticipant(project);
+
+    long deployBindings = plugin.getExecutions().stream()
+        .filter(execution -> execution.getGoals().contains("bbj-deploy")).count();
+    assertEquals(1, deployBindings);
+  }
+
+  @Test
   void shouldIgnoreProjectsWithoutThePlugin() {
     MavenProject project = new MavenProject();
     project.setBuild(new Build());
@@ -119,6 +175,13 @@ class WebforjLifecycleParticipantTest {
 
   private Plugin webforjPlugin(MavenProject project) {
     return project.getBuildPlugins().get(0);
+  }
+
+  private Xpp3Dom createBbjConfiguration() {
+    Xpp3Dom configuration = new Xpp3Dom("configuration");
+    configuration.addChild(new Xpp3Dom("bbj"));
+
+    return configuration;
   }
 
   private void assertExecution(Plugin plugin, String phase, String goal) {

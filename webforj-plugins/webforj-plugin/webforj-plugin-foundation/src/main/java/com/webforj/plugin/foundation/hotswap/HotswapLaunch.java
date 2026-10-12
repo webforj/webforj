@@ -32,12 +32,19 @@ public final class HotswapLaunch {
   /** The property that selects the tool on the command line. */
   public static final String SELECTION_PROPERTY = "webforj.hotswap";
 
+  /** The property that sets the hotswap directory on the command line. */
+  public static final String DIRECTORY_PROPERTY = "webforj.hotswap.directory";
+
   /**
    * Switches the Spring development restart off for the run. A development restart would replace
    * the very classes the tool just swapped, so the two must not run together, whichever tool is
    * attached. The runner adapter appends this wherever the Spring Boot runner is the target.
    */
   public static final String SPRING_RESTART_OFF = "-Dspring.devtools.restart.enabled=false";
+
+  private static final String AGENT_CACHE_FOLDER = "hotswap-agent";
+  private static final String UNSUPPORTED_PATH =
+      " contains a space, which the container cannot pass to Java. ";
 
   private final boolean hotswapAgentConfigured;
   private final String hotswapAgentVersion;
@@ -46,7 +53,9 @@ public final class HotswapLaunch {
   private final Path jrebelPath;
   private final String commandLineValue;
   private final Path buildDirectory;
-  private final Path agentCacheRoot;
+  private final boolean sharedContainer;
+  private final Path containerOptionsDirectory;
+  private final Path directory;
   private final Path javaExecutable;
   private final Supplier<ApplicationClasspath> applicationClasspath;
   private final ArtifactResolver resolver;
@@ -61,8 +70,9 @@ public final class HotswapLaunch {
     this.jrebelPath = builder.jrebelPath;
     this.commandLineValue = builder.commandLineValue;
     this.buildDirectory = builder.buildDirectory;
-    this.agentCacheRoot = builder.agentCacheRoot != null ? builder.agentCacheRoot
-        : Path.of(System.getProperty("user.home"), ".webforj", "hotswap-agent");
+    this.sharedContainer = builder.sharedContainer;
+    this.containerOptionsDirectory = builder.containerOptionsDirectory;
+    this.directory = builder.directory != null ? builder.directory : getDefaultDirectory();
     this.javaExecutable = builder.javaExecutable;
     this.applicationClasspath = builder.applicationClasspath;
     this.resolver = builder.resolver;
@@ -77,6 +87,15 @@ public final class HotswapLaunch {
    */
   public static Builder create() {
     return new Builder();
+  }
+
+  /**
+   * Gets the hotswap directory used when the build names none.
+   *
+   * @return the hotswap directory under the user home
+   */
+  public static Path getDefaultDirectory() {
+    return Path.of(System.getProperty("user.home"), ".webforj", "hotswap");
   }
 
   /**
@@ -97,7 +116,9 @@ public final class HotswapLaunch {
    * @return the arguments, one flag or value per element, empty when hotswap stays off
    * @throws IOException if the attachment cannot be prepared
    * @throws IllegalArgumentException if the configuration names more than one tool, the command
-   *         line names no known tool, or the selected tool misses a required setting
+   *         line names no known tool, the selected tool misses a required setting, a shared
+   *         container has no options directory, or the hotswap directory, when the run uses it, or
+   *         the JRebel path contains whitespace
    */
   public List<String> getArguments() throws IOException {
     Optional<HotswapTool> selected = HotswapTool.select(configuredTools(), commandLineValue);
@@ -110,7 +131,20 @@ public final class HotswapLaunch {
       return List.of();
     }
 
-    return createAttachment(selected.get()).getArguments();
+    if (sharedContainer && containerOptionsDirectory == null) {
+      throw new IllegalArgumentException("the shared container needs the options directory");
+    }
+
+    boolean directoryUsed = sharedContainer || selected.get() == HotswapTool.HOTSWAP_AGENT;
+    if (directoryUsed && hasWhitespace(directory)) {
+      throw new IllegalArgumentException("The hotswap directory " + directory + UNSUPPORTED_PATH
+          + "Configure " + DIRECTORY_PROPERTY + " with a path without spaces");
+    }
+
+    HotswapAttachment attachment = createAttachment(selected.get());
+
+    return sharedContainer ? attachment.getSharedContainerArguments(containerOptionsDirectory)
+        : attachment.getArguments();
   }
 
   private Set<HotswapTool> configuredTools() {
@@ -134,15 +168,16 @@ public final class HotswapLaunch {
   }
 
   private HotswapAttachment createHotswapAgentAttachment() throws IOException {
-    if (buildDirectory == null) {
+    if (buildDirectory == null && !sharedContainer) {
       throw new IllegalArgumentException(
           "the hotswap agent needs the build directory of the project, none was supplied");
     }
 
-    return HotswapAgentAttachment.create().setCacheRoot(agentCacheRoot)
+    return HotswapAgentAttachment.create().setCacheRoot(directory.resolve(AGENT_CACHE_FOLDER))
         .setVersion(hotswapAgentVersion).setOverridePath(hotswapAgentPath)
         .setObserverJar(HotswapObserverJar.resolve(applicationClasspath.get(), resolver))
-        .setConfigurationDirectory(buildDirectory.resolve("hotswap"))
+        .setConfigurationDirectory(
+            buildDirectory == null ? null : buildDirectory.resolve("hotswap"))
         .setJavaExecutable(javaExecutable).setLog(log).setWarn(warn).build();
   }
 
@@ -152,7 +187,16 @@ public final class HotswapLaunch {
           + "configuration, the JRebel agent location cannot be guessed");
     }
 
+    if (hasWhitespace(jrebelPath)) {
+      throw new IllegalArgumentException("The JRebel library path " + jrebelPath + UNSUPPORTED_PATH
+          + "Configure the JRebel path without spaces");
+    }
+
     return JrebelAttachment.create().setPath(jrebelPath).setLog(log).build();
+  }
+
+  private static boolean hasWhitespace(Path path) {
+    return path.toString().chars().anyMatch(Character::isWhitespace);
   }
 
   /**
@@ -170,7 +214,9 @@ public final class HotswapLaunch {
     private Path jrebelPath;
     private String commandLineValue;
     private Path buildDirectory;
-    private Path agentCacheRoot;
+    private boolean sharedContainer;
+    private Path containerOptionsDirectory;
+    private Path directory;
     private Path javaExecutable;
     private Supplier<ApplicationClasspath> applicationClasspath;
     private ArtifactResolver resolver;
@@ -259,14 +305,36 @@ public final class HotswapLaunch {
     }
 
     /**
-     * Sets the cache root the downloaded agent jars live under, or null for the default under the
-     * user home.
+     * Sets whether the application runs in a container virtual machine the build does not start and
+     * that hosts other applications.
      *
-     * @param agentCacheRoot the cache root
+     * @param sharedContainer true for a shared container
      * @return this builder
      */
-    public Builder setAgentCacheRoot(Path agentCacheRoot) {
-      this.agentCacheRoot = agentCacheRoot;
+    public Builder setSharedContainer(boolean sharedContainer) {
+      this.sharedContainer = sharedContainer;
+      return this;
+    }
+
+    /**
+     * Sets the directory the options file of a shared container is written into.
+     *
+     * @param containerOptionsDirectory the options directory
+     * @return this builder
+     */
+    public Builder setContainerOptionsDirectory(Path containerOptionsDirectory) {
+      this.containerOptionsDirectory = containerOptionsDirectory;
+      return this;
+    }
+
+    /**
+     * Sets the hotswap directory, or null for the default under the user home.
+     *
+     * @param directory the hotswap directory
+     * @return this builder
+     */
+    public Builder setDirectory(Path directory) {
+      this.directory = directory;
       return this;
     }
 

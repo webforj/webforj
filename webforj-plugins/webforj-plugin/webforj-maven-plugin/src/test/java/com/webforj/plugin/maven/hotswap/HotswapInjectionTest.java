@@ -7,11 +7,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.webforj.plugin.foundation.hotswap.HotswapLaunch;
 import com.webforj.plugin.foundation.resolve.ApplicationClasspath.ResolvedJar;
-import com.webforj.plugin.foundation.resolve.ArtifactResolver;
 import com.webforj.plugin.maven.hotswap.hotswapagent.HotswapAgentOptions;
 import com.webforj.plugin.maven.hotswap.jrebel.JrebelOptions;
 import java.io.IOException;
@@ -32,6 +33,9 @@ import org.apache.maven.project.MavenProject;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class HotswapInjectionTest {
 
@@ -166,7 +170,7 @@ class HotswapInjectionTest {
     Path observer = observerJar(tmp);
 
     HotswapInjection.create().setProject(project).setUserProperties(new Properties())
-        .setOptions(hotswapAgentOptions(tmp)).setAgentCacheRoot(tmp.resolve("cache"))
+        .setOptions(hotswapAgentOptions(tmp)).setDirectory(tmp.resolve("hotswap"))
         .setResolver((groupId, artifactId, version) -> {
           versions.add(version);
           return List.of(new ResolvedJar(groupId, artifactId, version, observer));
@@ -190,7 +194,7 @@ class HotswapInjectionTest {
     Path observer = observerJar(tmp);
 
     HotswapInjection.create().setProject(project).setUserProperties(new Properties())
-        .setOptions(hotswapAgentOptions(tmp)).setAgentCacheRoot(tmp.resolve("cache"))
+        .setOptions(hotswapAgentOptions(tmp)).setDirectory(tmp.resolve("hotswap"))
         .setResolver((groupId, artifactId, version) -> List
             .of(new ResolvedJar(groupId, artifactId, version, observer)))
         .setJavaExecutable(fakeJava(tmp, 1)).setLog(log).build().apply();
@@ -209,13 +213,139 @@ class HotswapInjectionTest {
     when(project.getArtifacts()).thenReturn(Set.of());
     HotswapInjection injection =
         HotswapInjection.create().setProject(project).setUserProperties(new Properties())
-            .setOptions(hotswapAgentOptions(tmp)).setAgentCacheRoot(tmp.resolve("cache"))
+            .setOptions(hotswapAgentOptions(tmp)).setDirectory(tmp.resolve("hotswap"))
             .setResolver((groupId, artifactId, version) -> List.of())
             .setJavaExecutable(fakeJava(tmp, 0)).setLog(mock(Log.class)).build();
 
     MojoExecutionException failure = assertThrows(MojoExecutionException.class, injection::apply);
 
     assertTrue(failure.getMessage().contains(FRAMEWORK), "the missing requirement is named");
+  }
+
+  @Test
+  void shouldLogTheContainerArgumentAndInjectNothingForTheSharedContainer(@TempDir Path tmp)
+      throws Exception {
+    MavenProject project = newProject(tmp);
+    Log log = mock(Log.class);
+
+    HotswapInjection.create().setProject(project).setUserProperties(new Properties())
+        .setOptions(jrebelOptions(tmp)).setDirectory(tmp.resolve("hotswap"))
+        .setBbjDeploymentUrl("http://localhost:8888/webforj-bbjship").setLog(log).build().apply();
+
+    verify(log).info("webforJ hotswap: -XX:VMOptionsFile="
+        + tmp.resolve("hotswap/hotswap.options").toAbsolutePath());
+    verify(log, never()).warn(contains("no supported application runner"));
+    assertEquals(new Properties(), project.getProperties());
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {SPRING, JETTY})
+  void shouldHandTheAgentToTheRunnerWhenTheBbjProjectHasOne(String runner, @TempDir Path tmp)
+      throws Exception {
+    MavenProject project = newProject(tmp, runner);
+
+    HotswapInjection.create().setProject(project).setUserProperties(new Properties())
+        .setOptions(jrebelOptions(tmp)).setDirectory(tmp.resolve("hotswap"))
+        .setBbjDeploymentUrl("http://localhost:8888/webforj-bbjship").setLog(mock(Log.class))
+        .build().apply();
+
+    String key = SPRING.equals(runner) ? HotswapInjection.SPRING_JVM_ARGUMENTS
+        : HotswapInjection.JETTY_JVM_ARGS;
+    assertTrue(project.getProperties().getProperty(key).contains("-agentpath:"));
+    assertFalse(Files.exists(tmp.resolve("hotswap/hotswap.options")));
+  }
+
+  @Test
+  void shouldReturnNoArgumentsWhileHotswapStaysOff(@TempDir Path tmp) throws Exception {
+    MavenProject project = newProject(tmp, SPRING);
+
+    List<String> arguments = newInjection(project, new Properties(), null, null).apply();
+
+    assertEquals(List.of(), arguments);
+  }
+
+  @Test
+  void shouldReturnTheContainerArgumentForTheSharedContainer(@TempDir Path tmp) throws Exception {
+    MavenProject project = newProject(tmp);
+
+    List<String> arguments =
+        HotswapInjection.create().setProject(project).setUserProperties(new Properties())
+            .setOptions(jrebelOptions(tmp)).setDirectory(tmp.resolve("hotswap"))
+            .setBbjDeploymentUrl("http://localhost:8888/webforj-bbjship").setLog(mock(Log.class))
+            .build().apply();
+
+    assertEquals(
+        List.of("-XX:VMOptionsFile=" + tmp.resolve("hotswap/hotswap.options").toAbsolutePath()),
+        arguments);
+  }
+
+  @Test
+  void shouldReturnTheArgumentsHandedToTheRunner(@TempDir Path tmp) throws Exception {
+    MavenProject project = newProject(tmp, SPRING);
+
+    List<String> arguments =
+        newInjection(project, new Properties(), jrebelOptions(tmp), null).apply();
+
+    assertEquals(String.join(" ", arguments) + " -Dspring.devtools.restart.enabled=false",
+        project.getProperties().getProperty(HotswapInjection.SPRING_JVM_ARGUMENTS));
+  }
+
+  @Test
+  void shouldGiveTheHotswapDirectoryAsTheOptionsDirectory(@TempDir Path tmp) {
+    HotswapInjection injection = HotswapInjection.create().setProject(newProject(tmp))
+        .setDirectory(tmp.resolve("hotswap")).setLog(mock(Log.class)).build();
+
+    assertEquals(tmp.resolve("hotswap"), injection.getContainerOptionsDirectory());
+  }
+
+  @ParameterizedTest
+  @CsvSource(value = {"configured,,configured", "configured,property,property"})
+  void shouldPreferTheCommandLineDirectoryOverTheConfiguredOne(String configured,
+      String commandLine, String expected, @TempDir Path tmp) {
+    HotswapOptions options = new HotswapOptions().setDirectory(tmp.resolve(configured).toFile());
+    Path commandLineDirectory = commandLine == null ? null : tmp.resolve(commandLine);
+
+    HotswapInjection injection = HotswapInjection.create().setProject(newProject(tmp))
+        .setOptions(options).setDirectory(commandLineDirectory).setLog(mock(Log.class)).build();
+
+    assertEquals(tmp.resolve(expected), injection.getContainerOptionsDirectory());
+  }
+
+  @Test
+  void shouldUseTheDefaultDirectoryWithoutAnyDirectory(@TempDir Path tmp) {
+    HotswapInjection injection =
+        HotswapInjection.create().setProject(newProject(tmp)).setLog(mock(Log.class)).build();
+
+    assertEquals(HotswapLaunch.getDefaultDirectory(), injection.getContainerOptionsDirectory());
+  }
+
+  @Test
+  void shouldEndTheGoalWhenTheHotswapDirectoryHasASpace(@TempDir Path tmp) throws Exception {
+    Path directory = tmp.resolve("hotswap directory");
+    HotswapInjection injection = HotswapInjection.create().setProject(newProject(tmp, SPRING))
+        .setUserProperties(new Properties()).setOptions(hotswapAgentOptions(tmp))
+        .setDirectory(directory).setLog(mock(Log.class)).build();
+
+    MojoExecutionException failure = assertThrows(MojoExecutionException.class, injection::apply);
+
+    assertEquals(
+        "The hotswap directory " + directory + " contains a space, which the container "
+            + "cannot pass to Java. Configure webforj.hotswap.directory with a path without spaces",
+        failure.getMessage());
+  }
+
+  @ParameterizedTest
+  @CsvSource(value = {"http://localhost:8888/webforj-bbjship,,true",
+      "http://localhost:8888/webforj-bbjship," + SPRING + ",false",
+      "http://localhost:8888/webforj-bbjship," + JETTY + ",false", "''," + SPRING + ",false",
+      "'',,false"})
+  void shouldRunInTheSharedContainerOnlyForABbjProjectWithoutRunner(String url, String runner,
+      boolean shared, @TempDir Path tmp) {
+    MavenProject project = runner == null ? newProject(tmp) : newProject(tmp, runner);
+    HotswapInjection.Builder builder = HotswapInjection.create().setProject(project)
+        .setBbjDeploymentUrl(url).setLog(mock(Log.class));
+
+    assertEquals(shared, builder.isSharedContainer());
   }
 
   private static HotswapInjection newInjection(MavenProject project, Properties userProperties,

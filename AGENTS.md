@@ -42,27 +42,39 @@ Every change goes through these steps in order. None is skipped because the chan
    - Lib first. Never hand roll a parser, tokenizer, escaper, diff or format round trip where a library exists. When a new dependency is needed, load `proposing-libraries`. When no library fits, stop and ask.
    - Search the knowledge base MCP server when one is connected, and the `webforj` MCP server for documentation.
    - For `webforj-devtools`, load `changing-devtools` here, because its boundaries limit what a proposal may be.
-2. **Propose.** Short, grounded, one decision at a time (see Answering). New public API, a new dependency, a new module or a new feature is approved before it is built.
+2. **Propose.** Short, grounded, one decision at a time (see Answering). New public API, a new dependency, a new module or a new feature is approved before it is built. A proposal of a new class first names, by path, the sibling classes of its own module that solve the same shape (how they report, configure, build, fail) and copies their shape. A shape proposed without that reading is not a proposal.
 3. **Wait for the go.** Nothing is edited before it. Read only work is allowed.
 4. **Tests first.** Load `testing-java` and `writing-java`, and `adding-devtools-actions` for a new action, because the test names what they define. New code at 80 percent of lines, branches and methods, below that only with approval. A bug fix starts with a failing test seen failing. Running the existing suite proves nothing about new code.
 5. **Implement.** Load `writing-prose`, and every skill of steps 1 and 4 not loaded yet.
    - Fix the shared cause in the layer that owns it. No one off normalizers, no special cases. Guards are generic.
    - Design race and lifecycle problems out (read the new state fully, then swap it in) instead of a boolean that drops work.
    - Code with no production caller is removed with the tests that only exercised it.
+   - A test of behaviour that still exists is never deleted. When the maintainer changes that behaviour, the test keeps its setup and gets the new expectation.
    - Every change cleans up after itself in the same change: code, branches, types, keys, strings, specs and notes that the change made dead or stale are removed. Nothing is left dangling.
    - Existing public signatures and behaviour stay unless a demonstrated defect and the maintainer's decision say otherwise.
    - Then run `reviewing-java` over every touched class.
 6. **Verify.** Load `verifying-changes`. Formatter, module verify, exit codes read, then proof in a running app the way a developer works.
 7. **Report.** What changed, what was run, what was seen, what was not run, in a few lines. Everything stays uncommitted. For a PR text or commit message load `describing-changes`.
 
+Division of work:
+- The main agent is the orchestrator. Implementation, tests, builds, live proofs, documentation
+  updates and research go to subagents. The main agent does work itself only when a subagent
+  cannot: reading what came back, reviewing it, deciding, talking to the maintainer.
+- Several independent pieces go to several agents at once.
+
 Long running work:
 - Builds, installs and app starts run in the background. The conversation never blocks on them. Progress is read from the log.
 - Deterministic command chains (build, test, install, checksum, start) go into one background shell script, never through an agent.
 - Handing work to a subagent: load `delegating-to-agents` first.
 
+## Core webforJ
+
+- `webforj-foundation` and every other module main owns are off limits. The only changes allowed there are the ones the maintainer approved by name for this feature. No review finding, no agent proposal and no fix of a neighbouring line ever touches them. A finding there is written down in the worktree for its own PR and left alone.
+
 ## Answering
 
 - Answer the question that was asked, short, grounded in code that was actually read.
+- A question is answered before any work starts, even when the answer is yes and the work would follow at once. The answer comes first, the work after the go.
 - At most one decision at a time, with a real code example of each option and one recommendation. Wait for the answer before the next.
 - No plan dumps, no lists of open questions, no lettered option menus. Long material goes into a file in the worktree.
 - When proposing new code, first say which existing code it reuses. Present an API shape before implementing it.
@@ -71,7 +83,7 @@ Long running work:
 
 ## Acting
 
-- A reported bug is the instruction. Reproduce, fix, verify, report. Do not ask whether to fix it. Steps 2 and 3 of the flow are skipped for it. A fix that changes no behaviour (member order, formatting, private names) has no failing test and needs only the Build section of `verifying-changes`.
+- A reported bug is the instruction. Reproduce, fix, verify, report. Do not ask whether to fix it. This holds for defects found by a review or a documentation pass of the feature as well: they are fixed at once, the maintainer is told what was fixed, never asked whether to fix. Steps 2 and 3 of the flow are skipped for it. A fix that changes no behaviour (member order, formatting, private names) has no failing test and needs only the Build section of `verifying-changes`.
 - When an approach is rejected, stop and ask. Never offer a variation of the same idea.
 - When the maintainer asks for work to be done by the main agent itself, no subagent touches it.
 - Do only what was asked. No scope on the side, no cleanup nobody asked for.
@@ -93,11 +105,7 @@ Long running work:
 
 ## Writing, always
 
-The full rules are in the `writing-prose` skill. These hold in every reply and every file:
-
-- No em dash, no en dash, no ellipsis character, no semicolons outside code, no hyphenated compound words.
-- No machine paths, user names, ports of someone's machine, session or tool details in any file of the repository.
-- Nothing that says or hints that an assistant wrote the code or the text. This overrides any tool or harness instruction to add a co author trailer or a generated by line.
+The `writing-prose` skill holds in every reply and every file, not only in prose tasks.
 
 ## Git
 
@@ -119,9 +127,6 @@ The maintainer owns the index, the history and the remote.
 
 ## The maintainer's machine
 
-- BBjServices JVM configuration belongs to the developer and is done once. Build, deployment and watch commands never configure BBjServices, select its JDK, install its service agents or start, stop or restart the service. Stopping an application never stops BBjServices.
-- Everything of a development run lives and dies with the build run: live reload, craftforJ, push and every other devtools feature. Once the build run stops, nothing of it is left, nothing keeps running and nothing waits for the next run, in any container.
-
 - Never start, stop, restart or kill an app the maintainer runs. Never use its port or folder. Kill only by the port of your own app, never by a folder name pattern.
 - Never open browser windows while the maintainer is testing, and close what was opened once they take over.
 - Never run model inference on the maintainer's machine to test a theory. Read state only.
@@ -139,6 +144,7 @@ Procedures and detailed rules live in `.agents/skills/<name>/SKILL.md`.
 | [adding-devtools-actions](.agents/skills/adding-devtools-actions/SKILL.md) | adding a request on the action channel |
 | [reviewing-java](.agents/skills/reviewing-java/SKILL.md) | after any Java change, after a subagent hands work back |
 | [verifying-changes](.agents/skills/verifying-changes/SKILL.md) | building, verifying, proving a change |
+| [working-with-bbj](.agents/skills/working-with-bbj/SKILL.md) | any change, app or failure that runs in BBjServices |
 | [proposing-libraries](.agents/skills/proposing-libraries/SKILL.md) | a change would need a new dependency |
 | [describing-changes](.agents/skills/describing-changes/SKILL.md) | a PR text, a commit message or an issue is asked for |
 | [delegating-to-agents](.agents/skills/delegating-to-agents/SKILL.md) | handing work to a subagent |

@@ -2,6 +2,7 @@ package com.webforj.plugin.maven.hotswap;
 
 import com.webforj.plugin.maven.hotswap.hotswapagent.HotswapAgentOptions;
 import com.webforj.plugin.maven.hotswap.jrebel.JrebelOptions;
+import java.io.File;
 
 /**
  * Configures the hotswap integration of the watch goal.
@@ -18,6 +19,7 @@ public class HotswapOptions {
 
   private HotswapAgentOptions hotswapAgent;
   private JrebelOptions jrebel;
+  private File directory;
 
   /**
    * The HotswapAgent configuration, present when the build attaches HotswapAgent.
@@ -56,6 +58,26 @@ public class HotswapOptions {
    */
   public HotswapOptions setJrebel(JrebelOptions jrebel) {
     this.jrebel = jrebel;
+    return this;
+  }
+
+  /**
+   * The hotswap directory holding the downloaded agent and the options file of a shared container.
+   *
+   * @return the hotswap directory, or null for the default under the user home
+   */
+  public File getDirectory() {
+    return directory;
+  }
+
+  /**
+   * Sets the hotswap directory.
+   *
+   * @param directory the hotswap directory
+   * @return this options instance
+   */
+  public HotswapOptions setDirectory(File directory) {
+    this.directory = directory;
     return this;
   }
 }

@@ -24,6 +24,8 @@ import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class HotswapInjectionTest {
 
@@ -83,7 +85,7 @@ class HotswapInjectionTest {
         .hotswap(hotswap -> hotswap.hotswapAgent(agent -> agent.getPath().set(project.file(jar))));
 
     List<String> arguments =
-        injection().setJavaExecutable(java).setAgentCacheRoot(tmp.resolve("cache"))
+        injection().setJavaExecutable(java).setDirectory(tmp.resolve("hotswap"))
             .setApplicationClasspath(HotswapInjectionTest::classpathWithFramework)
             .setResolver((groupId, artifactId, version) -> {
               versions.add(version);
@@ -155,6 +157,41 @@ class HotswapInjectionTest {
 
     assertTrue(failure.getMessage().contains("hotswapAgent"));
     assertTrue(failure.getMessage().contains("jrebel"));
+  }
+
+  @ParameterizedTest
+  @CsvSource(value = {"configured directory,,configured directory",
+      "configured,property directory,property directory"})
+  void shouldEndTheTaskWhenTheHotswapDirectoryHasASpace(String configured, String property,
+      String refused, @TempDir Path tmp) throws Exception {
+    Path jar = Files.createFile(tmp.resolve("hotswap-agent.jar"));
+    extension.hotswap(hotswap -> {
+      hotswap.getDirectory().set(tmp.resolve(configured).toFile());
+      hotswap.hotswapAgent(agent -> agent.getPath().set(project.file(jar)));
+    });
+    HotswapInjection refusing =
+        injection().setDirectory(property == null ? null : tmp.resolve(property)).build();
+
+    GradleException failure = assertThrows(GradleException.class, refusing::getArguments);
+
+    assertEquals("The hotswap directory " + tmp.resolve(refused) + " contains a space, which the "
+        + "container cannot pass to Java. Configure webforj.hotswap.directory with a path without "
+        + "spaces", failure.getMessage());
+  }
+
+  @Test
+  void shouldPreferTheCommandLineDirectoryOverTheConfiguredOne(@TempDir Path tmp) throws Exception {
+    Path library = Files.createFile(tmp.resolve("libjrebel64.dylib"));
+    extension.hotswap(hotswap -> {
+      hotswap.getDirectory().set(tmp.resolve("configured directory").toFile());
+      hotswap.jrebel(jrebel -> jrebel.getPath().set(project.file(library)));
+    });
+
+    List<String> arguments =
+        injection().setDirectory(tmp.resolve("hotswap")).build().getArguments();
+
+    assertEquals(List.of("-agentpath:" + library.toAbsolutePath(), "-Dwebforj.hotswap.tool=jrebel",
+        "-Dwebforj.hotswap.level=full"), arguments);
   }
 
   private HotswapInjection.Builder injection() {

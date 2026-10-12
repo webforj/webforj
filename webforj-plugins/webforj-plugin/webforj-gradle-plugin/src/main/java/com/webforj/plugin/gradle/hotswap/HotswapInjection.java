@@ -32,7 +32,7 @@ public final class HotswapInjection {
   private final Path buildDirectory;
   private final Path javaExecutable;
   private final Logger log;
-  private final Path agentCacheRoot;
+  private final Path directory;
   private final Supplier<ApplicationClasspath> applicationClasspath;
   private final ArtifactResolver resolver;
 
@@ -43,7 +43,7 @@ public final class HotswapInjection {
     this.buildDirectory = builder.buildDirectory;
     this.javaExecutable = builder.javaExecutable;
     this.log = builder.log;
-    this.agentCacheRoot = builder.agentCacheRoot;
+    this.directory = resolveDirectory(builder.directory, builder.options);
 
     Project project = builder.project;
     this.applicationClasspath = builder.applicationClasspath != null ? builder.applicationClasspath
@@ -96,9 +96,17 @@ public final class HotswapInjection {
             ? options.getJrebel().getPath().get().getAsFile().toPath()
             : null)
         .setCommandLineValue(commandLineValue).setBuildDirectory(buildDirectory)
-        .setAgentCacheRoot(agentCacheRoot).setJavaExecutable(javaExecutable)
+        .setDirectory(directory).setJavaExecutable(javaExecutable)
         .setApplicationClasspath(applicationClasspath).setResolver(resolver).setLog(log::lifecycle)
         .setWarn(log::warn).build();
+  }
+
+  private static Path resolveDirectory(Path commandLineDirectory, HotswapOptions options) {
+    if (commandLineDirectory != null || !options.getDirectory().isPresent()) {
+      return commandLineDirectory;
+    }
+
+    return options.getDirectory().get().getAsFile().toPath();
   }
 
   /**
@@ -116,7 +124,7 @@ public final class HotswapInjection {
     private Path buildDirectory;
     private Path javaExecutable;
     private Logger log;
-    private Path agentCacheRoot;
+    private Path directory;
     private Supplier<ApplicationClasspath> applicationClasspath;
     private ArtifactResolver resolver;
 
@@ -206,14 +214,14 @@ public final class HotswapInjection {
     }
 
     /**
-     * Sets the cache root the downloaded agent jars live under, or null for the default under the
-     * user home.
+     * Sets the hotswap directory given on the command line, which wins over the directory of the
+     * hotswap configuration, or null when it was not given.
      *
-     * @param agentCacheRoot the cache root
+     * @param directory the hotswap directory
      * @return this builder
      */
-    Builder setAgentCacheRoot(Path agentCacheRoot) {
-      this.agentCacheRoot = agentCacheRoot;
+    public Builder setDirectory(Path directory) {
+      this.directory = directory;
       return this;
     }
 

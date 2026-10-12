@@ -9,14 +9,19 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.webforj.devtools.livereload.LiveReloadServer;
+import com.webforj.plugin.foundation.WatchPortFile;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.CountDownLatch;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.TempDir;
@@ -144,6 +149,108 @@ class WatchReceiverTest {
     receiver.stop();
     receiver.stop();
     assertFalse(receiver.isRunning());
+  }
+
+  @Test
+  void shouldSendTheContentOfAStylesheetWhenHotSwapIsOff() {
+    LiveReloadServer server = runningServer();
+
+    new WatchReceiver(server, false).handleLine("REBUILD watch-receiver/served.css");
+
+    verify(server).sendResourceUpdateMessage("css", "watch-receiver/served.css",
+        "body { color: red; }\n");
+    verify(server, never()).sendReloadMessage();
+  }
+
+  @Test
+  void shouldReloadOnceForAStylesheetAndAnImageWhenHotSwapIsOff() {
+    LiveReloadServer server = runningServer();
+
+    new WatchReceiver(server, false)
+        .handleLine("REBUILD watch-receiver/served.css assets/logo.png");
+
+    verify(server, times(1)).sendReloadMessage();
+    verify(server, never()).sendResourceUpdateMessage(any(), any(), any());
+  }
+
+  @Test
+  void shouldReloadOnceForAnUnreadableStylesheetWhenHotSwapIsOff() {
+    LiveReloadServer server = runningServer();
+
+    new WatchReceiver(server, false)
+        .handleLine("REBUILD watch-receiver/served.css watch-receiver/absent.css");
+
+    verify(server, times(1)).sendReloadMessage();
+    verify(server, never()).sendResourceUpdateMessage(any(), any(), any());
+  }
+
+  @Test
+  @Timeout(10)
+  void shouldConnectToTheWatchOfTheProjectRoot(@TempDir Path tmp) throws Exception {
+    String projectRoot = tmp.toAbsolutePath().toString();
+    Path portFile = WatchPortFile.resolve(projectRoot);
+    WatchReceiver receiver =
+        new WatchReceiver(mock(LiveReloadServer.class), true, projectRoot, () -> {
+        });
+
+    try (ServerSocket watch = new ServerSocket(0)) {
+      Files.writeString(portFile, Integer.toString(watch.getLocalPort()), StandardCharsets.UTF_8);
+      receiver.start();
+
+      try (Socket connection = watch.accept()) {
+        assertTrue(connection.isConnected());
+      }
+    } finally {
+      receiver.stop();
+      Files.deleteIfExists(portFile);
+    }
+  }
+
+  @Test
+  @Timeout(10)
+  void shouldReportTheEndOfTheWatchWhenItsConnectionCloses(@TempDir Path tmp) throws Exception {
+    String projectRoot = tmp.toAbsolutePath().toString();
+    Path portFile = WatchPortFile.resolve(projectRoot);
+    CountDownLatch ended = new CountDownLatch(1);
+    WatchReceiver receiver =
+        new WatchReceiver(mock(LiveReloadServer.class), true, projectRoot, ended::countDown);
+
+    try (ServerSocket watch = new ServerSocket(0)) {
+      Files.writeString(portFile, Integer.toString(watch.getLocalPort()), StandardCharsets.UTF_8);
+      receiver.start();
+      watch.accept().close();
+      ended.await();
+
+      assertFalse(receiver.isRunning(), "the receiver should stop once the watch ended");
+    } finally {
+      receiver.stop();
+      Files.deleteIfExists(portFile);
+    }
+  }
+
+  @Test
+  @Timeout(10)
+  void shouldNotReportTheEndOfTheWatchWhenStopped(@TempDir Path tmp) throws Exception {
+    String projectRoot = tmp.toAbsolutePath().toString();
+    Path portFile = WatchPortFile.resolve(projectRoot);
+    CountDownLatch ended = new CountDownLatch(1);
+    WatchReceiver receiver =
+        new WatchReceiver(mock(LiveReloadServer.class), true, projectRoot, ended::countDown);
+
+    try (ServerSocket watch = new ServerSocket(0)) {
+      Files.writeString(portFile, Integer.toString(watch.getLocalPort()), StandardCharsets.UTF_8);
+      receiver.start();
+      try (Socket connection = watch.accept()) {
+        receiver.stop();
+
+        assertEquals(-1, connection.getInputStream().read());
+      }
+
+      assertEquals(1, ended.getCount(), "a stop should not count as the watch ending");
+    } finally {
+      receiver.stop();
+      Files.deleteIfExists(portFile);
+    }
   }
 
   private static LiveReloadServer runningServer() {

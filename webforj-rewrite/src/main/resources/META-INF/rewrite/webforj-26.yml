@@ -247,3 +247,42 @@ tags:
 recipeList:
   - com.webforj.rewrite.v26.UpgradeWebforjSpring
   - com.webforj.rewrite.v26.MigrateHtmlInSetText
+
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.webforj.rewrite.v26.MigrateToBBjShip
+displayName: Migrate from the webforJ install plugin to BBjShip
+description: Moves the build and the configuration of a project from the deprecated webforJ install plugin to BBjShip, with the webforJ build plugin and a development run.
+tags:
+  - webforj
+  - bbj
+preconditions:
+  - org.openrewrite.maven.search.ModuleHasPlugin:
+      groupId: com.webforj
+      artifactId: webforj-install-maven-plugin
+recipeList:
+  - com.webforj.rewrite.v26.MigrateInstallPluginSettings
+  - org.openrewrite.maven.ChangePluginGroupIdAndArtifactId:
+      oldGroupId: com.webforj
+      oldArtifactId: webforj-install-maven-plugin
+      newArtifactId: webforj-maven-plugin
+  - org.openrewrite.xml.AddOrUpdateChildTag:
+      parentXPath: /project/build/plugins/plugin[artifactId='webforj-maven-plugin']
+      newChildTag: <extensions>true</extensions>
+      replaceExisting: true
+  - org.openrewrite.xml.AddOrUpdateChildTag:
+      parentXPath: /project/build
+      newChildTag: <defaultGoal>compile webforj:watch</defaultGoal>
+      replaceExisting: false
+
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.webforj.rewrite.v26.UpgradeWebforj_26_03
+displayName: Upgrade to webforJ 26.03
+description: Upgrades webforJ projects to version 26.03.
+tags:
+  - webforj
+recipeList:
+  - com.webforj.rewrite.v26.UpgradeWebforj_26_01
+  - com.webforj.rewrite.v26.MigrateToBBjShip
+

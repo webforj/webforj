@@ -5,15 +5,15 @@ import com.webforj.plugin.foundation.resolve.ApplicationClasspath.ResolvedJar;
 import com.webforj.plugin.foundation.resolve.ArtifactResolver;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
 /**
- * Computes the webforJ devtools jars the application run classpath misses.
+ * Computes the webforJ devtools jars an application run classpath misses.
  *
  * <p>
  * The devtools are resolved at the framework version found on the application classpath, and only
@@ -26,16 +26,16 @@ import java.util.function.Consumer;
  * @author Hyyan Abo Fakher
  * @since 26.02
  */
-public final class SpringDevtoolsDelivery {
+public final class DevtoolsDelivery {
 
-  static final String DEVTOOLS_ARTIFACT_ID = "webforj-spring-devtools";
-
+  private final String artifactId;
   private final ApplicationClasspath applicationClasspath;
   private final ArtifactResolver resolver;
   private final Consumer<String> log;
   private final Consumer<String> debug;
 
-  private SpringDevtoolsDelivery(Builder builder) {
+  private DevtoolsDelivery(Builder builder) {
+    this.artifactId = builder.artifactId;
     this.applicationClasspath = builder.applicationClasspath;
     this.resolver = builder.resolver;
     this.log = builder.log;
@@ -58,7 +58,7 @@ public final class SpringDevtoolsDelivery {
    *         framework on its classpath
    * @throws IOException if the resolution fails
    */
-  public List<Path> getJars() throws IOException {
+  public List<ResolvedJar> getJars() throws IOException {
     Optional<String> version = applicationClasspath.getFrameworkVersion();
     if (version.isEmpty()) {
       debug.accept(
@@ -76,11 +76,11 @@ public final class SpringDevtoolsDelivery {
       present.add(ApplicationClasspath.getModuleKey(jar));
     }
 
-    Set<Path> additions = new LinkedHashSet<>();
-    for (ResolvedJar jar : resolver.resolve(ApplicationClasspath.FRAMEWORK_GROUP_ID,
-        DEVTOOLS_ARTIFACT_ID, version.get())) {
+    Map<Path, ResolvedJar> additions = new LinkedHashMap<>();
+    for (ResolvedJar jar : resolver.resolve(ApplicationClasspath.FRAMEWORK_GROUP_ID, artifactId,
+        version.get())) {
       if (!present.contains(ApplicationClasspath.getModuleKey(jar))) {
-        additions.add(jar.file());
+        additions.putIfAbsent(jar.file(), jar);
       }
     }
 
@@ -89,17 +89,18 @@ public final class SpringDevtoolsDelivery {
           + " webforJ devtools JAR(s) to the application run classpath");
     }
 
-    return List.copyOf(new ArrayList<>(additions));
+    return List.copyOf(additions.values());
   }
 
   /**
-   * Builds a {@link SpringDevtoolsDelivery}.
+   * Builds a {@link DevtoolsDelivery}.
    *
    * @author Hyyan Abo Fakher
    * @since 26.02
    */
   public static final class Builder {
 
+    private String artifactId;
     private ApplicationClasspath applicationClasspath;
     private ArtifactResolver resolver;
     private Consumer<String> log = line -> {
@@ -108,6 +109,17 @@ public final class SpringDevtoolsDelivery {
     };
 
     private Builder() {}
+
+    /**
+     * Sets the devtools artifact delivered at the framework version.
+     *
+     * @param artifactId the artifact id
+     * @return this builder
+     */
+    public Builder setArtifactId(String artifactId) {
+      this.artifactId = artifactId;
+      return this;
+    }
 
     /**
      * Sets the resolved runtime classpath of the application.
@@ -159,9 +171,14 @@ public final class SpringDevtoolsDelivery {
      * Builds the delivery.
      *
      * @return the delivery
+     * @throws IllegalStateException if the artifact id is missing
      */
-    public SpringDevtoolsDelivery build() {
-      return new SpringDevtoolsDelivery(this);
+    public DevtoolsDelivery build() {
+      if (artifactId == null || artifactId.isBlank()) {
+        throw new IllegalStateException("the devtools artifact id is required");
+      }
+
+      return new DevtoolsDelivery(this);
     }
   }
 }

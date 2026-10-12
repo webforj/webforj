@@ -1,6 +1,7 @@
 package com.webforj.plugin.gradle.devtools;
 
-import com.webforj.plugin.foundation.devtools.SpringDevtoolsDelivery;
+import com.webforj.plugin.foundation.devtools.DevtoolsDelivery;
+import com.webforj.plugin.foundation.resolve.ApplicationClasspath.ResolvedJar;
 import com.webforj.plugin.gradle.resolve.GradleArtifacts;
 import java.io.IOException;
 import java.util.concurrent.Callable;
@@ -49,11 +50,12 @@ public final class SpringDevtoolsInjection {
    */
   public static FileCollection resolve(Project project) {
     try {
-      return project.files(SpringDevtoolsDelivery.create()
+      return project.files(DevtoolsDelivery.create().setArtifactId("webforj-spring-devtools")
           .setApplicationClasspath(GradleArtifacts.getApplicationClasspath(project))
           .setResolver(GradleArtifacts.getResolver(project))
           .setLog(line -> project.getLogger().lifecycle(line))
-          .setDebug(line -> project.getLogger().debug(line)).build().getJars());
+          .setDebug(line -> project.getLogger().debug(line)).build().getJars().stream()
+          .map(ResolvedJar::file).toList());
     } catch (IOException e) {
       throw new GradleException(e.getMessage(), e);
     }

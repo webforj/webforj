@@ -1,3 +1,4 @@
 com.webforj.devtools.livereload.LiveReloadScriptInjector
+com.webforj.devtools.livereload.LiveReloadBBjLifecycle
 com.webforj.devtools.livereload.ClassUpdateListener
 com.webforj.devtools.craftforj.CraftforjLifecycleListener

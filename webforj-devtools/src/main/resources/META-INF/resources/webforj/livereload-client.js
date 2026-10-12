@@ -990,14 +990,17 @@
     /**
      * Applies one resource update message.
      *
-     * @param {{resourceType: string, path: string, timestamp: number}} message the update
+     * @param {{resourceType: string, path: string, content: ?string, timestamp: number}} message
+     *        the update
      */
     apply(message) {
       const resourcePath = this.normalizePath(message.path);
 
       switch (message.resourceType) {
         case 'css':
-          this.updateStylesheets(resourcePath, message.timestamp);
+          if (!this.updateInlineStyles(resourcePath, message.content)) {
+            this.updateStylesheets(resourcePath, message.timestamp);
+          }
           break;
         case 'image':
           this.updateImages(resourcePath, message.timestamp);
@@ -1011,6 +1014,42 @@
         default:
           this.logger.log('Unrecognized resource type: ' + message.resourceType);
       }
+    }
+
+    /**
+     * Replaces the content of every inlined bundle style that matches the resource path.
+     *
+     * A matching style without new content reloads the page.
+     *
+     * @param {string} resourcePath the changed resource path
+     * @param {?string} content the new stylesheet content
+     * @returns {boolean} whether the page holds an inlined bundle style for the resource path
+     */
+    updateInlineStyles(resourcePath, content) {
+      const normalize = this.normalizePath;
+      const styles = Array.prototype.filter.call(
+        document.querySelectorAll('style[data-webforj-bundle]'),
+        function (style) {
+          const bundlePath = normalize(style.getAttribute('data-webforj-bundle'));
+          return bundlePath.indexOf(resourcePath) !== -1 || resourcePath.indexOf(bundlePath) !== -1;
+        }
+      );
+
+      if (styles.length === 0) {
+        return false;
+      }
+
+      if (content === null || content === undefined) {
+        this.reload('Stylesheet updated: ' + resourcePath + ', reloading the page');
+        return true;
+      }
+
+      styles.forEach(function (style) {
+        style.textContent = content;
+      });
+      this.logger.log('Stylesheet updated in place: ' + resourcePath);
+
+      return true;
     }
 
     /**

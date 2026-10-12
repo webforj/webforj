@@ -1,6 +1,7 @@
 package com.webforj.plugin.foundation.hotswap.hotswapagent;
 
 import com.sun.management.HotSpotDiagnosticMXBean;
+import com.webforj.plugin.foundation.hotswap.ContainerOptionsFile;
 import com.webforj.plugin.foundation.hotswap.HotswapAttachment;
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,6 +58,11 @@ public final class HotswapAgentAttachment implements HotswapAttachment {
   public static final String DEFAULT_VERSION = "2.0.3";
 
   private static final long CHECK_TIMEOUT_SECONDS = 30;
+  private static final List<String> REFLECTIVE_OPENS =
+      List.of("--add-opens=java.base/java.lang=ALL-UNNAMED",
+          "--add-opens=java.base/java.io=ALL-UNNAMED", "--add-opens=java.base/java.net=ALL-UNNAMED",
+          "--add-opens=java.base/jdk.internal.loader=ALL-UNNAMED",
+          "--add-opens=java.desktop/java.beans=ALL-UNNAMED");
 
   private final Path cacheRoot;
   private final String version;
@@ -106,6 +112,46 @@ public final class HotswapAgentAttachment implements HotswapAttachment {
    */
   @Override
   public List<String> getArguments() throws IOException {
+    findObserverJar();
+    boolean enhanced = supportsEnhancedRedefinition();
+
+    Path jar = resolve();
+    log.accept("webforJ hotswap: HotswapAgent " + version
+        + " attached to the application virtual machine");
+
+    return List.copyOf(buildArguments(jar, observerJar, enhanced, writeAgentProperties(jar), ""));
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<String> getSharedContainerArguments(Path directory) throws IOException {
+    final Path observer = findObserverJar();
+    boolean enhanced = supportsEnhancedRedefinition();
+    Path jar = resolve();
+
+    // The shared container runs other web applications on its own loaders, so the agent leaves
+    // those loaders out, and the JSON library of the container must not be touched.
+    Path properties = directory.resolve(AGENT_PROPERTIES_FILE_NAME).toAbsolutePath();
+    ContainerOptionsFile.writeContent(properties,
+        formatAgentProperties(jar, "excludedClassLoaderPatterns=org.eclipse.*\n"));
+    ContainerOptionsFile.write(directory,
+        buildArguments(jar, observer, enhanced, properties, ",disablePlugin=JacksonPlugin"));
+
+    return List.of(ContainerOptionsFile.getArgument(directory));
+  }
+
+  String getJarUrl() {
+    return repositoryHost + "/" + GROUP_ID.replace('.', '/') + "/" + ARTIFACT_ID + "/" + version
+        + "/" + getJarFileName();
+  }
+
+  String getJarFileName() {
+    return ARTIFACT_ID + "-" + version + ".jar";
+  }
+
+  private Path findObserverJar() throws IOException {
     if (observerJar == null) {
       throw new IOException("the redefinition observer jar was not supplied, the build system "
           + "must resolve " + HotswapObserverJar.GROUP_ID + ":" + HotswapObserverJar.ARTIFACT_ID
@@ -116,54 +162,7 @@ public final class HotswapAgentAttachment implements HotswapAttachment {
       throw new IOException("the redefinition observer jar does not exist: " + observerJar);
     }
 
-    boolean enhanced = supportsEnhancedRedefinition();
-
-    Path jar = resolve();
-    log.accept("webforJ hotswap: HotswapAgent " + version
-        + " attached to the application virtual machine");
-
-    // autoHotswap must travel as an agent argument, the agent reads it only from this line.
-    List<String> arguments = new ArrayList<>();
-    if (enhanced) {
-      // The flag only exists on a machine that supports the capability, anywhere else it ends the
-      // start of the virtual machine, so it travels only after the check proved it.
-      arguments.add(REDEFINITION_FLAG);
-    }
-
-    // The agent reads autoHotswap only from this line. The named properties file replaces the
-    // configuration file the agent carries inside its own jar, whose LOGGER=info line would
-    // otherwise reset the log level on every classloader the agent reaches. The LOGGER argument
-    // still travels on the line itself, it covers the window before the file is read.
-    Path agentProperties = writeAgentProperties(jar);
-    arguments.add("-javaagent:" + jar.toAbsolutePath() + "=autoHotswap=true,LOGGER=error"
-        + ",propertiesFilePath=" + agentProperties.toAbsolutePath());
-
-    // Each open stays one self contained token. java.net and jdk.internal.loader carry the ucp
-    // field the agent rewrites to honor the extraClasspath entry of the properties file.
-    arguments.addAll(List.of("--add-opens=java.base/java.lang=ALL-UNNAMED",
-        "--add-opens=java.base/java.io=ALL-UNNAMED", "--add-opens=java.base/java.net=ALL-UNNAMED",
-        "--add-opens=java.base/jdk.internal.loader=ALL-UNNAMED",
-        "--add-opens=java.desktop/java.beans=ALL-UNNAMED"));
-
-    // The observer travels behind the agent, so its transformer registers last and reports the
-    // redefinitions the agent applies to the running application.
-    arguments.add("-javaagent:" + observerJar.toAbsolutePath());
-
-    // The properties tell the application which tool this attachment installed and how deep its
-    // updates go on this machine, so the running application can tell the developer.
-    arguments.add(TOOL_ARGUMENT);
-    arguments.add(LEVEL_ARGUMENT_PREFIX + (enhanced ? "full" : "limited"));
-
-    return List.copyOf(arguments);
-  }
-
-  String getJarUrl() {
-    return repositoryHost + "/" + GROUP_ID.replace('.', '/') + "/" + ARTIFACT_ID + "/" + version
-        + "/" + getJarFileName();
-  }
-
-  String getJarFileName() {
-    return ARTIFACT_ID + "-" + version + ".jar";
+    return observerJar;
   }
 
   private boolean supportsEnhancedRedefinition() {
@@ -272,15 +271,57 @@ public final class HotswapAgentAttachment implements HotswapAttachment {
     Files.createDirectories(configurationDirectory);
     Path file = configurationDirectory.resolve(AGENT_PROPERTIES_FILE_NAME);
 
+    Files.writeString(file, formatAgentProperties(jar, ""));
+
+    return file;
+  }
+
+  private static List<String> buildArguments(Path jar, Path observer, boolean enhanced,
+      Path properties, String agentOptions) {
+    List<String> arguments = new ArrayList<>();
+    if (enhanced) {
+      // The flag only exists on a machine that supports the capability, anywhere else it ends the
+      // start of the virtual machine, so it travels only after the check proved it.
+      arguments.add(REDEFINITION_FLAG);
+    }
+
+    // The agent reads autoHotswap only from this line. The named properties file replaces the
+    // configuration file the agent carries inside its own jar, whose LOGGER=info line would
+    // otherwise reset the log level on every classloader the agent reaches. The LOGGER argument
+    // still travels on the line itself, it covers the window before the file is read.
+    arguments.add("-javaagent:" + jar.toAbsolutePath() + "=autoHotswap=true,LOGGER=error"
+        + agentOptions + ",propertiesFilePath=" + properties.toAbsolutePath());
+
+    // Each open stays one self contained token. java.net and jdk.internal.loader carry the ucp
+    // field the agent rewrites to honor the extraClasspath entry of the properties file.
+    arguments.addAll(REFLECTIVE_OPENS);
+
+    // The observer travels behind the agent, so its transformer registers last and reports the
+    // redefinitions the agent applies to the running application.
+    arguments.add("-javaagent:" + observer.toAbsolutePath());
+
+    // The properties tell the application which tool this attachment installed and how deep its
+    // updates go on this machine, so the running application can tell the developer.
+    arguments.add(TOOL_ARGUMENT);
+    arguments.add(LEVEL_ARGUMENT_PREFIX + (enhanced ? "full" : "limited"));
+
+    return arguments;
+  }
+
+  private static String formatAgentProperties(Path jar, String extraProperties) {
     // extraClasspath names the agent jar itself. The agent prepends the entry into every
     // application classloader it initializes, so its own classes stay resolvable inside a webapp
     // classloader whose parent chain never reaches the system classpath. The forward slashes keep
     // the path intact under the escape rules of the properties format.
-    String extraClasspath = jar.toAbsolutePath().toString().replace('\\', '/');
-    Files.writeString(file,
-        "autoHotswap=true\nLOGGER=error\nextraClasspath=" + extraClasspath + "\n");
+    return """
+        autoHotswap=true
+        LOGGER=error
+        extraClasspath=%s
+        %s""".formatted(formatClasspathEntry(jar), extraProperties);
+  }
 
-    return file;
+  private static String formatClasspathEntry(Path jar) {
+    return jar.toAbsolutePath().toString().replace('\\', '/');
   }
 
   private void download(String url, Path target) throws IOException {

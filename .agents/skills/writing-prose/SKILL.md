@@ -30,6 +30,7 @@ Applies to JavaDoc, comments, strings, messages, Markdown and replies. Commits, 
 - Terse, in the register of the surrounding code. A one line summary sentence ending with a period.
 - Further paragraphs are wrapped as `<p>` on its own line, the text, `</p>` on its own line. A blank `*` line between paragraphs and before the block tags.
 - Every thrown exception is documented with `@throws`.
+- The `@param` tags form one group. A blank `*` line separates that group from `@return`, or from `@throws` when there is no `@return`. `@throws` follows `@return` directly.
 - `{@link Type}` with the simple name, never a fully qualified name.
 - Every file's class JavaDoc ends with `@author`, copied from the neighbouring classes of the module, and `@since <next release>`, the version of the current SNAPSHOT in `pom.xml` without the suffix (26.03 for 26.03-SNAPSHOT), never copied from neighbouring classes. `@since` goes on the class and nested classes, not on each method.
 - Test classes carry no JavaDoc.
@@ -49,6 +50,7 @@ Applies to JavaDoc, comments, strings, messages, Markdown and replies. Commits, 
 - No internal cross references a reader has no context for, no process notes, no test plans in the artifact itself.
 - No internal ids in any text a user sees. Resolve the object and show its display name.
 - Nothing that says or hints that an assistant wrote the code or the text, anywhere.
+- Never the maintainer, a conversation, a request or an instruction in any file: no "the maintainer", "as asked", "by hand", no wording taken from a prompt. A file states facts about the code only. Fixtures carry no README, their test names and the code that loads them say what they are.
 
 ## Messages to users
 

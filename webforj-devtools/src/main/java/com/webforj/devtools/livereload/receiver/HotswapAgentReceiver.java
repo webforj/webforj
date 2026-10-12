@@ -2,8 +2,10 @@ package com.webforj.devtools.livereload.receiver;
 
 import com.webforj.devtools.livereload.LiveReloadServer;
 import java.lang.management.ManagementFactory;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -19,7 +21,8 @@ import java.util.zip.CRC32;
  * The HotswapAgent java agent redefines Java bytecode in place and never restarts the server, so
  * none of the restart signals the reload pipeline reacts to ever fire. The webforJ observer agent
  * attached next to it reports every applied redefinition to this receiver instead, and a quick
- * burst of redefinitions collapses into one update.
+ * burst of redefinitions collapses into one update. The receiver also registers and releases
+ * application class loaders with the agent.
  * </p>
  *
  * @author Hyyan Abo Fakher
@@ -31,11 +34,13 @@ public class HotswapAgentReceiver implements LiveReloadReceiver {
   static final String JAVA_AGENT_ARGUMENT_MARKER = "hotswap";
   static final String RUNTIME_AGENT_ARGUMENT_PREFIX = "-XX:HotswapAgent";
 
+  private static final String PLUGIN_MANAGER_CLASS_NAME = "org.hotswap.agent.config.PluginManager";
   private static final System.Logger logger =
       System.getLogger(HotswapAgentReceiver.class.getName());
   private static final Set<HotswapAgentReceiver> activeReceivers = ConcurrentHashMap.newKeySet();
 
   private final boolean agentPresent;
+  private final ClassLoader toolClassLoader;
   private final ClassUpdateDelivery delivery;
   private final RedefinitionFailureHandler failureHandler;
   private final AtomicBoolean running = new AtomicBoolean(false);
@@ -58,6 +63,20 @@ public class HotswapAgentReceiver implements LiveReloadReceiver {
    * @param vmArguments the virtual machine startup arguments the agent is detected in
    */
   HotswapAgentReceiver(LiveReloadServer server, List<String> vmArguments) {
+    this(server, vmArguments, ClassLoader.getSystemClassLoader());
+  }
+
+  /**
+   * Creates a receiver that detects the agent in the given virtual machine arguments and looks the
+   * agent up in the given class loader, so a test can supply its own.
+   *
+   * @param server the reload server the update is pushed through
+   * @param vmArguments the virtual machine startup arguments the agent is detected in
+   * @param toolClassLoader the class loader the agent is looked up in
+   */
+  HotswapAgentReceiver(LiveReloadServer server, List<String> vmArguments,
+      ClassLoader toolClassLoader) {
+    this.toolClassLoader = toolClassLoader;
     this.agentPresent = isAgentPresent(vmArguments);
     this.delivery = new ClassUpdateDelivery(server, "a HotswapAgent class redefinition",
         "webforj-hotswap-receiver");
@@ -129,8 +148,76 @@ public class HotswapAgentReceiver implements LiveReloadReceiver {
     return running.get();
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void openClassLoader(ClassLoader loader) {
+    if (!agentPresent) {
+      return;
+    }
+
+    Optional<Class<?>> pluginManagerClass = findPluginManagerClass();
+    if (pluginManagerClass.isEmpty()) {
+      logger.log(System.Logger.Level.WARNING,
+          "The hotswap agent is attached but its plugin manager "
+              + "is not reachable, the application class loader was not registered");
+      return;
+    }
+
+    try {
+      Class<?> managerClass = pluginManagerClass.get();
+      Object manager = managerClass.getMethod("getInstance").invoke(null);
+
+      managerClass.getMethod("initClassLoader", ClassLoader.class).invoke(manager, loader);
+    } catch (ReflectiveOperationException | LinkageError e) {
+      logger.log(System.Logger.Level.WARNING,
+          "Could not register the class loader with the hotswap agent", e);
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void closeClassLoader(ClassLoader loader) {
+    if (!agentPresent) {
+      return;
+    }
+
+    Optional<Class<?>> pluginManagerClass = findPluginManagerClass();
+    if (pluginManagerClass.isEmpty()) {
+      logger.log(System.Logger.Level.WARNING,
+          "The hotswap agent is attached but its plugin manager "
+              + "is not reachable, the application class loader was not released");
+      return;
+    }
+
+    try {
+      Class<?> managerClass = pluginManagerClass.get();
+      Object manager = managerClass.getMethod("getInstance").invoke(null);
+      Method getWatcher = managerClass.getMethod("getWatcher");
+      Object watcher = getWatcher.invoke(manager);
+
+      getWatcher.getReturnType().getMethod("closeClassLoader", ClassLoader.class).invoke(watcher,
+          loader);
+      managerClass.getMethod("closeClassLoader", ClassLoader.class).invoke(manager, loader);
+    } catch (ReflectiveOperationException | LinkageError e) {
+      logger.log(System.Logger.Level.WARNING,
+          "Could not release the class loader from the hotswap agent", e);
+    }
+  }
+
   void sendReload() {
     delivery.deliver();
+  }
+
+  private Optional<Class<?>> findPluginManagerClass() {
+    try {
+      return Optional.of(Class.forName(PLUGIN_MANAGER_CLASS_NAME, true, toolClassLoader));
+    } catch (ClassNotFoundException e) {
+      return Optional.empty();
+    }
   }
 
   private void updateRejected(String reason) {

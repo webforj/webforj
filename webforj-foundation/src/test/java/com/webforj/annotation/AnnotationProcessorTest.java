@@ -52,6 +52,7 @@ class AnnotationProcessorTest {
     when(api.getObjectTable()).thenReturn(objectTable);
     when(api.getWebManager()).thenReturn(webManager);
     when(webManager.getUrl()).thenReturn("http://localhost");
+    mockedEnvironment.when(Environment::getContextPath).thenReturn("/");
     when(environment.getConfig()).thenReturn(config);
     when(config.hasPath("webforj.assetsDir")).thenReturn(false);
   }
@@ -111,6 +112,52 @@ class AnnotationProcessorTest {
     verify(page).setMeta("viewport", "custom-viewport");
     verify(page).addLink(eq("http://localhost/static/icon.png"), eq(true),
         eq(Map.of("rel", "shortcut icon", "type", "image/png")));
+  }
+
+  @Test
+  void shouldUseTheApplicationRootAsManifestBaseOnBbjServices() throws BBjException {
+    @AppProfile(name = "my-app-name", shortName = "my-app-short-name")
+    class MockAppClass extends App {
+      @Override
+      public void run() throws WebforjException {
+        // no-op
+      }
+    }
+
+    when(webManager.getUrl()).thenReturn("http://localhost:8888/webapp/my-app");
+    mockedEnvironment.when(Environment::isRunningWithBBjServices).thenReturn(true);
+    when(config.hasPath("webforj.assetsSource")).thenReturn(true);
+    when(config.getString("webforj.assetsSource")).thenReturn("packaged");
+    try (MockedStatic<App> mockedApp = mockStatic(App.class)) {
+      mockedApp.when(App::getApplicationName).thenReturn("my-app");
+
+      ProfileDescriptor descriptor =
+          new AnnotationProcessor().processAppProfile(new MockAppClass());
+
+      assertEquals("http://localhost:8888/webapp/my-app/", descriptor.getBase());
+      assertEquals("http://localhost:8888/webapp/my-app/", descriptor.getStartUrl());
+      assertEquals("http://localhost:8888/webapp/my-app/", descriptor.getId());
+    }
+  }
+
+  @Test
+  void shouldUseTheContextPathAsManifestBaseOnOtherContainers() throws BBjException {
+    @AppProfile(name = "my-app-name", shortName = "my-app-short-name")
+    class MockAppClass extends App {
+      @Override
+      public void run() throws WebforjException {
+        // no-op
+      }
+    }
+
+    when(webManager.getUrl()).thenReturn("http://localhost:8080/mycontext/orders/42");
+    mockedEnvironment.when(Environment::isRunningWithBBjServices).thenReturn(false);
+    mockedEnvironment.when(Environment::getContextPath).thenReturn("/mycontext");
+
+    ProfileDescriptor descriptor = new AnnotationProcessor().processAppProfile(new MockAppClass());
+
+    assertEquals("http://localhost:8080/mycontext/", descriptor.getBase());
+    assertEquals("http://localhost:8080/mycontext/", descriptor.getStartUrl());
   }
 
   @Test

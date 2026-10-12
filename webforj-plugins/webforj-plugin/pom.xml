@@ -16,8 +16,14 @@
   <name>${project.artifactId}</name>
   <description>webforJ build plugin family: shared foundation plus the per build tool plugins. Internal implementation.</description>
 
+  <properties>
+    <httpcore5.version>5.4.3</httpcore5.version>
+    <httpclient5.version>5.6.4</httpclient5.version>
+  </properties>
+
   <modules>
     <module>webforj-plugin-foundation</module>
+    <module>webforj-bbjship</module>
     <module>webforj-hotswap-observer</module>
     <module>webforj-maven-plugin</module>
     <module>webforj-gradle-plugin</module>
@@ -29,6 +35,16 @@
         <groupId>com.webforj</groupId>
         <artifactId>webforj-plugin-foundation</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents.core5</groupId>
+        <artifactId>httpcore5</artifactId>
+        <version>${httpcore5.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents.client5</groupId>
+        <artifactId>httpclient5</artifactId>
+        <version>${httpclient5.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

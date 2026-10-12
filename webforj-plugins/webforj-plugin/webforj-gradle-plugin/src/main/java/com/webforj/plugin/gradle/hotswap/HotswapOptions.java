@@ -3,6 +3,7 @@ package com.webforj.plugin.gradle.hotswap;
 import com.webforj.plugin.gradle.hotswap.hotswapagent.HotswapAgentOptions;
 import com.webforj.plugin.gradle.hotswap.jrebel.JrebelOptions;
 import org.gradle.api.Action;
+import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.tasks.Nested;
 
 /**
@@ -20,6 +21,13 @@ public abstract class HotswapOptions {
 
   private boolean hotswapAgentConfigured;
   private boolean jrebelConfigured;
+
+  /**
+   * The hotswap directory holding the downloaded agent.
+   *
+   * @return the hotswap directory property, unset for the default under the user home
+   */
+  public abstract DirectoryProperty getDirectory();
 
   /**
    * The HotswapAgent configuration values.

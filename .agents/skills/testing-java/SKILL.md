@@ -13,7 +13,14 @@ JUnit 5 and Mockito.
 - No themed scenario files across classes, no second test file for the same class with another suffix.
 - A test file over about 500 lines or with eight or more `@Nested` groups is split into a subpackage named after the class, one file per group, `<Class><Concern>Test`.
 - Shared fixtures are plain classes named for what they hold, never after a production class.
-- Test classes and methods are package private and carry no JavaDoc.
+- Test classes and methods are package private and carry no JavaDoc. A shared fixture used from another test package is public and carries a one line JavaDoc on the class and on each public member, saying what it holds or does.
+
+## Fixtures
+
+- Tests are the reader's way to understand the code, so they run against a real application fixture, not files made up by helpers. The fixture is a real application kept as plain files under `src/test/resources/fixtures/<name>`, readable in the repository, and every test names which fixture it uses and what it does to it.
+- No helper class that writes jars, archives, folders or scripts on the fly. Production code builds what the fixture needs (the real archive writer packs the fixture), and a test changes the fixture only by a visible step in its own body.
+
+- Tests are how the maintainer judges whether the code does what it must. No noise: every line of a test body serves the one behaviour it names. No repeated cases: a path is covered once, several inputs of one shape are one parameterized test. No helper that buries what the test does: setup, the call and the outcome are visible in the body.
 
 ## Assertions
 

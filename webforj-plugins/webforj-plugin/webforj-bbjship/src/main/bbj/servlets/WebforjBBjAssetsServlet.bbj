@@ -1,0 +1,19 @@
+use com.webforj.bbjship.assets.AssetsServlet
+
+rem /**
+rem  * Serves the static files and icons of published applications.
+rem  *
+rem  * @author Hyyan Abo Fakher
+rem  * @since 26.03
+rem  */
+class public WebforjBBjAssetsServlet
+  rem /**
+  rem  * Answers a GET or HEAD request for an asset of a published application.
+  rem  *
+  rem  * @param BBxServletContext context! The servlet request context.
+  rem  */
+  method public void service(BBxServletContext context!)
+    AssetsServlet.handle(context!.getRequest().getHttpServletRequest(), context!.getResponse().getHttpServletResponse())
+  methodend
+
+classend

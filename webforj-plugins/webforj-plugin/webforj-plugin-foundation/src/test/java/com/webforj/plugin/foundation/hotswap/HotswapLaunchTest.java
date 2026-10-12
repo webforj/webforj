@@ -1,9 +1,11 @@
 package com.webforj.plugin.foundation.hotswap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.webforj.plugin.foundation.hotswap.hotswapagent.HotswapAgentAttachment;
 import com.webforj.plugin.foundation.resolve.ApplicationClasspath;
 import com.webforj.plugin.foundation.resolve.ApplicationClasspath.ResolvedJar;
 import java.io.IOException;
@@ -16,6 +18,8 @@ import java.util.List;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class HotswapLaunchTest {
 
@@ -90,7 +94,7 @@ class HotswapLaunchTest {
 
     List<String> arguments = HotswapLaunch.create().setHotswapAgentConfigured(true)
         .setHotswapAgentPath(agentJar).setBuildDirectory(tmp.resolve("build"))
-        .setAgentCacheRoot(tmp.resolve("cache")).setJavaExecutable(fakeJava(tmp, 0))
+        .setDirectory(tmp.resolve("hotswap")).setJavaExecutable(fakeJava(tmp, 0))
         .setApplicationClasspath(HotswapLaunchTest::classpathWithFramework)
         .setResolver((groupId, artifactId, version) -> {
           versions.add(version);
@@ -115,7 +119,7 @@ class HotswapLaunchTest {
 
     List<String> arguments =
         HotswapLaunch.create().setHotswapAgentConfigured(true).setHotswapAgentPath(agentJar)
-            .setBuildDirectory(tmp.resolve("build")).setAgentCacheRoot(tmp.resolve("cache"))
+            .setBuildDirectory(tmp.resolve("build")).setDirectory(tmp.resolve("hotswap"))
             .setJavaExecutable(fakeJava(tmp, 1))
             .setApplicationClasspath(HotswapLaunchTest::classpathWithFramework)
             .setResolver((groupId, artifactId, version) -> List
@@ -133,7 +137,7 @@ class HotswapLaunchTest {
     Path agentJar = Files.createFile(tmp.resolve("hotswap-agent.jar"));
     HotswapLaunch launch = HotswapLaunch.create().setHotswapAgentConfigured(true)
         .setHotswapAgentPath(agentJar).setBuildDirectory(tmp.resolve("build"))
-        .setAgentCacheRoot(tmp.resolve("cache")).setJavaExecutable(fakeJava(tmp, 0))
+        .setDirectory(tmp.resolve("hotswap")).setJavaExecutable(fakeJava(tmp, 0))
         .setApplicationClasspath(() -> new ApplicationClasspath(List.of()))
         .setResolver((groupId, artifactId, version) -> List.of()).build();
 
@@ -141,6 +145,140 @@ class HotswapLaunchTest {
 
     assertTrue(failure.getMessage().contains(ApplicationClasspath.FRAMEWORK_ARTIFACT_ID),
         "the missing requirement is named");
+  }
+
+  @Test
+  void shouldComposeTheSharedContainerArgumentWithoutABuildDirectory(@TempDir Path tmp)
+      throws Exception {
+    Path agentJar = Files.createFile(tmp.resolve("hotswap-agent.jar"));
+    Path observer = Files.createFile(tmp.resolve("webforj-hotswap-observer.jar"));
+    HotswapLaunch launch =
+        HotswapLaunch.create().setHotswapAgentConfigured(true).setHotswapAgentPath(agentJar)
+            .setDirectory(tmp.resolve("hotswap")).setJavaExecutable(fakeJava(tmp, 0))
+            .setSharedContainer(true).setContainerOptionsDirectory(tmp.resolve("hotswap"))
+            .setApplicationClasspath(HotswapLaunchTest::classpathWithFramework)
+            .setResolver((groupId, artifactId, version) -> List
+                .of(new ResolvedJar(groupId, artifactId, version, observer)))
+            .build();
+
+    List<String> arguments = launch.getArguments();
+
+    assertEquals(
+        List.of("-XX:VMOptionsFile=" + tmp.resolve("hotswap/hotswap.options").toAbsolutePath()),
+        arguments);
+  }
+
+  @Test
+  void shouldWriteTheJrebelArgumentsIntoTheSharedContainerOptions(@TempDir Path tmp)
+      throws Exception {
+    Path library = jrebelLibrary(tmp);
+    HotswapLaunch launch = HotswapLaunch.create().setJrebelConfigured(true).setJrebelPath(library)
+        .setDirectory(tmp.resolve("hotswap")).setSharedContainer(true)
+        .setContainerOptionsDirectory(tmp.resolve("hotswap")).build();
+
+    List<String> arguments = launch.getArguments();
+
+    assertEquals(
+        List.of("-XX:VMOptionsFile=" + tmp.resolve("hotswap/hotswap.options").toAbsolutePath()),
+        arguments);
+    assertEquals("""
+        -agentpath:%s
+        -Dwebforj.hotswap.tool=jrebel
+        -Dwebforj.hotswap.level=full
+        """.formatted(library.toAbsolutePath()),
+        Files.readString(tmp.resolve("hotswap/hotswap.options")));
+  }
+
+  @Test
+  void shouldRequireTheOptionsDirectoryOfASharedContainer(@TempDir Path tmp) throws Exception {
+    HotswapLaunch launch = HotswapLaunch.create().setJrebelConfigured(true)
+        .setJrebelPath(jrebelLibrary(tmp)).setSharedContainer(true).build();
+
+    IllegalArgumentException failure =
+        assertThrows(IllegalArgumentException.class, launch::getArguments);
+
+    assertEquals("the shared container needs the options directory", failure.getMessage());
+  }
+
+  @Test
+  void shouldGiveTheHotswapFolderOfTheUserHomeAsDefaultDirectory() {
+    assertEquals(Path.of(System.getProperty("user.home"), ".webforj", "hotswap"),
+        HotswapLaunch.getDefaultDirectory());
+  }
+
+  @Test
+  void shouldAttachTheAgentCachedInTheHotswapAgentFolderOfTheDirectory(@TempDir Path tmp)
+      throws Exception {
+    Path directory = tmp.resolve("hotswap");
+    Path versionFolder = Files.createDirectories(
+        directory.resolve("hotswap-agent").resolve(HotswapAgentAttachment.DEFAULT_VERSION));
+    Path cached = Files.createFile(
+        versionFolder.resolve("hotswap-agent-" + HotswapAgentAttachment.DEFAULT_VERSION + ".jar"));
+    Path observer = Files.createFile(tmp.resolve("webforj-hotswap-observer.jar"));
+
+    List<String> arguments =
+        HotswapLaunch.create().setHotswapAgentConfigured(true)
+            .setBuildDirectory(tmp.resolve("build")).setDirectory(directory)
+            .setJavaExecutable(fakeJava(tmp, 0))
+            .setApplicationClasspath(HotswapLaunchTest::classpathWithFramework)
+            .setResolver((groupId, artifactId, version) -> List
+                .of(new ResolvedJar(groupId, artifactId, version, observer)))
+            .build().getArguments();
+
+    assertTrue(
+        arguments.stream().anyMatch(
+            argument -> argument.startsWith("-javaagent:" + cached.toAbsolutePath() + "=")),
+        "the agent attaches from the hotswap agent folder of the directory");
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"hotswap directory", "hotswap\tdirectory"})
+  void shouldRefuseTheHotswapDirectoryWithWhitespace(String name, @TempDir Path tmp)
+      throws Exception {
+    Path directory = tmp.resolve(name);
+    HotswapLaunch launch = HotswapLaunch.create().setJrebelConfigured(true)
+        .setJrebelPath(jrebelLibrary(tmp)).setDirectory(directory).setSharedContainer(true)
+        .setContainerOptionsDirectory(directory).build();
+
+    IllegalArgumentException failure =
+        assertThrows(IllegalArgumentException.class, launch::getArguments);
+
+    assertEquals(
+        "The hotswap directory " + directory + " contains a space, which the container "
+            + "cannot pass to Java. Configure webforj.hotswap.directory with a path without spaces",
+        failure.getMessage());
+    assertFalse(Files.exists(directory), "nothing is written into the refused directory");
+  }
+
+  @Test
+  void shouldAcceptTheHotswapDirectoryWithWhitespaceWhenJrebelRunsOutsideASharedContainer(
+      @TempDir Path tmp) throws Exception {
+    Path library = jrebelLibrary(tmp);
+    Path directory = tmp.resolve("hotswap directory");
+    HotswapLaunch launch = HotswapLaunch.create().setJrebelConfigured(true).setJrebelPath(library)
+        .setDirectory(directory).build();
+
+    assertEquals(List.of("-agentpath:" + library.toAbsolutePath(), "-Dwebforj.hotswap.tool=jrebel",
+        "-Dwebforj.hotswap.level=full"), launch.getArguments());
+  }
+
+  @Test
+  void shouldRefuseTheJrebelPathWithWhitespace(@TempDir Path tmp) throws Exception {
+    Path library = Files
+        .createFile(Files.createDirectories(tmp.resolve("jrebel lib")).resolve("libjrebel.so"));
+    Path directory = tmp.resolve("hotswap");
+    HotswapLaunch launch = HotswapLaunch.create().setJrebelConfigured(true).setJrebelPath(library)
+        .setDirectory(directory).setSharedContainer(true).setContainerOptionsDirectory(directory)
+        .build();
+
+    IllegalArgumentException failure =
+        assertThrows(IllegalArgumentException.class, launch::getArguments);
+
+    assertEquals(
+        "The JRebel library path " + library + " contains a space, which the container "
+            + "cannot pass to Java. Configure the JRebel path without spaces",
+        failure.getMessage());
+    assertFalse(Files.exists(directory), "nothing is written into the hotswap directory");
   }
 
   private static ApplicationClasspath classpathWithFramework() {

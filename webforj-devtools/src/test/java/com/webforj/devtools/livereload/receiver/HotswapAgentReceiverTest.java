@@ -12,12 +12,18 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.webforj.devtools.livereload.LiveReloadServer;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import org.hotswap.agent.config.PluginManager;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -27,6 +33,11 @@ class HotswapAgentReceiverTest {
   private static final String OTHER_CLASS_NAME = HotswapAgentReceiverFixture.class.getName();
 
   private HotswapAgentReceiver receiver;
+
+  @BeforeEach
+  void clearPluginManagerCalls() {
+    PluginManager.clearCalls();
+  }
 
   @AfterEach
   void tearDown() {
@@ -321,5 +332,85 @@ class HotswapAgentReceiverTest {
     when(server.isRunning()).thenReturn(true);
 
     return server;
+  }
+
+  @Nested
+  class ClassLoaderRegistration {
+
+    private static final List<String> AGENT_ARGUMENTS =
+        List.of("-javaagent:/tools/hotswap-agent-2.0.3.jar=autoHotswap=true");
+
+    @Test
+    void shouldRegisterTheClassLoaderWithTheTool() {
+      ClassLoader loader = new URLClassLoader(new URL[0]);
+      receiver = new HotswapAgentReceiver(runningServer(), AGENT_ARGUMENTS,
+          HotswapAgentReceiverTest.class.getClassLoader());
+
+      receiver.openClassLoader(loader);
+
+      assertEquals(List.of(Map.entry("initClassLoader", loader)), PluginManager.getCalls());
+    }
+
+    @Test
+    void shouldReleaseTheClassLoaderFromTheWatcherAndTheTool() {
+      ClassLoader loader = new URLClassLoader(new URL[0]);
+      receiver = new HotswapAgentReceiver(runningServer(), AGENT_ARGUMENTS,
+          HotswapAgentReceiverTest.class.getClassLoader());
+
+      receiver.closeClassLoader(loader);
+
+      assertEquals(List.of(Map.entry("watcher.closeClassLoader", loader),
+          Map.entry("closeClassLoader", loader)), PluginManager.getCalls());
+    }
+
+    @Test
+    void shouldDoNothingWhenTheToolIsAbsent() {
+      ClassLoader loader = new URLClassLoader(new URL[0]);
+      receiver = new HotswapAgentReceiver(runningServer(), AGENT_ARGUMENTS,
+          new URLClassLoader(new URL[0], null));
+
+      assertDoesNotThrow(() -> receiver.openClassLoader(loader));
+      assertDoesNotThrow(() -> receiver.closeClassLoader(loader));
+
+      assertTrue(PluginManager.getCalls().isEmpty());
+    }
+
+    @Test
+    void shouldOpenTheClassLoaderQuietlyWhenThePluginManagerIsUnreachable() {
+      ClassLoader loader = new URLClassLoader(new URL[0]);
+      LiveReloadServer server = runningServer();
+      receiver =
+          new HotswapAgentReceiver(server, AGENT_ARGUMENTS, new URLClassLoader(new URL[0], null));
+
+      assertDoesNotThrow(() -> receiver.openClassLoader(loader));
+
+      verify(server, never()).sendReloadMessage();
+      assertTrue(PluginManager.getCalls().isEmpty());
+    }
+
+    @Test
+    void shouldCloseTheClassLoaderQuietlyWhenThePluginManagerIsUnreachable() {
+      ClassLoader loader = new URLClassLoader(new URL[0]);
+      LiveReloadServer server = runningServer();
+      receiver =
+          new HotswapAgentReceiver(server, AGENT_ARGUMENTS, new URLClassLoader(new URL[0], null));
+
+      assertDoesNotThrow(() -> receiver.closeClassLoader(loader));
+
+      verify(server, never()).sendReloadMessage();
+      assertTrue(PluginManager.getCalls().isEmpty());
+    }
+
+    @Test
+    void shouldLookNothingUpWhenTheAgentIsAbsent() {
+      ClassLoader loader = new URLClassLoader(new URL[0]);
+      receiver = new HotswapAgentReceiver(runningServer(), List.of("-Xmx1g"),
+          HotswapAgentReceiverTest.class.getClassLoader());
+
+      receiver.openClassLoader(loader);
+      receiver.closeClassLoader(loader);
+
+      assertTrue(PluginManager.getCalls().isEmpty());
+    }
   }
 }

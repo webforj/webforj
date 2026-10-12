@@ -233,6 +233,79 @@ class HotswapAgentAttachmentTest {
   }
 
   @Test
+  void shouldWriteTheSharedContainerOptionsAndReturnTheArgument(@TempDir Path tmp)
+      throws Exception {
+    Path local = Files.write(tmp.resolve("hotswap-agent.jar"), JAR_BYTES);
+    Path java = fakeJava(tmp, 0);
+    Path directory = tmp.resolve("shared");
+    List<String> lines = new ArrayList<>();
+    List<String> warnings = new ArrayList<>();
+    HotswapAgentAttachment attachment = newAttachment(tmp).setOverridePath(local)
+        .setJavaExecutable(java).setLog(lines::add).setWarn(warnings::add).build();
+
+    List<String> arguments = attachment.getSharedContainerArguments(directory);
+
+    String argument = "-XX:VMOptionsFile=" + directory.resolve("hotswap.options").toAbsolutePath();
+    Path properties = directory.resolve("hotswap-agent.properties");
+    assertEquals(List.of(argument), arguments);
+    assertEquals("""
+        autoHotswap=true
+        LOGGER=error
+        extraClasspath=%s
+        excludedClassLoaderPatterns=org.eclipse.*
+        """.formatted(local.toAbsolutePath().toString().replace('\\', '/')),
+        Files.readString(properties));
+    assertEquals(
+        """
+            -XX:+AllowEnhancedClassRedefinition
+            -javaagent:%s=autoHotswap=true,LOGGER=error,disablePlugin=JacksonPlugin,propertiesFilePath=%s
+            --add-opens=java.base/java.lang=ALL-UNNAMED
+            --add-opens=java.base/java.io=ALL-UNNAMED
+            --add-opens=java.base/java.net=ALL-UNNAMED
+            --add-opens=java.base/jdk.internal.loader=ALL-UNNAMED
+            --add-opens=java.desktop/java.beans=ALL-UNNAMED
+            -javaagent:%s
+            -Dwebforj.hotswap.tool=hotswapAgent
+            -Dwebforj.hotswap.level=full
+            """
+            .formatted(local.toAbsolutePath(), properties.toAbsolutePath(),
+                observerJar(tmp).toAbsolutePath()),
+        Files.readString(directory.resolve("hotswap.options")));
+    assertEquals(List.of(), lines);
+    assertEquals(List.of(), warnings);
+  }
+
+  @Test
+  void shouldRewriteTheSharedContainerOptionsForTheLimitedLevel(@TempDir Path tmp)
+      throws Exception {
+    Path local = Files.write(tmp.resolve("hotswap-agent.jar"), JAR_BYTES);
+    Path directory = tmp.resolve("shared");
+    List<String> lines = new ArrayList<>();
+    newAttachment(tmp).setOverridePath(local).build().getSharedContainerArguments(directory);
+
+    newAttachment(tmp).setOverridePath(local).setJavaExecutable(fakeJava(tmp, 1)).setLog(lines::add)
+        .build().getSharedContainerArguments(directory);
+
+    assertEquals(List.of(), lines);
+    assertEquals(
+        """
+            -javaagent:%s=autoHotswap=true,LOGGER=error,disablePlugin=JacksonPlugin,propertiesFilePath=%s
+            --add-opens=java.base/java.lang=ALL-UNNAMED
+            --add-opens=java.base/java.io=ALL-UNNAMED
+            --add-opens=java.base/java.net=ALL-UNNAMED
+            --add-opens=java.base/jdk.internal.loader=ALL-UNNAMED
+            --add-opens=java.desktop/java.beans=ALL-UNNAMED
+            -javaagent:%s
+            -Dwebforj.hotswap.tool=hotswapAgent
+            -Dwebforj.hotswap.level=limited
+            """
+            .formatted(local.toAbsolutePath(),
+                directory.resolve("hotswap-agent.properties").toAbsolutePath(),
+                observerJar(tmp).toAbsolutePath()),
+        Files.readString(directory.resolve("hotswap.options")));
+  }
+
+  @Test
   void shouldFallBackToTheDefaultVersion(@TempDir Path tmp) throws Exception {
     assertEquals(HotswapAgentAttachment.DEFAULT_VERSION,
         newAttachment(tmp).setVersion(" ").build().getVersion());

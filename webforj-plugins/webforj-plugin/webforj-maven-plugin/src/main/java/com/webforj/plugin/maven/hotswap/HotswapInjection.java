@@ -46,8 +46,9 @@ public final class HotswapInjection {
   private final String commandLineValue;
   private final ArtifactResolver resolver;
   private final Log log;
-  private final Path agentCacheRoot;
+  private final Path directory;
   private final Path javaExecutable;
+  private final String bbjDeploymentUrl;
 
   private HotswapInjection(Builder builder) {
     this.project = builder.project;
@@ -56,8 +57,9 @@ public final class HotswapInjection {
     this.commandLineValue = builder.commandLineValue;
     this.resolver = builder.resolver;
     this.log = builder.log;
-    this.agentCacheRoot = builder.agentCacheRoot;
+    this.directory = resolveDirectory(builder.directory, builder.options);
     this.javaExecutable = builder.javaExecutable;
+    this.bbjDeploymentUrl = builder.bbjDeploymentUrl;
   }
 
   /**
@@ -73,24 +75,49 @@ public final class HotswapInjection {
    * Resolves the selected tool through the foundation launch and places its arguments into the
    * runner properties.
    *
+   * <p>
+   * A project deployed to a BBj host without an application runner runs in a shared container. Its
+   * arguments go into the options file of the container and the one argument naming that file is
+   * reported.
+   * </p>
+   *
+   * @return the arguments of the launch, empty when hotswap stays off
    * @throws MojoExecutionException if the configuration is invalid or the launch cannot be prepared
    */
-  public void apply() throws MojoExecutionException {
+  public List<String> apply() throws MojoExecutionException {
+    boolean sharedContainer = isSharedContainer(project, bbjDeploymentUrl);
     List<String> arguments;
     try {
-      arguments = createLaunch().getArguments();
+      arguments = createLaunch(sharedContainer).getArguments();
     } catch (IllegalArgumentException | IOException e) {
       throw new MojoExecutionException(e.getMessage(), e);
     }
 
     if (arguments.isEmpty()) {
-      return;
+      return arguments;
+    }
+
+    if (sharedContainer) {
+      log.info("webforJ hotswap: " + String.join(" ", arguments));
+      return arguments;
     }
 
     inject(String.join(" ", arguments));
+
+    return arguments;
   }
 
-  private HotswapLaunch createLaunch() {
+  /**
+   * Gets the directory holding the options file of the shared container, which is the hotswap
+   * directory.
+   *
+   * @return the options directory
+   */
+  public Path getContainerOptionsDirectory() {
+    return directory;
+  }
+
+  private HotswapLaunch createLaunch(boolean sharedContainer) {
     HotswapAgentOptions agent = options == null ? null : options.getHotswapAgent();
     JrebelOptions jrebel = options == null ? null : options.getJrebel();
     String buildDirectory = project.getBuild() == null ? null : project.getBuild().getDirectory();
@@ -104,14 +131,15 @@ public final class HotswapInjection {
             jrebel == null || jrebel.getPath() == null ? null : jrebel.getPath().toPath())
         .setCommandLineValue(commandLineValue)
         .setBuildDirectory(buildDirectory == null ? null : Path.of(buildDirectory))
-        .setAgentCacheRoot(agentCacheRoot).setJavaExecutable(javaExecutable)
+        .setSharedContainer(sharedContainer).setContainerOptionsDirectory(directory)
+        .setDirectory(directory).setJavaExecutable(javaExecutable)
         .setApplicationClasspath(() -> MavenArtifacts.getApplicationClasspath(project))
         .setResolver(resolver).setLog(log::info).setWarn(log::warn).build();
   }
 
   private void inject(String joined) {
-    boolean spring = hasPlugin(artifactId -> SPRING_PLUGIN.equals(artifactId));
-    boolean jetty = hasPlugin(artifactId -> JETTY_PLUGIN.matcher(artifactId).matches());
+    boolean spring = hasSpringPlugin(project);
+    boolean jetty = hasJettyPlugin(project);
 
     if (spring) {
       RunnerProperties.append(project, userProperties, SPRING_JVM_ARGUMENTS,
@@ -141,7 +169,31 @@ public final class HotswapInjection {
     RunnerProperties.append(project, userProperties, JETTY_JVM_ARGS, joined, " ");
   }
 
-  private boolean hasPlugin(Predicate<String> artifactId) {
+  private static Path resolveDirectory(Path commandLineDirectory, HotswapOptions options) {
+    if (commandLineDirectory != null) {
+      return commandLineDirectory;
+    }
+
+    if (options != null && options.getDirectory() != null) {
+      return options.getDirectory().toPath();
+    }
+
+    return HotswapLaunch.getDefaultDirectory();
+  }
+
+  private static boolean isSharedContainer(MavenProject project, String bbjDeploymentUrl) {
+    return !bbjDeploymentUrl.isBlank() && !hasSpringPlugin(project) && !hasJettyPlugin(project);
+  }
+
+  private static boolean hasSpringPlugin(MavenProject project) {
+    return hasPlugin(project, SPRING_PLUGIN::equals);
+  }
+
+  private static boolean hasJettyPlugin(MavenProject project) {
+    return hasPlugin(project, artifactId -> JETTY_PLUGIN.matcher(artifactId).matches());
+  }
+
+  private static boolean hasPlugin(MavenProject project, Predicate<String> artifactId) {
     for (Plugin plugin : project.getBuildPlugins()) {
       if (artifactId.test(plugin.getArtifactId())) {
         return true;
@@ -165,8 +217,9 @@ public final class HotswapInjection {
     private String commandLineValue;
     private ArtifactResolver resolver;
     private Log log;
-    private Path agentCacheRoot;
+    private Path directory;
     private Path javaExecutable;
+    private String bbjDeploymentUrl = "";
 
     private Builder() {}
 
@@ -226,19 +279,19 @@ public final class HotswapInjection {
     }
 
     /**
-     * Sets the cache root the downloaded agent jars live under, or null for the default under the
-     * user home.
+     * Sets the hotswap directory given on the command line, which wins over the directory of the
+     * hotswap configuration, or null when it was not given.
      *
-     * @param agentCacheRoot the cache root
+     * @param directory the hotswap directory
      * @return this builder
      */
-    Builder setAgentCacheRoot(Path agentCacheRoot) {
-      this.agentCacheRoot = agentCacheRoot;
+    public Builder setDirectory(Path directory) {
+      this.directory = directory;
       return this;
     }
 
     /**
-     * Sets the java executable the agent capability check runs, as named by the Maven toolchain.
+     * Sets the java executable the agent capability check runs.
      *
      * <p>
      * With null the check asks the running virtual machine directly, which is the virtual machine
@@ -254,6 +307,17 @@ public final class HotswapInjection {
     }
 
     /**
+     * Sets the BBj deployment URL of the project, blank when there is none.
+     *
+     * @param bbjDeploymentUrl the deployment URL
+     * @return this builder
+     */
+    public Builder setBbjDeploymentUrl(String bbjDeploymentUrl) {
+      this.bbjDeploymentUrl = bbjDeploymentUrl;
+      return this;
+    }
+
+    /**
      * Sets where progress is reported.
      *
      * @param log the goal log
@@ -262,6 +326,16 @@ public final class HotswapInjection {
     public Builder setLog(Log log) {
       this.log = log;
       return this;
+    }
+
+    /**
+     * Checks whether the project runs in a shared container, deployed to a BBj host without an
+     * application runner.
+     *
+     * @return true for a shared container
+     */
+    public boolean isSharedContainer() {
+      return HotswapInjection.isSharedContainer(project, bbjDeploymentUrl);
     }
 
     /**

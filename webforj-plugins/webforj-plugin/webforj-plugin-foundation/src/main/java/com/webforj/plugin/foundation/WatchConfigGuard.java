@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 /**
@@ -30,15 +31,15 @@ public final class WatchConfigGuard implements AutoCloseable {
   private final Path file;
   private final Consumer<String> notice;
   private final Thread thread;
-  private volatile byte[] content;
-  private volatile FileTime lastModified;
+  private final AtomicReference<byte[]> content;
+  private final AtomicReference<FileTime> lastModified;
   private volatile boolean running = true;
 
   private WatchConfigGuard(Path file, byte[] content, FileTime lastModified,
       Consumer<String> notice) {
     this.file = file;
-    this.content = content;
-    this.lastModified = lastModified;
+    this.content = new AtomicReference<>(content);
+    this.lastModified = new AtomicReference<>(lastModified);
     this.notice = notice;
     this.thread = new Thread(this::watch, "webforj-watch-config-guard");
     this.thread.setDaemon(true);
@@ -106,9 +107,9 @@ public final class WatchConfigGuard implements AutoCloseable {
   private void adopt() {
     try {
       FileTime modified = Files.getLastModifiedTime(file);
-      if (!modified.equals(lastModified)) {
-        content = Files.readAllBytes(file);
-        lastModified = modified;
+      if (!modified.equals(lastModified.get())) {
+        content.set(Files.readAllBytes(file));
+        lastModified.set(modified);
       }
     } catch (IOException e) {
       // A writer still holds the file, the next check adopts the settled content.
@@ -118,8 +119,8 @@ public final class WatchConfigGuard implements AutoCloseable {
   private void restore() {
     try {
       Files.createDirectories(file.getParent());
-      Files.write(file, content);
-      lastModified = Files.getLastModifiedTime(file);
+      Files.write(file, content.get());
+      lastModified.set(Files.getLastModifiedTime(file));
       notice.accept("restored " + file.getFileName() + " after an outside build removed it");
     } catch (IOException e) {
       notice.accept("could not restore " + file.getFileName() + ": " + e.getMessage());

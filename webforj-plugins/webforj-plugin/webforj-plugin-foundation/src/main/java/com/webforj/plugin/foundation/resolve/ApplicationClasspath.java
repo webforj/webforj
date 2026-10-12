@@ -17,6 +17,7 @@ import java.util.Set;
  * @author Hyyan Abo Fakher
  * @since 26.02
  */
+@SuppressWarnings("java:S6206")
 public final class ApplicationClasspath {
 
   /** The group of the webforJ framework artifact. */
@@ -34,6 +35,15 @@ public final class ApplicationClasspath {
    */
   public ApplicationClasspath(List<ResolvedJar> jars) {
     this.jars = List.copyOf(jars);
+  }
+
+  /**
+   * Gets the resolved jars in classpath order.
+   *
+   * @return the resolved jars
+   */
+  public List<ResolvedJar> getJars() {
+    return jars;
   }
 
   /**

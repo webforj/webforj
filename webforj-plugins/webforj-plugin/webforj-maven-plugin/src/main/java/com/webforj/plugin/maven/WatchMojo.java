@@ -7,21 +7,35 @@ import com.webforj.plugin.foundation.WatchConfigGuard;
 import com.webforj.plugin.foundation.WatchPortFile;
 import com.webforj.plugin.foundation.WatchProtocol;
 import com.webforj.plugin.foundation.WatchSocketServer;
+import com.webforj.plugin.foundation.bbj.Development;
+import com.webforj.plugin.foundation.bbj.ServicesProperties;
+import com.webforj.plugin.foundation.bbj.model.BBjCredentials;
+import com.webforj.plugin.foundation.bbj.model.JavaSettings;
 import com.webforj.plugin.foundation.hotswap.HotswapLaunch;
 import com.webforj.plugin.foundation.resolve.ArtifactResolver;
+import com.webforj.plugin.maven.bbj.DeploymentSettings;
+import com.webforj.plugin.maven.bbj.ProjectDeployment;
+import com.webforj.plugin.maven.bbj.model.BBjOptions;
 import com.webforj.plugin.maven.devtools.SpringDevtoolsInjection;
 import com.webforj.plugin.maven.hotswap.HotswapInjection;
 import com.webforj.plugin.maven.hotswap.HotswapOptions;
 import com.webforj.plugin.maven.resolve.MavenArtifacts;
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
+import javax.inject.Inject;
 import org.apache.maven.execution.MavenSession;
+import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
@@ -29,6 +43,7 @@ import org.apache.maven.toolchain.Toolchain;
 import org.apache.maven.toolchain.ToolchainManager;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.resolution.ArtifactResolutionException;
 
 /**
  * Goal that runs the development bundle watch in the stable Maven process and forwards its output
@@ -48,6 +63,12 @@ import org.eclipse.aether.RepositorySystemSession;
  * The watcher's log lines and its rebuild events both travel over that socket, so the bundler
  * output appears in the application log and a rebuild reaches the browser reload, identically under
  * every runtime.
+ * </p>
+ *
+ * <p>
+ * With a BBj deployment URL configured, the goal sets up BBjShip on the local BBj installation for
+ * development runs, starts a development run of the application on BBjShip and stops it when the
+ * Maven process exits.
  * </p>
  *
  * @author Hyyan Abo Fakher
@@ -78,21 +99,75 @@ public class WatchMojo extends AbstractBundlerMojo {
   @Parameter(property = HotswapLaunch.SELECTION_PROPERTY)
   protected String hotswapSelection;
 
+  /**
+   * Command line hotswap directory.
+   *
+   * <p>
+   * When given, this wins over the directory of the hotswap configuration for the run.
+   * </p>
+   */
+  @Parameter(property = HotswapLaunch.DIRECTORY_PROPERTY)
+  protected File hotswapDirectory;
+
   /** The current Maven session, the source of the command line properties. */
   @Parameter(defaultValue = "${session}", readonly = true, required = true)
   protected MavenSession session;
 
-  /** The toolchain manager that names the virtual machine the application run goal forks. */
-  @Component
-  protected ToolchainManager toolchainManager;
+  /** The execution of this goal, matched against the goals of the build. */
+  @Parameter(defaultValue = "${mojoExecution}", readonly = true, required = true)
+  protected MojoExecution mojoExecution;
 
-  /** The repository system the devtools dependency tree is resolved through. */
-  @Component
-  protected RepositorySystem repositorySystem;
+  /** The descriptor of this plugin, the source of the webforJ version BBjShip must match. */
+  @Parameter(defaultValue = "${plugin}", readonly = true, required = true)
+  protected PluginDescriptor pluginDescriptor;
+
+  @Parameter
+  BBjOptions bbj = new BBjOptions();
+
+  @Parameter(property = "webforj.bbj.deployment.url")
+  String deploymentUrl;
+
+  @Parameter(property = "webforj.bbj.admin.username")
+  String username;
+
+  @Parameter(property = "webforj.bbj.admin.password")
+  String password;
+
+  @Parameter(property = "webforj.bbj.admin.token")
+  String token;
+
+  @Parameter(property = "webforj.bbj.publishName")
+  String publishName;
+
+  @Parameter(property = "webforj.bbj.home")
+  File home;
+
+  @Parameter(property = "webforj.bbj.properties")
+  File properties;
 
   /** The repository session of the build. */
   @Parameter(defaultValue = "${repositorySystemSession}", readonly = true, required = true)
   protected RepositorySystemSession repositorySession;
+
+  private final ToolchainManager toolchainManager;
+  private final RepositorySystem repositorySystem;
+  private List<String> hotswapArguments = List.of();
+  private boolean sharedContainer;
+  private Path containerOptionsDirectory;
+
+  /**
+   * Creates the goal with the build components it works with.
+   *
+   * @param toolchainManager the toolchain manager that names the virtual machine the application
+   *        run goal forks
+   * @param repositorySystem the repository system the devtools dependency tree and the BBjShip
+   *        package are resolved through
+   */
+  @Inject
+  public WatchMojo(ToolchainManager toolchainManager, RepositorySystem repositorySystem) {
+    this.toolchainManager = toolchainManager;
+    this.repositorySystem = repositorySystem;
+  }
 
   @Override
   public void execute() throws MojoExecutionException {
@@ -100,9 +175,16 @@ public class WatchMojo extends AbstractBundlerMojo {
     // before the watch decides whether there is anything to bundle.
     attachHotswap();
     deliverDevtools();
+    Optional<DevelopmentRun> run = startDevelopmentRun();
+    AtomicReference<Runnable> watchStop = new AtomicReference<>(() -> {
+    });
+    installShutdownHook(run, watchStop);
 
     if (!sourceRoot.isDirectory()) {
       getLog().info("no bundle source root at " + sourceRoot + ", skipping the watch");
+      if (run.isPresent()) {
+        handleLastGoal(run);
+      }
 
       return;
     }
@@ -138,7 +220,14 @@ public class WatchMojo extends AbstractBundlerMojo {
         socket.setOnConnect(watchSession::rescan);
       }
 
-      installShutdownHook(watchSession, socket, portFile, configGuard);
+      watchStop.set(() -> {
+        if (watchSession != null) {
+          watchSession.close();
+        }
+
+        closeGuard(configGuard);
+        closeSocket(socket, portFile);
+      });
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       closeGuard(configGuard);
@@ -149,14 +238,131 @@ public class WatchMojo extends AbstractBundlerMojo {
       closeSocket(socket, portFile);
       throw new MojoExecutionException("the watch failed to start: " + e.getMessage(), e);
     }
+
+    handleLastGoal(run);
+  }
+
+  Optional<DevelopmentRun> startDevelopmentRun() throws MojoExecutionException {
+    DeploymentSettings settings = createDeploymentSettings();
+    if (settings.getUrl().isBlank()) {
+      return Optional.empty();
+    }
+
+    settings.setDefaultPublishName(project.getBuild().getFinalName())
+        .setVersion(pluginDescriptor.getVersion());
+    String name = settings.getPublishName();
+    BBjCredentials credentials = settings.getCredentials();
+    if (credentials.isFactoryAccount()) {
+      getLog().warn(BBjCredentials.FACTORY_ACCOUNT_WARNING);
+    }
+
+    Path archive = ProjectDeployment.resolveArchive(project, name);
+    try {
+      Path bundle = MavenArtifacts.resolveBBjShipPackage(repositorySystem, repositorySession,
+          project.getRemoteProjectRepositories(), settings.getVersion());
+      File configured = bbj.getDevelopment().getClassFolder();
+      Path classFolder = (configured != null ? configured.toPath()
+          : Path.of(project.getBuild().getOutputDirectory())).toAbsolutePath().normalize();
+      Development.Builder development = Development.create(bundle, settings.getVersion())
+          .setDeploymentUrl(URI.create(settings.getUrl())).setPublishName(name)
+          .setCredentials(credentials).setArchive(archive).setClassFolders(List.of(classFolder))
+          .setApplicationClasspath(MavenArtifacts.getApplicationClasspath(project))
+          .setRuntimeClasspath(MavenArtifacts.getRuntimeClasspath(project))
+          .setResolver(getArtifactResolver()).setLog(getLog()::info).setWarn(getLog()::warn)
+          .setDebug(getLog()::debug);
+      File effectiveHome = settings.getHome();
+      if (effectiveHome != null) {
+        development.setHome(effectiveHome.toPath());
+      }
+
+      if (sharedContainer && !hotswapArguments.isEmpty()) {
+        File effectiveProperties = settings.getProperties();
+        development.setJavaSettings(
+            new JavaSettings(effectiveProperties == null ? null : effectiveProperties.toPath(),
+                containerOptionsDirectory));
+      }
+
+      Development built = development.build();
+      URI address = built.start();
+
+      return Optional.of(new DevelopmentRun(built, name, address));
+    } catch (ArtifactResolutionException | IOException | IllegalArgumentException failure) {
+      throw new MojoExecutionException(Development.FAILURE, failure);
+    }
+  }
+
+  void stopDevelopmentRun(DevelopmentRun run) {
+    run.development.stop();
+  }
+
+  private DeploymentSettings createDeploymentSettings() {
+    return DeploymentSettings.create(bbj).setUrl(deploymentUrl).setPublishName(publishName)
+        .setUsername(username).setPassword(password).setToken(token).setHome(home)
+        .setProperties(properties);
+  }
+
+  private void handleLastGoal(Optional<DevelopmentRun> run) {
+    run.ifPresent(started -> getLog().info(
+        "webforJ watch: " + started.getPublishName() + " is running at " + started.getAddress()));
+    if (!isLastGoal()) {
+      return;
+    }
+
+    getLog().info(run.isPresent() ? "webforJ watch: press Ctrl+C to stop the app and the watch"
+        : "the watch is the last goal of the build and keeps it running, "
+            + "stop the build to stop the watch");
+    try {
+      new CountDownLatch(1).await();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+    }
+  }
+
+  private boolean isLastGoal() {
+    if (session == null || mojoExecution == null) {
+      return false;
+    }
+
+    List<String> goals = session.getGoals();
+    if (goals == null || goals.isEmpty()) {
+      String defaultGoal = session.getTopLevelProject().getDefaultGoal();
+      goals = defaultGoal == null || defaultGoal.isBlank() ? List.of()
+          : List.of(defaultGoal.trim().split("\\s+"));
+    }
+
+    if (goals.isEmpty()) {
+      return false;
+    }
+
+    String last = goals.get(goals.size() - 1);
+    int executionId = last.indexOf('@');
+    String[] parts = (executionId < 0 ? last : last.substring(0, executionId)).split(":");
+    if (parts.length < 2 || !mojoExecution.getGoal().equals(parts[parts.length - 1])) {
+      return false;
+    }
+
+    PluginDescriptor plugin = mojoExecution.getMojoDescriptor().getPluginDescriptor();
+    if (parts.length == 2) {
+      return plugin.getGoalPrefix().equals(parts[0]);
+    }
+
+    return plugin.getGroupId().equals(parts[0]) && plugin.getArtifactId().equals(parts[1]);
   }
 
   private void attachHotswap() throws MojoExecutionException {
     Properties userProperties = session == null ? new Properties() : session.getUserProperties();
-    HotswapInjection.create().setProject(project).setUserProperties(userProperties)
-        .setOptions(hotswap).setCommandLineValue(hotswapSelection)
-        .setResolver(getArtifactResolver()).setJavaExecutable(toolchainJavaExecutable())
-        .setLog(getLog()).build().apply();
+    HotswapInjection.Builder builder = HotswapInjection.create().setProject(project)
+        .setUserProperties(userProperties).setOptions(hotswap).setCommandLineValue(hotswapSelection)
+        .setDirectory(hotswapDirectory == null ? null : hotswapDirectory.toPath())
+        .setResolver(getArtifactResolver()).setBbjDeploymentUrl(createDeploymentSettings().getUrl())
+        .setLog(getLog());
+    sharedContainer = builder.isSharedContainer();
+    boolean selected = hotswap != null || hotswapSelection != null && !hotswapSelection.isBlank();
+    HotswapInjection injection = builder.setJavaExecutable(
+        sharedContainer && selected ? resolveServicesJavaExecutable() : toolchainJavaExecutable())
+        .build();
+    hotswapArguments = injection.apply();
+    containerOptionsDirectory = injection.getContainerOptionsDirectory();
   }
 
   private void deliverDevtools() throws MojoExecutionException {
@@ -184,6 +390,20 @@ public class WatchMojo extends AbstractBundlerMojo {
 
     String java = toolchain.findTool("java");
     return java == null || java.isBlank() ? null : Path.of(java);
+  }
+
+  private Path resolveServicesJavaExecutable() throws MojoExecutionException {
+    DeploymentSettings settings = createDeploymentSettings();
+    File configured = settings.getProperties();
+    File effectiveHome = settings.getHome();
+    try {
+      return ServicesProperties
+          .findJavaExecutable(effectiveHome == null ? null : effectiveHome.toPath(),
+              configured == null ? null : configured.toPath())
+          .orElse(null);
+    } catch (IOException failure) {
+      throw new MojoExecutionException(failure.getMessage(), failure);
+    }
   }
 
   private WatchConfigGuard startConfigGuard(WatchSocketServer socket) {
@@ -235,15 +455,38 @@ public class WatchMojo extends AbstractBundlerMojo {
     }
   }
 
-  private void installShutdownHook(WatchSession session, WatchSocketServer socket, Path portFile,
-      WatchConfigGuard configGuard) {
+  private void installShutdownHook(Optional<DevelopmentRun> run,
+      AtomicReference<Runnable> watchStop) {
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-      if (session != null) {
-        session.close();
-      }
-
-      closeGuard(configGuard);
-      closeSocket(socket, portFile);
+      run.ifPresent(this::stopDevelopmentRun);
+      watchStop.get().run();
     }, "webforj-watch-shutdown"));
+  }
+
+  /**
+   * A development run of the application on BBjShip.
+   *
+   * @author Hyyan Abo Fakher
+   * @since 26.03
+   */
+  static final class DevelopmentRun {
+
+    private final Development development;
+    private final String publishName;
+    private final URI address;
+
+    DevelopmentRun(Development development, String publishName, URI address) {
+      this.development = development;
+      this.publishName = publishName;
+      this.address = address;
+    }
+
+    String getPublishName() {
+      return publishName;
+    }
+
+    URI getAddress() {
+      return address;
+    }
   }
 }

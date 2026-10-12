@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A small line oriented TCP server the watch uses to forward its output to the application.
@@ -41,8 +42,8 @@ public final class WatchSocketServer implements AutoCloseable {
   private final Thread acceptThread;
   private final List<String> pending = new ArrayList<>();
   private boolean replayed = false;
-  private volatile Runnable onConnect = () -> {
-  };
+  private final AtomicReference<Runnable> onConnect = new AtomicReference<>(() -> {
+  });
 
   /**
    * Opens the server on a free loopback port chosen by the operating system.
@@ -101,7 +102,7 @@ public final class WatchSocketServer implements AutoCloseable {
     // A connection means an application started or restarted, the one moment its compiled classes
     // can carry a new set of bundle entries. The callback runs off the write lock so a slow rescan
     // never holds up output to the other connections.
-    onConnect.run();
+    onConnect.get().run();
   }
 
   /**
@@ -111,8 +112,8 @@ public final class WatchSocketServer implements AutoCloseable {
    * @param onConnect the callback, or {@code null} to clear it
    */
   public void setOnConnect(Runnable onConnect) {
-    this.onConnect = onConnect != null ? onConnect : () -> {
-    };
+    this.onConnect.set(onConnect != null ? onConnect : () -> {
+    });
   }
 
   /**

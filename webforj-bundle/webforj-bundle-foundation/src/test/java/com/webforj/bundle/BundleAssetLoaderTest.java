@@ -2,12 +2,21 @@ package com.webforj.bundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
 
+import com.webforj.Page;
+import com.webforj.environment.ObjectTable;
+import com.webforj.utilities.Assets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 class BundleAssetLoaderTest {
 
@@ -104,6 +113,52 @@ class BundleAssetLoaderTest {
         indexWithDebug(WithCounter.class, List.of("panel-D3.js"), List.of("panel-D3.js")));
 
     assertTrue(loader.resolveUrlsFor(WithCounter.class, false).isEmpty());
+  }
+
+  @Test
+  void shouldMarkAnInlinedStylesheetWithItsBundlePath() {
+    Page page = mock(Page.class);
+    Map<String, List<String>> bindings = new LinkedHashMap<>();
+    bindings.put(BundleIndex.EAGER_KEY, List.of("bundle.css"));
+    BundleAssetLoader loader = new BundleAssetLoader(new BundleIndex(bindings));
+
+    try (MockedStatic<Page> pages = mockStatic(Page.class);
+        MockedStatic<ObjectTable> table = mockStatic(ObjectTable.class);
+        MockedStatic<Assets> assets = mockStatic(Assets.class)) {
+      assets.when(Assets::isPackagedOnBBj).thenReturn(false);
+      pages.when(() -> Page.ifPresent(any())).thenAnswer(invocation -> {
+        invocation.<Consumer<Page>>getArgument(0).accept(page);
+        return null;
+      });
+
+      loader.loadEager();
+    }
+
+    verify(page).addInlineStyleSheet("context://static/frontend/bundle.css", false,
+        Map.of("data-webforj-bundle", "bundle.css"));
+  }
+
+  @Test
+  void shouldLinkTheEagerBundleWhenAssetsArePackagedOnBbj() {
+    Page page = mock(Page.class);
+    Map<String, List<String>> bindings = new LinkedHashMap<>();
+    bindings.put(BundleIndex.EAGER_KEY, List.of("bundle.css", "bundle.js"));
+    BundleAssetLoader loader = new BundleAssetLoader(new BundleIndex(bindings));
+
+    try (MockedStatic<Page> pages = mockStatic(Page.class);
+        MockedStatic<ObjectTable> table = mockStatic(ObjectTable.class);
+        MockedStatic<Assets> assets = mockStatic(Assets.class)) {
+      assets.when(Assets::isPackagedOnBBj).thenReturn(true);
+      pages.when(() -> Page.ifPresent(any())).thenAnswer(invocation -> {
+        invocation.<Consumer<Page>>getArgument(0).accept(page);
+        return null;
+      });
+
+      loader.loadEager();
+    }
+
+    verify(page).addStyleSheet("ws://frontend/bundle.css", false, Map.of());
+    verify(page).addJavaScript("ws://frontend/bundle.js", false, Map.of("type", "module"));
   }
 
   private static BundleIndex index(Class<?> boundClass, String... files) {

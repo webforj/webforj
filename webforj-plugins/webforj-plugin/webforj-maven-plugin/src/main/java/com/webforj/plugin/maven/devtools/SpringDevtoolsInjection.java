@@ -1,6 +1,7 @@
 package com.webforj.plugin.maven.devtools;
 
-import com.webforj.plugin.foundation.devtools.SpringDevtoolsDelivery;
+import com.webforj.plugin.foundation.devtools.DevtoolsDelivery;
+import com.webforj.plugin.foundation.resolve.ApplicationClasspath.ResolvedJar;
 import com.webforj.plugin.foundation.resolve.ArtifactResolver;
 import com.webforj.plugin.maven.RunnerProperties;
 import com.webforj.plugin.maven.resolve.MavenArtifacts;
@@ -66,9 +67,10 @@ public final class SpringDevtoolsInjection {
 
     List<Path> additions;
     try {
-      additions = SpringDevtoolsDelivery.create()
+      additions = DevtoolsDelivery.create().setArtifactId("webforj-spring-devtools")
           .setApplicationClasspath(MavenArtifacts.getApplicationClasspath(project))
-          .setResolver(resolver).setLog(log::info).setDebug(log::debug).build().getJars();
+          .setResolver(resolver).setLog(log::info).setDebug(log::debug).build().getJars().stream()
+          .map(ResolvedJar::file).toList();
     } catch (IOException e) {
       throw new MojoExecutionException(e.getMessage(), e);
     }
