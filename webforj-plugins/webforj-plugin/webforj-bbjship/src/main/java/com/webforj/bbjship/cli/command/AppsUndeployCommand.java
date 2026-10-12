@@ -8,6 +8,8 @@ import com.webforj.bbjship.cli.option.CredentialOptions;
 import com.webforj.bbjship.model.PublishedApplication;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalInt;
 import java.util.concurrent.Callable;
@@ -59,11 +61,12 @@ public final class AppsUndeployCommand implements Callable<Integer> {
     String root = plugin.getDeployments().toString();
     PrintWriter out = spec.commandLine().getOut();
     BBjAdminBase admin = session.openAdmin(credentials, OptionalInt.empty(), OptionalInt.empty());
+    List<Path> kept = new ArrayList<>();
     try {
       boolean found = false;
       for (PublishedApplication application : DeploymentInstaller.findApplications(root, admin)) {
         if (target.all || application.getName().equals(target.name)) {
-          DeploymentInstaller.undeploy(application.getName(), root, admin);
+          DeploymentInstaller.undeploy(application.getName(), root, admin).ifPresent(kept::add);
           out.println(spec.commandLine().getColorScheme()
               .apply("Undeployed", List.of(Style.fg_green)).concat(" " + application.getName()));
           found = true;
@@ -76,6 +79,8 @@ public final class AppsUndeployCommand implements Callable<Integer> {
     } finally {
       admin.release();
     }
+
+    kept.forEach(folder -> out.println("Not removed: " + folder));
 
     return 0;
   }

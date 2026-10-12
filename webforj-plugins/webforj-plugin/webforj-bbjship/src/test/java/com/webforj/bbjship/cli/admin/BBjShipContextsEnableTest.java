@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
 import java.util.OptionalInt;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -230,6 +231,36 @@ class BBjShipContextsEnableTest extends EmptyWebAppServer {
   }
 
   @Test
+  void shouldWaitForTheBbjShipContextWhosePortRefusesConnectionsWhileItStarts() throws Exception {
+    BBjAdminContextInfo created = mock(BBjAdminContextInfo.class);
+    when(server.createContext("webforj-bbjship")).thenReturn(created);
+    when(created.getString(BBjAdminContextInfo.JSON_DATA))
+        .thenReturn(CREATED.formatted("webforj-bbjship", ""));
+    when(server.getContextInfo("webforj-bbjship")).thenReturn(info);
+    when(info.getString(BBjAdminContextInfo.JSON_DATA))
+        .thenReturn(CREATED.formatted("webforj-bbjship", ""));
+    contexts = new BBjShipContexts(admin, plugin, Duration.ofSeconds(10));
+    int httpPort = WebServer.findClosedPort();
+    OptionalInt sslPort = OptionalInt.empty();
+    CompletableFuture<WebServer> web = CompletableFuture.supplyAsync(() -> {
+      try {
+        Thread.sleep(Duration.ofMillis(600));
+        return WebServer.startServingBBjShipOn(httpPort);
+      } catch (IOException | InterruptedException failure) {
+        throw new IllegalStateException(failure);
+      }
+    });
+
+    try {
+      assertDoesNotThrow(() -> contexts.enable(httpPort, sslPort, false));
+    } finally {
+      web.join().close();
+    }
+
+    verify(server, never()).removeContext(anyString());
+  }
+
+  @Test
   void shouldRestoreTheBbjShipContextWhenTheBbjShipDoesNotAnswerOnThePort() throws Exception {
     Path documentRoot = home.resolve("plugins/.webforj-bbjship-deployments/htdocs");
     String running = RUNNING.formatted("webforj-bbjship", documentRoot);
@@ -276,6 +307,7 @@ class BBjShipContextsEnableTest extends EmptyWebAppServer {
     when(server.getContextInfo("webforj-bbjship")).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA))
         .thenReturn(CREATED.formatted("webforj-bbjship", ""));
+    contexts = new BBjShipContexts(admin, plugin, Duration.ofMillis(300));
     int port = WebServer.findClosedPort();
     int httpPort = port;
     OptionalInt sslPort = OptionalInt.empty();
@@ -346,6 +378,7 @@ class BBjShipContextsEnableTest extends EmptyWebAppServer {
     when(server.getContextInfo("webforj-bbjship")).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA))
         .thenReturn(CREATED.formatted("webforj-bbjship", ""));
+    contexts = new BBjShipContexts(admin, plugin, Duration.ofMillis(300));
     WebServer web = WebServer.startServingBBjShip();
     int port = WebServer.findClosedPort();
     int httpPort = web.getPort();

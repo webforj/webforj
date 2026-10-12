@@ -104,6 +104,25 @@ class AppsUndeployCommandTest {
   }
 
   @Test
+  void shouldReportTheFolderWhoseFilesCannotBeRemoved() throws Exception {
+    Path held = deployments.resolve("hello-app/0b8f4f0e-3f5c-4a8e-9a49-5d1a6f3c2b10/bbj");
+    assertTrue(held.toFile().setWritable(false));
+
+    int status = cli.run("apps", "undeploy", "--all");
+
+    assertTrue(held.toFile().setWritable(true));
+    assertEquals(0, status);
+    assertEquals(FACTORY_ACCOUNT_WARNING + "\n" + """
+        Undeployed hello-app
+        Undeployed shop
+        Not removed: %s
+        """.formatted(deployments.resolve("hello-app")), output.toString(StandardCharsets.UTF_8));
+    verify(configuration).removeApplication("hello-app");
+    assertTrue(Files.isRegularFile(held.resolve("webforj.bbj")));
+    assertFalse(Files.exists(deployments.resolve("shop")));
+  }
+
+  @Test
   void shouldReportAnApplicationTheBbjShipDidNotDeploy() {
     int status = cli.run("apps", "undeploy", "inventory");
 

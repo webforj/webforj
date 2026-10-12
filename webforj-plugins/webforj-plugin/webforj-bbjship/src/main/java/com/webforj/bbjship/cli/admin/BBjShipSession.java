@@ -7,7 +7,9 @@ import com.webforj.plugin.foundation.bbj.model.BBjCredentials;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.time.Duration;
 import java.util.Map;
+import java.util.Objects;
 import java.util.OptionalInt;
 import picocli.CommandLine.ParameterException;
 
@@ -25,6 +27,7 @@ public final class BBjShipSession {
   private final Map<String, String> environment;
   private final AdminConnector connector;
   private final BBjShipServices services;
+  private Duration answerDeadline = BBjShipContexts.ANSWER_DEADLINE;
   private boolean assetsStarted;
   private BBjCredentials credentials;
 
@@ -74,6 +77,29 @@ public final class BBjShipSession {
   }
 
   /**
+   * Creates the BBjShip contexts of an administration session, waiting for the BBjServices web
+   * server as long as this session allows.
+   *
+   * @param admin the administration session
+   *
+   * @return the contexts
+   */
+  public BBjShipContexts createContexts(BBjAdminBase admin) {
+    return new BBjShipContexts(admin, plugin, answerDeadline);
+  }
+
+  /**
+   * Sets the longest wait for the BBjServices web server to answer on a port of a context.
+   *
+   * @param answerDeadline the longest wait
+   *
+   * @throws NullPointerException if answerDeadline is null
+   */
+  public void setAnswerDeadline(Duration answerDeadline) {
+    this.answerDeadline = Objects.requireNonNull(answerDeadline);
+  }
+
+  /**
    * Indicates whether the last opened administration session created and started the assets
    * context.
    *
@@ -116,7 +142,7 @@ public final class BBjShipSession {
     BBjCredentials resolved = credentials.resolveCredentials(input, environment);
     BBjAdminBase admin = connector.open(resolved.getUsername(), resolved.getPassword());
     try {
-      BBjShipContexts contexts = new BBjShipContexts(admin, plugin);
+      BBjShipContexts contexts = createContexts(admin);
       new BBjShipClasspaths(admin, plugin).addMissing();
       assetsStarted = contexts.addAssets(httpPort, sslPort);
       Files.createDirectories(plugin.getDeployments());

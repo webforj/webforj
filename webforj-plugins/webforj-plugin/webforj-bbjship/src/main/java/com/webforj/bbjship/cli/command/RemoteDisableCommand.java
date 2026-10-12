@@ -1,7 +1,6 @@
 package com.webforj.bbjship.cli.command;
 
 import com.basis.api.admin.BBjAdminBase;
-import com.webforj.bbjship.cli.admin.BBjShipContexts;
 import com.webforj.bbjship.cli.admin.BBjShipSession;
 import com.webforj.bbjship.cli.option.CredentialOptions;
 import java.util.List;
@@ -49,7 +48,7 @@ public final class RemoteDisableCommand implements Callable<Integer> {
     BBjAdminBase admin = session.openAdmin(credentials, OptionalInt.empty(), OptionalInt.empty());
     boolean disabled;
     try {
-      disabled = new BBjShipContexts(admin, session.getPlugin()).disable();
+      disabled = session.createContexts(admin).disable();
     } finally {
       admin.release();
     }

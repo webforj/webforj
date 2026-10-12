@@ -1,7 +1,6 @@
 package com.webforj.bbjship.cli.command;
 
 import com.basis.api.admin.BBjAdminBase;
-import com.webforj.bbjship.cli.admin.BBjShipContexts;
 import com.webforj.bbjship.cli.admin.BBjShipSession;
 import com.webforj.bbjship.cli.option.CredentialOptions;
 import java.net.URI;
@@ -52,7 +51,7 @@ public final class RemoteStatusCommand implements Callable<Integer> {
     BBjAdminBase admin = session.openAdmin(credentials, OptionalInt.empty(), OptionalInt.empty());
     List<URI> addresses;
     try {
-      addresses = new BBjShipContexts(admin, session.getPlugin()).getAddresses();
+      addresses = session.createContexts(admin).getAddresses();
     } finally {
       admin.release();
     }

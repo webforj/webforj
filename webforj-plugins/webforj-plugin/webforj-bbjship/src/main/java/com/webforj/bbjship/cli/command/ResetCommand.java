@@ -79,7 +79,7 @@ public final class ResetCommand implements Callable<Integer> {
         : plugin.getHome().resolve("cfg").resolve("BBj.properties");
     PrintWriter out = spec.commandLine().getOut();
     BBjAdminBase admin = session.openAdmin(credentials, OptionalInt.empty(), OptionalInt.empty());
-    BBjShipContexts contexts = new BBjShipContexts(admin, plugin);
+    BBjShipContexts contexts = session.createContexts(admin);
     OptionalLong processId = OptionalLong.empty();
     boolean restored = false;
     try {
@@ -150,7 +150,14 @@ public final class ResetCommand implements Callable<Integer> {
       showStep("Restarted", "BBjServices");
     }
 
-    FileTree.removeDirectory(plugin.getRuntime());
+    try {
+      FileTree.removeDirectory(plugin.getRuntime());
+    } catch (IOException held) {
+      // Windows refuses to delete a jar the BBjServices virtual machine has open. Everything is
+      // unregistered by now, the folder is reported and the reset ends as done
+      out.println("Not removed: " + plugin.getRuntime());
+    }
+
     showStep("Reset", "BBjShip");
 
     return 0;

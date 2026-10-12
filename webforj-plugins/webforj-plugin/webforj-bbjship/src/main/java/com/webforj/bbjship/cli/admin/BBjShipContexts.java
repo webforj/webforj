@@ -113,7 +113,7 @@ public final class BBjShipContexts {
   private static final String SERVLETS = "BBx Servlets";
   private static final String PARAMETERS = "Parameters";
   private static final Duration ANSWER_TIMEOUT = Duration.ofSeconds(30);
-  private static final Duration ANSWER_DEADLINE = Duration.ofSeconds(15);
+  static final Duration ANSWER_DEADLINE = Duration.ofSeconds(15);
   private static final Duration ANSWER_INTERVAL = Duration.ofMillis(250);
   private static final Gson GSON =
       new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
@@ -562,14 +562,24 @@ public final class BBjShipContexts {
       builder.sslContext(createLoopbackSslContext());
     }
 
+    // The web server of a BBjServices that just started, or a connector of a context that was
+    // just created, refuses connections for a moment, so a refused request is retried like an
+    // unexpected answer until the deadline
     try (HttpClient client = builder.build()) {
-      HttpResponse<Void> answer = client.send(request, BodyHandlers.discarding());
-      while (!expected.test(answer) && System.nanoTime() - deadline < 0) {
+      Optional<HttpResponse<Void>> answer = sendVersionRequest(client, request);
+      while (answer.filter(expected).isEmpty() && System.nanoTime() - deadline < 0) {
         Thread.sleep(ANSWER_INTERVAL);
-        answer = client.send(request, BodyHandlers.discarding());
+        answer = sendVersionRequest(client, request);
       }
 
-      return Optional.of(answer).filter(expected);
+      return answer.filter(expected);
+    }
+  }
+
+  private static Optional<HttpResponse<Void>> sendVersionRequest(HttpClient client,
+      HttpRequest request) throws InterruptedException {
+    try {
+      return Optional.of(client.send(request, BodyHandlers.discarding()));
     } catch (IOException unanswered) {
       return Optional.empty();
     }

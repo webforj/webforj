@@ -15,6 +15,7 @@ import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.List;
 import java.util.OptionalInt;
 import org.junit.jupiter.api.Test;
@@ -199,6 +200,7 @@ class BBjShipContextsAssetsTest extends EmptyWebAppServer {
     when(server.getContextInfo("webforj-bbjship-assets")).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA))
         .thenReturn(CREATED.formatted("webforj-bbjship-assets", ""));
+    contexts = new BBjShipContexts(admin, plugin, Duration.ofMillis(300));
     WebServer web = WebServer.startServingBBjShip();
     int port = WebServer.findClosedPort();
     OptionalInt httpPort = OptionalInt.of(web.getPort());

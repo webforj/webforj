@@ -87,6 +87,12 @@ public final class WebServer implements AutoCloseable {
     server.stop(0);
   }
 
+  static WebServer startServingBBjShipOn(int port) throws IOException {
+    return startServing(
+        HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), port), 0),
+        CHALLENGE, 0);
+  }
+
   static WebServer startServingBBjShipWith(String challenge, int notFoundAnswers)
       throws IOException {
     return startServing(

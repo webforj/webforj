@@ -109,23 +109,25 @@ public final class DeploymentInstaller {
   }
 
   /**
-   * Undeploys an application and removes the files owned by BBjShip.
+   * Undeploys an application and removes the files owned by BBjShip. The application is always
+   * unregistered, a folder whose files cannot be removed stays.
    *
    * @param publishName the published application name
    * @param root the deployment root path
    * @param admin the authenticated administration API
    *
+   * @return the folder of the application that stayed, empty when it is removed
    * @throws DeploymentException if the name is invalid or BBjShip published no application of that
    *         name
-   * @throws IOException if the removal or cleanup fails
+   * @throws IOException if the deployment root cannot be locked
    */
   @SuppressWarnings("try")
-  public static synchronized void undeploy(String publishName, String root, BBjAdminBase admin)
-      throws IOException {
+  public static synchronized Optional<Path> undeploy(String publishName, String root,
+      BBjAdminBase admin) throws IOException {
     applyNameValidation(publishName);
     Path deployments = Path.of(root).toAbsolutePath().normalize();
     try (FileChannel lock = openLock(deployments)) {
-      applyRemoval(publishName, deployments, admin);
+      return applyRemoval(publishName, deployments, admin);
     }
   }
 
@@ -331,8 +333,8 @@ public final class DeploymentInstaller {
     return previousDirectory == null ? DeploymentResult.CREATED : DeploymentResult.REPLACED;
   }
 
-  private static void applyRemoval(String publishName, Path deployments, BBjAdminBase admin)
-      throws IOException {
+  private static Optional<Path> applyRemoval(String publishName, Path deployments,
+      BBjAdminBase admin) throws IOException {
     String classpathName = CLASSPATH_PREFIX + publishName;
     Optional<Path> directory;
     try {
@@ -358,12 +360,22 @@ public final class DeploymentInstaller {
     }
 
     if (directory.isEmpty()) {
-      return;
+      return Optional.empty();
     }
 
-    FileTree.removeDirectory(directory.get());
-    Files.deleteIfExists(directory.get().getParent().resolve(CURRENT));
-    removeEmptyFolder(directory.get().getParent());
+    Path folder = directory.get().getParent();
+    try {
+      FileTree.removeDirectory(directory.get());
+      Files.deleteIfExists(folder.resolve(CURRENT));
+      removeEmptyFolder(folder);
+    } catch (IOException held) {
+      // Windows refuses to delete a jar the BBjServices virtual machine has open, and BBjServices
+      // keeps the jars of a removed classpath open until it restarts
+      LOGGER.log(Level.DEBUG, "Not removed: " + folder, held);
+      return Optional.of(folder);
+    }
+
+    return Optional.empty();
   }
 
   private static FileChannel openLock(Path deployments) throws IOException {

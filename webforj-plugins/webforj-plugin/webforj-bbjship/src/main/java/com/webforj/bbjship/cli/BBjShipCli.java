@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
 import picocli.CommandLine;
@@ -52,6 +53,10 @@ public final class BBjShipCli {
   private BBjShipCli(Builder builder) {
     this.session = new BBjShipSession(new BBjShipPlugin(builder.home), builder.input,
         builder.environment, builder.connector, builder.services);
+    if (builder.answerDeadline != null) {
+      this.session.setAnswerDeadline(builder.answerDeadline);
+    }
+
     this.output = builder.output;
     this.error = builder.error;
     this.ansi = builder.ansi;
@@ -161,6 +166,7 @@ public final class BBjShipCli {
     private Ansi ansi = Ansi.AUTO;
     private AdminConnector connector = BBjAdminFactory::getBBjAdmin;
     private BBjShipServices services;
+    private Duration answerDeadline;
 
     private Builder(Path home) {
       this.home = Objects.requireNonNull(home);
@@ -248,6 +254,18 @@ public final class BBjShipCli {
      */
     public Builder setServices(BBjShipServices services) {
       this.services = Objects.requireNonNull(services);
+      return this;
+    }
+
+    /**
+     * Sets the longest wait for the BBjServices web server to answer on a port of a context.
+     *
+     * @param answerDeadline the longest wait
+     *
+     * @return this builder
+     */
+    public Builder setAnswerDeadline(Duration answerDeadline) {
+      this.answerDeadline = Objects.requireNonNull(answerDeadline);
       return this;
     }
 

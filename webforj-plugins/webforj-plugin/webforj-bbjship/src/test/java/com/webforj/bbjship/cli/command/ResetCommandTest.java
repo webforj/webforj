@@ -292,6 +292,42 @@ class ResetCommandTest {
   }
 
   @Test
+  void shouldReportTheRuntimeFolderWhoseFilesCannotBeRemovedAndEndAsDone() throws Exception {
+    Path held = deployments.resolve("inventory/0b8f4f0e-3f5c-4a8e-9a49-5d1a6f3c2b10/bbj");
+    assertTrue(held.toFile().setWritable(false));
+    BBjShipCli cli = createCli(home, admin, "y\n");
+
+    int status = cli.run("reset");
+
+    assertTrue(held.toFile().setWritable(true));
+    assertEquals(0, status);
+    assertEquals(FACTORY_ACCOUNT_WARNING + "\n" + """
+        This resets BBjShip on this machine:
+          undeploy inventory
+          undeploy proof-app
+          disable development runs
+          remove the BBjShip HTTP endpoint and assets
+        Continue? [y/N]
+        Undeployed inventory
+        Undeployed proof-app
+        Disabled development runs
+        Disabled the BBjShip HTTP endpoint
+        Removed the BBjShip assets
+        Not removed: %s
+        Reset BBjShip
+        """.formatted(home.resolve("plugins/.webforj-bbjship-deployments")),
+        output.toString(StandardCharsets.UTF_8));
+    verify(configuration).removeApplication("inventory");
+    verify(configuration).removeApplication("proof-app");
+    assertEquals(List.of(), admin.getClasspathNames());
+    assertNull(bbjServices.getContext("webforj-bbjship"));
+    assertTrue(Files.isRegularFile(held.resolve("webforj.bbj")));
+    assertFalse(Files.exists(deployments.resolve("proof-app")));
+    verify(admin).release();
+    verify(services, never()).restart(any(), any());
+  }
+
+  @Test
   void shouldReportNothingToResetAndRemoveWhatTheSessionAdded() throws Exception {
     Path emptyHome = Home.createCopy(temporary.resolve("empty-bbx"));
     BBjServices emptyServices = new BBjServices();

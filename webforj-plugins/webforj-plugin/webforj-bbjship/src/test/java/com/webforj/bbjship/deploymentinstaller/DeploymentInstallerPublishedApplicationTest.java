@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -213,6 +214,23 @@ final class DeploymentInstallerPublishedApplicationTest {
     }
 
     assertTrue(Files.isRegularFile(other.resolve("application.jar")));
+  }
+
+  @Test
+  void shouldUndeployAndKeepTheFolderWhoseFilesCannotBeRemoved() throws Exception {
+    Files.writeString(root.resolve("hello-app/current"), previous.getFileName().toString());
+    assertTrue(previous.resolve("bbj").toFile().setWritable(false));
+    String destination = root.toString();
+
+    Optional<Path> kept =
+        assertDoesNotThrow(() -> DeploymentInstaller.undeploy("hello-app", destination, admin));
+
+    assertTrue(previous.resolve("bbj").toFile().setWritable(true));
+    assertEquals(Optional.of(root.toRealPath().resolve("hello-app")), kept);
+    verify(configuration).removeApplication("hello-app");
+    verify(admin).setClasspath(CLASSPATH_NAME, null);
+    verify(admin).commit();
+    assertTrue(Files.isRegularFile(previous.resolve("bbj/webforj.bbj")));
   }
 
   @ParameterizedTest

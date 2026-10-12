@@ -57,7 +57,7 @@ public final class RemoteEnableCommand implements Callable<Integer> {
     List<URI> addresses;
     try {
       new BBjShipClasspaths(admin, session.getPlugin()).resetServlet();
-      BBjShipContexts contexts = new BBjShipContexts(admin, session.getPlugin());
+      BBjShipContexts contexts = session.createContexts(admin);
       contexts.enable(port.getPort(), port.getSslPort(), session.isAssetsStarted());
       addresses = contexts.getAddresses();
     } finally {

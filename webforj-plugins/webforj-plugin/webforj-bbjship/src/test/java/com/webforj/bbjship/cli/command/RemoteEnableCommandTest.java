@@ -21,6 +21,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -430,7 +431,8 @@ class RemoteEnableCommandTest {
     PrintStream stream = new PrintStream(output, true, StandardCharsets.UTF_8);
     BBjShipCli cli = BBjShipCli.create(home).setInput(InputStream.nullInputStream())
         .setEnvironment(Map.of()).setOutput(stream).setError(stream).setAnsi(Ansi.OFF)
-        .setConnector((username, password) -> services.getAdmin()).build();
+        .setConnector((username, password) -> services.getAdmin())
+        .setAnswerDeadline(Duration.ofMillis(300)).build();
     int port = WebServer.findClosedPort();
 
     int status = cli.run("remote", "enable", "--port", Integer.toString(port));
