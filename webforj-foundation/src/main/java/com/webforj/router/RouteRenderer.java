@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -458,28 +459,16 @@ public class RouteRenderer {
     Component componentInstance = componentsCache.get(componentClass);
 
     if (componentInstance == null || componentInstance.isDestroyed()) {
-      Component newComponentInstance = getConceiver().getComponent(componentClass);
-      notify(newComponentInstance, RouteRendererObserver.LifecycleEvent.BEFORE_CREATE, allowed -> {
-        if (Boolean.FALSE.equals(allowed)) {
-          onComplete.accept(false);
-          return;
-        }
+      emitToObservers(
+          (observer, callback) -> observer.onBeforeCreate(componentClass, context, callback),
+          creationAllowed -> {
+            if (Boolean.FALSE.equals(creationAllowed)) {
+              onComplete.accept(false);
+              return;
+            }
 
-        componentsCache.put(componentClass, newComponentInstance);
-        context.addComponent(newComponentInstance);
-
-        // Add lifecycle observer to remove from cache when destroyed
-        newComponentInstance.addLifecycleObserver((component, event) -> {
-          if (event == ComponentLifecycleObserver.LifecycleEvent.DESTROY) {
-            componentsCache.remove(componentClass);
-          }
-        });
-
-        notify(newComponentInstance, RouteRendererObserver.LifecycleEvent.AFTER_CREATE,
-            afterCreateAllowed -> {
-              onComplete.accept(true);
-            });
-      });
+            createComponentWithLifecycle(componentClass, onComplete);
+          });
     } else {
       // Component already exists - activate it
       context.addComponent(componentInstance);
@@ -540,20 +529,51 @@ public class RouteRenderer {
    */
   protected void notify(Component component, RouteRendererObserver.LifecycleEvent event,
       Consumer<Boolean> onComplete) {
+    emitToObservers((observer, callback) -> observer.onRouteRendererLifecycleEvent(component, event,
+        context, callback), onComplete);
+  }
+
+  private void createComponentWithLifecycle(Class<? extends Component> componentClass,
+      Consumer<Boolean> onComplete) {
+    Component newComponentInstance = getConceiver().getComponent(componentClass);
+    notify(newComponentInstance, RouteRendererObserver.LifecycleEvent.BEFORE_CREATE, allowed -> {
+      if (Boolean.FALSE.equals(allowed)) {
+        onComplete.accept(false);
+        return;
+      }
+
+      componentsCache.put(componentClass, newComponentInstance);
+      context.addComponent(newComponentInstance);
+
+      newComponentInstance.addLifecycleObserver((component, event) -> {
+        if (event == ComponentLifecycleObserver.LifecycleEvent.DESTROY) {
+          componentsCache.remove(componentClass);
+        }
+      });
+
+      notify(newComponentInstance, RouteRendererObserver.LifecycleEvent.AFTER_CREATE,
+          afterCreateAllowed -> {
+            onComplete.accept(true);
+          });
+    });
+  }
+
+  private void emitToObservers(BiConsumer<RouteRendererObserver, Consumer<Boolean>> call,
+      Consumer<Boolean> onComplete) {
     WorkflowExecutor<Boolean> executor = new WorkflowExecutor<>();
     AtomicBoolean vetoed = new AtomicBoolean(false);
 
     for (RouteRendererObserver observer : observers) {
       executor.addTask((ctx, cb) -> {
         if (vetoed.get()) {
-          cb.accept(false); // Skip further notification if vetoed
+          cb.accept(false);
           return;
         }
-        observer.onRouteRendererLifecycleEvent(component, event, context, result -> {
+        call.accept(observer, result -> {
           if (Boolean.FALSE.equals(result)) {
             vetoed.set(true);
             cb.accept(false);
-            onComplete.accept(false); // Stop workflow if vetoed
+            onComplete.accept(false);
             return;
           }
           cb.accept(true);

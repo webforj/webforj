@@ -44,27 +44,16 @@ public class RouteSecurityObserver implements RouteRendererObserver {
       return;
     }
 
-    Class<?> routeClass = component.getClass();
-    logger.log(Level.DEBUG, "Security check for route: {0}", routeClass.getName());
+    handleRouteAccess(component.getClass(), context, continueCallback);
+  }
 
-    try {
-      RouteAccessDecision decision = securityManager.evaluate(routeClass, context);
-
-      if (decision.isGranted()) {
-        logger.log(Level.DEBUG, "Access granted to route: {0}", routeClass.getName());
-        continueCallback.accept(true);
-      } else {
-        logger.log(Level.DEBUG, "Access denied to route: {0}, reason: {1}", routeClass.getName(),
-            decision.getReason());
-        continueCallback.accept(false);
-        securityManager.onAccessDenied(decision, context);
-      }
-    } catch (Exception e) {
-      logger.log(Level.ERROR, "Error during security evaluation for route: {0}",
-          routeClass.getName(), e);
-      // On error, deny access for safety
-      continueCallback.accept(false);
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void onBeforeCreate(Class<? extends Component> componentClass, NavigationContext context,
+      Consumer<Boolean> continueCallback) {
+    handleRouteAccess(componentClass, context, continueCallback);
   }
 
   /**
@@ -82,5 +71,28 @@ public class RouteSecurityObserver implements RouteRendererObserver {
    */
   public RouteSecurityManager getSecurityManager() {
     return securityManager;
+  }
+
+  private void handleRouteAccess(Class<?> routeClass, NavigationContext context,
+      Consumer<Boolean> continueCallback) {
+    logger.log(Level.DEBUG, "Security check for route: {0}", routeClass.getName());
+
+    try {
+      RouteAccessDecision decision = securityManager.evaluate(routeClass, context);
+
+      if (decision.isGranted()) {
+        logger.log(Level.DEBUG, "Access granted to route: {0}", routeClass.getName());
+        continueCallback.accept(true);
+      } else {
+        logger.log(Level.DEBUG, "Access denied to route: {0}, reason: {1}", routeClass.getName(),
+            decision.getReason());
+        continueCallback.accept(false);
+        securityManager.onAccessDenied(decision, context);
+      }
+    } catch (Exception e) {
+      logger.log(Level.ERROR, "Error during security evaluation for route: {0}",
+          routeClass.getName(), e);
+      continueCallback.accept(false);
+    }
   }
 }

@@ -89,6 +89,39 @@ class RouteSecurityObserverTest {
     verify(securityManager, never()).onAccessDenied(any(), any());
   }
 
+  @Test
+  void shouldAllowAccessOnBeforeCreateWhenGranted() {
+    when(securityManager.evaluate(TestComponent.class, navigationContext))
+        .thenReturn(RouteAccessDecision.grant());
+
+    observer.onBeforeCreate(TestComponent.class, navigationContext, continueCallback);
+
+    verify(continueCallback).accept(true);
+    verify(securityManager).evaluate(TestComponent.class, navigationContext);
+    verify(securityManager, never()).onAccessDenied(any(), any());
+  }
+
+  @Test
+  void shouldDenyAccessOnBeforeCreateWhenDenied() {
+    RouteAccessDecision denial = RouteAccessDecision.denyAuthentication("Test reason");
+    when(securityManager.evaluate(TestComponent.class, navigationContext)).thenReturn(denial);
+
+    observer.onBeforeCreate(TestComponent.class, navigationContext, continueCallback);
+
+    verify(continueCallback).accept(false);
+    verify(securityManager).onAccessDenied(denial, navigationContext);
+  }
+
+  @Test
+  void shouldDenyAccessOnBeforeCreateEvaluationError() {
+    doThrow(new RuntimeException("Test error")).when(securityManager).evaluate(any(), any());
+
+    observer.onBeforeCreate(TestComponent.class, navigationContext, continueCallback);
+
+    verify(continueCallback).accept(false);
+    verify(securityManager, never()).onAccessDenied(any(), any());
+  }
+
   private static class TestComponent extends Component {
     @Override
     protected void onCreate(com.webforj.component.window.Window window) {

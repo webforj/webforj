@@ -1,5 +1,6 @@
 package com.webforj.router;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -7,9 +8,13 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.basis.bbj.proxies.BBjSysGui;
@@ -28,10 +33,15 @@ import com.webforj.conceiver.DefaultConceiver;
 import com.webforj.concern.HasComponents;
 import com.webforj.router.exception.NotFoundException;
 import com.webforj.router.observer.RouteRendererObserver;
+import com.webforj.router.security.RouteAccessDecision;
+import com.webforj.router.security.RouteSecurityManager;
+import com.webforj.router.security.RouteSecurityObserver;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.AfterEach;
@@ -673,6 +683,75 @@ class RouteRendererTest {
     }
   }
 
+  @Nested
+  class RouteSecurity {
+    private RouteSecurityManager securityManager;
+
+    @BeforeEach
+    void setUp() {
+      GuardedView.constructorCalls.set(0);
+      ThrowingGuardedView.constructorCalls.set(0);
+      securityManager = mock(RouteSecurityManager.class);
+      when(securityManager.evaluate(any(), any())).thenReturn(RouteAccessDecision.grant());
+      routeRenderer.addObserver(new RouteSecurityObserver(securityManager));
+    }
+
+    @Test
+    void shouldNotConstructDeniedRoute() {
+      routeRegistry.register("/guarded", GuardedView.class);
+      RouteAccessDecision denial = RouteAccessDecision.denyAuthentication("Login required");
+      when(securityManager.evaluate(eq(GuardedView.class), any())).thenReturn(denial);
+
+      AtomicReference<Optional<GuardedView>> rendered = new AtomicReference<>();
+      routeRenderer.render(GuardedView.class, new NavigationContext(), rendered::set);
+
+      assertEquals(0, GuardedView.constructorCalls.get());
+      assertFalse(rendered.get().isPresent());
+      verify(securityManager).onAccessDenied(eq(denial), any());
+    }
+
+    @Test
+    void shouldCompleteWithDenialWhenDeniedRouteConstructorThrows() {
+      routeRegistry.register("/guarded", ThrowingGuardedView.class);
+      RouteAccessDecision denial = RouteAccessDecision.denyAuthentication("Login required");
+      when(securityManager.evaluate(eq(ThrowingGuardedView.class), any())).thenReturn(denial);
+
+      AtomicReference<Optional<ThrowingGuardedView>> rendered = new AtomicReference<>();
+      assertDoesNotThrow(() -> routeRenderer.render(ThrowingGuardedView.class,
+          new NavigationContext(), rendered::set));
+
+      assertFalse(rendered.get().isPresent());
+      verify(securityManager).onAccessDenied(eq(denial), any());
+    }
+
+    @Test
+    void shouldConstructGrantedRouteOnce() {
+      routeRegistry.register("/guarded", GuardedView.class);
+
+      AtomicReference<Optional<GuardedView>> rendered = new AtomicReference<>();
+      routeRenderer.render(GuardedView.class, new NavigationContext(), rendered::set);
+
+      assertEquals(1, GuardedView.constructorCalls.get());
+      assertTrue(rendered.get().isPresent());
+      verify(securityManager, never()).onAccessDenied(any(), any());
+    }
+
+    @Test
+    void shouldNotConstructDeniedRouteInsideAllowedOutlet() {
+      routeRegistry.register("/home", HomeView.class);
+      routeRegistry.register("/guarded", GuardedView.class, HomeView.class);
+      RouteAccessDecision denial = RouteAccessDecision.denyAuthentication("Login required");
+      when(securityManager.evaluate(eq(GuardedView.class), any())).thenReturn(denial);
+
+      AtomicReference<Optional<GuardedView>> rendered = new AtomicReference<>();
+      routeRenderer.render(GuardedView.class, new NavigationContext(), rendered::set);
+
+      assertEquals(0, GuardedView.constructorCalls.get());
+      assertFalse(rendered.get().isPresent());
+      verify(securityManager).onAccessDenied(eq(denial), any());
+    }
+  }
+
   @NodeName("test-component")
   public static class TestComponent extends ElementCompositeContainer {
   }
@@ -879,5 +958,34 @@ class RouteRendererTest {
     public List<Component> getComponents() {
       return this.components;
     }
+  }
+
+  public static class GuardedView extends Component {
+    static final AtomicInteger constructorCalls = new AtomicInteger();
+
+    public GuardedView() {
+      constructorCalls.incrementAndGet();
+    }
+
+    @Override
+    protected void onCreate(Window window) {}
+
+    @Override
+    protected void onDestroy() {}
+  }
+
+  public static class ThrowingGuardedView extends Component {
+    static final AtomicInteger constructorCalls = new AtomicInteger();
+
+    public ThrowingGuardedView() {
+      constructorCalls.incrementAndGet();
+      throw new IllegalStateException("Secured service called without a session");
+    }
+
+    @Override
+    protected void onCreate(Window window) {}
+
+    @Override
+    protected void onDestroy() {}
   }
 }
