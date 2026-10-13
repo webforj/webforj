@@ -99,13 +99,34 @@ public final class DeploymentInstaller {
    *         the name is published in the other mode or development runs are not enabled
    * @throws IOException if the registration fails or cleanup fails
    */
-  @SuppressWarnings("try")
   public static synchronized DeploymentResult deploy(InputStream archive, String name, String root,
       BBjAdminBase admin) throws IOException {
+    return deploy(archive, name, root, admin, ClasspathRelease.NONE);
+  }
+
+  /**
+   * Publishes an uploaded archive and replaces a previous deployment owned by BBjShip, releasing
+   * the files the process holds open for the previous deployment before its folder is removed.
+   *
+   * @param archive the uploaded archive
+   * @param name the publish name
+   * @param root the deployment root path
+   * @param admin the authenticated administration API
+   * @param release the release of the files this process holds open for a classpath
+   *
+   * @return whether the application was created or replaced
+   * @throws DeploymentException if the name or the archive is invalid, the archive is too large,
+   *         the name belongs to another application, another name publishes the same entry class,
+   *         the name is published in the other mode or development runs are not enabled
+   * @throws IOException if the registration fails or cleanup fails
+   */
+  @SuppressWarnings("try")
+  public static synchronized DeploymentResult deploy(InputStream archive, String name, String root,
+      BBjAdminBase admin, ClasspathRelease release) throws IOException {
     applyNameValidation(name);
     Path deployments = Path.of(root).toAbsolutePath().normalize();
     try (FileChannel lock = openLock(deployments)) {
-      return applyDeployment(archive, name, deployments, admin);
+      return applyDeployment(archive, name, deployments, admin, release);
     }
   }
 
@@ -282,7 +303,7 @@ public final class DeploymentInstaller {
   }
 
   private static DeploymentResult applyDeployment(InputStream archive, String name,
-      Path deployments, BBjAdminBase admin) throws IOException {
+      Path deployments, BBjAdminBase admin, ClasspathRelease release) throws IOException {
     String classpathName = CLASSPATH_PREFIX + name;
     BBjAdminAppDeploymentConfiguration configuration;
     BBjAdminAppDeploymentApplication previous;
@@ -307,6 +328,8 @@ public final class DeploymentInstaller {
     List<String> previousClasspath = null;
     DeploymentRegistration previousRegistration = null;
     boolean mutationStarted = false;
+    Closeable hold = () -> {
+    };
     try {
       if (previousDirectory != null) {
         applyModeValidation(deployment, previousDirectory, name);
@@ -314,6 +337,10 @@ public final class DeploymentInstaller {
 
       if (previous != null || claimed) {
         previousClasspath = new ArrayList<>(admin.getClasspath(classpathName));
+        // The previous classpath still resolves to the loader that holds the previous files,
+        // it is closed once the previous sessions are stopped and before the new classpath replaces
+        // it
+        hold = release.find(classpathName);
       }
 
       if (previous != null) {
@@ -329,11 +356,13 @@ public final class DeploymentInstaller {
         stopProcesses(admin, classpathName);
       }
 
+      closeHold(hold, classpathName);
       admin.setClasspath(classpathName, createClasspath(deployment));
       admin.commit();
       application.commit();
       writeCurrent(deployment);
     } catch (BBjAdminException | IOException | RuntimeException failure) {
+      closeHold(hold, classpathName);
       IOException problem = toDeploymentFailure(name, failure);
       if (mutationStarted) {
         applyRegistrationRollback(admin, configuration, name, previousClasspath,

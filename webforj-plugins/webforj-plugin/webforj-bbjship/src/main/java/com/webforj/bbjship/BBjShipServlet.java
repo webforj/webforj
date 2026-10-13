@@ -220,7 +220,7 @@ public final class BBjShipServlet {
     }
 
     DeploymentResult result =
-        DeploymentInstaller.deploy(request.getInputStream(), publishName, root, admin);
+        DeploymentInstaller.deploy(request.getInputStream(), publishName, root, admin, release);
     String url = DeploymentInstaller.getApplicationUrl(publishName);
     response.setHeader(HttpHeaders.LOCATION, url);
     int status = result == DeploymentResult.CREATED ? HttpServletResponse.SC_CREATED
