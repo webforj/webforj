@@ -968,10 +968,14 @@ class RouteRendererTest {
     }
 
     @Override
-    protected void onCreate(Window window) {}
+    protected void onCreate(Window window) {
+      // Do nothing
+    }
 
     @Override
-    protected void onDestroy() {}
+    protected void onDestroy() {
+      // Do nothing
+    }
   }
 
   public static class ThrowingGuardedView extends Component {
@@ -983,9 +987,13 @@ class RouteRendererTest {
     }
 
     @Override
-    protected void onCreate(Window window) {}
+    protected void onCreate(Window window) {
+      // Do nothing
+    }
 
     @Override
-    protected void onDestroy() {}
+    protected void onDestroy() {
+      // Do nothing
+    }
   }
 }
