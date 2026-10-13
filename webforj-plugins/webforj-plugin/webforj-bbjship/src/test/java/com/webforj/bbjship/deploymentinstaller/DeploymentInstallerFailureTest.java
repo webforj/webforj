@@ -117,7 +117,7 @@ final class DeploymentInstallerFailureTest {
     BBjAdminBBjProcess foreign = mock(BBjAdminBBjProcess.class);
     when(owned.getString(BBjAdminBBjProcess.SSCP_NAME)).thenReturn(CLASSPATH_NAME);
     when(foreign.getString(BBjAdminBBjProcess.SSCP_NAME)).thenReturn("foreign_classpath");
-    when(admin.getBBjProcesses()).thenReturn(List.of(owned, foreign));
+    when(admin.getBBjProcesses()).thenReturn(List.of(owned, foreign), List.of());
     if (operation == Operation.DEPLOY) {
       when(configuration.createApplication()).thenReturn(replacement, restored);
     }

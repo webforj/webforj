@@ -154,7 +154,7 @@ final class DeploymentInstallerPublishedApplicationTest {
     when(owned.getString(BBjAdminBBjProcess.SSCP_NAME)).thenReturn(CLASSPATH_NAME);
     when(similar.getString(BBjAdminBBjProcess.SSCP_NAME)).thenReturn(CLASSPATH_NAME + "_other");
     when(foreign.getString(BBjAdminBBjProcess.SSCP_NAME)).thenReturn("webforj_other");
-    when(admin.getBBjProcesses()).thenReturn(List.of(owned, similar, foreign));
+    when(admin.getBBjProcesses()).thenReturn(List.of(owned, similar, foreign), List.of());
     Files.writeString(root.resolve(CURRENT_FILE), previous.getFileName().toString());
     doAnswer(invocation -> {
       assertTrue(Files.exists(previous.resolve(APPLICATION_JAR)));
@@ -200,7 +200,7 @@ final class DeploymentInstallerPublishedApplicationTest {
     BBjAdminBBjProcess foreign = mock(BBjAdminBBjProcess.class);
     when(owned.getString(BBjAdminBBjProcess.SSCP_NAME)).thenReturn(CLASSPATH_NAME);
     when(foreign.getString(BBjAdminBBjProcess.SSCP_NAME)).thenReturn("webforj_other");
-    when(admin.getBBjProcesses()).thenReturn(List.of(owned, foreign));
+    when(admin.getBBjProcesses()).thenReturn(List.of(owned, foreign), List.of());
     Path other =
         Files.createDirectories(root.resolve("other")).resolve(UUID.randomUUID().toString());
     DeploymentArchive.read(archive, other);
@@ -227,7 +227,7 @@ final class DeploymentInstallerPublishedApplicationTest {
   void shouldReleaseTheFilesOfThePreviousDeploymentWhenItIsReplaced() throws Exception {
     BBjAdminBBjProcess owned = mock(BBjAdminBBjProcess.class);
     when(owned.getString(BBjAdminBBjProcess.SSCP_NAME)).thenReturn(CLASSPATH_NAME);
-    when(admin.getBBjProcesses()).thenReturn(List.of(owned));
+    when(admin.getBBjProcesses()).thenReturn(List.of(owned), List.of());
     Files.writeString(root.resolve(CURRENT_FILE), previous.getFileName().toString());
     ClasspathRelease release = mock(ClasspathRelease.class);
     Closeable hold = mock(Closeable.class);
@@ -257,7 +257,7 @@ final class DeploymentInstallerPublishedApplicationTest {
       throws Exception {
     BBjAdminBBjProcess owned = mock(BBjAdminBBjProcess.class);
     when(owned.getString(BBjAdminBBjProcess.SSCP_NAME)).thenReturn(CLASSPATH_NAME);
-    when(admin.getBBjProcesses()).thenReturn(List.of(owned));
+    when(admin.getBBjProcesses()).thenReturn(List.of(owned), List.of());
     Files.writeString(root.resolve(CURRENT_FILE), previous.getFileName().toString());
     ClasspathRelease release = mock(ClasspathRelease.class);
     Closeable hold = mock(Closeable.class);
@@ -280,6 +280,32 @@ final class DeploymentInstallerPublishedApplicationTest {
     order.verify(admin).commit();
     order.verify(hold).close();
     assertFalse(Files.exists(root.resolve(NAME)));
+  }
+
+  @Test
+  void shouldFailTheUndeployAndKeepTheClasspathWhenTheWaitForTheSessionsIsInterrupted()
+      throws Exception {
+    BBjAdminBBjProcess owned = mock(BBjAdminBBjProcess.class);
+    when(owned.getString(BBjAdminBBjProcess.SSCP_NAME)).thenReturn(CLASSPATH_NAME);
+    when(admin.getBBjProcesses()).thenReturn(List.of(owned));
+    doAnswer(call -> {
+      Thread.currentThread().interrupt();
+      return null;
+    }).when(owned).terminate();
+    Files.writeString(root.resolve(CURRENT_FILE), previous.getFileName().toString());
+    String destination = root.toString();
+
+    IOException failure;
+    try {
+      failure = assertThrows(IOException.class,
+          () -> DeploymentInstaller.undeploy(NAME, destination, admin));
+    } finally {
+      assertTrue(Thread.interrupted());
+    }
+
+    assertEquals(BBjAdminException.class, failure.getCause().getClass());
+    verify(admin, never()).setClasspath(CLASSPATH_NAME, null);
+    assertTrue(Files.isRegularFile(previous.resolve(APPLICATION_JAR)));
   }
 
   @Test

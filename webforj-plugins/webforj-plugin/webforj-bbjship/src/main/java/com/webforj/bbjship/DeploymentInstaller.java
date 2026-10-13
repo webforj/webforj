@@ -6,6 +6,7 @@ import com.basis.api.admin.BBjAdminBBjProcess;
 import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.BBjAdminException;
 import com.webforj.bbjship.DeploymentException.Reason;
+import com.webforj.bbjship.assets.DeployedAssets;
 import com.webforj.bbjship.model.DeploymentRegistration;
 import com.webforj.bbjship.model.InstalledDeployment;
 import com.webforj.bbjship.model.PublishedApplication;
@@ -29,6 +30,7 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -81,6 +83,8 @@ public final class DeploymentInstaller {
       "BBj development class folder must be an absolute directory on the BBj machine";
   private static final String LOCK = ".lock";
   private static final String APPLICATION_URL = "/webapp/";
+  private static final Duration TERMINATION_TIMEOUT = Duration.ofSeconds(10);
+  private static final Duration TERMINATION_INTERVAL = Duration.ofMillis(250);
   private static final Logger LOGGER = System.getLogger(DeploymentInstaller.class.getName());
 
   private DeploymentInstaller() {}
@@ -424,6 +428,7 @@ public final class DeploymentInstaller {
     }
 
     Path folder = directory.get().getParent();
+    closeAssets(directory.get());
     try {
       FileTree.removeDirectory(directory.get());
       Files.deleteIfExists(folder.resolve(CURRENT));
@@ -432,7 +437,7 @@ public final class DeploymentInstaller {
       // Windows refuses to delete a jar the BBjServices virtual machine has open, and BBjServices
       // keeps the jars of a removed classpath open until it restarts
       String report = formatKeptFolder(folder, held);
-      LOGGER.log(Level.DEBUG, report, held);
+      LOGGER.log(Level.ERROR, report, held);
       return Optional.of(report);
     }
 
@@ -446,6 +451,16 @@ public final class DeploymentInstaller {
       // The removal is attempted either way, the folder report names what stayed
       LOGGER.log(Level.DEBUG,
           "The files of the BBj classpath " + classpathName + " could not be released", failure);
+    }
+  }
+
+  private static void closeAssets(Path directory) {
+    try {
+      DeployedAssets.close(directory);
+    } catch (IOException | RuntimeException failure) {
+      // The removal is attempted either way
+      LOGGER.log(Level.DEBUG,
+          "The assets of the BBj deployment " + directory + " could not be released", failure);
     }
   }
 
@@ -891,11 +906,41 @@ public final class DeploymentInstaller {
 
   private static void stopProcesses(BBjAdminBase admin, String classpathName)
       throws BBjAdminException {
-    for (BBjAdminBBjProcess process : admin.getBBjProcesses()) {
-      if (classpathName.equals(process.getString(BBjAdminBBjProcess.SSCP_NAME))) {
-        process.terminate();
+    for (BBjAdminBBjProcess process : findProcesses(admin, classpathName)) {
+      process.terminate();
+    }
+
+    // Termination is asynchronous. The sessions must be gone before the loader of the classpath is
+    // closed, or a session still shutting down fails on its next class load
+    long deadline = System.nanoTime() + TERMINATION_TIMEOUT.toNanos();
+    while (!findProcesses(admin, classpathName).isEmpty()) {
+      if (System.nanoTime() - deadline >= 0) {
+        LOGGER.log(Level.WARNING, "Sessions of the BBj classpath " + classpathName
+            + " did not end within " + TERMINATION_TIMEOUT.toSeconds() + " seconds");
+        return;
+      }
+
+      try {
+        Thread.sleep(TERMINATION_INTERVAL);
+      } catch (InterruptedException interruption) {
+        Thread.currentThread().interrupt();
+        throw new BBjAdminException(
+            "Stopping the sessions of the BBj classpath " + classpathName + " was interrupted",
+            interruption);
       }
     }
+  }
+
+  private static List<BBjAdminBBjProcess> findProcesses(BBjAdminBase admin, String classpathName)
+      throws BBjAdminException {
+    List<BBjAdminBBjProcess> processes = new ArrayList<>();
+    for (BBjAdminBBjProcess process : admin.getBBjProcesses()) {
+      if (classpathName.equals(process.getString(BBjAdminBBjProcess.SSCP_NAME))) {
+        processes.add(process);
+      }
+    }
+
+    return processes;
   }
 
   private static void applyUnregistration(BBjAdminBase admin,
@@ -975,6 +1020,7 @@ public final class DeploymentInstaller {
     }
 
     for (Path leftover : leftovers) {
+      closeAssets(leftover);
       try {
         FileTree.removeDirectory(leftover);
       } catch (IOException failure) {
@@ -997,6 +1043,7 @@ public final class DeploymentInstaller {
   }
 
   private static void removeDeploymentDirectory(Path directory) throws IOException {
+    closeAssets(directory);
     FileTree.removeDirectory(directory);
     removeEmptyFolder(directory.getParent());
   }

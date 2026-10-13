@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -39,6 +40,27 @@ final class DeployedAssetsTest {
 
     @TempDir
     Path temporary;
+
+    @Test
+    void shouldCloseTheCachedApplicationOfTheFolderSoItCanBeRemoved() throws IOException {
+      Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
+      Path archive = HelloApp.writeArchive(app, temporary.resolve("hello-app.zip"));
+      Path root = temporary.resolve("deployments");
+      String id = UUID.randomUUID().toString();
+      Path deployment = Files.createDirectories(root.resolve("hello-app")).resolve(id);
+      DeploymentArchive.read(archive, deployment);
+      Files.writeString(root.resolve("hello-app/current"), id);
+      DeployedApplication cached = DeployedAssets.findApplication(root, "hello-app");
+      assertNotNull(cached);
+
+      DeployedAssets.close(deployment);
+
+      assertEquals(Optional.empty(), cached.readResource("static/app.css"));
+      DeployedApplication reloaded = DeployedAssets.findApplication(root, "hello-app");
+      assertNotSame(cached, reloaded);
+      assertTrue(reloaded.readResource("static/app.css").isPresent());
+      DeployedAssets.close(deployment);
+    }
 
     @Test
     void shouldServeTheStylesheetOfTheApplicationWithoutCacheControl() throws IOException {

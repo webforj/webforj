@@ -106,7 +106,7 @@ public final class DeployedAssets {
   static DeployedApplication findApplication(Path root, String name) throws IOException {
     for (Path directory : APPLICATIONS.keySet()) {
       if (!Files.isDirectory(directory)) {
-        closeApplication(directory);
+        close(directory);
       }
     }
 
@@ -118,7 +118,7 @@ public final class DeployedAssets {
     for (Path directory : APPLICATIONS.keySet()) {
       if (directory.getParent().equals(current.get().getParent())
           && !directory.equals(current.get())) {
-        closeApplication(directory);
+        close(directory);
       }
     }
 
@@ -135,7 +135,15 @@ public final class DeployedAssets {
     }
   }
 
-  private static void closeApplication(Path directory) throws IOException {
+  /**
+   * Closes the cached application of a deployment folder, releasing the jars it holds open, so the
+   * folder can be removed.
+   *
+   * @param directory the deployment folder
+   *
+   * @throws IOException if the application cannot be closed
+   */
+  public static void close(Path directory) throws IOException {
     DeployedApplication removed = APPLICATIONS.remove(directory);
     if (removed != null) {
       removed.close();
