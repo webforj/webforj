@@ -3,7 +3,7 @@ package com.webforj.bbjship.assets;
 import com.google.common.net.HttpHeaders;
 import com.webforj.bbjship.assets.model.AssetRequest;
 import com.webforj.bbjship.assets.model.AssetResponse;
-import com.webforj.bbjship.cli.admin.BBjShipPlugin;
+import com.webforj.plugin.foundation.bbj.BBjShipPlugin;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -41,7 +41,7 @@ public final class AssetsServlet {
    */
   public static void handle(HttpServletRequest request, HttpServletResponse response)
       throws IOException {
-    BBjShipPlugin plugin = new BBjShipPlugin(Path.of(System.getProperty("basis.BBjHome")));
+    BBjShipPlugin plugin = BBjShipPlugin.createFromBBjHome();
     handle(request, response, plugin.getDeployments());
   }
 

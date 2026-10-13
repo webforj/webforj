@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -15,12 +14,13 @@ import com.basis.api.admin.BBjAdminAppDeploymentConfiguration;
 import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
 import com.webforj.bbjship.cli.BBjShipCli;
-import com.webforj.bbjship.cli.admin.WebServer;
+import com.webforj.bbjship.cli.TerminalLines;
+import com.webforj.plugin.foundation.bbj.BBjShipPlugin;
 import com.webforj.plugin.foundation.bbj.DeploymentArchive;
 import com.webforj.plugin.foundation.bbj.HelloApp;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,10 +33,12 @@ import picocli.CommandLine.Help.Ansi;
 
 class AppsUndeployCommandTest {
 
+  private static final String HELLO_APP_NAME = "hello-app";
+  private static final String UNDEPLOY_COMMAND = "undeploy";
+
   @TempDir
   Path temporary;
 
-  private Path home;
   private Path deployments;
   private BBjServices services;
   private ByteArrayOutputStream output;
@@ -46,8 +48,8 @@ class AppsUndeployCommandTest {
 
   @BeforeEach
   void initBBjShipWithHelloAppAndShopDeployed() throws Exception {
-    home = Home.createCopy(temporary.resolve("bbx"));
-    Path archive = HelloApp.writeArchive(HelloApp.createCopy(temporary.resolve("hello-app")),
+    Path home = Home.createCopy(temporary.resolve("bbx"));
+    Path archive = HelloApp.writeArchive(HelloApp.createCopy(temporary.resolve(HELLO_APP_NAME)),
         temporary.resolve("hello-app.zip"));
     deployments = home.resolve("plugins/.webforj-bbjship-deployments/deployments");
     services = new BBjServices();
@@ -58,7 +60,7 @@ class AppsUndeployCommandTest {
     when(admin.getBBjProcesses()).thenReturn(List.of());
     BBjAdminAdapterList<BBjAdminAppDeploymentApplication> registrations =
         new BBjAdminAdapterList<>();
-    for (String name : List.of("hello-app", "shop")) {
+    for (String name : List.of(HELLO_APP_NAME, "shop")) {
       Path directory = Files.createDirectories(deployments.resolve(name))
           .resolve("0b8f4f0e-3f5c-4a8e-9a49-5d1a6f3c2b10");
       DeploymentArchive.read(archive, directory);
@@ -77,91 +79,38 @@ class AppsUndeployCommandTest {
 
     when(configuration.getApplications()).thenReturn(registrations);
     output = new ByteArrayOutputStream();
-    PrintStream stream = new PrintStream(output, true, StandardCharsets.UTF_8);
-    cli = BBjShipCli.create(home).setInput(InputStream.nullInputStream()).setEnvironment(Map.of())
-        .setOutput(stream).setError(stream).setAnsi(Ansi.OFF)
-        .setConnector((username, password) -> admin).build();
+    Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+    cli = BBjShipCli.create(new BBjShipPlugin(home)).setTerminal(new TerminalLines(stream))
+        .setAnsi(Ansi.OFF).setSessions(login -> admin).build();
   }
 
   @Test
   void shouldUndeployTheNamedApplication() throws Exception {
-    int status = cli.run("apps", "undeploy", "hello-app");
+    int status = cli.run("apps", UNDEPLOY_COMMAND, HELLO_APP_NAME);
 
     assertEquals(0, status);
     assertEquals(FACTORY_ACCOUNT_WARNING + "\n" + "Undeployed hello-app\n",
         output.toString(StandardCharsets.UTF_8));
-    verify(configuration).removeApplication("hello-app");
-    assertFalse(Files.exists(deployments.resolve("hello-app")));
+    verify(configuration).removeApplication(HELLO_APP_NAME);
+    assertFalse(Files.exists(deployments.resolve(HELLO_APP_NAME)));
     assertTrue(Files.isDirectory(deployments.resolve("shop")));
   }
 
   @Test
   void shouldUndeployEveryApplication() {
-    int status = cli.run("apps", "undeploy", "--all");
+    int status = cli.run("apps", UNDEPLOY_COMMAND, "--all");
 
     assertEquals(0, status);
     assertEquals(FACTORY_ACCOUNT_WARNING + "\n" + """
         Undeployed hello-app
         Undeployed shop
         """, output.toString(StandardCharsets.UTF_8));
-    assertFalse(Files.exists(deployments.resolve("hello-app")));
+    assertFalse(Files.exists(deployments.resolve(HELLO_APP_NAME)));
     assertFalse(Files.exists(deployments.resolve("shop")));
   }
 
   @Test
-  void shouldUndeployThroughTheEndpointWhileItAnswers() throws Exception {
-    try (WebServer web =
-        WebServer.startServingBBjShipUndeployments("Basic YWRtaW46YWRtaW4xMjM=", "26.03")) {
-      services.addContext("webforj-bbjship", """
-          {
-            "STOP": {"EXECUTOR": "CONTEXT:webforj-bbjship", "DATA": {"ACTION": "STOP"},
-              "ENABLED": true},
-            "HTTP port": %d,
-            "Document Base": "%s"
-          }""".formatted(web.getPort(),
-          home.resolve("plugins/.webforj-bbjship-deployments/htdocs")));
-
-      int status = cli.run("apps", "undeploy", "hello-app");
-
-      assertEquals(0, status);
-      assertEquals(FACTORY_ACCOUNT_WARNING + "\n" + "Undeployed hello-app\n",
-          output.toString(StandardCharsets.UTF_8));
-      assertEquals(
-          List.of("DELETE /webforj-bbjship/applications/hello-app Basic YWRtaW46YWRtaW4xMjM="),
-          web.getRequests());
-    }
-
-    verify(configuration, never()).removeApplication("hello-app");
-    assertTrue(Files.isDirectory(deployments.resolve("hello-app")));
-  }
-
-  @Test
-  void shouldUndeployThroughTheAdministrationSessionWhenTheEndpointRefuses() throws Exception {
-    try (WebServer web = WebServer.startServingBBjShipUndeployments("Basic other", "26.03")) {
-      services.addContext("webforj-bbjship", """
-          {
-            "STOP": {"EXECUTOR": "CONTEXT:webforj-bbjship", "DATA": {"ACTION": "STOP"},
-              "ENABLED": true},
-            "HTTP port": %d,
-            "Document Base": "%s"
-          }""".formatted(web.getPort(),
-          home.resolve("plugins/.webforj-bbjship-deployments/htdocs")));
-
-      int status = cli.run("apps", "undeploy", "hello-app");
-
-      assertEquals(0, status);
-      assertEquals(1, web.getRequests().size());
-    }
-
-    assertEquals(FACTORY_ACCOUNT_WARNING + "\n" + "Undeployed hello-app\n",
-        output.toString(StandardCharsets.UTF_8));
-    verify(configuration).removeApplication("hello-app");
-    assertFalse(Files.exists(deployments.resolve("hello-app")));
-  }
-
-  @Test
-  void shouldUndeployThroughTheAdministrationSessionWhenTheContextBelongsToAnotherApplication()
-      throws Exception {
+  void shouldUndeployWhenTheBbjShipContextBelongsToAnotherApplication() throws Exception {
     services.addContext("webforj-bbjship", """
         {
           "STOP": {"EXECUTOR": "CONTEXT:webforj-bbjship", "DATA": {"ACTION": "STOP"},
@@ -170,13 +119,13 @@ class AppsUndeployCommandTest {
           "Document Base": "%s"
         }""".formatted(temporary.resolve("other-application/htdocs")));
 
-    int status = cli.run("apps", "undeploy", "hello-app");
+    int status = cli.run("apps", UNDEPLOY_COMMAND, HELLO_APP_NAME);
 
     assertEquals(0, status);
     assertEquals(FACTORY_ACCOUNT_WARNING + "\n" + "Undeployed hello-app\n",
         output.toString(StandardCharsets.UTF_8));
-    verify(configuration).removeApplication("hello-app");
-    assertFalse(Files.exists(deployments.resolve("hello-app")));
+    verify(configuration).removeApplication(HELLO_APP_NAME);
+    assertFalse(Files.exists(deployments.resolve(HELLO_APP_NAME)));
   }
 
   @Test
@@ -188,7 +137,7 @@ class AppsUndeployCommandTest {
 
     int status;
     try {
-      status = cli.run("apps", "undeploy", "--all");
+      status = cli.run("apps", UNDEPLOY_COMMAND, "--all");
     } finally {
       assertTrue(held.toFile().setWritable(true));
     }
@@ -198,16 +147,16 @@ class AppsUndeployCommandTest {
         Undeployed hello-app
         Not removed: %s. %s
         Undeployed shop
-        """.formatted(deployments.resolve("hello-app"), held.resolve("webforj.bbj")),
+        """.formatted(deployments.resolve(HELLO_APP_NAME), held.resolve("webforj.bbj")),
         output.toString(StandardCharsets.UTF_8));
-    verify(configuration).removeApplication("hello-app");
+    verify(configuration).removeApplication(HELLO_APP_NAME);
     assertTrue(Files.isRegularFile(held.resolve("webforj.bbj")));
     assertFalse(Files.exists(deployments.resolve("shop")));
   }
 
   @Test
   void shouldReportAnApplicationTheBbjShipDidNotDeploy() {
-    int status = cli.run("apps", "undeploy", "inventory");
+    int status = cli.run("apps", UNDEPLOY_COMMAND, "inventory");
 
     assertEquals(1, status);
     assertEquals(

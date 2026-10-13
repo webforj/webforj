@@ -16,6 +16,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
@@ -24,11 +25,17 @@ import org.apache.hc.core5.http.protocol.HttpContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Answers;
 import org.mockito.MockedStatic;
 
 class BBjShipClientConfigurationTest {
+
+  private static final String ADMIN_USERNAME = "administrator";
+  private static final String ADMIN_PASSWORD = "secret-password";
+  private static final String CLIENT_VERSION = "26.03";
 
   @TempDir
   Path temporary;
@@ -54,8 +61,8 @@ class BBjShipClientConfigurationTest {
   void shouldNotWarnForHttpsOrLoopbackEndpoint(String value) throws IOException {
     List<String> warnings = new ArrayList<>();
     BBjShipClient bbjShip = BBjShipClient.create(URI.create(value))
-        .setCredentials(BBjCredentials.of("administrator", "secret-password")).setVersion("26.03")
-        .setWarn(warnings::add).build();
+        .setCredentials(BBjCredentials.createUser(ADMIN_USERNAME, ADMIN_PASSWORD))
+        .setVersion(CLIENT_VERSION).setWarn(warnings::add).build();
     Path archive = temporary.resolve("hello-app.zip");
     String publishName = "hello-app";
     CloseableHttpClient offline = mock(CloseableHttpClient.class);
@@ -79,8 +86,8 @@ class BBjShipClientConfigurationTest {
     URI endpoint = URI.create("http://build.example:8888/webforj-bbjship");
     List<String> warnings = new ArrayList<>();
     BBjShipClient bbjShip = BBjShipClient.create(endpoint)
-        .setCredentials(BBjCredentials.of("administrator", "secret-password")).setVersion("26.03")
-        .setWarn(warnings::add).build();
+        .setCredentials(BBjCredentials.createUser(ADMIN_USERNAME, ADMIN_PASSWORD))
+        .setVersion(CLIENT_VERSION).setWarn(warnings::add).build();
     Path archive = temporary.resolve("hello-app.zip");
     String publishName = "hello-app";
     CloseableHttpClient offline = mock(CloseableHttpClient.class);
@@ -116,9 +123,21 @@ class BBjShipClientConfigurationTest {
     assertThrows(NullPointerException.class, () -> builder.setWarn(warn));
 
     assertSame(builder,
-        builder.setCredentials(BBjCredentials.of("administrator", "secret-password")));
-    assertSame(builder, builder.setVersion("26.03"));
+        builder.setCredentials(BBjCredentials.createUser(ADMIN_USERNAME, ADMIN_PASSWORD)));
+    assertSame(builder, builder.setVersion(CLIENT_VERSION));
     assertSame(builder, builder.setWarn(warnings -> {
     }));
+  }
+
+  @ParameterizedTest
+  @MethodSource("getPorts")
+  void shouldGiveThePortOfTheUrl(String url, int port) {
+    assertEquals(port, BBjShipClient.getPort(URI.create(url)));
+  }
+
+  private static Stream<Arguments> getPorts() {
+    return Stream.of(Arguments.of("http://localhost:8888/webforj-bbjship", 8888),
+        Arguments.of("https://localhost/webforj-bbjship", 443),
+        Arguments.of("http://localhost/webforj-bbjship", 80));
   }
 }

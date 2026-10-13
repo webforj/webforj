@@ -1,10 +1,12 @@
 package com.webforj.bbjship.cli.command;
 
 import com.basis.api.admin.BBjAdminBase;
-import com.webforj.bbjship.DeploymentInstaller;
+import com.webforj.bbjship.BBjServicesClasspathRelease;
+import com.webforj.bbjship.Deployer;
 import com.webforj.bbjship.cli.BBjShipFailureHandler;
 import com.webforj.bbjship.cli.admin.BBjShipSession;
 import com.webforj.bbjship.cli.option.CredentialOptions;
+import com.webforj.plugin.foundation.bbj.BBjShipCommandLine;
 import com.webforj.plugin.foundation.bbj.DeploymentArchive;
 import com.webforj.plugin.foundation.bbj.PublishNamePolicy;
 import java.io.IOException;
@@ -29,7 +31,7 @@ import picocli.CommandLine.Spec;
  * @author Hyyan Abo Fakher
  * @since 26.03
  */
-@Command(name = "deploy", mixinStandardHelpOptions = true,
+@Command(name = BBjShipCommandLine.DEPLOY, mixinStandardHelpOptions = true,
     description = "Deploy an application archive.")
 public final class AppsDeployCommand implements Callable<Integer> {
 
@@ -64,14 +66,14 @@ public final class AppsDeployCommand implements Callable<Integer> {
     String root = session.getPlugin().getDeployments().toString();
     BBjAdminBase admin = session.openAdmin(credentials, OptionalInt.empty(), OptionalInt.empty());
     try (InputStream input = Files.newInputStream(archive)) {
-      DeploymentInstaller.deploy(input, publishName, root, admin);
+      Deployer.deploy(input, publishName, root, admin, new BBjServicesClasspathRelease());
     } finally {
       admin.release();
     }
 
     spec.commandLine().getOut()
         .println(spec.commandLine().getColorScheme().apply("Deployed", List.of(Style.fg_green))
-            .concat(" " + publishName + " " + DeploymentInstaller.getApplicationUrl(publishName)));
+            .concat(" " + publishName + " " + Deployer.getApplicationUrl(publishName)));
 
     return 0;
   }
@@ -79,13 +81,13 @@ public final class AppsDeployCommand implements Callable<Integer> {
   @Parameters(paramLabel = LABEL,
       description = "Path of the deployment archive. The file name without .zip is the publish "
           + "name.")
-  void setArchive(String value) {
+  void setArchive(Path path) {
+    String value = path.toString();
     BBjShipFailureHandler.applyValueValidation(spec, LABEL, value);
     if (!value.endsWith(EXTENSION)) {
       throw BBjShipFailureHandler.createMissingValueException(spec, LABEL);
     }
 
-    Path path = Path.of(value);
     String fileName = path.getFileName().toString();
     String name = fileName.substring(0, fileName.length() - EXTENSION.length());
     Optional<String> refusal = PublishNamePolicy.findRefusal(name);
@@ -105,7 +107,8 @@ public final class AppsDeployCommand implements Callable<Integer> {
 
     if (isDevelopment(path, value)) {
       throw new ParameterException(spec.commandLine(),
-          "Development archives are deployed by the watch, not by apps deploy");
+          "Development archives are deployed by the watch, not by " + BBjShipCommandLine.APPS + " "
+              + BBjShipCommandLine.DEPLOY);
     }
 
     archive = path;

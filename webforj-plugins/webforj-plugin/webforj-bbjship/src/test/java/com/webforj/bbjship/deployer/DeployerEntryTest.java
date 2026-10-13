@@ -1,4 +1,4 @@
-package com.webforj.bbjship.deploymentinstaller;
+package com.webforj.bbjship.deployer;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -14,9 +14,11 @@ import com.basis.api.admin.BBjAdminAppDeploymentApplication;
 import com.basis.api.admin.BBjAdminAppDeploymentConfiguration;
 import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
+import com.webforj.bbjship.ClasspathRelease;
+import com.webforj.bbjship.Deployer;
+import com.webforj.bbjship.Deployer.DeploymentResult;
 import com.webforj.bbjship.DeploymentException;
-import com.webforj.bbjship.DeploymentInstaller;
-import com.webforj.bbjship.DeploymentInstaller.DeploymentResult;
+import com.webforj.bbjship.DevelopmentRunFiles;
 import com.webforj.plugin.foundation.bbj.DeploymentArchive;
 import com.webforj.plugin.foundation.bbj.HelloApp;
 import java.io.ByteArrayInputStream;
@@ -32,9 +34,11 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-final class DeploymentInstallerEntryTest {
+final class DeployerEntryTest {
 
   private static final String CLASSPATH_NAME = "webforj_bbjship_hello-app";
+  private static final String NAME = "hello-app";
+  private static final String SECOND_NAME = "second-app";
 
   @TempDir
   Path temporary;
@@ -48,11 +52,10 @@ final class DeploymentInstallerEntryTest {
 
   @BeforeEach
   void initServerWithHelloAppPublished() throws Exception {
-    app = HelloApp.createCopy(temporary.resolve("hello-app"));
+    app = HelloApp.createCopy(temporary.resolve(NAME));
     archive = HelloApp.writeArchive(app, temporary.resolve("hello-app.zip"));
     root = temporary.resolve("deployments");
-    previous =
-        Files.createDirectories(root.resolve("hello-app")).resolve(UUID.randomUUID().toString());
+    previous = Files.createDirectories(root.resolve(NAME)).resolve(UUID.randomUUID().toString());
     DeploymentArchive.read(archive, previous);
     Files.writeString(root.resolve("hello-app/current"), previous.getFileName().toString());
     admin = mock(BBjAdminBase.class);
@@ -65,7 +68,7 @@ final class DeploymentInstallerEntryTest {
         .thenReturn(new BBjAdminAdapterList<>(List.of(registered)));
     BBjAdminAppDeploymentApplication created = mock(BBjAdminAppDeploymentApplication.class);
     when(configuration.createApplication()).thenReturn(created);
-    when(registered.getString(BBjAdminAppDeploymentApplication.NAME)).thenReturn("hello-app");
+    when(registered.getString(BBjAdminAppDeploymentApplication.NAME)).thenReturn(NAME);
     when(registered.getString(BBjAdminAppDeploymentApplication.PROGRAM))
         .thenReturn(previous.resolve("bbj/webforj.bbj").toString());
     when(registered.getString(BBjAdminAppDeploymentApplication.CLASSPATH))
@@ -80,7 +83,7 @@ final class DeploymentInstallerEntryTest {
     String destination = root.toString();
 
     DeploymentException failure = assertThrows(DeploymentException.class,
-        () -> DeploymentInstaller.deploy(upload, "second-app", destination, admin));
+        () -> Deployer.deploy(upload, SECOND_NAME, destination, admin, ClasspathRelease.NONE));
 
     assertEquals("Entry class org.example.Application is already published as hello-app. "
         + "Undeploy hello-app first", failure.getMessage());
@@ -89,21 +92,19 @@ final class DeploymentInstallerEntryTest {
     verify(admin, never()).setClasspath(anyString(), any());
     verify(admin, never()).commit();
     try (Stream<Path> folders = Files.list(root)) {
-      assertEquals(List.of(root.resolve(".lock"), root.resolve("hello-app")),
-          folders.sorted().toList());
+      assertEquals(List.of(root.resolve(".lock"), root.resolve(NAME)), folders.sorted().toList());
     }
   }
 
   @Test
   void shouldRefuseTheEntryClassOfDevelopmentRunPublishedUnderAnotherName() throws Exception {
     Files.delete(previous.resolve("application.jar"));
-    Files.writeString(previous.resolve("development"),
-        app.resolve("src/main/resources").toString());
+    DevelopmentRunFiles.write(previous, app.resolve("src/main/resources"));
     InputStream upload = new ByteArrayInputStream(Files.readAllBytes(archive));
     String destination = root.toString();
 
     DeploymentException failure = assertThrows(DeploymentException.class,
-        () -> DeploymentInstaller.deploy(upload, "second-app", destination, admin));
+        () -> Deployer.deploy(upload, SECOND_NAME, destination, admin, ClasspathRelease.NONE));
 
     assertEquals("Entry class org.example.Application is already published as hello-app. "
         + "Undeploy hello-app first", failure.getMessage());
@@ -119,7 +120,7 @@ final class DeploymentInstallerEntryTest {
     String destination = root.toString();
 
     DeploymentResult result = assertDoesNotThrow(
-        () -> DeploymentInstaller.deploy(upload, "second-app", destination, admin));
+        () -> Deployer.deploy(upload, SECOND_NAME, destination, admin, ClasspathRelease.NONE));
 
     assertEquals(DeploymentResult.CREATED, result);
   }
@@ -132,7 +133,7 @@ final class DeploymentInstallerEntryTest {
     String destination = root.toString();
 
     DeploymentResult result = assertDoesNotThrow(
-        () -> DeploymentInstaller.deploy(upload, "second-app", destination, admin));
+        () -> Deployer.deploy(upload, SECOND_NAME, destination, admin, ClasspathRelease.NONE));
 
     assertEquals(DeploymentResult.CREATED, result);
   }

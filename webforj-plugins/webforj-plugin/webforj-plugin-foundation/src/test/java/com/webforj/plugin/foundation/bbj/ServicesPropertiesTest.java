@@ -1,5 +1,7 @@
 package com.webforj.plugin.foundation.bbj;
 
+import static com.webforj.plugin.foundation.bbj.ServicesProperties.JAVA_ARGUMENTS_KEY;
+import static com.webforj.plugin.foundation.bbj.ServicesProperties.JAVA_EXECUTABLE_KEY;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -32,6 +34,12 @@ class ServicesPropertiesTest {
       basis.java.jvm.Default=/opt/java/bin/java
       """;
   private static final String OPTIONS_ARGUMENT = "-XX:VMOptionsFile=/opt/hotswap/hotswap.options";
+  private static final String PROPERTIES_FILE = "BBj.properties";
+  private static final String JAVA_EXECUTABLE = "/opt/java/bin/java";
+  private static final String ENCODING_ARGUMENT = "-Dfile.encoding=UTF-8";
+  private static final String MEMORY_ARGUMENT = "-Xmx1024m";
+  private static final String BACKUP_FILE = "BBj.properties.before-webforj";
+  private static final String JBR_EXECUTABLE = "/opt/jbr/bin/java";
 
   @TempDir
   Path temporary;
@@ -45,18 +53,18 @@ class ServicesPropertiesTest {
 
   @Test
   void shouldReadTheJavaSettingsOfBbjServices() throws IOException {
-    Path file = temporary.resolve("BBj.properties");
+    Path file = temporary.resolve(PROPERTIES_FILE);
     Files.writeString(file, SERVICES_PROPERTIES);
 
     ServicesProperties properties = ServicesProperties.load(file, runtime);
 
-    assertEquals(Optional.of(Path.of("/opt/java/bin/java")), properties.getJavaExecutable());
-    assertEquals(List.of("-Xmx1024m", "-Dfile.encoding=UTF-8"), properties.getJavaArguments());
+    assertEquals(Optional.of(Path.of(JAVA_EXECUTABLE)), properties.getJavaExecutable());
+    assertEquals(List.of(MEMORY_ARGUMENT, ENCODING_ARGUMENT), properties.getJavaArguments());
   }
 
   @Test
   void shouldAnswerNoJavaSettingsWhenTheKeysAreAbsent() throws IOException {
-    Path file = temporary.resolve("BBj.properties");
+    Path file = temporary.resolve(PROPERTIES_FILE);
     Files.writeString(file, "basis.cacheDirectory=/opt/bbx/cache\n");
 
     ServicesProperties properties = ServicesProperties.load(file, runtime);
@@ -68,7 +76,7 @@ class ServicesPropertiesTest {
 
   @Test
   void shouldReadTheDefaultJavaExecutableOfBbj() throws IOException {
-    Path file = temporary.resolve("BBj.properties");
+    Path file = temporary.resolve(PROPERTIES_FILE);
     Files.writeString(file, """
         basis.java.jvm.Default=/opt/zulu/bin/java
         """);
@@ -94,7 +102,7 @@ class ServicesPropertiesTest {
   @MethodSource("getJavaSettings")
   void shouldTellWhetherTheJavaSettingsArePresent(String executable, String arguments,
       boolean present) throws IOException {
-    Path file = temporary.resolve("BBj.properties");
+    Path file = temporary.resolve(PROPERTIES_FILE);
     Files.writeString(file, """
         basis.java.jvm.BBjServices=%s
         basis.java.args.BBjServices=%s
@@ -108,7 +116,7 @@ class ServicesPropertiesTest {
 
   @Test
   void shouldApplyTheJavaSettingsAndKeepEveryOtherKeyAndArgument() throws IOException {
-    Path file = temporary.resolve("BBj.properties");
+    Path file = temporary.resolve(PROPERTIES_FILE);
     Files.writeString(file, SERVICES_PROPERTIES);
     final byte[] original = Files.readAllBytes(file);
     ServicesProperties properties = ServicesProperties.load(file, runtime);
@@ -126,18 +134,18 @@ class ServicesPropertiesTest {
         written.getProperty("basis.java.args.BBjServices"));
     assertEquals("/opt/bbx/cache", written.getProperty("basis.cacheDirectory"));
     assertEquals("-Xmx512m", written.getProperty("basis.java.args.Default"));
-    assertEquals("/opt/java/bin/java", written.getProperty("basis.java.jvm.Default"));
+    assertEquals(JAVA_EXECUTABLE, written.getProperty("basis.java.jvm.Default"));
     assertEquals(5, written.size());
-    assertEquals(Optional.of(Path.of("/opt/java/bin/java")), properties.getJavaExecutable());
+    assertEquals(Optional.of(Path.of(JAVA_EXECUTABLE)), properties.getJavaExecutable());
     assertArrayEquals(original,
-        Files.readAllBytes(runtime.resolve("BBj.properties" + ServicesProperties.BACKUP_SUFFIX)));
+        Files.readAllBytes(runtime.resolve(PROPERTIES_FILE + ServicesProperties.BACKUP_SUFFIX)));
     assertFalse(
-        Files.exists(temporary.resolve("BBj.properties" + ServicesProperties.BACKUP_SUFFIX)));
+        Files.exists(temporary.resolve(PROPERTIES_FILE + ServicesProperties.BACKUP_SUFFIX)));
   }
 
   @Test
   void shouldReplaceTheOptionsFileArgumentInItsPlace() throws IOException {
-    Path file = temporary.resolve("BBj.properties");
+    Path file = temporary.resolve(PROPERTIES_FILE);
     Files.writeString(file, """
         basis.java.jvm.BBjServices=/opt/jbr/bin/java
         basis.java.args.BBjServices=-Xmx1g -XX:VMOptionsFile=/old/x.options -Xss1m
@@ -152,7 +160,7 @@ class ServicesPropertiesTest {
 
   @Test
   void shouldWriteTheBackupOnlyOnce() throws IOException {
-    Path file = temporary.resolve("BBj.properties");
+    Path file = temporary.resolve(PROPERTIES_FILE);
     Files.writeString(file, SERVICES_PROPERTIES);
     final byte[] original = Files.readAllBytes(file);
     ServicesProperties.load(file, runtime).applyJavaSettings(OPTIONS_ARGUMENT);
@@ -161,16 +169,15 @@ class ServicesPropertiesTest {
         .applyJavaSettings("-XX:VMOptionsFile=/opt/hotswap-next/hotswap.options");
 
     assertEquals(
-        List.of("-Xmx1024m", "-Dfile.encoding=UTF-8",
+        List.of(MEMORY_ARGUMENT, ENCODING_ARGUMENT,
             "-XX:VMOptionsFile=/opt/hotswap-next/hotswap.options"),
         ServicesProperties.load(file, runtime).getJavaArguments());
-    assertArrayEquals(original,
-        Files.readAllBytes(runtime.resolve("BBj.properties.before-webforj")));
+    assertArrayEquals(original, Files.readAllBytes(runtime.resolve(BACKUP_FILE)));
   }
 
   @Test
   void shouldCreateTheBackupFolderWhenItDoesNotExist() throws IOException {
-    Path file = temporary.resolve("BBj.properties");
+    Path file = temporary.resolve(PROPERTIES_FILE);
     Files.writeString(file, SERVICES_PROPERTIES);
     byte[] original = Files.readAllBytes(file);
     Path backupDirectory = temporary.resolve("bbx/plugins/.webforj-bbjship-deployments");
@@ -178,15 +185,14 @@ class ServicesPropertiesTest {
 
     properties.applyJavaSettings(OPTIONS_ARGUMENT);
 
-    assertArrayEquals(original,
-        Files.readAllBytes(backupDirectory.resolve("BBj.properties.before-webforj")));
-    assertEquals(List.of("-Xmx1024m", "-Dfile.encoding=UTF-8", OPTIONS_ARGUMENT),
+    assertArrayEquals(original, Files.readAllBytes(backupDirectory.resolve(BACKUP_FILE)));
+    assertEquals(List.of(MEMORY_ARGUMENT, ENCODING_ARGUMENT, OPTIONS_ARGUMENT),
         ServicesProperties.load(file, backupDirectory).getJavaArguments());
   }
 
   @Test
   void shouldWriteNothingWhenTheJavaSettingsArePresent() throws IOException {
-    Path file = temporary.resolve("BBj.properties");
+    Path file = temporary.resolve(PROPERTIES_FILE);
     Files.writeString(file, """
         basis.java.jvm.BBjServices=/opt/jbr/bin/java
         basis.java.args.BBjServices=-Xmx1024m %s
@@ -197,13 +203,13 @@ class ServicesPropertiesTest {
     properties.applyJavaSettings(OPTIONS_ARGUMENT);
 
     assertArrayEquals(original, Files.readAllBytes(file));
-    assertFalse(Files.exists(runtime.resolve("BBj.properties.before-webforj")));
+    assertFalse(Files.exists(runtime.resolve(BACKUP_FILE)));
     assertTrue(properties.hasJavaSettings(OPTIONS_ARGUMENT));
   }
 
   @Test
   void shouldRestoreTheBackupAndRemoveIt() throws IOException {
-    Path file = temporary.resolve("BBj.properties");
+    Path file = temporary.resolve(PROPERTIES_FILE);
     Files.writeString(file, SERVICES_PROPERTIES);
     byte[] original = Files.readAllBytes(file);
     ServicesProperties.load(file, runtime).applyJavaSettings(OPTIONS_ARGUMENT);
@@ -212,12 +218,12 @@ class ServicesPropertiesTest {
 
     assertTrue(restored);
     assertArrayEquals(original, Files.readAllBytes(file));
-    assertFalse(Files.exists(runtime.resolve("BBj.properties.before-webforj")));
+    assertFalse(Files.exists(runtime.resolve(BACKUP_FILE)));
   }
 
   @Test
   void shouldLeaveTheFileWhenNoBackupExists() throws IOException {
-    Path file = temporary.resolve("BBj.properties");
+    Path file = temporary.resolve(PROPERTIES_FILE);
     Files.writeString(file, SERVICES_PROPERTIES);
     byte[] original = Files.readAllBytes(file);
 
@@ -225,6 +231,50 @@ class ServicesPropertiesTest {
 
     assertFalse(restored);
     assertArrayEquals(original, Files.readAllBytes(file));
+  }
+
+  @Test
+  void shouldRemoveTheHotswapArgumentWhenNoBackupExists() throws IOException {
+    Path file = temporary.resolve(PROPERTIES_FILE);
+    Files.writeString(file, """
+        %s=-Xmx1024m %s -Dfile.encoding=UTF-8
+        %s=/opt/java/bin/java
+        """.formatted(JAVA_ARGUMENTS_KEY, OPTIONS_ARGUMENT, JAVA_EXECUTABLE_KEY));
+
+    boolean reset = ServicesProperties.resetJavaSettings(file, runtime);
+
+    assertTrue(reset);
+    ServicesProperties properties = ServicesProperties.load(file, runtime);
+    assertEquals(List.of(MEMORY_ARGUMENT, ENCODING_ARGUMENT), properties.getJavaArguments());
+    assertEquals(Optional.of(Path.of(JAVA_EXECUTABLE)), properties.getJavaExecutable());
+    assertFalse(properties.hasHotswapArgument());
+  }
+
+  @Test
+  void shouldKeepTheOptionsFileArgumentOfAnotherFileWhenNoBackupExists() throws IOException {
+    Path file = temporary.resolve(PROPERTIES_FILE);
+    Files.writeString(file, """
+        %s=-Xmx1024m -XX:VMOptionsFile=/opt/app/jvm.options
+        """.formatted(JAVA_ARGUMENTS_KEY));
+    byte[] original = Files.readAllBytes(file);
+
+    boolean reset = ServicesProperties.resetJavaSettings(file, runtime);
+
+    assertFalse(reset);
+    assertArrayEquals(original, Files.readAllBytes(file));
+    assertFalse(ServicesProperties.load(file, runtime).hasHotswapArgument());
+  }
+
+  @Test
+  void shouldFindTheHotswapArgumentOfBbjShip() throws IOException {
+    Path file = temporary.resolve(PROPERTIES_FILE);
+    Files.writeString(file, """
+        %s=-Xmx1024m %s
+        """.formatted(JAVA_ARGUMENTS_KEY, OPTIONS_ARGUMENT));
+
+    ServicesProperties properties = ServicesProperties.load(file, runtime);
+
+    assertTrue(properties.hasHotswapArgument());
   }
 
   @ParameterizedTest
@@ -243,21 +293,21 @@ class ServicesPropertiesTest {
     Files.writeString(bbx.resolve("cfg/BBj.properties"), """
         basis.java.jvm.BBjServices=/opt/zulu/bin/java
         """);
-    Path file = Files.writeString(temporary.resolve("BBj.properties"), """
+    Path file = Files.writeString(temporary.resolve(PROPERTIES_FILE), """
         basis.java.jvm.BBjServices=/opt/jbr/bin/java
         """);
 
-    assertEquals(Optional.of(Path.of("/opt/jbr/bin/java")),
+    assertEquals(Optional.of(Path.of(JBR_EXECUTABLE)),
         ServicesProperties.findJavaExecutable(bbx, file));
   }
 
   @Test
   void shouldFindJavaExecutableInNamedFileWithoutHome() throws IOException {
-    Path file = Files.writeString(temporary.resolve("BBj.properties"), """
+    Path file = Files.writeString(temporary.resolve(PROPERTIES_FILE), """
         basis.java.jvm.BBjServices=/opt/jbr/bin/java
         """);
 
-    assertEquals(Optional.of(Path.of("/opt/jbr/bin/java")),
+    assertEquals(Optional.of(Path.of(JBR_EXECUTABLE)),
         ServicesProperties.findJavaExecutable(null, file));
   }
 
@@ -282,7 +332,7 @@ class ServicesPropertiesTest {
     return Stream.of(Arguments.of("""
         basis.java.jvm.BBjServices=/opt/jbr/bin/java
         basis.java.jvm.Default=/opt/zulu/bin/java
-        """, Optional.of(Path.of("/opt/jbr/bin/java"))), Arguments.of("""
+        """, Optional.of(Path.of(JBR_EXECUTABLE))), Arguments.of("""
         basis.java.jvm.Default=/opt/zulu/bin/java
         """, Optional.of(Path.of("/opt/zulu/bin/java"))), Arguments.of("""
         basis.java.jvm.BBjServices=/jdk/jbr/bin/server/jvm.dll
@@ -297,8 +347,8 @@ class ServicesPropertiesTest {
   }
 
   private static Stream<Arguments> getJavaSettings() {
-    return Stream.of(Arguments.of("/opt/jbr/bin/java", "-Xmx1024m " + OPTIONS_ARGUMENT, true),
-        Arguments.of("/opt/java/bin/java", "-Xmx1024m " + OPTIONS_ARGUMENT, true),
-        Arguments.of("/opt/jbr/bin/java", "-Xmx1024m", false));
+    return Stream.of(Arguments.of(JBR_EXECUTABLE, "-Xmx1024m " + OPTIONS_ARGUMENT, true),
+        Arguments.of(JAVA_EXECUTABLE, "-Xmx1024m " + OPTIONS_ARGUMENT, true),
+        Arguments.of(JBR_EXECUTABLE, MEMORY_ARGUMENT, false));
   }
 }

@@ -42,7 +42,7 @@ public final class BBjCredentials {
    * @return the credentials
    * @throws NullPointerException if an argument is null
    */
-  public static BBjCredentials of(String username, String password) {
+  public static BBjCredentials createUser(String username, String password) {
     return new BBjCredentials(Objects.requireNonNull(username), Objects.requireNonNull(password),
         null);
   }
@@ -55,7 +55,7 @@ public final class BBjCredentials {
    * @return the credentials
    * @throws NullPointerException if token is null
    */
-  public static BBjCredentials ofToken(String token) {
+  public static BBjCredentials createToken(String token) {
     return new BBjCredentials(null, null, Objects.requireNonNull(token));
   }
 
@@ -64,8 +64,8 @@ public final class BBjCredentials {
    *
    * @return the credentials
    */
-  public static BBjCredentials ofFactoryAccount() {
-    return of(FACTORY_USERNAME, FACTORY_PASSWORD);
+  public static BBjCredentials createFactoryAccount() {
+    return createUser(FACTORY_USERNAME, FACTORY_PASSWORD);
   }
 
   /**

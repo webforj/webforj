@@ -15,11 +15,22 @@ import org.junit.jupiter.api.Test;
 class DevtoolsDeliveryTest {
 
   private static final String VERSION = "26.02-SNAPSHOT";
+  private static final String SPRING_DEVTOOLS_ARTIFACT = "webforj-spring-devtools";
+  private static final String GROUP_ID = "com.webforj";
+  private static final String FOUNDATION_JAR = "webforj-foundation.jar";
+  private static final String FOUNDATION_ARTIFACT = "webforj-foundation";
+  private static final String WEBSOCKET_VERSION = "1.6.0";
+  private static final String WEBSOCKET_JAR = "Java-WebSocket.jar";
+  private static final String WEBSOCKET_ARTIFACT = "Java-WebSocket";
+  private static final String WEBSOCKET_GROUP_ID = "org.java-websocket";
+  private static final String SPRING_DEVTOOLS_JAR = "webforj-spring-devtools.jar";
+  private static final String CARRIED_JAR = "carried.jar";
+  private static final String DEVTOOLS_ARTIFACT = "webforj-devtools";
 
   @Test
   void shouldSkipTheApplicationWithoutTheFramework() throws Exception {
     List<String> diagnostics = new ArrayList<>();
-    DevtoolsDelivery delivery = DevtoolsDelivery.create().setArtifactId("webforj-spring-devtools")
+    DevtoolsDelivery delivery = DevtoolsDelivery.create().setArtifactId(SPRING_DEVTOOLS_ARTIFACT)
         .setApplicationClasspath(new ApplicationClasspath(
             List.of(jar("org.springframework", "spring-core", "6.2.0", "spring.jar"))))
         .setResolver((groupId, artifactId, version) -> {
@@ -33,8 +44,8 @@ class DevtoolsDeliveryTest {
   @Test
   void shouldKeepOnlyTheDevtoolsDelta() throws Exception {
     ApplicationClasspath application = new ApplicationClasspath(
-        List.of(jar("com.webforj", "webforj-foundation", VERSION, "webforj-foundation.jar"),
-            jar("org.java-websocket", "Java-WebSocket", "1.6.0", "Java-WebSocket.jar")));
+        List.of(jar(GROUP_ID, FOUNDATION_ARTIFACT, VERSION, FOUNDATION_JAR),
+            jar(WEBSOCKET_GROUP_ID, WEBSOCKET_ARTIFACT, WEBSOCKET_VERSION, WEBSOCKET_JAR)));
 
     ArtifactResolver resolver = (groupId, artifactId, version) -> {
       if (ApplicationClasspath.FRAMEWORK_ARTIFACT_ID.equals(artifactId)) {
@@ -42,20 +53,17 @@ class DevtoolsDeliveryTest {
             .of(jar("com.fasterxml.jackson.core", "jackson-core", "2.21.4", "jackson-core.jar"));
       }
 
-      return List.of(
-          jar("com.webforj", "webforj-spring-devtools", VERSION, "webforj-spring-devtools.jar"),
-          jar("org.java-websocket", "Java-WebSocket", "1.6.0", "dupe.jar"),
+      return List.of(jar(GROUP_ID, SPRING_DEVTOOLS_ARTIFACT, VERSION, SPRING_DEVTOOLS_JAR),
+          jar(WEBSOCKET_GROUP_ID, WEBSOCKET_ARTIFACT, WEBSOCKET_VERSION, "dupe.jar"),
           jar("com.fasterxml.jackson.core", "jackson-core", "2.21.4", "jackson-dupe.jar"));
     };
 
     List<String> lines = new ArrayList<>();
-    List<ResolvedJar> additions = DevtoolsDelivery.create().setArtifactId("webforj-spring-devtools")
+    List<ResolvedJar> additions = DevtoolsDelivery.create().setArtifactId(SPRING_DEVTOOLS_ARTIFACT)
         .setApplicationClasspath(application).setResolver(resolver).setLog(lines::add).build()
         .getJars();
 
-    assertEquals(
-        List.of(
-            jar("com.webforj", "webforj-spring-devtools", VERSION, "webforj-spring-devtools.jar")),
+    assertEquals(List.of(jar(GROUP_ID, SPRING_DEVTOOLS_ARTIFACT, VERSION, SPRING_DEVTOOLS_JAR)),
         additions,
         "a jar the application classpath or the framework tree already carries is never added");
     assertEquals(1, lines.size(), "the delivery reports what it hands over");
@@ -65,14 +73,14 @@ class DevtoolsDeliveryTest {
   @Test
   void shouldStayQuietWhenTheApplicationCarriesEverything() throws Exception {
     ApplicationClasspath application = new ApplicationClasspath(
-        List.of(jar("com.webforj", "webforj-foundation", VERSION, "webforj-foundation.jar"),
-            jar("com.webforj", "webforj-spring-devtools", VERSION, "carried.jar")));
+        List.of(jar(GROUP_ID, FOUNDATION_ARTIFACT, VERSION, FOUNDATION_JAR),
+            jar(GROUP_ID, SPRING_DEVTOOLS_ARTIFACT, VERSION, CARRIED_JAR)));
 
     ArtifactResolver resolver = (groupId, artifactId, version) -> List
-        .of(jar("com.webforj", "webforj-spring-devtools", VERSION, "webforj-spring-devtools.jar"));
+        .of(jar(GROUP_ID, SPRING_DEVTOOLS_ARTIFACT, VERSION, SPRING_DEVTOOLS_JAR));
 
     List<String> lines = new ArrayList<>();
-    List<ResolvedJar> additions = DevtoolsDelivery.create().setArtifactId("webforj-spring-devtools")
+    List<ResolvedJar> additions = DevtoolsDelivery.create().setArtifactId(SPRING_DEVTOOLS_ARTIFACT)
         .setApplicationClasspath(application).setResolver(resolver).setLog(lines::add).build()
         .getJars();
 
@@ -94,25 +102,27 @@ class DevtoolsDeliveryTest {
   @Test
   void shouldResolveTheClosureOfTheCoreDevtools() throws Exception {
     ApplicationClasspath application = new ApplicationClasspath(
-        List.of(jar("com.webforj", "webforj-foundation", VERSION, "webforj-foundation.jar")));
+        List.of(jar(GROUP_ID, FOUNDATION_ARTIFACT, VERSION, FOUNDATION_JAR)));
     List<String> asked = new ArrayList<>();
     ArtifactResolver resolver = (groupId, artifactId, version) -> {
       asked.add(artifactId);
       if (ApplicationClasspath.FRAMEWORK_ARTIFACT_ID.equals(artifactId)) {
-        return List.of(jar("com.webforj", "webforj-foundation", VERSION, "carried.jar"));
+        return List.of(jar(GROUP_ID, FOUNDATION_ARTIFACT, VERSION, CARRIED_JAR));
       }
 
-      return List.of(jar("com.webforj", "webforj-devtools", VERSION, "webforj-devtools.jar"),
-          jar("com.webforj", "webforj-foundation", VERSION, "carried.jar"),
-          jar("org.java-websocket", "Java-WebSocket", "1.6.0", "Java-WebSocket.jar"));
+      return List.of(jar(GROUP_ID, DEVTOOLS_ARTIFACT, VERSION, "webforj-devtools.jar"),
+          jar(GROUP_ID, FOUNDATION_ARTIFACT, VERSION, CARRIED_JAR),
+          jar(WEBSOCKET_GROUP_ID, WEBSOCKET_ARTIFACT, WEBSOCKET_VERSION, WEBSOCKET_JAR));
     };
 
-    List<ResolvedJar> additions = DevtoolsDelivery.create().setArtifactId("webforj-devtools")
+    List<ResolvedJar> additions = DevtoolsDelivery.create().setArtifactId(DEVTOOLS_ARTIFACT)
         .setApplicationClasspath(application).setResolver(resolver).build().getJars();
 
-    assertEquals(List.of(ApplicationClasspath.FRAMEWORK_ARTIFACT_ID, "webforj-devtools"), asked);
-    assertEquals(List.of(jar("com.webforj", "webforj-devtools", VERSION, "webforj-devtools.jar"),
-        jar("org.java-websocket", "Java-WebSocket", "1.6.0", "Java-WebSocket.jar")), additions);
+    assertEquals(List.of(ApplicationClasspath.FRAMEWORK_ARTIFACT_ID, DEVTOOLS_ARTIFACT), asked);
+    assertEquals(
+        List.of(jar(GROUP_ID, DEVTOOLS_ARTIFACT, VERSION, "webforj-devtools.jar"),
+            jar(WEBSOCKET_GROUP_ID, WEBSOCKET_ARTIFACT, WEBSOCKET_VERSION, WEBSOCKET_JAR)),
+        additions);
   }
 
   private static ResolvedJar jar(String groupId, String artifactId, String version,

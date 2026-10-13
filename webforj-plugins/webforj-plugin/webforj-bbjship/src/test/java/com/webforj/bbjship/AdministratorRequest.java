@@ -1,6 +1,7 @@
 package com.webforj.bbjship;
 
 import static org.mockito.AdditionalAnswers.delegatesTo;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -10,8 +11,7 @@ import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.webforj.bbjship.BBjShipServlet.AdminSessionFactory;
-import com.webforj.bbjship.cli.admin.BBjShipPlugin;
+import com.webforj.plugin.foundation.bbj.BBjShipPlugin;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -88,7 +88,8 @@ abstract class AdministratorRequest {
     when(request.getHeader("Authorization")).thenReturn("Basic YWRtaW5pc3RyYXRvcjpzZWNyZXQ=");
     ServletOutputStream output = mock(ServletOutputStream.class, delegatesTo(body));
     when(response.getOutputStream()).thenReturn(output);
-    when(sessions.create("administrator", "secret")).thenReturn(admin);
+    when(sessions.create(argThat(login -> "administrator".equals(login.getUsername())
+        && "secret".equals(login.getPassword())))).thenReturn(admin);
     when(admin.getRemoteConfiguration()).thenReturn(configuration);
     when(admin.getClasspathNames()).thenReturn(new BBjAdminAdapterList<>(List.of()));
     when(configuration.getApplications()).thenReturn(new BBjAdminAdapterList<>(List.of()));

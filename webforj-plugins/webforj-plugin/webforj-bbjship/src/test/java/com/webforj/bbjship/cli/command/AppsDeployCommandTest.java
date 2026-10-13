@@ -14,11 +14,13 @@ import com.basis.api.admin.BBjAdminAppDeploymentConfiguration;
 import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
 import com.webforj.bbjship.cli.BBjShipCli;
+import com.webforj.bbjship.cli.TerminalLines;
+import com.webforj.plugin.foundation.bbj.BBjShipPlugin;
 import com.webforj.plugin.foundation.bbj.DeploymentArchive;
 import com.webforj.plugin.foundation.bbj.HelloApp;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -39,11 +41,16 @@ import picocli.CommandLine.Help.Ansi;
 
 class AppsDeployCommandTest {
 
+  private static final String HELLO_APP_NAME = "hello-app";
+  private static final String DEPLOY_COMMAND = "deploy";
+  private static final String PROOF_APP_NAME = "proof-app";
+
   private static final String PREVIOUS_ID = "0b8f4f0e-3f5c-4a8e-9a49-5d1a6f3c2b10";
 
   @TempDir
   Path temporary;
 
+  private Path home;
   private Path app;
   private Path archive;
   private Path deployments;
@@ -55,11 +62,12 @@ class AppsDeployCommandTest {
 
   @BeforeEach
   void initBBjShipWithHelloAppDeployed() throws Exception {
-    Path home = Home.createCopy(temporary.resolve("bbx"));
-    app = HelloApp.createCopy(temporary.resolve("hello-app"));
+    home = Home.createCopy(temporary.resolve("bbx"));
+    app = HelloApp.createCopy(temporary.resolve(HELLO_APP_NAME));
     archive = HelloApp.writeArchive(app, temporary.resolve("hello-app.zip"));
     deployments = home.resolve("plugins/.webforj-bbjship-deployments/deployments");
-    Path previous = Files.createDirectories(deployments.resolve("hello-app")).resolve(PREVIOUS_ID);
+    Path previous =
+        Files.createDirectories(deployments.resolve(HELLO_APP_NAME)).resolve(PREVIOUS_ID);
     DeploymentArchive.read(archive, previous);
     Files.writeString(deployments.resolve("hello-app/current"), PREVIOUS_ID);
     BBjServices services = new BBjServices();
@@ -74,7 +82,7 @@ class AppsDeployCommandTest {
     when(configuration.getApplications())
         .thenReturn(new BBjAdminAdapterList<>(List.of(registration)));
     when(configuration.createApplication()).thenReturn(created);
-    when(registration.getString(BBjAdminAppDeploymentApplication.NAME)).thenReturn("hello-app");
+    when(registration.getString(BBjAdminAppDeploymentApplication.NAME)).thenReturn(HELLO_APP_NAME);
     when(registration.getString(BBjAdminAppDeploymentApplication.PROGRAM))
         .thenReturn(previous.resolve("bbj/webforj.bbj").toString());
     when(registration.getString(BBjAdminAppDeploymentApplication.CLASSPATH))
@@ -83,10 +91,9 @@ class AppsDeployCommandTest {
     when(registration.getArguments()).thenReturn(new BBjAdminAdapterList<>());
     when(registration.getJavaArguments()).thenReturn(new BBjAdminAdapterList<>());
     output = new ByteArrayOutputStream();
-    PrintStream stream = new PrintStream(output, true, StandardCharsets.UTF_8);
-    cli = BBjShipCli.create(home).setInput(InputStream.nullInputStream()).setEnvironment(Map.of())
-        .setOutput(stream).setError(stream).setAnsi(Ansi.OFF)
-        .setConnector((username, password) -> admin).build();
+    Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+    cli = BBjShipCli.create(new BBjShipPlugin(home)).setTerminal(new TerminalLines(stream))
+        .setAnsi(Ansi.OFF).setSessions(login -> admin).build();
   }
 
   @Test
@@ -95,28 +102,47 @@ class AppsDeployCommandTest {
         "webforj.entry = \"org.example.ProofApplication\"");
     Path proofApp = HelloApp.writeArchive(app, temporary.resolve("proof-app.zip"));
 
-    int status = cli.run("apps", "deploy", proofApp.toString());
+    int status = cli.run("apps", DEPLOY_COMMAND, proofApp.toString());
 
     assertEquals(0, status);
     assertEquals(FACTORY_ACCOUNT_WARNING + "\n" + "Deployed proof-app /webapp/proof-app\n",
         output.toString(StandardCharsets.UTF_8));
-    verify(created).setString(BBjAdminAppDeploymentApplication.NAME, "proof-app");
+    verify(created).setString(BBjAdminAppDeploymentApplication.NAME, PROOF_APP_NAME);
     verify(created).commit();
-    verify(configuration, never()).removeApplication("proof-app");
+    verify(configuration, never()).removeApplication(PROOF_APP_NAME);
     verify(admin).release();
   }
 
   @Test
+  void shouldDeployTheArchiveNamedRelativeToTheWorkingDirectoryOfTheTerminal() throws Exception {
+    Files.writeString(app.resolve("src/main/resources/webforj.conf"),
+        "webforj.entry = \"org.example.ProofApplication\"");
+    Path folder = Files.createDirectories(temporary.resolve("builds"));
+    HelloApp.writeArchive(app, folder.resolve("proof-app.zip"));
+    Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+    BBjShipCli inFolder = BBjShipCli.create(new BBjShipPlugin(home))
+        .setTerminal(new TerminalLines(stream).setWorkingDirectory(temporary))
+        .setSessions(login -> admin).build();
+
+    int status = inFolder.run("apps", DEPLOY_COMMAND, "builds/proof-app.zip");
+
+    assertEquals(0, status);
+    assertEquals(FACTORY_ACCOUNT_WARNING + "\n" + "Deployed proof-app /webapp/proof-app\n",
+        output.toString(StandardCharsets.UTF_8));
+    verify(created).setString(BBjAdminAppDeploymentApplication.NAME, PROOF_APP_NAME);
+  }
+
+  @Test
   void shouldReplaceTheApplicationOfTheSameName() throws Exception {
-    int status = cli.run("apps", "deploy", archive.toString());
+    int status = cli.run("apps", DEPLOY_COMMAND, archive.toString());
 
     assertEquals(0, status);
     assertEquals(FACTORY_ACCOUNT_WARNING + "\n" + "Deployed hello-app /webapp/hello-app\n",
         output.toString(StandardCharsets.UTF_8));
-    verify(configuration).removeApplication("hello-app");
+    verify(configuration).removeApplication(HELLO_APP_NAME);
     verify(created).commit();
     assertNotEquals(PREVIOUS_ID, Files.readString(deployments.resolve("hello-app/current")));
-    assertFalse(Files.exists(deployments.resolve("hello-app").resolve(PREVIOUS_ID)));
+    assertFalse(Files.exists(deployments.resolve(HELLO_APP_NAME).resolve(PREVIOUS_ID)));
   }
 
   @ParameterizedTest
@@ -124,7 +150,7 @@ class AppsDeployCommandTest {
   void shouldReportTheArchiveTheInstallerRefuses(String fileName, String message) throws Exception {
     Path refused = Files.copy(archive, temporary.resolve(fileName));
 
-    int status = cli.run("apps", "deploy", refused.toString());
+    int status = cli.run("apps", DEPLOY_COMMAND, refused.toString());
 
     assertEquals(1, status);
     assertEquals(FACTORY_ACCOUNT_WARNING + "\n" + "Command failed. " + message + "\n",
@@ -139,7 +165,7 @@ class AppsDeployCommandTest {
       String message) throws Exception {
     Path refused = Files.copy(archive, temporary.resolve(fileName));
 
-    int status = cli.run("apps", "deploy", refused.toString());
+    int status = cli.run("apps", DEPLOY_COMMAND, refused.toString());
 
     assertEquals(2, status);
     assertEquals(message + "\n", output.toString(StandardCharsets.UTF_8));
@@ -157,7 +183,7 @@ class AppsDeployCommandTest {
           """.formatted(app.resolve("src/main/resources").toString().replace("\\", "\\\\")));
     }
 
-    int status = cli.run("apps", "deploy", development.toString());
+    int status = cli.run("apps", DEPLOY_COMMAND, development.toString());
 
     assertEquals(2, status);
     assertEquals("Development archives are deployed by the watch, not by apps deploy\n",
@@ -170,7 +196,7 @@ class AppsDeployCommandTest {
   void shouldRefuseAnArchiveThatDoesNotExist() throws Exception {
     String missing = temporary.resolve("missing.zip").toString();
 
-    int status = cli.run("apps", "deploy", missing);
+    int status = cli.run("apps", DEPLOY_COMMAND, missing);
 
     assertEquals(2, status);
     assertEquals("Deployment archive " + missing + " does not exist\n",
@@ -182,7 +208,7 @@ class AppsDeployCommandTest {
   void shouldRefuseAnArchiveThatCannotBeRead() throws Exception {
     Files.setPosixFilePermissions(archive, Set.of());
 
-    int status = cli.run("apps", "deploy", archive.toString());
+    int status = cli.run("apps", DEPLOY_COMMAND, archive.toString());
 
     assertEquals(2, status);
     assertEquals("Deployment archive " + archive + " cannot be read\n",
@@ -191,9 +217,9 @@ class AppsDeployCommandTest {
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {"hello-app.jar", "hello-app", ""})
+  @ValueSource(strings = {"hello-app.jar", HELLO_APP_NAME, ""})
   void shouldRefusePathWithoutZipExtension(String path) throws Exception {
-    int status = cli.run("apps", "deploy", path);
+    int status = cli.run("apps", DEPLOY_COMMAND, path);
 
     assertEquals(2, status);
     assertEquals("Specify the path of a deployment archive ending in .zip\n",
@@ -203,7 +229,7 @@ class AppsDeployCommandTest {
 
   @Test
   void shouldRefuseMoreThanOneArchive() throws Exception {
-    int status = cli.run("apps", "deploy", archive.toString(), archive.toString());
+    int status = cli.run("apps", DEPLOY_COMMAND, archive.toString(), archive.toString());
 
     assertEquals(2, status);
     assertEquals("Specify one deployment archive\n", output.toString(StandardCharsets.UTF_8));

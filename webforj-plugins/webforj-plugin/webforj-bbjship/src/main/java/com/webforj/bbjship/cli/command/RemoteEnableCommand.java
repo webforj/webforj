@@ -6,6 +6,7 @@ import com.webforj.bbjship.cli.admin.BBjShipContexts;
 import com.webforj.bbjship.cli.admin.BBjShipSession;
 import com.webforj.bbjship.cli.option.CredentialOptions;
 import com.webforj.bbjship.cli.option.PortOption;
+import com.webforj.plugin.foundation.bbj.BBjShipCommandLine;
 import java.net.URI;
 import java.util.List;
 import java.util.OptionalInt;
@@ -23,7 +24,7 @@ import picocli.CommandLine.Spec;
  * @author Hyyan Abo Fakher
  * @since 26.03
  */
-@Command(name = "enable", mixinStandardHelpOptions = true,
+@Command(name = BBjShipCommandLine.ENABLE, mixinStandardHelpOptions = true,
     description = "Enable the BBjShip HTTP endpoint.")
 public final class RemoteEnableCommand implements Callable<Integer> {
 
@@ -58,7 +59,7 @@ public final class RemoteEnableCommand implements Callable<Integer> {
     try {
       new BBjShipClasspaths(admin, session.getPlugin()).resetServlet();
       BBjShipContexts contexts = session.createContexts(admin);
-      contexts.enable(port.getPort(), port.getSslPort(), session.isAssetsStarted());
+      contexts.applyEndpoint(port.getPort(), port.getSslPort(), session.isAssetsStarted());
       addresses = contexts.getAddresses();
     } finally {
       admin.release();

@@ -20,6 +20,9 @@ import org.junit.jupiter.api.io.TempDir;
 
 class WatchConfigGuardTest {
 
+  private static final String CONFIG_FILE = "webforj.conf";
+  private static final String DEBUG_LINE = "webforj.debug = true";
+
   @TempDir
   Path directory;
 
@@ -27,7 +30,7 @@ class WatchConfigGuardTest {
   @Timeout(10)
   @SuppressWarnings("try")
   void shouldRestoreTheFileAfterDeletion() throws Exception {
-    Path file = directory.resolve("webforj.conf");
+    Path file = directory.resolve(CONFIG_FILE);
     Files.writeString(file, "webforj.devtools.livereload.enabled = true");
     List<String> notices = new CopyOnWriteArrayList<>();
     CountDownLatch restored = new CountDownLatch(1);
@@ -47,19 +50,19 @@ class WatchConfigGuardTest {
   @Timeout(10)
   @SuppressWarnings("try")
   void shouldRestoreTheLastRewriteRatherThanTheStartContent() throws Exception {
-    Path file = directory.resolve("webforj.conf");
+    Path file = directory.resolve(CONFIG_FILE);
     Files.writeString(file, "webforj.debug = false");
     CountDownLatch restored = new CountDownLatch(1);
 
     try (WatchConfigGuard guard = WatchConfigGuard.start(file, line -> restored.countDown())) {
-      Files.writeString(file, "webforj.debug = true");
+      Files.writeString(file, DEBUG_LINE);
       Files.setLastModifiedTime(file, FileTime.from(Instant.now().plusSeconds(2)));
       assertFalse(restored.await(WatchConfigGuard.CHECK_INTERVAL_MS * 2, TimeUnit.MILLISECONDS));
-      assertEquals("webforj.debug = true", Files.readString(file, StandardCharsets.UTF_8));
+      assertEquals(DEBUG_LINE, Files.readString(file, StandardCharsets.UTF_8));
 
       Files.delete(file);
 
-      assertEquals("webforj.debug = true", readRestoredFile(restored, file));
+      assertEquals(DEBUG_LINE, readRestoredFile(restored, file));
     }
   }
 
@@ -67,7 +70,7 @@ class WatchConfigGuardTest {
   @Timeout(10)
   @SuppressWarnings("try")
   void shouldDoNothingWhenTheFileNeverExisted() throws Exception {
-    Path file = directory.resolve("webforj.conf");
+    Path file = directory.resolve(CONFIG_FILE);
     CountDownLatch restored = new CountDownLatch(1);
 
     try (WatchConfigGuard guard = WatchConfigGuard.start(file, line -> restored.countDown())) {
@@ -80,8 +83,8 @@ class WatchConfigGuardTest {
   @Test
   @Timeout(10)
   void shouldStopRestoringAfterClose() throws Exception {
-    Path file = directory.resolve("webforj.conf");
-    Files.writeString(file, "webforj.debug = true");
+    Path file = directory.resolve(CONFIG_FILE);
+    Files.writeString(file, DEBUG_LINE);
     CountDownLatch restored = new CountDownLatch(1);
 
     WatchConfigGuard guard = WatchConfigGuard.start(file, line -> restored.countDown());

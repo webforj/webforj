@@ -13,10 +13,13 @@ import org.junit.jupiter.api.Test;
 class ApplicationClasspathTest {
 
   private static final String VERSION = "26.02-SNAPSHOT";
+  private static final String SPRING_ARTIFACT = "spring-core";
+  private static final String SPRING_GROUP_ID = "org.springframework";
+  private static final String SPRING_VERSION = "6.2.0";
 
   @Test
   void shouldFindTheFrameworkVersionOnlyWhenTheFrameworkIsPresent() {
-    ResolvedJar spring = jar("org.springframework", "spring-core", "6.2.0");
+    ResolvedJar spring = jar(SPRING_GROUP_ID, SPRING_ARTIFACT, SPRING_VERSION);
     ResolvedJar framework = jar("com.webforj", "webforj-foundation", VERSION);
 
     assertEquals(Optional.of(VERSION),
@@ -28,8 +31,8 @@ class ApplicationClasspathTest {
   void shouldListTheModuleKeysInClasspathOrderWithoutRepetition() {
     ApplicationClasspath classpath =
         new ApplicationClasspath(List.of(jar("com.webforj", "webforj-foundation", VERSION),
-            jar("org.springframework", "spring-core", "6.2.0"),
-            jar("org.springframework", "spring-core", "6.2.0")));
+            jar(SPRING_GROUP_ID, SPRING_ARTIFACT, SPRING_VERSION),
+            jar(SPRING_GROUP_ID, SPRING_ARTIFACT, SPRING_VERSION)));
 
     assertEquals(Set.of("com.webforj:webforj-foundation", "org.springframework:spring-core"),
         classpath.getModuleKeys());

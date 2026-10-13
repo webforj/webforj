@@ -1,5 +1,11 @@
 package com.webforj.bbjship.cli.admin;
 
+import static com.webforj.bbjship.cli.command.BBjServices.ASSETS_CONTEXT;
+import static com.webforj.bbjship.cli.command.BBjServices.BBJSHIP_CONTEXT;
+import static com.webforj.bbjship.cli.command.Home.ASSETS_FOLDER;
+import static com.webforj.bbjship.cli.command.Home.DEPLOYMENTS_FOLDER;
+import static com.webforj.bbjship.cli.command.Home.HTDOCS_FOLDER;
+import static com.webforj.bbjship.cli.command.Home.PLUGIN_FOLDER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -22,32 +28,42 @@ import org.mockito.InOrder;
 
 class BBjShipContextsEnableAssetsTest extends EmptyWebAppServer {
 
+  private static final String ASSETS_EXECUTOR = "CONTEXT:webforj-bbjship-assets";
+  private static final String ASSETS_RESTART = """
+      {
+        "EXECUTOR": "CONTEXT:webforj-bbjship-assets",
+        "DATA": {
+          "ACTION": "RESTART"
+        },
+        "ENABLED": true
+      }""";
+
   @Test
   void shouldLeaveTheServerAloneWhenTheAssetsContextDoesNotExist() throws Exception {
     when(server.getContextNames())
-        .thenReturn(new BBjAdminAdapterList<>(List.of("root", "webforj-bbjship")));
-    when(server.getContextInfo("webforj-bbjship")).thenReturn(info);
-    when(info.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn(RUNNING
-        .formatted("webforj-bbjship", home.resolve("plugins/.webforj-bbjship-deployments/htdocs")));
+        .thenReturn(new BBjAdminAdapterList<>(List.of("root", BBJSHIP_CONTEXT)));
+    when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(info);
+    when(info.getString(BBjAdminContextInfo.JSON_DATA))
+        .thenReturn(RUNNING.formatted(BBJSHIP_CONTEXT, home.resolve(HTDOCS_FOLDER)));
     WebServer web = WebServer.startServingBBjShip();
 
     try (web) {
-      contexts.enable(web.getPort(), OptionalInt.empty(), false);
+      contexts.applyEndpoint(web.getPort(), OptionalInt.empty(), false);
     }
 
-    verify(server, never()).getContextInfo("webforj-bbjship-assets");
-    verify(admin, never()).jsonExecute(contains("CONTEXT:webforj-bbjship-assets"));
+    verify(server, never()).getContextInfo(ASSETS_CONTEXT);
+    verify(admin, never()).jsonExecute(contains(ASSETS_EXECUTOR));
   }
 
   @Test
   void shouldMoveTheAssetsContextToThePortsOfTheBbjShipContextAndRestartIt() throws Exception {
     BBjAdminContextInfo bbjShip = mock(BBjAdminContextInfo.class);
-    when(server.getContextNames()).thenReturn(
-        new BBjAdminAdapterList<>(List.of("root", "webforj-bbjship", "webforj-bbjship-assets")));
-    when(server.getContextInfo("webforj-bbjship")).thenReturn(bbjShip);
-    when(bbjShip.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn(RUNNING
-        .formatted("webforj-bbjship", home.resolve("plugins/.webforj-bbjship-deployments/htdocs")));
-    when(server.getContextInfo("webforj-bbjship-assets")).thenReturn(info);
+    when(server.getContextNames())
+        .thenReturn(new BBjAdminAdapterList<>(List.of("root", BBJSHIP_CONTEXT, ASSETS_CONTEXT)));
+    when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(bbjShip);
+    when(bbjShip.getString(BBjAdminContextInfo.JSON_DATA))
+        .thenReturn(RUNNING.formatted(BBJSHIP_CONTEXT, home.resolve(HTDOCS_FOLDER)));
+    when(server.getContextInfo(ASSETS_CONTEXT)).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn("""
         {
           "RESTART": {"EXECUTOR": "CONTEXT:webforj-bbjship-assets", "DATA": {"ACTION": "RESTART"},
@@ -56,18 +72,18 @@ class BBjShipContextsEnableAssetsTest extends EmptyWebAppServer {
           "Protocol": true,
           "SSL port": "",
           "Document Base": "%s"
-        }""".formatted(home.resolve("plugins/.webforj-bbjship-deployments/assets")));
+        }""".formatted(home.resolve(ASSETS_FOLDER)));
     WebServer web = WebServer.startServingBBjShip();
     WebServer secure = WebServer.startServingBBjShipOverHttps();
     int port = web.getPort();
     int sslPort = secure.getPort();
 
     try (web; secure) {
-      contexts.enable(port, OptionalInt.of(sslPort), false);
+      contexts.applyEndpoint(port, OptionalInt.of(sslPort), false);
     }
 
-    Path folder = home.resolve("plugins/webforj-bbjship");
-    Path runtime = home.resolve("plugins/.webforj-bbjship-deployments");
+    Path folder = home.resolve(PLUGIN_FOLDER);
+    Path runtime = home.resolve(DEPLOYMENTS_FOLDER);
     InOrder calls = inOrder(info, server, admin);
     calls.verify(info).setString(BBjAdminContextInfo.JSON_DATA, """
         {
@@ -101,25 +117,18 @@ class BBjShipContextsEnableAssetsTest extends EmptyWebAppServer {
         }""".formatted(folder, home, port, sslPort, runtime));
     calls.verify(info).commit();
     calls.verify(server).commit();
-    calls.verify(admin).jsonExecute("""
-        {
-          "EXECUTOR": "CONTEXT:webforj-bbjship-assets",
-          "DATA": {
-            "ACTION": "RESTART"
-          },
-          "ENABLED": true
-        }""");
+    calls.verify(admin).jsonExecute(ASSETS_RESTART);
   }
 
   @Test
   void shouldRestartTheAssetsContextOnThePortsOfTheBbjShipContextAsItIs() throws Exception {
     BBjAdminContextInfo bbjShip = mock(BBjAdminContextInfo.class);
-    when(server.getContextNames()).thenReturn(
-        new BBjAdminAdapterList<>(List.of("root", "webforj-bbjship", "webforj-bbjship-assets")));
-    when(server.getContextInfo("webforj-bbjship")).thenReturn(bbjShip);
-    when(bbjShip.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn(RUNNING
-        .formatted("webforj-bbjship", home.resolve("plugins/.webforj-bbjship-deployments/htdocs")));
-    when(server.getContextInfo("webforj-bbjship-assets")).thenReturn(info);
+    when(server.getContextNames())
+        .thenReturn(new BBjAdminAdapterList<>(List.of("root", BBJSHIP_CONTEXT, ASSETS_CONTEXT)));
+    when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(bbjShip);
+    when(bbjShip.getString(BBjAdminContextInfo.JSON_DATA))
+        .thenReturn(RUNNING.formatted(BBJSHIP_CONTEXT, home.resolve(HTDOCS_FOLDER)));
+    when(server.getContextInfo(ASSETS_CONTEXT)).thenReturn(info);
     WebServer web = WebServer.startServingBBjShip();
     int port = web.getPort();
     when(info.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn("""
@@ -130,32 +139,25 @@ class BBjShipContextsEnableAssetsTest extends EmptyWebAppServer {
           "Protocol": true,
           "SSL port": "",
           "Document Base": "%s"
-        }""".formatted(port, home.resolve("plugins/.webforj-bbjship-deployments/assets")));
+        }""".formatted(port, home.resolve(ASSETS_FOLDER)));
 
     try (web) {
-      contexts.enable(port, OptionalInt.empty(), false);
+      contexts.applyEndpoint(port, OptionalInt.empty(), false);
     }
 
     verify(info, never()).setString(anyString(), anyString());
-    verify(admin).jsonExecute("""
-        {
-          "EXECUTOR": "CONTEXT:webforj-bbjship-assets",
-          "DATA": {
-            "ACTION": "RESTART"
-          },
-          "ENABLED": true
-        }""");
+    verify(admin).jsonExecute(ASSETS_RESTART);
   }
 
   @Test
   void shouldLeaveTheAssetsContextStartedInThisSessionOnTheSamePortsAsItIs() throws Exception {
     BBjAdminContextInfo bbjShip = mock(BBjAdminContextInfo.class);
-    when(server.getContextNames()).thenReturn(
-        new BBjAdminAdapterList<>(List.of("root", "webforj-bbjship", "webforj-bbjship-assets")));
-    when(server.getContextInfo("webforj-bbjship")).thenReturn(bbjShip);
-    when(bbjShip.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn(RUNNING
-        .formatted("webforj-bbjship", home.resolve("plugins/.webforj-bbjship-deployments/htdocs")));
-    when(server.getContextInfo("webforj-bbjship-assets")).thenReturn(info);
+    when(server.getContextNames())
+        .thenReturn(new BBjAdminAdapterList<>(List.of("root", BBJSHIP_CONTEXT, ASSETS_CONTEXT)));
+    when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(bbjShip);
+    when(bbjShip.getString(BBjAdminContextInfo.JSON_DATA))
+        .thenReturn(RUNNING.formatted(BBJSHIP_CONTEXT, home.resolve(HTDOCS_FOLDER)));
+    when(server.getContextInfo(ASSETS_CONTEXT)).thenReturn(info);
     WebServer web = WebServer.startServingBBjShip();
     int port = web.getPort();
     when(info.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn("""
@@ -166,28 +168,27 @@ class BBjShipContextsEnableAssetsTest extends EmptyWebAppServer {
           "Protocol": true,
           "SSL port": "",
           "Document Base": "%s"
-        }""".formatted(port, home.resolve("plugins/.webforj-bbjship-deployments/assets")));
+        }""".formatted(port, home.resolve(ASSETS_FOLDER)));
 
     try (web) {
-      contexts.enable(port, OptionalInt.empty(), true);
+      contexts.applyEndpoint(port, OptionalInt.empty(), true);
     }
 
     verify(info, never()).setString(anyString(), anyString());
-    verify(admin, never()).jsonExecute(contains("CONTEXT:webforj-bbjship-assets"));
+    verify(admin, never()).jsonExecute(contains(ASSETS_EXECUTOR));
   }
 
   @Test
   void shouldRestartTheAssetsContextAsItIsWhenTheBbjShipContextFails() throws Exception {
     BBjAdminContextInfo bbjShip = mock(BBjAdminContextInfo.class);
-    String running = RUNNING.formatted("webforj-bbjship",
-        home.resolve("plugins/.webforj-bbjship-deployments/htdocs"));
-    when(server.getContextNames()).thenReturn(
-        new BBjAdminAdapterList<>(List.of("root", "webforj-bbjship", "webforj-bbjship-assets")));
-    when(server.getContextInfo("webforj-bbjship")).thenReturn(bbjShip);
+    String running = RUNNING.formatted(BBJSHIP_CONTEXT, home.resolve(HTDOCS_FOLDER));
+    when(server.getContextNames())
+        .thenReturn(new BBjAdminAdapterList<>(List.of("root", BBJSHIP_CONTEXT, ASSETS_CONTEXT)));
+    when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(bbjShip);
     when(bbjShip.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn(running);
-    when(server.getContextInfo("webforj-bbjship-assets")).thenReturn(info);
-    when(info.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn(RUNNING.formatted(
-        "webforj-bbjship-assets", home.resolve("plugins/.webforj-bbjship-deployments/assets")));
+    when(server.getContextInfo(ASSETS_CONTEXT)).thenReturn(info);
+    when(info.getString(BBjAdminContextInfo.JSON_DATA))
+        .thenReturn(RUNNING.formatted(ASSETS_CONTEXT, home.resolve(ASSETS_FOLDER)));
     contexts = new BBjShipContexts(admin, plugin, Duration.ofMillis(300));
     WebServer web = WebServer.startServingOther();
     int port = web.getPort();
@@ -195,28 +196,20 @@ class BBjShipContextsEnableAssetsTest extends EmptyWebAppServer {
 
     IOException failure;
     try (web) {
-      failure = assertThrows(IOException.class, () -> contexts.enable(port, sslPort, false));
+      failure = assertThrows(IOException.class, () -> contexts.applyEndpoint(port, sslPort, false));
     }
 
     assertEquals("The BBjServices web server does not answer on port " + port
         + ". Use the HTTP port of the BBjServices web server", failure.getMessage());
     verify(bbjShip).setString(BBjAdminContextInfo.JSON_DATA, running);
     verify(info, never()).setString(anyString(), anyString());
-    verify(admin).jsonExecute("""
-        {
-          "EXECUTOR": "CONTEXT:webforj-bbjship-assets",
-          "DATA": {
-            "ACTION": "RESTART"
-          },
-          "ENABLED": true
-        }""");
+    verify(admin).jsonExecute(ASSETS_RESTART);
   }
 
   @Test
   void shouldRestoreBothContextsWhenTheMovedAssetsContextDoesNotRestart() throws Exception {
     BBjAdminContextInfo bbjShip = mock(BBjAdminContextInfo.class);
-    String running = RUNNING.formatted("webforj-bbjship",
-        home.resolve("plugins/.webforj-bbjship-deployments/htdocs"));
+    String running = RUNNING.formatted(BBJSHIP_CONTEXT, home.resolve(HTDOCS_FOLDER));
     String assets = """
         {
           "RESTART": {"EXECUTOR": "CONTEXT:webforj-bbjship-assets", "DATA": {"ACTION": "RESTART"},
@@ -225,22 +218,21 @@ class BBjShipContextsEnableAssetsTest extends EmptyWebAppServer {
           "Protocol": true,
           "SSL port": "",
           "Document Base": "%s"
-        }""".formatted(home.resolve("plugins/.webforj-bbjship-deployments/assets"));
-    when(server.getContextNames()).thenReturn(
-        new BBjAdminAdapterList<>(List.of("root", "webforj-bbjship", "webforj-bbjship-assets")));
-    when(server.getContextInfo("webforj-bbjship")).thenReturn(bbjShip);
+        }""".formatted(home.resolve(ASSETS_FOLDER));
+    when(server.getContextNames())
+        .thenReturn(new BBjAdminAdapterList<>(List.of("root", BBJSHIP_CONTEXT, ASSETS_CONTEXT)));
+    when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(bbjShip);
     when(bbjShip.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn(running);
-    when(server.getContextInfo("webforj-bbjship-assets")).thenReturn(info);
+    when(server.getContextInfo(ASSETS_CONTEXT)).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn(assets);
-    when(admin.jsonExecute(contains("CONTEXT:webforj-bbjship-assets"))).thenReturn("""
-        {"MESSAGE": "Port in use"}""");
+    when(admin.jsonExecute(contains(ASSETS_EXECUTOR))).thenReturn("{\"MESSAGE\": \"Port in use\"}");
     WebServer web = WebServer.startServingBBjShip();
     int port = web.getPort();
     OptionalInt sslPort = OptionalInt.empty();
 
     IOException failure;
     try (web) {
-      failure = assertThrows(IOException.class, () -> contexts.enable(port, sslPort, false));
+      failure = assertThrows(IOException.class, () -> contexts.applyEndpoint(port, sslPort, false));
     }
 
     assertEquals("The assets context did not restart. Port in use", failure.getMessage());

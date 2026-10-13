@@ -91,11 +91,12 @@ public final class Development {
    *
    * @return the address of the running application
    * @throws IOException if the setup, the devtools resolution, the archive or the deployment fails
-   * @throws IllegalArgumentException if the deployment URL is no valid BBjShip address
+   * @throws IllegalArgumentException if the deployment URL is no valid BBjShip address or no class
+   *         folder is set
    */
   public URI start() throws IOException {
     Setup.Builder setup = Setup.create(bundle, version).setDeploymentUrl(deploymentUrl)
-        .setCredentials(credentials).setPort(DeploymentPolicy.getPort(deploymentUrl))
+        .setCredentials(credentials).setPort(BBjShipClient.getPort(deploymentUrl))
         .setDevelopmentEnabled(true).setLog(log).setWarn(warn);
     if (home != null) {
       setup.setHome(home);
@@ -264,13 +265,9 @@ public final class Development {
      *
      * @return this builder
      * @throws NullPointerException if classFolders or one of its folders is null
-     * @throws IllegalArgumentException if classFolders is empty or a folder is not absolute
+     * @throws IllegalArgumentException if a folder is not absolute
      */
     public Builder setClassFolders(List<Path> classFolders) {
-      if (classFolders.isEmpty()) {
-        throw new IllegalArgumentException("a development run needs at least one class folder");
-      }
-
       for (Path folder : classFolders) {
         if (!Objects.requireNonNull(folder).isAbsolute()) {
           throw new IllegalArgumentException(

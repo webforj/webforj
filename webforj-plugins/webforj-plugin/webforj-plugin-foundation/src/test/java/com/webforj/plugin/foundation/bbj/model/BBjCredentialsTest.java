@@ -14,19 +14,24 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 class BBjCredentialsTest {
 
+  private static final String ADMIN_USERNAME = "administrator";
+  private static final String ADMIN_PASSWORD = "secret";
+  private static final String FACTORY_USERNAME = "admin";
+  private static final String FACTORY_PASSWORD = "admin123";
+
   @Test
   void shouldHoldTheGivenValues() {
-    BBjCredentials credentials = BBjCredentials.of("administrator", "secret");
+    BBjCredentials credentials = BBjCredentials.createUser(ADMIN_USERNAME, ADMIN_PASSWORD);
 
-    assertEquals("administrator", credentials.getUsername());
-    assertEquals("secret", credentials.getPassword());
+    assertEquals(ADMIN_USERNAME, credentials.getUsername());
+    assertEquals(ADMIN_PASSWORD, credentials.getPassword());
     assertFalse(credentials.isToken());
     assertNull(credentials.getToken());
   }
 
   @Test
   void shouldHoldTheGivenToken() {
-    BBjCredentials credentials = BBjCredentials.ofToken("4f2a9c");
+    BBjCredentials credentials = BBjCredentials.createToken("4f2a9c");
 
     assertEquals("4f2a9c", credentials.getToken());
     assertTrue(credentials.isToken());
@@ -36,21 +41,21 @@ class BBjCredentialsTest {
 
   @Test
   void shouldRejectNullValues() {
-    String username = "administrator";
-    String password = "secret";
+    String username = ADMIN_USERNAME;
+    String password = ADMIN_PASSWORD;
     String missing = null;
 
-    assertThrows(NullPointerException.class, () -> BBjCredentials.of(missing, password));
-    assertThrows(NullPointerException.class, () -> BBjCredentials.of(username, missing));
-    assertThrows(NullPointerException.class, () -> BBjCredentials.ofToken(missing));
+    assertThrows(NullPointerException.class, () -> BBjCredentials.createUser(missing, password));
+    assertThrows(NullPointerException.class, () -> BBjCredentials.createUser(username, missing));
+    assertThrows(NullPointerException.class, () -> BBjCredentials.createToken(missing));
   }
 
   @Test
   void shouldHoldTheFactoryAccount() {
-    BBjCredentials credentials = BBjCredentials.ofFactoryAccount();
+    BBjCredentials credentials = BBjCredentials.createFactoryAccount();
 
-    assertEquals("admin", credentials.getUsername());
-    assertEquals("admin123", credentials.getPassword());
+    assertEquals(FACTORY_USERNAME, credentials.getUsername());
+    assertEquals(FACTORY_PASSWORD, credentials.getPassword());
     assertTrue(credentials.isFactoryAccount());
   }
 
@@ -62,9 +67,10 @@ class BBjCredentialsTest {
   }
 
   private static Stream<Arguments> getCredentials() {
-    return Stream.of(Arguments.of(BBjCredentials.of("admin", "admin123"), true),
-        Arguments.of(BBjCredentials.of("admin", "secret"), false),
-        Arguments.of(BBjCredentials.of("administrator", "admin123"), false),
-        Arguments.of(BBjCredentials.ofToken("admin123"), false));
+    return Stream.of(
+        Arguments.of(BBjCredentials.createUser(FACTORY_USERNAME, FACTORY_PASSWORD), true),
+        Arguments.of(BBjCredentials.createUser(FACTORY_USERNAME, ADMIN_PASSWORD), false),
+        Arguments.of(BBjCredentials.createUser(ADMIN_USERNAME, FACTORY_PASSWORD), false),
+        Arguments.of(BBjCredentials.createToken(FACTORY_PASSWORD), false));
   }
 }

@@ -3,8 +3,7 @@ package com.webforj.bbjship.model;
 import java.util.List;
 
 /**
- * Holds the answer that names the version of BBjShip, the Java arguments BBjServices runs with and
- * the process id of BBjServices.
+ * Holds the answer that names the version of BBjShip and the Java arguments BBjServices runs with.
  *
  * @author Hyyan Abo Fakher
  * @since 26.03
@@ -14,19 +13,16 @@ public final class BBjShipVersion {
 
   private final String version;
   private final List<String> javaArguments;
-  private final long pid;
 
   /**
    * Creates a version answer.
    *
    * @param version the BBjShip version
    * @param javaArguments the Java arguments BBjServices runs with
-   * @param pid the process id of BBjServices
    */
-  public BBjShipVersion(String version, List<String> javaArguments, long pid) {
+  public BBjShipVersion(String version, List<String> javaArguments) {
     this.version = version;
     this.javaArguments = List.copyOf(javaArguments);
-    this.pid = pid;
   }
 
   /**
@@ -45,14 +41,5 @@ public final class BBjShipVersion {
    */
   public List<String> getJavaArguments() {
     return javaArguments;
-  }
-
-  /**
-   * Gets the process id of BBjServices.
-   *
-   * @return the process id
-   */
-  public long getPid() {
-    return pid;
   }
 }

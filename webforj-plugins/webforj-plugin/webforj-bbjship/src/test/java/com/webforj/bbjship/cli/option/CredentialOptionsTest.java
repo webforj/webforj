@@ -3,13 +3,17 @@ package com.webforj.bbjship.cli.option;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.basis.api.admin.BBjAdminBase;
+import com.basis.api.admin.BBjAdminException;
 import com.webforj.bbjship.cli.BBjShipCli;
+import com.webforj.bbjship.cli.TerminalLines;
 import com.webforj.bbjship.cli.command.BBjServices;
 import com.webforj.bbjship.cli.command.Home;
-import java.io.ByteArrayInputStream;
+import com.webforj.plugin.foundation.bbj.BBjShipPlugin;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -27,6 +31,15 @@ import picocli.CommandLine.Help.Ansi;
 
 class CredentialOptionsTest {
 
+  private static final String FACTORY_USERNAME = "admin";
+  private static final String FACTORY_PASSWORD = "admin123";
+  private static final String USERNAME_VARIABLE = "WEBFORJ_BBJ_USERNAME";
+  private static final String PASSWORD_VARIABLE = "WEBFORJ_BBJ_PASSWORD";
+  private static final String OPERATOR_USERNAME = "operator";
+  private static final String ENVIRONMENT_PASSWORD = "environment-secret";
+  private static final String ADMINISTRATOR_USERNAME = "administrator";
+  private static final String PROMPT_PASSWORD = "prompt-secret";
+
   @TempDir
   Path temporary;
 
@@ -37,18 +50,18 @@ class CredentialOptionsTest {
   private BBjShipCli cli;
 
   @BeforeEach
-  void initCliOnTheBBjHomeFixture() throws Exception {
+  void initCliOnTheBBjHomeFixture() throws IOException, URISyntaxException, BBjAdminException {
     home = Home.createCopy(temporary.resolve("bbx"));
     output = new ByteArrayOutputStream();
     BBjServices services = new BBjServices();
     services.addBBjShipConfiguration(home);
     admin = services.getAdmin();
     credentials = new ArrayList<>();
-    PrintStream stream = new PrintStream(output, true, StandardCharsets.UTF_8);
-    cli = BBjShipCli.create(home).setInput(InputStream.nullInputStream()).setEnvironment(Map.of())
-        .setOutput(stream).setError(stream).setAnsi(Ansi.OFF).setConnector((username, password) -> {
-          credentials.add(username);
-          credentials.add(password);
+    Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+    cli = BBjShipCli.create(new BBjShipPlugin(home)).setTerminal(new TerminalLines(stream))
+        .setAnsi(Ansi.OFF).setSessions(login -> {
+          credentials.add(login.getUsername());
+          credentials.add(login.getPassword());
           return admin;
         }).build();
   }
@@ -58,7 +71,7 @@ class CredentialOptionsTest {
     int status = cli.run("apps", "list");
 
     assertEquals(0, status);
-    assertEquals(List.of("admin", "admin123"), credentials);
+    assertEquals(List.of(FACTORY_USERNAME, FACTORY_PASSWORD), credentials);
     assertEquals("""
         Warning: the BBj factory administrator account admin is in use with its factory password. \
         Change the password in Enterprise Manager and configure the new credentials
@@ -70,11 +83,11 @@ class CredentialOptionsTest {
   @MethodSource("getAccounts")
   void shouldWarnOnlyWhileTheFactoryAccountIsInUse(String username, String password,
       String expected) {
-    PrintStream stream = new PrintStream(output, true, StandardCharsets.UTF_8);
-    BBjShipCli configured = BBjShipCli.create(home).setInput(InputStream.nullInputStream())
-        .setEnvironment(Map.of("WEBFORJ_BBJ_USERNAME", username, "WEBFORJ_BBJ_PASSWORD", password))
-        .setOutput(stream).setError(stream).setAnsi(Ansi.OFF).setConnector((name, secret) -> admin)
-        .build();
+    Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+    BBjShipCli configured = BBjShipCli.create(new BBjShipPlugin(home))
+        .setTerminal(new TerminalLines(stream)
+            .setVariables(Map.of(USERNAME_VARIABLE, username, PASSWORD_VARIABLE, password)))
+        .setAnsi(Ansi.OFF).setSessions(login -> admin).build();
 
     int status = configured.run("apps", "list");
 
@@ -84,10 +97,10 @@ class CredentialOptionsTest {
 
   @Test
   void shouldShowTheWarningInYellow() {
-    PrintStream stream = new PrintStream(output, true, StandardCharsets.UTF_8);
-    BBjShipCli colored = BBjShipCli.create(home).setInput(InputStream.nullInputStream())
-        .setEnvironment(Map.of()).setOutput(stream).setError(stream).setAnsi(Ansi.ON)
-        .setConnector((name, secret) -> admin).build();
+    Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+    BBjShipCli colored =
+        BBjShipCli.create(new BBjShipPlugin(home)).setTerminal(new TerminalLines(stream))
+            .setAnsi(Ansi.ON).setSessions(login -> admin).build();
 
     int status = colored.run("apps", "list");
 
@@ -103,12 +116,12 @@ class CredentialOptionsTest {
   @ParameterizedTest
   @MethodSource("getIncompleteEnvironments")
   void shouldRefuseIncompleteCredentials(Map<String, String> environment, String message) {
-    PrintStream stream = new PrintStream(output, true, StandardCharsets.UTF_8);
-    BBjShipCli configured = BBjShipCli.create(home).setInput(InputStream.nullInputStream())
-        .setEnvironment(environment).setOutput(stream).setError(stream).setAnsi(Ansi.OFF)
-        .setConnector((username, password) -> {
-          credentials.add(username);
-          credentials.add(password);
+    Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+    BBjShipCli configured = BBjShipCli.create(new BBjShipPlugin(home))
+        .setTerminal(new TerminalLines(stream).setVariables(environment)).setAnsi(Ansi.OFF)
+        .setSessions(login -> {
+          credentials.add(login.getUsername());
+          credentials.add(login.getPassword());
           return admin;
         }).build();
 
@@ -121,41 +134,64 @@ class CredentialOptionsTest {
 
   @Test
   void shouldPreferTheEnvironmentOverTheDefaultCredentials() {
-    PrintStream stream = new PrintStream(output, true, StandardCharsets.UTF_8);
-    BBjShipCli configured = BBjShipCli.create(home).setInput(InputStream.nullInputStream())
-        .setEnvironment(Map.of("WEBFORJ_BBJ_USERNAME", "operator", "WEBFORJ_BBJ_PASSWORD",
-            "environment-secret"))
-        .setOutput(stream).setError(stream).setAnsi(Ansi.OFF).setConnector((username, password) -> {
-          credentials.add(username);
-          credentials.add(password);
+    Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+    BBjShipCli configured = BBjShipCli.create(new BBjShipPlugin(home))
+        .setTerminal(new TerminalLines(stream).setVariables(
+            Map.of(USERNAME_VARIABLE, OPERATOR_USERNAME, PASSWORD_VARIABLE, ENVIRONMENT_PASSWORD)))
+        .setAnsi(Ansi.OFF).setSessions(login -> {
+          credentials.add(login.getUsername());
+          credentials.add(login.getPassword());
           return admin;
         }).build();
 
     int status = configured.run("apps", "list");
 
     assertEquals(0, status);
-    assertEquals(List.of("operator", "environment-secret"), credentials);
+    assertEquals(List.of(OPERATOR_USERNAME, ENVIRONMENT_PASSWORD), credentials);
   }
 
   @Test
   void shouldPreferTheOptionsOverTheEnvironment() {
-    PrintStream stream = new PrintStream(output, true, StandardCharsets.UTF_8);
-    BBjShipCli configured = BBjShipCli.create(home)
-        .setInput(new ByteArrayInputStream("stdin-secret\n".getBytes(StandardCharsets.UTF_8)))
-        .setEnvironment(Map.of("WEBFORJ_BBJ_USERNAME", "operator", "WEBFORJ_BBJ_PASSWORD",
-            "environment-secret"))
-        .setOutput(stream).setError(stream).setAnsi(Ansi.OFF).setConnector((username, password) -> {
-          credentials.add(username);
-          credentials.add(password);
+    Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+    BBjShipCli configured = BBjShipCli.create(new BBjShipPlugin(home))
+        .setTerminal(new TerminalLines(stream).setVariables(
+            Map.of(USERNAME_VARIABLE, OPERATOR_USERNAME, PASSWORD_VARIABLE, ENVIRONMENT_PASSWORD))
+            .setTyped("stdin-secret"))
+        .setAnsi(Ansi.OFF).setSessions(login -> {
+          credentials.add(login.getUsername());
+          credentials.add(login.getPassword());
           return admin;
         }).build();
 
-    int status = configured.run("apps", "list", "--username", "administrator", "--password-stdin");
+    int status =
+        configured.run("apps", "list", "--username", ADMINISTRATOR_USERNAME, "--password-stdin");
 
     assertEquals(0, status);
-    assertEquals(List.of("administrator", "stdin-secret"), credentials);
+    assertEquals(List.of(ADMINISTRATOR_USERNAME, "stdin-secret"), credentials);
     assertEquals("""
         Reading the password from standard input
+        No applications deployed
+        """, output.toString(StandardCharsets.UTF_8));
+  }
+
+  @Test
+  void shouldReadThePasswordTheTerminalPromptsFor() {
+    Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+    TerminalLines terminal = new TerminalLines(stream).setTyped(PROMPT_PASSWORD);
+    BBjShipCli configured =
+        BBjShipCli.create(new BBjShipPlugin(home)).setTerminal(terminal).setSessions(login -> {
+          credentials.add(login.getUsername());
+          credentials.add(login.getPassword());
+          return admin;
+        }).build();
+
+    int status = configured.run("apps", "list", "--username", ADMINISTRATOR_USERNAME, "--password");
+
+    assertEquals(0, status);
+    assertEquals(List.of(ADMINISTRATOR_USERNAME, PROMPT_PASSWORD), credentials);
+    assertEquals(List.of(PROMPT_PASSWORD), terminal.getPasswordReads());
+    assertEquals("""
+        Enter the password. The terminal shows it as it is typed
         No applications deployed
         """, output.toString(StandardCharsets.UTF_8));
   }
@@ -163,29 +199,30 @@ class CredentialOptionsTest {
   @ParameterizedTest
   @ValueSource(strings = {"", "\n"})
   void shouldAskForPasswordWhenStandardInputIsEmpty(String input) {
-    PrintStream stream = new PrintStream(output, true, StandardCharsets.UTF_8);
-    BBjShipCli configured = BBjShipCli.create(home)
-        .setInput(new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8)))
-        .setEnvironment(Map.of()).setOutput(stream).setError(stream).setAnsi(Ansi.OFF)
-        .setConnector((username, password) -> admin).build();
+    Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+    BBjShipCli configured = BBjShipCli.create(new BBjShipPlugin(home))
+        .setTerminal(new TerminalLines(stream).setTyped(input.lines().toArray(String[]::new)))
+        .setAnsi(Ansi.OFF).setSessions(login -> admin).build();
 
     int status = configured.run("apps", "list", "--password-stdin");
 
     assertEquals(2, status);
     assertEquals("""
         Reading the password from standard input
-        Specify a password
+        The BBj administration user name and password are missing. Specify --username and \
+        --password-stdin, or set WEBFORJ_BBJ_USERNAME and WEBFORJ_BBJ_PASSWORD
         """, output.toString(StandardCharsets.UTF_8));
   }
 
   @Test
   void shouldRefuseBlankEnvironmentValues() {
-    PrintStream stream = new PrintStream(output, true, StandardCharsets.UTF_8);
-    BBjShipCli configured = BBjShipCli.create(home).setInput(InputStream.nullInputStream())
-        .setEnvironment(Map.of("WEBFORJ_BBJ_USERNAME", " ", "WEBFORJ_BBJ_PASSWORD", ""))
-        .setOutput(stream).setError(stream).setAnsi(Ansi.OFF).setConnector((username, password) -> {
-          credentials.add(username);
-          credentials.add(password);
+    Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+    BBjShipCli configured = BBjShipCli.create(new BBjShipPlugin(home))
+        .setTerminal(new TerminalLines(stream)
+            .setVariables(Map.of(USERNAME_VARIABLE, " ", PASSWORD_VARIABLE, "")))
+        .setAnsi(Ansi.OFF).setSessions(login -> {
+          credentials.add(login.getUsername());
+          credentials.add(login.getPassword());
           return admin;
         }).build();
 
@@ -193,28 +230,33 @@ class CredentialOptionsTest {
 
     assertEquals(2, status);
     assertEquals(List.of(), credentials);
-    assertEquals("Specify a user name\n", output.toString(StandardCharsets.UTF_8));
+    assertEquals(
+        "The BBj administration user name and password are missing. Specify --username "
+            + "and --password-stdin, or set WEBFORJ_BBJ_USERNAME and WEBFORJ_BBJ_PASSWORD\n",
+        output.toString(StandardCharsets.UTF_8));
   }
 
   private static Stream<Arguments> getAccounts() {
-    return Stream.of(Arguments.of("admin", "admin123", """
+    return Stream.of(Arguments.of(FACTORY_USERNAME, FACTORY_PASSWORD, """
         Warning: the BBj factory administrator account admin is in use with its factory password. \
         Change the password in Enterprise Manager and configure the new credentials
         No applications deployed
-        """), Arguments.of("admin", "secret", """
+        """), Arguments.of(FACTORY_USERNAME, "secret", """
         No applications deployed
-        """), Arguments.of("operator", "admin123", """
+        """), Arguments.of(OPERATOR_USERNAME, FACTORY_PASSWORD, """
         No applications deployed
         """));
   }
 
   private static Stream<Arguments> getIncompleteEnvironments() {
+    String supply = ". Specify --username and --password-stdin, or set WEBFORJ_BBJ_USERNAME and "
+        + PASSWORD_VARIABLE;
     return Stream.of(
-        Arguments.of(Map.of("WEBFORJ_BBJ_USERNAME", "operator"),
-            "Specify --password or --password-stdin, or set WEBFORJ_BBJ_PASSWORD"),
-        Arguments.of(Map.of("WEBFORJ_BBJ_PASSWORD", "secret"),
-            "Specify --username or set WEBFORJ_BBJ_USERNAME"),
-        Arguments.of(Map.of("WEBFORJ_BBJ_USERNAME", "operator", "WEBFORJ_BBJ_PASSWORD", " "),
-            "Specify a password"));
+        Arguments.of(Map.of(USERNAME_VARIABLE, OPERATOR_USERNAME),
+            "The BBj administration password is missing" + supply),
+        Arguments.of(Map.of(PASSWORD_VARIABLE, "secret"),
+            "The BBj administration user name is missing" + supply),
+        Arguments.of(Map.of(USERNAME_VARIABLE, OPERATOR_USERNAME, PASSWORD_VARIABLE, " "),
+            "The BBj administration password is missing" + supply));
   }
 }

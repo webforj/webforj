@@ -48,6 +48,14 @@ import org.w3c.dom.Document;
 
 class BBjDeployMojoTest {
 
+  private static final String APPLICATION_NAME = "hello-app";
+  private static final String WEBFORJ_VERSION = "26.03-SNAPSHOT";
+  private static final String DEPLOYMENT_URL = "https://bbj.example.test/webforj-bbjship";
+  private static final String ADMIN_PASSWORD = "secret";
+  private static final String ARCHIVE_PATH = "target/bbj/hello-app.zip";
+  private static final String ARCHIVE_DIRECTORY = "target/bbj";
+  private static final String DEPLOYER_USERNAME = "deployer";
+
   @TempDir
   Path temporary;
 
@@ -64,11 +72,11 @@ class BBjDeployMojoTest {
     app = HelloApp.createCopy(temporary);
     jar = HelloApp.writeJar(app);
     foundation = Path.of(App.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-    DefaultArtifact application = new DefaultArtifact("org.example", "hello-app", "1.0-SNAPSHOT",
-        null, "jar", null, new DefaultArtifactHandler("jar"));
+    DefaultArtifact application = new DefaultArtifact("org.example", APPLICATION_NAME,
+        "1.0-SNAPSHOT", null, "jar", null, new DefaultArtifactHandler("jar"));
     application.setFile(jar.toFile());
     DefaultArtifact framework = new DefaultArtifact("com.webforj", "webforj-foundation",
-        "26.03-SNAPSHOT", "compile", "jar", null, new DefaultArtifactHandler("jar"));
+        WEBFORJ_VERSION, "compile", "jar", null, new DefaultArtifactHandler("jar"));
     framework.setFile(foundation.toFile());
     mojo = new BBjDeployMojo();
     mojo.project = new MavenProject();
@@ -76,11 +84,11 @@ class BBjDeployMojoTest {
     mojo.project.setArtifact(application);
     mojo.project.setArtifacts(Set.of(framework));
     mojo.pluginDescriptor = new PluginDescriptor();
-    mojo.pluginDescriptor.setVersion("26.03-SNAPSHOT");
-    mojo.bbj.setPublishName("hello-app");
-    mojo.bbj.getDeployment().setUrl("https://bbj.example.test/webforj-bbjship");
+    mojo.pluginDescriptor.setVersion(WEBFORJ_VERSION);
+    mojo.bbj.setPublishName(APPLICATION_NAME);
+    mojo.bbj.getDeployment().setUrl(DEPLOYMENT_URL);
     mojo.bbj.getAdmin().setUsername("administrator");
-    mojo.bbj.getAdmin().setPassword("secret");
+    mojo.bbj.getAdmin().setPassword(ADMIN_PASSWORD);
     log = mock(Log.class);
     mojo.setLog(log);
     bbjShip = mock(BBjShipClient.class);
@@ -90,13 +98,12 @@ class BBjDeployMojoTest {
 
   @Test
   void shouldDeployTheArchiveOfTheHelloAppWithTheConfiguredSettings() throws Exception {
-    Path archive = app.resolve("target/bbj/hello-app.zip");
-    when(bbjShip.deploy(archive, "hello-app"))
+    Path archive = app.resolve(ARCHIVE_PATH);
+    when(bbjShip.deploy(archive, APPLICATION_NAME))
         .thenReturn(URI.create("https://bbj.example.test/webapp/hello-app"));
 
     try (var bbjShips = mockStatic(BBjShipClient.class)) {
-      bbjShips
-          .when(() -> BBjShipClient.create(URI.create("https://bbj.example.test/webforj-bbjship")))
+      bbjShips.when(() -> BBjShipClient.create(URI.create(DEPLOYMENT_URL)))
           .thenReturn(bbjShipBuilder);
 
       mojo.execute();
@@ -105,8 +112,8 @@ class BBjDeployMojoTest {
     ArgumentCaptor<BBjCredentials> credentials = ArgumentCaptor.forClass(BBjCredentials.class);
     verify(bbjShipBuilder).setCredentials(credentials.capture());
     assertEquals("administrator", credentials.getValue().getUsername());
-    assertEquals("secret", credentials.getValue().getPassword());
-    verify(bbjShipBuilder).setVersion("26.03-SNAPSHOT");
+    assertEquals(ADMIN_PASSWORD, credentials.getValue().getPassword());
+    verify(bbjShipBuilder).setVersion(WEBFORJ_VERSION);
     ArgumentCaptor<Consumer<String>> logChannel = ArgumentCaptor.captor();
     verify(bbjShipBuilder).setLog(logChannel.capture());
     logChannel.getValue().accept("Uploaded 50 percent of hello-app");
@@ -115,7 +122,7 @@ class BBjDeployMojoTest {
     verify(bbjShipBuilder).setWarn(warnChannel.capture());
     warnChannel.getValue().accept("Credentials are readable over plain HTTP");
     verify(log).warn("Credentials are readable over plain HTTP");
-    verify(bbjShip).deploy(archive, "hello-app");
+    verify(bbjShip).deploy(archive, APPLICATION_NAME);
     try (ZipFile zip = new ZipFile(archive.toFile())) {
       assertEquals(List.of("dependencies/00000-" + foundation.getFileName(), "application.jar",
           "bbj/webforj.bbj"), zip.stream().map(ZipEntry::getName).toList());
@@ -166,8 +173,7 @@ class BBjDeployMojoTest {
     mojo.project.getBuild().setFinalName("hello-app-1.0-SNAPSHOT");
 
     try (var bbjShips = mockStatic(BBjShipClient.class)) {
-      bbjShips
-          .when(() -> BBjShipClient.create(URI.create("https://bbj.example.test/webforj-bbjship")))
+      bbjShips.when(() -> BBjShipClient.create(URI.create(DEPLOYMENT_URL)))
           .thenReturn(bbjShipBuilder);
 
       mojo.execute();
@@ -190,7 +196,7 @@ class BBjDeployMojoTest {
       bbjShips.verifyNoInteractions();
     }
 
-    assertFalse(Files.exists(app.resolve("target/bbj")));
+    assertFalse(Files.exists(app.resolve(ARCHIVE_DIRECTORY)));
   }
 
   @ParameterizedTest
@@ -205,19 +211,17 @@ class BBjDeployMojoTest {
       bbjShips.verifyNoInteractions();
     }
 
-    assertFalse(Files.exists(app.resolve("target/bbj")));
+    assertFalse(Files.exists(app.resolve(ARCHIVE_DIRECTORY)));
     assertFalse(Files.exists(app.resolve("target/escaped.zip")));
   }
 
   @Test
   void shouldReportTheFailureOfTheBbjShip() throws Exception {
     IOException uploadFailure = new IOException("BBj deployment upload failed");
-    when(bbjShip.deploy(app.resolve("target/bbj/hello-app.zip"), "hello-app"))
-        .thenThrow(uploadFailure);
+    when(bbjShip.deploy(app.resolve(ARCHIVE_PATH), APPLICATION_NAME)).thenThrow(uploadFailure);
 
     try (var bbjShips = mockStatic(BBjShipClient.class)) {
-      bbjShips
-          .when(() -> BBjShipClient.create(URI.create("https://bbj.example.test/webforj-bbjship")))
+      bbjShips.when(() -> BBjShipClient.create(URI.create(DEPLOYMENT_URL)))
           .thenReturn(bbjShipBuilder);
 
       MojoExecutionException failure = assertThrows(MojoExecutionException.class, mojo::execute);
@@ -233,8 +237,7 @@ class BBjDeployMojoTest {
     mojo.token = "4f2a9c";
 
     try (var bbjShips = mockStatic(BBjShipClient.class)) {
-      bbjShips
-          .when(() -> BBjShipClient.create(URI.create("https://bbj.example.test/webforj-bbjship")))
+      bbjShips.when(() -> BBjShipClient.create(URI.create(DEPLOYMENT_URL)))
           .thenReturn(bbjShipBuilder);
 
       mojo.execute();
@@ -244,14 +247,14 @@ class BBjDeployMojoTest {
     verify(bbjShipBuilder).setCredentials(credentials.capture());
     assertTrue(credentials.getValue().isToken());
     assertEquals("4f2a9c", credentials.getValue().getToken());
-    verify(bbjShip).deploy(app.resolve("target/bbj/hello-app.zip"), "hello-app");
+    verify(bbjShip).deploy(app.resolve(ARCHIVE_PATH), APPLICATION_NAME);
   }
 
   @Test
   void shouldPreferTheCommandLineOverTheConfiguration() throws Exception {
     mojo.deploymentUrl = "http://localhost:8888/webforj-bbjship";
     mojo.publishName = "hello-app-staging";
-    mojo.username = "deployer";
+    mojo.username = DEPLOYER_USERNAME;
     mojo.password = "deployer-secret";
 
     try (var bbjShips = mockStatic(BBjShipClient.class)) {
@@ -263,7 +266,7 @@ class BBjDeployMojoTest {
 
     ArgumentCaptor<BBjCredentials> credentials = ArgumentCaptor.forClass(BBjCredentials.class);
     verify(bbjShipBuilder).setCredentials(credentials.capture());
-    assertEquals("deployer", credentials.getValue().getUsername());
+    assertEquals(DEPLOYER_USERNAME, credentials.getValue().getUsername());
     assertEquals("deployer-secret", credentials.getValue().getPassword());
     verify(bbjShip).deploy(app.resolve("target/bbj/hello-app-staging.zip"), "hello-app-staging");
   }
@@ -280,7 +283,7 @@ class BBjDeployMojoTest {
       bbjShips.verifyNoInteractions();
     }
 
-    assertFalse(Files.exists(app.resolve("target/bbj")));
+    assertFalse(Files.exists(app.resolve(ARCHIVE_DIRECTORY)));
   }
 
   @Test
@@ -297,7 +300,7 @@ class BBjDeployMojoTest {
       bbjShips.verifyNoInteractions();
     }
 
-    assertFalse(Files.exists(app.resolve("target/bbj")));
+    assertFalse(Files.exists(app.resolve(ARCHIVE_DIRECTORY)));
   }
 
   @Test
@@ -312,7 +315,7 @@ class BBjDeployMojoTest {
       bbjShips.verifyNoInteractions();
     }
 
-    assertFalse(Files.exists(app.resolve("target/bbj/hello-app.zip")));
+    assertFalse(Files.exists(app.resolve(ARCHIVE_PATH)));
   }
 
   @ParameterizedTest
@@ -324,8 +327,7 @@ class BBjDeployMojoTest {
     mojo.password = password;
 
     try (var bbjShips = mockStatic(BBjShipClient.class)) {
-      bbjShips
-          .when(() -> BBjShipClient.create(URI.create("https://bbj.example.test/webforj-bbjship")))
+      bbjShips.when(() -> BBjShipClient.create(URI.create(DEPLOYMENT_URL)))
           .thenReturn(bbjShipBuilder);
 
       mojo.execute();
@@ -346,18 +348,19 @@ class BBjDeployMojoTest {
 
     MojoExecutionException failure = assertThrows(MojoExecutionException.class, mojo::execute);
 
-    assertEquals("BBj administration requires bbj.admin.username and bbj.admin.password, or "
-        + "webforj.bbj.admin.token. " + missing, failure.getMessage());
+    assertEquals(missing + ". Configure bbj.admin.username and bbj.admin.password, or "
+        + "webforj.bbj.admin.token", failure.getMessage());
   }
 
   private static Stream<Arguments> getAccounts() {
     return Stream.of(Arguments.of(null, null, 1), Arguments.of("admin", "admin123", 1),
-        Arguments.of("admin", "secret", 0));
+        Arguments.of("admin", ADMIN_PASSWORD, 0));
   }
 
   private static Stream<Arguments> getIncompleteCredentials() {
-    return Stream.of(Arguments.of(null, "secret", "bbj.admin.username is missing"),
-        Arguments.of("deployer", null, "bbj.admin.password is missing"));
+    return Stream.of(
+        Arguments.of(null, ADMIN_PASSWORD, "The BBj administration user name is missing"),
+        Arguments.of(DEPLOYER_USERNAME, null, "The BBj administration password is missing"));
   }
 
   private static Stream<Arguments> getDependencyResolutions() {
@@ -372,10 +375,10 @@ class BBjDeployMojoTest {
 
   private static Stream<Arguments> getIncompleteSettings() {
     return Stream.of(
-        Arguments.of("", "hello-app",
+        Arguments.of("", APPLICATION_NAME,
             "BBj deployment requires bbj.deployment.url. Set it in plugin configuration or "
                 + "pass -Dwebforj.bbj.deployment.url=<URL>"),
-        Arguments.of("https://bbj.example.test/webforj-bbjship", "",
+        Arguments.of(DEPLOYMENT_URL, "",
             "BBj deployment requires bbj.publishName or a final name of the build"));
   }
 

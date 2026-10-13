@@ -2,11 +2,11 @@ package com.webforj.bbjship.cli.option;
 
 import com.webforj.bbjship.cli.BBjShipFailureHandler;
 import com.webforj.bbjship.cli.admin.BBjShipInput;
+import com.webforj.plugin.foundation.bbj.BBjShipCommandLine;
+import com.webforj.plugin.foundation.bbj.DeploymentPolicy;
+import com.webforj.plugin.foundation.bbj.DeploymentPolicy.Authentication;
 import com.webforj.plugin.foundation.bbj.model.BBjCredentials;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import picocli.CommandLine;
 import picocli.CommandLine.Help.Ansi.Style;
@@ -32,23 +32,29 @@ public final class CredentialOptions {
 
   private static final String USERNAME_VARIABLE = "WEBFORJ_BBJ_USERNAME";
   private static final String PASSWORD_VARIABLE = "WEBFORJ_BBJ_PASSWORD";
+  private static final String SUPPLY = "Specify " + BBjShipCommandLine.USERNAME_OPTION + " and "
+      + BBjShipCommandLine.PASSWORD_STDIN_OPTION + ", or set " + USERNAME_VARIABLE + " and "
+      + PASSWORD_VARIABLE;
+  private static final String PASSWORD_PROMPT =
+      "Enter the password. The terminal shows it as it is typed";
 
   @Spec(Spec.Target.MIXEE)
   private CommandSpec spec;
 
   private String username;
 
-  @Option(names = "--password-stdin",
+  @Option(names = BBjShipCommandLine.PASSWORD_STDIN_OPTION,
       description = "Read the password from the first line of standard input.")
   private boolean passwordStdin;
 
-  @Option(names = "--password", interactive = true, arity = "0",
-      description = "Prompt for the password without showing it.")
-  private char[] password;
+  @Option(names = BBjShipCommandLine.PASSWORD_OPTION,
+      description = "Prompt for the password. The terminal shows the password as it is typed.")
+  private boolean passwordPrompt;
 
-  @Option(names = "--username", paramLabel = "USER", description = "BBj administrator user name.")
+  @Option(names = BBjShipCommandLine.USERNAME_OPTION, paramLabel = "USER",
+      description = "BBj administrator user name.")
   void setUsername(String username) {
-    BBjShipFailureHandler.applyValueValidation(spec, "--username", username);
+    BBjShipFailureHandler.applyValueValidation(spec, BBjShipCommandLine.USERNAME_OPTION, username);
     this.username = username;
   }
 
@@ -56,57 +62,36 @@ public final class CredentialOptions {
    * Resolves the credentials from the options, the environment or the factory account, and shows a
    * warning on the error stream while the factory account is in use.
    *
-   * @param input the standard input of the command
-   * @param environment the environment variables of the command
+   * @param input the input of the terminal that runs the command
    *
    * @return the credentials
-   * @throws IOException if standard input cannot be read
    * @throws ParameterException if a user name or password is blank or only one of them is given
    */
-  public BBjCredentials resolveCredentials(InputStream input, Map<String, String> environment)
-      throws IOException {
+  public BBjCredentials resolveCredentials(BBjShipInput input) {
     CommandLine line = spec.commandLine();
-    Optional<String> resolvedUsername = Optional.ofNullable(username)
-        .or(() -> Optional.ofNullable(environment.get(USERNAME_VARIABLE)));
-    if (resolvedUsername.filter(String::isBlank).isPresent()) {
-      throw new ParameterException(line, "Specify a user name");
+    String resolvedUsername =
+        username != null ? username : input.findVariable(USERNAME_VARIABLE).orElse(null);
+    String resolvedPassword = findPassword(input).orElse(null);
+    try {
+      return DeploymentPolicy.resolveCredentials(resolvedUsername, resolvedPassword, null,
+          Authentication.PASSWORD, warning -> line.getErr()
+              .println(line.getColorScheme().apply(warning, List.of(Style.fg_yellow))));
+    } catch (IllegalArgumentException refusal) {
+      throw new ParameterException(line, refusal.getMessage() + ". " + SUPPLY, refusal);
     }
-
-    Optional<String> resolvedPassword = findPassword(input, environment);
-    if (resolvedPassword.filter(String::isBlank).isPresent()) {
-      throw new ParameterException(line, "Specify a password");
-    }
-
-    BBjCredentials credentials = BBjCredentials.ofFactoryAccount();
-    if (resolvedUsername.isPresent() || resolvedPassword.isPresent()) {
-      credentials = BBjCredentials.of(
-          resolvedUsername.orElseThrow(
-              () -> new ParameterException(line, "Specify --username or set " + USERNAME_VARIABLE)),
-          resolvedPassword.orElseThrow(() -> new ParameterException(line,
-              "Specify --password or --password-stdin, or set " + PASSWORD_VARIABLE)));
-    }
-
-    if (credentials.isFactoryAccount()) {
-      line.getErr().println(line.getColorScheme().apply(BBjCredentials.FACTORY_ACCOUNT_WARNING,
-          List.of(Style.fg_yellow)));
-    }
-
-    return credentials;
   }
 
-  private Optional<String> findPassword(InputStream input, Map<String, String> environment)
-      throws IOException {
+  private Optional<String> findPassword(BBjShipInput input) {
     if (passwordStdin) {
       spec.commandLine().getOut().println("Reading the password from standard input");
-      String line = BBjShipInput.readLine(input);
 
-      return Optional.of(line == null ? "" : line);
+      return Optional.of(input.readLine().orElse(""));
     }
 
-    if (password != null) {
-      return Optional.of(new String(password));
+    if (passwordPrompt) {
+      return Optional.of(input.readPassword(PASSWORD_PROMPT).orElse(""));
     }
 
-    return Optional.ofNullable(environment.get(PASSWORD_VARIABLE));
+    return input.findVariable(PASSWORD_VARIABLE);
   }
 }

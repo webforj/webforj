@@ -2,11 +2,8 @@ package com.webforj.plugin.foundation.bbj;
 
 import com.webforj.plugin.foundation.resolve.ApplicationClasspath;
 import com.webforj.plugin.foundation.resolve.ApplicationClasspath.ResolvedJar;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -17,10 +14,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.stream.Collectors;
 
 /**
  * Writes the archive of a BBj application deployment.
@@ -30,7 +25,6 @@ import java.util.stream.Collectors;
  */
 public final class Deployment {
 
-  private static final String LAUNCHER_ENTRY = "bbj/webforj.bbj";
   private static final String ENGINE_ARTIFACT_ID = "webforj-engine";
 
   private final Path archive;
@@ -90,8 +84,8 @@ public final class Deployment {
         programArchives.add(path);
       }
 
-      String entry =
-          String.format(Locale.ROOT, "dependencies/%05d-%s", index++, path.getFileName());
+      String entry = String.format(Locale.ROOT, "%s/%05d-%s", DeploymentArchive.DEPENDENCIES_FOLDER,
+          index++, path.getFileName());
       files.put(entry, path);
     }
 
@@ -105,7 +99,7 @@ public final class Deployment {
     }
 
     if (application != null) {
-      files.put("application.jar", application);
+      files.put(DeploymentArchive.APPLICATION_ENTRY, application);
     }
 
     writeArchiveFiles(framework, files, programArchives);
@@ -141,7 +135,7 @@ public final class Deployment {
       }
 
       try (JarFile jar = new JarFile(framework.toFile())) {
-        JarEntry entry = jar.getJarEntry(LAUNCHER_ENTRY);
+        JarEntry entry = jar.getJarEntry(DeploymentArchive.LAUNCHER_ENTRY);
         if (entry == null) {
           throw new IOException(
               "The webforj-foundation dependency does not contain the BBj launcher");
@@ -152,7 +146,7 @@ public final class Deployment {
         }
       }
 
-      files.put(LAUNCHER_ENTRY, launcher);
+      files.put(DeploymentArchive.LAUNCHER_ENTRY, launcher);
       for (Path programArchive : programArchives) {
         addProgramFiles(programArchive, files, staged);
       }
@@ -169,12 +163,7 @@ public final class Deployment {
   private Path writeDevelopmentProperties(List<Path> staged) throws IOException {
     Path file = Files.createTempFile(archive.getParent(), ".bbj-development-", ".properties");
     staged.add(file);
-    Properties properties = new Properties();
-    properties.setProperty(DeploymentArchive.CLASS_FOLDER_KEY,
-        classFolders.stream().map(Path::toString).collect(Collectors.joining(File.pathSeparator)));
-    try (Writer writer = Files.newBufferedWriter(file, StandardCharsets.UTF_8)) {
-      properties.store(writer, null);
-    }
+    DeploymentArchive.writeClassFolders(file, classFolders);
 
     return file;
   }
@@ -187,7 +176,7 @@ public final class Deployment {
         JarEntry entry = entries.nextElement();
         String name = entry.getName();
         if (entry.isDirectory() || !name.toLowerCase(Locale.ROOT).endsWith(".bbj")
-            || LAUNCHER_ENTRY.equals(name)) {
+            || DeploymentArchive.LAUNCHER_ENTRY.equals(name)) {
           continue;
         }
 

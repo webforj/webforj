@@ -1,5 +1,7 @@
 package com.webforj.bbjship.cli.admin;
 
+import static com.webforj.bbjship.cli.command.BBjServices.BBJSHIP_CONTEXT;
+import static com.webforj.bbjship.cli.command.Home.HTDOCS_FOLDER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -17,11 +19,11 @@ class BBjShipContextsAddressesTest extends EmptyWebAppServer {
   @MethodSource("getUnsetSslPorts")
   void shouldReadUnsetSslPortAsNoHttpsAddress(String sslPort) throws Exception {
     when(server.getContextNames())
-        .thenReturn(new BBjAdminAdapterList<>(List.of("root", "webforj-bbjship")));
-    when(server.getContextInfo("webforj-bbjship")).thenReturn(info);
-    when(info.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn("""
-        {"HTTP port": 8888, %s"Document Base": "%s"}""".formatted(sslPort,
-        home.resolve("plugins/.webforj-bbjship-deployments/htdocs")));
+        .thenReturn(new BBjAdminAdapterList<>(List.of("root", BBJSHIP_CONTEXT)));
+    when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(info);
+    when(info.getString(BBjAdminContextInfo.JSON_DATA))
+        .thenReturn("{\"HTTP port\": 8888, %s\"Document Base\": \"%s\"}".formatted(sslPort,
+            home.resolve(HTDOCS_FOLDER)));
 
     List<URI> addresses = contexts.getAddresses();
 

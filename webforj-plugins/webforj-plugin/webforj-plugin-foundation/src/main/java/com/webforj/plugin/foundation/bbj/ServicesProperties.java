@@ -1,5 +1,6 @@
 package com.webforj.plugin.foundation.bbj;
 
+import com.webforj.plugin.foundation.hotswap.ContainerOptionsFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -34,13 +35,8 @@ public final class ServicesProperties {
    */
   public static final String JAVA_ARGUMENTS_KEY = "basis.java.args.BBjServices";
 
-  /**
-   * The suffix of the copy of the properties file taken before its first change.
-   */
-  public static final String BACKUP_SUFFIX = ".before-webforj";
-
-  static final String DEFAULT_FILE = "cfg/BBj.properties";
-
+  static final String BACKUP_SUFFIX = ".before-webforj";
+  private static final String DEFAULT_FILE = "cfg/BBj.properties";
   private static final String OPTIONS_FILE_PREFIX = "-XX:VMOptionsFile=";
   private static final String WINDOWS_LIBRARY = "jvm.dll";
   private static final String WINDOWS_EXECUTABLE = "java.exe";
@@ -85,7 +81,7 @@ public final class ServicesProperties {
    *         file cannot be read
    */
   public static Optional<Path> findJavaExecutable(Path home, Path file) throws IOException {
-    Path properties = file != null ? file : Setup.resolveHome(home).resolve(DEFAULT_FILE);
+    Path properties = file != null ? file : resolveDefaultFile(Installation.resolveHome(home));
     if (!Files.isRegularFile(properties)) {
       return Optional.empty();
     }
@@ -94,6 +90,29 @@ public final class ServicesProperties {
         new ServicesProperties(properties, null, readProperties(properties));
 
     return services.getJavaExecutable().or(services::getDefaultJavaExecutable);
+  }
+
+  /**
+   * Resolves the properties file of BBjServices in the cfg folder of a BBj home.
+   *
+   * @param home the BBj home
+   *
+   * @return the default properties file
+   */
+  public static Path resolveDefaultFile(Path home) {
+    return home.resolve(DEFAULT_FILE);
+  }
+
+  /**
+   * Resolves the copy of a properties file taken before its first change.
+   *
+   * @param file the properties file
+   * @param backupDirectory the folder that holds the copy
+   *
+   * @return the copy of the properties file
+   */
+  public static Path resolveBackup(Path file, Path backupDirectory) {
+    return backupDirectory.resolve(file.getFileName() + BACKUP_SUFFIX);
   }
 
   /**
@@ -178,31 +197,55 @@ public final class ServicesProperties {
     }
 
     properties.setProperty(JAVA_ARGUMENTS_KEY, String.join(" ", arguments));
-    try (OutputStream output = Files.newOutputStream(file)) {
-      properties.store(output, null);
-    }
+    writeProperties();
   }
 
   /**
-   * Restores the properties file of BBjServices from the copy taken before its first change.
+   * Checks whether BBjServices is set to run with the hotswap options file argument.
+   *
+   * @return true when the file holds an argument naming a hotswap options file
+   */
+  public boolean hasHotswapArgument() {
+    return getJavaArguments().stream().anyMatch(ContainerOptionsFile::isArgument);
+  }
+
+  /**
+   * Takes the Java settings of BBjServices back to the state before the first change.
    *
    * <p>
-   * The copy replaces the file and is removed. Nothing is touched when no copy exists.
+   * The copy taken before the first change replaces the file and is removed. Without a copy the
+   * hotswap options file argument is removed from the Java arguments and every other argument and
+   * key is kept. Nothing is touched when there is neither a copy nor that argument.
    * </p>
    *
    * @param file the properties file
    * @param backupDirectory the folder that holds the copy taken before the first change
    *
-   * @return true when the copy replaced the file, false when no copy exists
-   * @throws IOException if the copy cannot be moved over the file
+   * @return true when the file was changed, false when nothing was to reset
+   * @throws IOException if the copy cannot be moved over the file, or the file cannot be read or
+   *         written
    */
   public static boolean resetJavaSettings(Path file, Path backupDirectory) throws IOException {
     Path backup = resolveBackup(file, backupDirectory);
-    if (!Files.exists(backup)) {
+    if (Files.exists(backup)) {
+      Files.move(backup, file, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+      return true;
+    }
+
+    if (!Files.isRegularFile(file)) {
       return false;
     }
 
-    Files.move(backup, file, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+    ServicesProperties services =
+        new ServicesProperties(file, backupDirectory, readProperties(file));
+    if (!services.hasHotswapArgument()) {
+      return false;
+    }
+
+    List<String> arguments = services.getJavaArguments().stream()
+        .filter(argument -> !ContainerOptionsFile.isArgument(argument)).toList();
+    services.properties.setProperty(JAVA_ARGUMENTS_KEY, String.join(" ", arguments));
+    services.writeProperties();
 
     return true;
   }
@@ -216,13 +259,15 @@ public final class ServicesProperties {
     return properties;
   }
 
+  private void writeProperties() throws IOException {
+    try (OutputStream output = Files.newOutputStream(file)) {
+      properties.store(output, null);
+    }
+  }
+
   private Optional<Path> readPath(String key) {
     String value = properties.getProperty(key, "");
     return value.isBlank() ? Optional.empty() : Optional.of(Path.of(value.strip()));
-  }
-
-  private static Path resolveBackup(Path file, Path backupDirectory) {
-    return backupDirectory.resolve(file.getFileName() + BACKUP_SUFFIX);
   }
 
   private static Path toExecutable(Path java) {

@@ -31,6 +31,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 class BBjPackageMojoTest {
 
+  private static final String ARCHIVE_WRITTEN_MESSAGE = "BBj deployment archive written to ";
+  private static final String ARCHIVE_DIRECTORY = "target/bbj";
+
   @TempDir
   Path temporary;
 
@@ -76,7 +79,7 @@ class BBjPackageMojoTest {
       }
     }
 
-    verify(log).info("BBj deployment archive written to " + archive);
+    verify(log).info(ARCHIVE_WRITTEN_MESSAGE + archive);
   }
 
   @Test
@@ -85,8 +88,7 @@ class BBjPackageMojoTest {
 
     mojo.execute();
 
-    verify(log).info(
-        "BBj deployment archive written to " + app.resolve("target/bbj/hello-app-staging.zip"));
+    verify(log).info(ARCHIVE_WRITTEN_MESSAGE + app.resolve("target/bbj/hello-app-staging.zip"));
   }
 
   @Test
@@ -96,8 +98,8 @@ class BBjPackageMojoTest {
 
     mojo.execute();
 
-    verify(log).info("BBj deployment archive written to "
-        + app.resolve("target/bbj/hello-app-1.0-SNAPSHOT.zip"));
+    verify(log)
+        .info(ARCHIVE_WRITTEN_MESSAGE + app.resolve("target/bbj/hello-app-1.0-SNAPSHOT.zip"));
   }
 
   @Test
@@ -108,7 +110,7 @@ class BBjPackageMojoTest {
 
     assertEquals("BBj deployment requires jar packaging, this project is packaged as war",
         failure.getMessage());
-    assertFalse(Files.exists(app.resolve("target/bbj")));
+    assertFalse(Files.exists(app.resolve(ARCHIVE_DIRECTORY)));
   }
 
   @Test
@@ -121,7 +123,7 @@ class BBjPackageMojoTest {
         "BBj deployment requires the packaged application jar. Run the package phase "
             + "in the same invocation, as in mvn package webforj:bbj-package",
         failure.getMessage());
-    assertFalse(Files.exists(app.resolve("target/bbj")));
+    assertFalse(Files.exists(app.resolve(ARCHIVE_DIRECTORY)));
   }
 
   @Test
@@ -132,7 +134,7 @@ class BBjPackageMojoTest {
 
     assertEquals("BBj deployment requires bbj.publishName or a final name of the build",
         failure.getMessage());
-    assertFalse(Files.exists(app.resolve("target/bbj")));
+    assertFalse(Files.exists(app.resolve(ARCHIVE_DIRECTORY)));
   }
 
   @ParameterizedTest
@@ -143,7 +145,7 @@ class BBjPackageMojoTest {
     MojoExecutionException failure = assertThrows(MojoExecutionException.class, mojo::execute);
 
     assertEquals(message, failure.getMessage());
-    assertFalse(Files.exists(app.resolve("target/bbj")));
+    assertFalse(Files.exists(app.resolve(ARCHIVE_DIRECTORY)));
     assertFalse(Files.exists(app.resolve("target/escaped.zip")));
   }
 

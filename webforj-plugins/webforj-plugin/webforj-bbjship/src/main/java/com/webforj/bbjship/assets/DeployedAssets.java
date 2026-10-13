@@ -1,6 +1,6 @@
 package com.webforj.bbjship.assets;
 
-import com.webforj.bbjship.DeploymentInstaller;
+import com.webforj.bbjship.DeploymentFolder;
 import com.webforj.bbjship.assets.model.AssetRequest;
 import com.webforj.bbjship.assets.model.AssetResponse;
 import java.awt.Color;
@@ -10,9 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UncheckedIOException;
 import java.net.URLConnection;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -22,7 +20,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -30,11 +27,6 @@ import javax.imageio.ImageIO;
 
 /**
  * Serves the static files and icons of published applications from their deployments.
- *
- * <p>
- * An application stays open between requests and is closed once its deployment directory is gone or
- * another deployment of its name becomes current.
- * </p>
  *
  * @author Hyyan Abo Fakher
  * @since 26.03
@@ -56,7 +48,8 @@ public final class DeployedAssets {
   private static final Map<String, String> CONTENT_TYPES =
       Map.of("js", "text/javascript", "mjs", "text/javascript", "css", "text/css", "html",
           "text/html", "htm", "text/html", "txt", "text/plain", "pdf", "application/pdf");
-  private static final Map<Path, DeployedApplication> APPLICATIONS = new ConcurrentHashMap<>();
+
+  private static final ResourceIndexes INDEXES = new ResourceIndexes();
 
   private DeployedAssets() {}
 
@@ -71,11 +64,19 @@ public final class DeployedAssets {
    * @throws IOException if a deployment cannot be read
    */
   public static AssetResponse read(String root, AssetRequest request) throws IOException {
-    DeployedApplication application = findApplication(Path.of(root), request.getApplicationName());
-    if (application == null) {
+    return read(root, request, INDEXES);
+  }
+
+  static AssetResponse read(String root, AssetRequest request, ResourceIndexes indexes)
+      throws IOException {
+    indexes.dropRemoved();
+    Optional<Path> current =
+        DeploymentFolder.findCurrentDirectory(Path.of(root), request.getApplicationName());
+    if (current.isEmpty()) {
       return AssetResponse.create(NOT_FOUND).build();
     }
 
+    DeployedApplication application = DeployedApplication.load(current.get(), indexes);
     String path = request.getPath();
     String assetsPrefix = application.getAssetsPrefix();
     if (!assetsPrefix.isEmpty() && path.startsWith(assetsPrefix)) {
@@ -91,63 +92,6 @@ public final class DeployedAssets {
     }
 
     return AssetResponse.create(NOT_FOUND).build();
-  }
-
-  /**
-   * Finds the application of the deployment that the {@code current} file of a publish name names,
-   * closing every cached application whose folder is gone or was replaced.
-   *
-   * @param root the deployments root path
-   * @param name the publish name
-   *
-   * @return the application, {@code null} when no current deployment exists
-   * @throws IOException if a deployment cannot be read or a replaced application cannot be closed
-   */
-  static DeployedApplication findApplication(Path root, String name) throws IOException {
-    for (Path directory : APPLICATIONS.keySet()) {
-      if (!Files.isDirectory(directory)) {
-        close(directory);
-      }
-    }
-
-    Optional<Path> current = DeploymentInstaller.findCurrentDirectory(root, name);
-    if (current.isEmpty()) {
-      return null;
-    }
-
-    for (Path directory : APPLICATIONS.keySet()) {
-      if (directory.getParent().equals(current.get().getParent())
-          && !directory.equals(current.get())) {
-        close(directory);
-      }
-    }
-
-    try {
-      return APPLICATIONS.computeIfAbsent(current.get(), path -> {
-        try {
-          return DeployedApplication.load(path);
-        } catch (IOException failure) {
-          throw new UncheckedIOException(failure);
-        }
-      });
-    } catch (UncheckedIOException failure) {
-      throw failure.getCause();
-    }
-  }
-
-  /**
-   * Closes the cached application of a deployment folder, releasing the jars it holds open, so the
-   * folder can be removed.
-   *
-   * @param directory the deployment folder
-   *
-   * @throws IOException if the application cannot be closed
-   */
-  public static void close(Path directory) throws IOException {
-    DeployedApplication removed = APPLICATIONS.remove(directory);
-    if (removed != null) {
-      removed.close();
-    }
   }
 
   private static AssetResponse readStatic(DeployedApplication application, String path)

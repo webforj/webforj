@@ -3,6 +3,7 @@ package com.webforj.plugin.foundation.bbj;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.FileSystem;
 import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -16,15 +17,13 @@ final class FixtureFolder {
 
   static synchronized Path getFolder(String name) throws IOException {
     String folder = "fixtures/" + name;
+    URI fixture = getResource(folder);
     try {
-      URI fixture = FixtureFolder.class.getClassLoader().getResource(folder).toURI();
-      try {
-        return Path.of(fixture);
-      } catch (FileSystemNotFoundException closed) {
-        return FileSystems.newFileSystem(fixture, Map.of()).getPath(folder);
-      }
-    } catch (URISyntaxException invalid) {
-      throw new IOException(invalid);
+      return Path.of(fixture);
+    } catch (FileSystemNotFoundException closed) {
+      FileSystem archive = FileSystems.newFileSystem(fixture, Map.of()); // NOSONAR
+
+      return archive.getPath(folder);
     }
   }
 
@@ -41,5 +40,13 @@ final class FixtureFolder {
     }
 
     return target;
+  }
+
+  private static URI getResource(String folder) throws IOException {
+    try {
+      return FixtureFolder.class.getClassLoader().getResource(folder).toURI();
+    } catch (URISyntaxException invalid) {
+      throw new IOException(invalid);
+    }
   }
 }

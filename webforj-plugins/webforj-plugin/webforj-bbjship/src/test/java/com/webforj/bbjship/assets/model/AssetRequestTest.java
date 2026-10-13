@@ -12,12 +12,15 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 final class AssetRequestTest {
 
+  private static final String APP_NAME = "sample";
+  private static final String ICON = "icons/icon.png";
+
   @Test
   void shouldStartWithTheApplicationAndPathAndNoParameters() {
-    AssetRequest request = AssetRequest.create("sample", "icons/icon.png").build();
+    AssetRequest request = AssetRequest.create(APP_NAME, ICON).build();
 
-    assertEquals("sample", request.getApplicationName());
-    assertEquals("icons/icon.png", request.getPath());
+    assertEquals(APP_NAME, request.getApplicationName());
+    assertEquals(ICON, request.getPath());
     assertNull(request.getPadding());
     assertNull(request.getBackground());
     assertNull(request.getIfNoneMatch());
@@ -25,7 +28,7 @@ final class AssetRequestTest {
 
   @Test
   void shouldCarryEveryParameter() {
-    AssetRequest request = AssetRequest.create("sample", "icons/icon-16x16.png").setPadding(".5")
+    AssetRequest request = AssetRequest.create(APP_NAME, "icons/icon-16x16.png").setPadding(".5")
         .setBackground("00ff00").setIfNoneMatch("\"tag\"").build();
 
     assertEquals(".5", request.getPadding());
@@ -35,8 +38,8 @@ final class AssetRequestTest {
 
   @Test
   void shouldAcceptNullParameters() {
-    AssetRequest request = AssetRequest.create("sample", "icons/icon.png").setPadding(".5")
-        .setPadding(null).setBackground(null).setIfNoneMatch(null).build();
+    AssetRequest request = AssetRequest.create(APP_NAME, ICON).setPadding(".5").setPadding(null)
+        .setBackground(null).setIfNoneMatch(null).build();
 
     assertNull(request.getPadding());
     assertNull(request.getBackground());
@@ -50,6 +53,6 @@ final class AssetRequestTest {
   }
 
   private static Stream<Arguments> getMissingValues() {
-    return Stream.of(Arguments.of(null, "icons/icon.png"), Arguments.of("sample", null));
+    return Stream.of(Arguments.of(null, ICON), Arguments.of(APP_NAME, null));
   }
 }

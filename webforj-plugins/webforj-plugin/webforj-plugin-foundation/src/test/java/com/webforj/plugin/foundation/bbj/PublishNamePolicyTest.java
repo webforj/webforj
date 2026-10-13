@@ -65,4 +65,12 @@ final class PublishNamePolicyTest {
     assertEquals(Optional.of("The publish name " + name + " is reserved by BBjServices for its own "
         + "web paths. Choose another publish name"), PublishNamePolicy.findRefusal(name));
   }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"", " "})
+  void shouldAskForThePublishNameInTheRefusalOfBlankName(String name) {
+    assertEquals(
+        Optional.of("BBj deployment requires bbj.publishName or a final name of the build"),
+        PublishNamePolicy.findRefusal(name));
+  }
 }

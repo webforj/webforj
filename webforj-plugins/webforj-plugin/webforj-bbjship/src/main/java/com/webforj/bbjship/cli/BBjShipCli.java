@@ -1,9 +1,8 @@
 package com.webforj.bbjship.cli;
 
-import com.basis.api.admin.BBjAdminFactory;
-import com.webforj.bbjship.cli.admin.AdminConnector;
-import com.webforj.bbjship.cli.admin.BBjShipPlugin;
-import com.webforj.bbjship.cli.admin.BBjShipServices;
+import com.webforj.bbjship.AdminSessionFactory;
+import com.webforj.bbjship.BBjServicesAdminSessionFactory;
+import com.webforj.bbjship.cli.admin.BBjShipInput;
 import com.webforj.bbjship.cli.admin.BBjShipSession;
 import com.webforj.bbjship.cli.command.AppsDeployCommand;
 import com.webforj.bbjship.cli.command.AppsListCommand;
@@ -15,27 +14,27 @@ import com.webforj.bbjship.cli.command.RemoteDisableCommand;
 import com.webforj.bbjship.cli.command.RemoteEnableCommand;
 import com.webforj.bbjship.cli.command.RemoteStatusCommand;
 import com.webforj.bbjship.cli.command.ResetCommand;
-import com.webforj.bbjship.cli.command.ServicesRestartCommand;
-import java.io.InputStream;
-import java.io.PrintStream;
+import com.webforj.bbjship.cli.command.ServicesStopCommand;
+import com.webforj.plugin.foundation.bbj.BBjShipCommandLine;
+import com.webforj.plugin.foundation.bbj.BBjShipPlugin;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 import picocli.CommandLine;
 import picocli.CommandLine.Help;
 import picocli.CommandLine.Help.Ansi;
 import picocli.CommandLine.Model.CommandSpec;
 
 /**
- * Runs the command line of the BBjShip plugin.
+ * Runs the command line of the BBjShip plugin inside BBjServices.
  *
  * <p>
- * The {@code bbjship} launcher of the plugin starts this class with the Java runtime BBj uses for
- * its own tools and the BBj home in the {@code basis.BBjHome} system property. The commands reach
- * BBjServices through the administration API. Colors follow the terminal, they are off when the
- * output is redirected or {@code NO_COLOR} is set.
+ * The BBj program {@code bbjship.bbj} hands the arguments and the terminal to
+ * {@link #run(String[], BBjShipTerminal)}. The commands reach BBjServices through the
+ * administration API.
  * </p>
  *
  * @author Hyyan Abo Fakher
@@ -43,46 +42,42 @@ import picocli.CommandLine.Model.CommandSpec;
  */
 public final class BBjShipCli {
 
-  private static final String HOME_PROPERTY = "basis.BBjHome";
-
   private final BBjShipSession session;
-  private final PrintStream output;
-  private final PrintStream error;
+  private final BBjShipTerminal terminal;
   private final Ansi ansi;
 
   private BBjShipCli(Builder builder) {
-    this.session = new BBjShipSession(new BBjShipPlugin(builder.home), builder.input,
-        builder.environment, builder.connector, builder.services);
+    this.session =
+        new BBjShipSession(builder.plugin, new BBjShipInput(builder.terminal), builder.sessions);
     if (builder.answerDeadline != null) {
       this.session.setAnswerDeadline(builder.answerDeadline);
     }
 
-    this.output = builder.output;
-    this.error = builder.error;
-    this.ansi = builder.ansi;
-  }
-
-  /**
-   * Runs the BBjShip command line and exits with its status.
-   *
-   * @param arguments the command line arguments
-   */
-  @SuppressWarnings("java:S106")
-  public static void main(String[] arguments) {
-    System.exit(create(Path.of(System.getProperty(HOME_PROPERTY))).setInput(System.in)
-        .setEnvironment(System.getenv()).setOutput(System.out).setError(System.err).build()
-        .run(arguments));
+    this.terminal = builder.terminal;
+    this.ansi = builder.ansi != null ? builder.ansi : resolveAnsi(builder.terminal);
   }
 
   /**
    * Creates a builder for the command line of the BBjShip plugin.
    *
-   * @param home the BBj installation folder
+   * @param plugin the BBjShip plugin of the BBj installation
    *
    * @return the builder
    */
-  public static Builder create(Path home) {
-    return new Builder(home);
+  public static Builder create(BBjShipPlugin plugin) {
+    return new Builder(plugin);
+  }
+
+  /**
+   * Runs one command inside BBjServices for the BBj installation that runs it.
+   *
+   * @param arguments the command line arguments
+   * @param terminal the terminal that runs the command
+   *
+   * @return 0 on success, 2 for invalid arguments, 1 when the operation failed
+   */
+  public static int run(String[] arguments, BBjShipTerminal terminal) {
+    return create(BBjShipPlugin.createFromBBjHome()).setTerminal(terminal).build().run(arguments);
   }
 
   /**
@@ -93,19 +88,19 @@ public final class BBjShipCli {
    * @return 0 on success, 2 for invalid arguments, 1 when the operation failed
    */
   public int run(String... arguments) {
-    PrintWriter out = new PrintWriter(output, true);
-    PrintWriter err = new PrintWriter(error, true);
+    PrintWriter out = new PrintWriter(new LineWriter(terminal::print), true);
+    PrintWriter err = new PrintWriter(new LineWriter(terminal::printError), true);
     try {
       return createCommandLine(out, err).execute(arguments);
     } finally {
-      out.flush();
-      err.flush();
+      out.close();
+      err.close();
     }
   }
 
   private CommandLine createCommandLine(PrintWriter out, PrintWriter err) {
     CommandLine root = new CommandLine(new BBjShipCommandGroup());
-    root.getCommandSpec().name("bbjship").usageMessage()
+    root.getCommandSpec().name(BBjShipCommandLine.BBJSHIP).usageMessage()
         .description("Configure webforJ BBjShip and manage the applications it deployed.")
         .footer("",
             "WEBFORJ_BBJ_USERNAME and WEBFORJ_BBJ_PASSWORD are used when the options are "
@@ -116,31 +111,42 @@ public final class BBjShipCli {
     remote.addSubcommand(new RemoteEnableCommand(session));
     remote.addSubcommand(new RemoteDisableCommand(session));
     remote.addSubcommand(new RemoteStatusCommand(session));
-    root.addSubcommand("remote", remote);
+    root.addSubcommand(BBjShipCommandLine.REMOTE, remote);
     CommandLine development = new CommandLine(new BBjShipCommandGroup());
     development.getCommandSpec().usageMessage()
         .description("Manage development runs on this BBj machine.");
     development.addSubcommand(new DevelopmentEnableCommand(session));
     development.addSubcommand(new DevelopmentDisableCommand(session));
-    root.addSubcommand("development", development);
+    root.addSubcommand(BBjShipCommandLine.DEVELOPMENT, development);
     CommandLine services = new CommandLine(new BBjShipCommandGroup());
-    services.getCommandSpec().usageMessage().description("Manage the local BBjServices.");
-    services.addSubcommand(new ServicesRestartCommand(session));
-    root.addSubcommand("services", services);
+    services.getCommandSpec().usageMessage().description("Manage the local BBjServices.")
+        .hidden(true);
+    services.addSubcommand(new ServicesStopCommand(session));
+    root.addSubcommand(BBjShipCommandLine.SERVICES, services);
     CommandLine apps = new CommandLine(new BBjShipCommandGroup());
     apps.getCommandSpec().usageMessage()
         .description("Deploy, list and undeploy the applications BBjShip deployed.");
     apps.addSubcommand(new AppsDeployCommand(session));
     apps.addSubcommand(new AppsListCommand(session));
     apps.addSubcommand(new AppsUndeployCommand(session));
-    root.addSubcommand("apps", apps);
+    root.addSubcommand(BBjShipCommandLine.APPS, apps);
     root.addSubcommand(new ResetCommand(session));
+    root.registerConverter(Path.class,
+        value -> Path.of(terminal.getWorkingDirectory()).resolve(value));
     applyVersion(root);
     BBjShipFailureHandler failures = new BBjShipFailureHandler();
     root.setOut(out).setErr(err).setColorScheme(Help.defaultColorScheme(ansi))
         .setParameterExceptionHandler(failures).setExecutionExceptionHandler(failures);
 
     return root;
+  }
+
+  private static Ansi resolveAnsi(BBjShipTerminal terminal) {
+    String type = terminal.getVariable("TERM");
+    boolean colors =
+        type != null && !"dumb".equals(type) && terminal.getVariable("NO_COLOR") == null;
+
+    return colors ? Ansi.ON : Ansi.OFF;
   }
 
   private void applyVersion(CommandLine line) {
@@ -158,71 +164,31 @@ public final class BBjShipCli {
    */
   public static final class Builder {
 
-    private final Path home;
-    private InputStream input;
-    private Map<String, String> environment;
-    private PrintStream output;
-    private PrintStream error;
-    private Ansi ansi = Ansi.AUTO;
-    private AdminConnector connector = BBjAdminFactory::getBBjAdmin;
-    private BBjShipServices services;
+    private final BBjShipPlugin plugin;
+    private BBjShipTerminal terminal;
+    private Ansi ansi;
+    private AdminSessionFactory sessions = new BBjServicesAdminSessionFactory();
     private Duration answerDeadline;
 
-    private Builder(Path home) {
-      this.home = Objects.requireNonNull(home);
-      this.services = new BBjShipServices(new BBjShipPlugin(home));
+    private Builder(BBjShipPlugin plugin) {
+      this.plugin = Objects.requireNonNull(plugin);
     }
 
     /**
-     * Sets the standard input of the command.
+     * Sets the terminal that runs the command.
      *
-     * @param input the standard input of the command
+     * @param terminal the terminal that runs the command
      *
      * @return this builder
      */
-    public Builder setInput(InputStream input) {
-      this.input = Objects.requireNonNull(input);
+    public Builder setTerminal(BBjShipTerminal terminal) {
+      this.terminal = Objects.requireNonNull(terminal);
       return this;
     }
 
     /**
-     * Sets the environment variables of the command.
-     *
-     * @param environment the environment variables of the command
-     *
-     * @return this builder
-     */
-    public Builder setEnvironment(Map<String, String> environment) {
-      this.environment = Objects.requireNonNull(environment);
-      return this;
-    }
-
-    /**
-     * Sets the standard output stream.
-     *
-     * @param output the standard output stream
-     *
-     * @return this builder
-     */
-    public Builder setOutput(PrintStream output) {
-      this.output = Objects.requireNonNull(output);
-      return this;
-    }
-
-    /**
-     * Sets the standard error stream.
-     *
-     * @param error the standard error stream
-     *
-     * @return this builder
-     */
-    public Builder setError(PrintStream error) {
-      this.error = Objects.requireNonNull(error);
-      return this;
-    }
-
-    /**
-     * Sets the color mode.
+     * Sets the color mode. By default colors are on when the terminal sets TERM to a value other
+     * than dumb and does not set NO_COLOR.
      *
      * @param ansi the color mode
      *
@@ -234,26 +200,14 @@ public final class BBjShipCli {
     }
 
     /**
-     * Sets the connector that opens the administration session.
+     * Sets the factory that opens the administration session.
      *
-     * @param connector the connector that opens the administration session
-     *
-     * @return this builder
-     */
-    public Builder setConnector(AdminConnector connector) {
-      this.connector = Objects.requireNonNull(connector);
-      return this;
-    }
-
-    /**
-     * Sets the BBjServices the commands restart.
-     *
-     * @param services the BBjServices the commands restart
+     * @param sessions the factory that opens the administration session
      *
      * @return this builder
      */
-    public Builder setServices(BBjShipServices services) {
-      this.services = Objects.requireNonNull(services);
+    public Builder setSessions(AdminSessionFactory sessions) {
+      this.sessions = Objects.requireNonNull(sessions);
       return this;
     }
 
@@ -275,12 +229,65 @@ public final class BBjShipCli {
      * @return the command line
      */
     public BBjShipCli build() {
-      Objects.requireNonNull(input);
-      Objects.requireNonNull(environment);
-      Objects.requireNonNull(output);
-      Objects.requireNonNull(error);
+      Objects.requireNonNull(terminal);
 
       return new BBjShipCli(this);
+    }
+  }
+
+  /**
+   * Hands every line written to it to a terminal.
+   *
+   * @author Hyyan Abo Fakher
+   * @since 26.03
+   */
+  private static final class LineWriter extends Writer {
+
+    private final Consumer<String> lines;
+    private final StringBuilder pending = new StringBuilder();
+
+    private LineWriter(Consumer<String> lines) {
+      this.lines = lines;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void write(char[] buffer, int offset, int length) {
+      for (int index = offset; index < offset + length; index++) {
+        char next = buffer[index];
+        if (next == '\n') {
+          int end = pending.length();
+          if (end > 0 && pending.charAt(end - 1) == '\r') {
+            pending.setLength(end - 1);
+          }
+
+          lines.accept(pending.toString());
+          pending.setLength(0);
+        } else {
+          pending.append(next);
+        }
+      }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void flush() {
+      if (!pending.isEmpty()) {
+        lines.accept(pending.toString());
+        pending.setLength(0);
+      }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void close() {
+      flush();
     }
   }
 }

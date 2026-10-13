@@ -1,5 +1,6 @@
 package com.webforj.bbjship.cli;
 
+import com.webforj.plugin.foundation.bbj.BBjShipCommandLine;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
@@ -36,8 +37,11 @@ public final class BBjShipFailureHandler
     implements IParameterExceptionHandler, IExecutionExceptionHandler {
 
   private static final Map<String, String> MISSING_VALUES =
-      Map.of("--username", "Specify a user name after --username", "--port",
-          "Specify a port after --port", "--ssl-port", "Specify a port after --ssl-port", "ARCHIVE",
+      Map.of(BBjShipCommandLine.USERNAME_OPTION,
+          "Specify a user name after " + BBjShipCommandLine.USERNAME_OPTION,
+          BBjShipCommandLine.PORT_OPTION, "Specify a port after " + BBjShipCommandLine.PORT_OPTION,
+          BBjShipCommandLine.SSL_PORT_OPTION,
+          "Specify a port after " + BBjShipCommandLine.SSL_PORT_OPTION, "ARCHIVE",
           "Specify the path of a deployment archive ending in .zip");
   private static final Map<String, String> TARGETS = Map.of("NAME", "an application name");
   private static final Map<String, String> SINGLE_VALUES =

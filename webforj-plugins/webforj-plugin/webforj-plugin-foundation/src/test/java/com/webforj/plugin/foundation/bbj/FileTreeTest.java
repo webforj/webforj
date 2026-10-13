@@ -16,12 +16,15 @@ import org.junit.jupiter.api.io.TempDir;
 
 class FileTreeTest {
 
+  private static final String APP_NAME = "hello-app";
+  private static final String CONFIG_FILE = "src/main/resources/webforj.conf";
+
   @TempDir
   Path temporary;
 
   @Test
   void shouldRemoveTheDirectoryWithEveryFileInside() throws IOException {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
+    Path app = HelloApp.createCopy(temporary.resolve(APP_NAME));
 
     FileTree.removeDirectory(app);
 
@@ -37,10 +40,10 @@ class FileTreeTest {
 
   @Test
   void shouldRemoveSymbolicLinkWithoutTheFilesItPointsTo() throws IOException {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
+    Path app = HelloApp.createCopy(temporary.resolve(APP_NAME));
     Path folder = Files.createDirectory(temporary.resolve("folder"));
     try {
-      Files.createSymbolicLink(folder.resolve("hello-app"), app);
+      Files.createSymbolicLink(folder.resolve(APP_NAME), app);
     } catch (UnsupportedOperationException unsupported) {
       assumeTrue(false, "The file system does not support symbolic links");
     }
@@ -48,7 +51,7 @@ class FileTreeTest {
     FileTree.removeDirectory(folder);
 
     assertFalse(Files.exists(folder, LinkOption.NOFOLLOW_LINKS));
-    assertTrue(Files.isRegularFile(app.resolve("src/main/resources/webforj.conf")));
+    assertTrue(Files.isRegularFile(app.resolve(CONFIG_FILE)));
   }
 
   @Test
@@ -66,5 +69,28 @@ class FileTreeTest {
     assertEquals(directory, file.getParent());
     assertTrue(file.getFileName().toString().startsWith("program"));
     assertEquals(PosixFilePermissions.fromString("rw-------"), Files.getPosixFilePermissions(file));
+  }
+
+  @Test
+  void shouldWriteFileOnlyTheOwnerCanReadAndWrite() throws IOException {
+    assumeTrue(Files.getFileStore(temporary).supportsFileAttributeView("posix"),
+        "The file system has no owner permissions");
+    Path file = Files.writeString(temporary.resolve("development.enabled"), "previous");
+
+    FileTree.writePrivateFile(file, "development runs are enabled on this machine");
+
+    assertEquals("development runs are enabled on this machine", Files.readString(file));
+    assertEquals(PosixFilePermissions.fromString("rw-------"), Files.getPosixFilePermissions(file));
+  }
+
+  @Test
+  void shouldWriteCopyOfEveryFolderAndFileOfTheTree() throws IOException {
+    Path app = HelloApp.createCopy(temporary.resolve(APP_NAME));
+    Path copy = Files.createDirectory(temporary.resolve("copy"));
+
+    FileTree.writeTree(app, copy);
+
+    assertEquals(Files.readString(app.resolve(CONFIG_FILE)),
+        Files.readString(copy.resolve(CONFIG_FILE)));
   }
 }

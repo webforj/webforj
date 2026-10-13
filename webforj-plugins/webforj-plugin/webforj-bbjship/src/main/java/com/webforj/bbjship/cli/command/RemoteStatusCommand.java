@@ -3,6 +3,7 @@ package com.webforj.bbjship.cli.command;
 import com.basis.api.admin.BBjAdminBase;
 import com.webforj.bbjship.cli.admin.BBjShipSession;
 import com.webforj.bbjship.cli.option.CredentialOptions;
+import com.webforj.plugin.foundation.bbj.BBjShipCommandLine;
 import java.net.URI;
 import java.nio.file.Files;
 import java.util.List;
@@ -22,7 +23,7 @@ import picocli.CommandLine.Spec;
  * @author Hyyan Abo Fakher
  * @since 26.03
  */
-@Command(name = "status", mixinStandardHelpOptions = true,
+@Command(name = BBjShipCommandLine.STATUS, mixinStandardHelpOptions = true,
     description = "Show the BBjShip HTTP endpoint.")
 public final class RemoteStatusCommand implements Callable<Integer> {
 

@@ -8,19 +8,19 @@ import static org.mockito.Mockito.when;
 import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
 import com.webforj.bbjship.cli.BBjShipCli;
-import com.webforj.bbjship.cli.admin.BBjShipPlugin;
-import com.webforj.bbjship.cli.admin.BBjShipServices;
+import com.webforj.bbjship.cli.TerminalLines;
+import com.webforj.bbjship.cli.admin.BBjShipInput;
 import com.webforj.bbjship.cli.admin.BBjShipSession;
 import com.webforj.bbjship.cli.command.Home;
 import com.webforj.bbjship.cli.command.RemoteEnableCommand;
+import com.webforj.plugin.foundation.bbj.BBjShipPlugin;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.OptionalInt;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +33,11 @@ import picocli.CommandLine;
 import picocli.CommandLine.Help.Ansi;
 
 class PortOptionTest {
+
+  private static final String ENABLE_COMMAND = "enable";
+  private static final String PORT_OPTION = "--port";
+  private static final String REMOTE_COMMAND = "remote";
+  private static final String SSL_PORT_OPTION = "--ssl-port";
 
   @TempDir
   Path temporary;
@@ -50,20 +55,20 @@ class PortOptionTest {
     admin = mock(BBjAdminBase.class);
     when(admin.getClasspathNames()).thenReturn(new BBjAdminAdapterList<>(List.of()));
     credentials = new ArrayList<>();
-    PrintStream stream = new PrintStream(output, true, StandardCharsets.UTF_8);
-    cli = BBjShipCli.create(home).setInput(InputStream.nullInputStream()).setEnvironment(Map.of())
-        .setOutput(stream).setError(stream).setAnsi(Ansi.OFF).setConnector((username, password) -> {
-          credentials.add(username);
-          credentials.add(password);
+    Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+    cli = BBjShipCli.create(new BBjShipPlugin(home)).setTerminal(new TerminalLines(stream))
+        .setAnsi(Ansi.OFF).setSessions(login -> {
+          credentials.add(login.getUsername());
+          credentials.add(login.getPassword());
           return admin;
         }).build();
   }
 
   @Test
   void shouldUseTheDefaultPortOfTheWebServerWithoutPortOption() {
-    CommandLine line = new CommandLine(new RemoteEnableCommand(
-        new BBjShipSession(new BBjShipPlugin(home), InputStream.nullInputStream(), Map.of(),
-            (username, password) -> admin, new BBjShipServices(new BBjShipPlugin(home)))));
+    CommandLine line =
+        new CommandLine(new RemoteEnableCommand(new BBjShipSession(new BBjShipPlugin(home),
+            new BBjShipInput(new TerminalLines(Writer.nullWriter())), login -> admin)));
 
     line.parseArgs();
 
@@ -74,9 +79,9 @@ class PortOptionTest {
   @ParameterizedTest
   @MethodSource("getPortOptions")
   void shouldReadTheHttpAndTheSslPort(List<String> arguments, int httpPort, OptionalInt sslPort) {
-    CommandLine line = new CommandLine(new RemoteEnableCommand(
-        new BBjShipSession(new BBjShipPlugin(home), InputStream.nullInputStream(), Map.of(),
-            (username, password) -> admin, new BBjShipServices(new BBjShipPlugin(home)))));
+    CommandLine line =
+        new CommandLine(new RemoteEnableCommand(new BBjShipSession(new BBjShipPlugin(home),
+            new BBjShipInput(new TerminalLines(Writer.nullWriter())), login -> admin)));
 
     line.parseArgs(arguments.toArray(String[]::new));
 
@@ -97,18 +102,21 @@ class PortOptionTest {
 
   private static Stream<Arguments> invalidPorts() {
     return Stream.of(
-        Arguments.of(List.of("remote", "enable", "--port", "web"),
+        Arguments.of(List.of(REMOTE_COMMAND, ENABLE_COMMAND, PORT_OPTION, "web"),
             "Specify --port from 1 to 65535"),
-        Arguments.of(List.of("remote", "enable", "--port", "65536"),
+        Arguments.of(List.of(REMOTE_COMMAND, ENABLE_COMMAND, PORT_OPTION, "65536"),
             "Specify --port from 1 to 65535"),
-        Arguments.of(List.of("remote", "enable", "--port"), "Specify a port after --port"),
-        Arguments.of(List.of("remote", "enable", "--ssl-port", "0"),
+        Arguments.of(List.of(REMOTE_COMMAND, ENABLE_COMMAND, PORT_OPTION),
+            "Specify a port after --port"),
+        Arguments.of(List.of(REMOTE_COMMAND, ENABLE_COMMAND, SSL_PORT_OPTION, "0"),
             "Specify --ssl-port from 1 to 65535"),
-        Arguments.of(List.of("remote", "enable", "--ssl-port"), "Specify a port after --ssl-port"));
+        Arguments.of(List.of(REMOTE_COMMAND, ENABLE_COMMAND, SSL_PORT_OPTION),
+            "Specify a port after --ssl-port"));
   }
 
   private static Stream<Arguments> getPortOptions() {
-    return Stream.of(Arguments.of(List.of("--ssl-port", "8443"), 8888, OptionalInt.of(8443)),
-        Arguments.of(List.of("--port", "8080", "--ssl-port", "8443"), 8080, OptionalInt.of(8443)));
+    return Stream.of(Arguments.of(List.of(SSL_PORT_OPTION, "8443"), 8888, OptionalInt.of(8443)),
+        Arguments.of(List.of(PORT_OPTION, "8080", SSL_PORT_OPTION, "8443"), 8080,
+            OptionalInt.of(8443)));
   }
 }

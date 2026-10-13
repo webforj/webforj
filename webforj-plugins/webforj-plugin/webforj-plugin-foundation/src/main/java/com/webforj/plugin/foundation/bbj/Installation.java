@@ -19,15 +19,50 @@ import java.util.stream.Stream;
  * @author Hyyan Abo Fakher
  * @since 26.03
  */
-final class Installation {
+public final class Installation {
 
   static final String SERVICE_HOME_ARGUMENT = "-Dbasis.BBjHome=";
   static final Path INSTALL_RECORD = Path.of("bbj", "Install.properties");
   static final String INSTALL_RECORD_KEY = "InstallDirectory";
   static final List<String> EXECUTABLES = List.of("bbj", "bbj.exe");
-  static final String CONFIGURATION = "cfg/config.bbx";
 
   private Installation() {}
+
+  /**
+   * Resolves the local BBj installation directory.
+   *
+   * <p>
+   * Without a configured home the installation is taken from the BBJ_HOME variable, the running
+   * BBjServices, the install file of the installer, a bbj executable on the search path or the
+   * default folder of the installer, in that order.
+   * </p>
+   *
+   * @param configured the configured BBj home, null to detect it
+   *
+   * @return the real path of the BBj home
+   * @throws IOException if no installation is detected or the home is not a valid installation
+   */
+  public static Path resolveHome(Path configured) throws IOException {
+    if (configured != null) {
+      return resolveInstallation(configured);
+    }
+
+    String variable = System.getenv("BBJ_HOME");
+    if (variable != null && !variable.isBlank()) {
+      return resolveInstallation(Path.of(variable));
+    }
+
+    Optional<Path> detected = findInProcesses(ProcessHandle.allProcesses())
+        .or(() -> findInInstallRecord(Path.of(System.getProperty("user.home"))))
+        .or(() -> findOnPath(System.getenv("PATH")))
+        .or(() -> findDefault(System.getProperty("os.name"),
+            Path.of("").toAbsolutePath().getRoot()));
+    if (detected.isEmpty()) {
+      throw new IOException("Cannot detect a BBj installation. Configure bbj.home or BBJ_HOME");
+    }
+
+    return resolveInstallation(detected.get());
+  }
 
   /**
    * Tells whether a directory holds a BBj installation.
@@ -48,7 +83,8 @@ final class Installation {
    * @return whether the directory holds the BBj configuration file
    */
   static boolean hasConfiguration(Path directory) {
-    return Files.isDirectory(directory) && Files.isRegularFile(directory.resolve(CONFIGURATION));
+    return Files.isDirectory(directory)
+        && Files.isRegularFile(new BBjShipPlugin(directory).getConfigFile());
   }
 
   /**
@@ -143,6 +179,19 @@ final class Installation {
     }
 
     return Optional.of(home).filter(Installation::isHome);
+  }
+
+  private static Path resolveInstallation(Path candidate) throws IOException {
+    if (!hasConfiguration(candidate)) {
+      throw new IOException("Invalid BBj home. Configure a local BBj installation");
+    }
+
+    Path installation = candidate.toRealPath();
+    if (findExecutable(installation).isEmpty()) {
+      throw new IOException("BBj executable is missing or not executable. Check bbj.home");
+    }
+
+    return installation;
   }
 
   private static boolean isExecutableFile(Path file) {

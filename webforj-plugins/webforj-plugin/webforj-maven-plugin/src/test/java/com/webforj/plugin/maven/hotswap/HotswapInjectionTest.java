@@ -43,6 +43,11 @@ class HotswapInjectionTest {
   private static final String JETTY = "jetty-ee11-maven-plugin";
   private static final String FRAMEWORK = "webforj-foundation";
   private static final String VERSION = "26.02";
+  private static final String AGENT_PATH_OPTION = "-agentpath:";
+  private static final String JAVA_AGENT_OPTION = "-javaagent:";
+  private static final String HOTSWAP_DIRECTORY = "hotswap";
+  private static final String OPTIONS_FILE = "hotswap/hotswap.options";
+  private static final String DEPLOYMENT_URL = "http://localhost:8888/webforj-bbjship";
 
   @Test
   void shouldHandTheAgentToTheSpringBootFork(@TempDir Path tmp) throws Exception {
@@ -50,7 +55,7 @@ class HotswapInjectionTest {
     newInjection(project, new Properties(), jrebelOptions(tmp), null).apply();
 
     String arguments = project.getProperties().getProperty(HotswapInjection.SPRING_JVM_ARGUMENTS);
-    assertTrue(arguments.contains("-agentpath:"), "the agent flag reaches the fork arguments");
+    assertTrue(arguments.contains(AGENT_PATH_OPTION), "the agent flag reaches the fork arguments");
     assertTrue(arguments.contains("-Dspring.devtools.restart.enabled=false"),
         "the development restart cannot race the redefinition");
   }
@@ -64,7 +69,7 @@ class HotswapInjectionTest {
 
     String arguments = project.getProperties().getProperty(HotswapInjection.SPRING_JVM_ARGUMENTS);
     assertTrue(arguments.startsWith("-Xmx1g "), "the build supplied arguments stay first");
-    assertTrue(arguments.contains("-agentpath:"));
+    assertTrue(arguments.contains(AGENT_PATH_OPTION));
   }
 
   @Test
@@ -77,7 +82,7 @@ class HotswapInjectionTest {
 
     String merged = userProperties.getProperty(HotswapInjection.SPRING_JVM_ARGUMENTS);
     assertTrue(merged.startsWith("-Xmx1g "), "the command line arguments stay first");
-    assertTrue(merged.contains("-agentpath:"),
+    assertTrue(merged.contains(AGENT_PATH_OPTION),
         "the agent lands in the command line properties that outrank the project properties");
   }
 
@@ -88,7 +93,7 @@ class HotswapInjectionTest {
 
     assertEquals("FORK", project.getProperties().getProperty(HotswapInjection.JETTY_DEPLOY_MODE));
     assertTrue(project.getProperties().getProperty(HotswapInjection.JETTY_JVM_ARGS)
-        .contains("-agentpath:"));
+        .contains(AGENT_PATH_OPTION));
   }
 
   @Test
@@ -170,16 +175,16 @@ class HotswapInjectionTest {
     Path observer = observerJar(tmp);
 
     HotswapInjection.create().setProject(project).setUserProperties(new Properties())
-        .setOptions(hotswapAgentOptions(tmp)).setDirectory(tmp.resolve("hotswap"))
+        .setOptions(hotswapAgentOptions(tmp)).setDirectory(tmp.resolve(HOTSWAP_DIRECTORY))
         .setResolver((groupId, artifactId, version) -> {
           versions.add(version);
           return List.of(new ResolvedJar(groupId, artifactId, version, observer));
         }).setJavaExecutable(fakeJava(tmp, 0)).setLog(mock(Log.class)).build().apply();
 
     String arguments = project.getProperties().getProperty(HotswapInjection.SPRING_JVM_ARGUMENTS);
-    assertTrue(arguments.contains("-javaagent:"), "the agent flag reaches the fork arguments");
+    assertTrue(arguments.contains(JAVA_AGENT_OPTION), "the agent flag reaches the fork arguments");
     assertTrue(arguments.contains("-XX:+AllowEnhancedClassRedefinition"));
-    assertTrue(arguments.contains("-javaagent:" + observer.toAbsolutePath()),
+    assertTrue(arguments.contains(JAVA_AGENT_OPTION + observer.toAbsolutePath()),
         "the resolved observer jar reaches the fork arguments");
     assertEquals(List.of(VERSION), versions,
         "the observer resolves at the framework version of the application");
@@ -194,13 +199,13 @@ class HotswapInjectionTest {
     Path observer = observerJar(tmp);
 
     HotswapInjection.create().setProject(project).setUserProperties(new Properties())
-        .setOptions(hotswapAgentOptions(tmp)).setDirectory(tmp.resolve("hotswap"))
+        .setOptions(hotswapAgentOptions(tmp)).setDirectory(tmp.resolve(HOTSWAP_DIRECTORY))
         .setResolver((groupId, artifactId, version) -> List
             .of(new ResolvedJar(groupId, artifactId, version, observer)))
         .setJavaExecutable(fakeJava(tmp, 1)).setLog(log).build().apply();
 
     String arguments = project.getProperties().getProperty(HotswapInjection.SPRING_JVM_ARGUMENTS);
-    assertTrue(arguments.contains("-javaagent:"),
+    assertTrue(arguments.contains(JAVA_AGENT_OPTION),
         "the agent still attaches for the method body changes");
     assertFalse(arguments.contains("-XX:+AllowEnhancedClassRedefinition"),
         "the unsupported flag never reaches the virtual machine");
@@ -213,7 +218,7 @@ class HotswapInjectionTest {
     when(project.getArtifacts()).thenReturn(Set.of());
     HotswapInjection injection =
         HotswapInjection.create().setProject(project).setUserProperties(new Properties())
-            .setOptions(hotswapAgentOptions(tmp)).setDirectory(tmp.resolve("hotswap"))
+            .setOptions(hotswapAgentOptions(tmp)).setDirectory(tmp.resolve(HOTSWAP_DIRECTORY))
             .setResolver((groupId, artifactId, version) -> List.of())
             .setJavaExecutable(fakeJava(tmp, 0)).setLog(mock(Log.class)).build();
 
@@ -229,11 +234,11 @@ class HotswapInjectionTest {
     Log log = mock(Log.class);
 
     HotswapInjection.create().setProject(project).setUserProperties(new Properties())
-        .setOptions(jrebelOptions(tmp)).setDirectory(tmp.resolve("hotswap"))
-        .setBbjDeploymentUrl("http://localhost:8888/webforj-bbjship").setLog(log).build().apply();
+        .setOptions(jrebelOptions(tmp)).setDirectory(tmp.resolve(HOTSWAP_DIRECTORY))
+        .setBbjDeploymentUrl(DEPLOYMENT_URL).setLog(log).build().apply();
 
-    verify(log).info("webforJ hotswap: -XX:VMOptionsFile="
-        + tmp.resolve("hotswap/hotswap.options").toAbsolutePath());
+    verify(log)
+        .info("webforJ hotswap: -XX:VMOptionsFile=" + tmp.resolve(OPTIONS_FILE).toAbsolutePath());
     verify(log, never()).warn(contains("no supported application runner"));
     assertEquals(new Properties(), project.getProperties());
   }
@@ -245,14 +250,13 @@ class HotswapInjectionTest {
     MavenProject project = newProject(tmp, runner);
 
     HotswapInjection.create().setProject(project).setUserProperties(new Properties())
-        .setOptions(jrebelOptions(tmp)).setDirectory(tmp.resolve("hotswap"))
-        .setBbjDeploymentUrl("http://localhost:8888/webforj-bbjship").setLog(mock(Log.class))
-        .build().apply();
+        .setOptions(jrebelOptions(tmp)).setDirectory(tmp.resolve(HOTSWAP_DIRECTORY))
+        .setBbjDeploymentUrl(DEPLOYMENT_URL).setLog(mock(Log.class)).build().apply();
 
     String key = SPRING.equals(runner) ? HotswapInjection.SPRING_JVM_ARGUMENTS
         : HotswapInjection.JETTY_JVM_ARGS;
-    assertTrue(project.getProperties().getProperty(key).contains("-agentpath:"));
-    assertFalse(Files.exists(tmp.resolve("hotswap/hotswap.options")));
+    assertTrue(project.getProperties().getProperty(key).contains(AGENT_PATH_OPTION));
+    assertFalse(Files.exists(tmp.resolve(OPTIONS_FILE)));
   }
 
   @Test
@@ -270,12 +274,10 @@ class HotswapInjectionTest {
 
     List<String> arguments =
         HotswapInjection.create().setProject(project).setUserProperties(new Properties())
-            .setOptions(jrebelOptions(tmp)).setDirectory(tmp.resolve("hotswap"))
-            .setBbjDeploymentUrl("http://localhost:8888/webforj-bbjship").setLog(mock(Log.class))
-            .build().apply();
+            .setOptions(jrebelOptions(tmp)).setDirectory(tmp.resolve(HOTSWAP_DIRECTORY))
+            .setBbjDeploymentUrl(DEPLOYMENT_URL).setLog(mock(Log.class)).build().apply();
 
-    assertEquals(
-        List.of("-XX:VMOptionsFile=" + tmp.resolve("hotswap/hotswap.options").toAbsolutePath()),
+    assertEquals(List.of("-XX:VMOptionsFile=" + tmp.resolve(OPTIONS_FILE).toAbsolutePath()),
         arguments);
   }
 
@@ -293,9 +295,9 @@ class HotswapInjectionTest {
   @Test
   void shouldGiveTheHotswapDirectoryAsTheOptionsDirectory(@TempDir Path tmp) {
     HotswapInjection injection = HotswapInjection.create().setProject(newProject(tmp))
-        .setDirectory(tmp.resolve("hotswap")).setLog(mock(Log.class)).build();
+        .setDirectory(tmp.resolve(HOTSWAP_DIRECTORY)).setLog(mock(Log.class)).build();
 
-    assertEquals(tmp.resolve("hotswap"), injection.getContainerOptionsDirectory());
+    assertEquals(tmp.resolve(HOTSWAP_DIRECTORY), injection.getContainerOptionsDirectory());
   }
 
   @ParameterizedTest
@@ -371,7 +373,7 @@ class HotswapInjectionTest {
     return jar;
   }
 
-  private static HotswapOptions hotswapAgentOptions(Path tmp) throws Exception {
+  private static HotswapOptions hotswapAgentOptions(Path tmp) throws IOException {
     Path jar = tmp.resolve("hotswap-agent.jar");
     if (!Files.exists(jar)) {
       Files.createFile(jar);
@@ -386,12 +388,12 @@ class HotswapInjectionTest {
 
     Path script = dir.resolve("java-" + exitCode);
     Files.writeString(script, "#!/bin/sh\nexit " + exitCode + "\n");
-    Files.setPosixFilePermissions(script, PosixFilePermissions.fromString("rwxr-xr-x"));
+    Files.setPosixFilePermissions(script, PosixFilePermissions.fromString("rwx------"));
 
     return script;
   }
 
-  private static HotswapOptions jrebelOptions(Path tmp) throws Exception {
+  private static HotswapOptions jrebelOptions(Path tmp) throws IOException {
     Path library = tmp.resolve("libjrebel64.dylib");
     if (!Files.exists(library)) {
       Files.createFile(library);

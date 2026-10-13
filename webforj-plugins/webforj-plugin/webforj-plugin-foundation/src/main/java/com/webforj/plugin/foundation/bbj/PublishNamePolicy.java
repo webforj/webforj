@@ -21,13 +21,9 @@ import java.util.regex.Pattern;
  */
 public final class PublishNamePolicy {
 
-  /**
-   * Says which publish names are valid.
-   */
-  public static final String INVALID_NAME_ADVICE = "Use a name that starts with a letter or digit, "
-      + "holds only letters, digits, underscores, dots and hyphens, and is not a reserved device "
-      + "name such as con or nul";
-
+  private static final String INVALID_NAME_ADVICE =
+      "Use a name that starts with a letter or digit, holds only letters, digits, underscores, "
+          + "dots and hyphens, and is not a reserved device name such as con or nul";
   private static final Pattern NAME = Pattern.compile("[A-Za-z0-9][A-Za-z0-9_.-]*");
   private static final Pattern RESERVED_DEVICES =
       Pattern.compile("(con|prn|aux|nul|com[1-9]|lpt[1-9])(\\..*)?", Pattern.CASE_INSENSITIVE);
@@ -55,11 +51,15 @@ public final class PublishNamePolicy {
   /**
    * Finds the reason a name may not publish an application.
    *
-   * @param name the publish name
+   * @param name the publish name, may be {@code null}
    *
    * @return the message that names the publish name and the reason, empty when the name is valid
    */
   public static Optional<String> findRefusal(String name) {
+    if (name == null || name.isBlank()) {
+      return Optional.of("BBj deployment requires bbj.publishName or a final name of the build");
+    }
+
     if (isReserved(name)) {
       return Optional.of("The publish name " + name
           + " is reserved by BBjServices for its own web paths. Choose another publish name");

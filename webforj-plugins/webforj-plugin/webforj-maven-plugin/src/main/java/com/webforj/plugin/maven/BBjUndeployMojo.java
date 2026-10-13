@@ -1,11 +1,11 @@
 package com.webforj.plugin.maven;
 
 import com.webforj.plugin.foundation.bbj.BBjShipClient;
-import com.webforj.plugin.foundation.bbj.model.BBjCredentials;
+import com.webforj.plugin.foundation.bbj.PublishNamePolicy;
 import com.webforj.plugin.maven.bbj.DeploymentSettings;
 import com.webforj.plugin.maven.bbj.model.BBjOptions;
 import java.io.IOException;
-import java.net.URI;
+import java.util.Optional;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
@@ -55,25 +55,13 @@ public final class BBjUndeployMojo extends AbstractMojo {
         DeploymentSettings.create(bbj).setUrl(deploymentUrl).setPublishName(publishName)
             .setDefaultPublishName(project.getBuild().getFinalName()).setUsername(username)
             .setPassword(password).setToken(token).setVersion(pluginDescriptor.getVersion());
-    if (settings.getUrl().isBlank()) {
-      throw new MojoExecutionException("BBj undeployment requires bbj.deployment.url. Set it in "
-          + "plugin configuration or pass -Dwebforj.bbj.deployment.url=<URL>");
-    }
-
-    if (settings.getPublishName().isBlank()) {
-      throw new MojoExecutionException(
-          "BBj undeployment requires bbj.publishName or a final name of the build");
-    }
-
-    BBjCredentials credentials = settings.getCredentials();
-    if (credentials.isFactoryAccount()) {
-      getLog().warn(BBjCredentials.FACTORY_ACCOUNT_WARNING);
+    Optional<String> refusal = PublishNamePolicy.findRefusal(settings.getPublishName());
+    if (refusal.isPresent()) {
+      throw new MojoExecutionException(refusal.get());
     }
 
     try {
-      BBjShipClient bbjShip = BBjShipClient.create(URI.create(settings.getUrl()))
-          .setCredentials(credentials).setVersion(settings.getVersion()).setLog(getLog()::info)
-          .setWarn(getLog()::warn).build();
+      BBjShipClient bbjShip = settings.createBBjShipClient(getLog());
       getLog().info("Undeploying " + settings.getPublishName() + " from " + settings.getUrl());
       bbjShip.undeploy(settings.getPublishName());
       getLog().info("BBj undeployment of " + settings.getPublishName() + " completed");

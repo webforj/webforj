@@ -1,4 +1,4 @@
-package com.webforj.bbjship.deploymentinstaller;
+package com.webforj.bbjship.deployer;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,8 +25,8 @@ import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.BBjAdminException;
 import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
 import com.webforj.bbjship.ClasspathRelease;
-import com.webforj.bbjship.DeploymentInstaller;
-import com.webforj.bbjship.DeploymentInstaller.DeploymentResult;
+import com.webforj.bbjship.Deployer;
+import com.webforj.bbjship.Deployer.DeploymentResult;
 import com.webforj.plugin.foundation.bbj.DeploymentArchive;
 import com.webforj.plugin.foundation.bbj.HelloApp;
 import java.io.ByteArrayInputStream;
@@ -51,7 +51,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
-final class DeploymentInstallerPublishedApplicationTest {
+final class DeployerPublishedApplicationTest {
 
   private static final String CLASSPATH_NAME = "webforj_bbjship_hello-app";
   private static final String NAME = "hello-app";
@@ -113,8 +113,8 @@ final class DeploymentInstallerPublishedApplicationTest {
     InputStream upload = new ByteArrayInputStream(Files.readAllBytes(archive));
     String destination = first.toString();
 
-    DeploymentResult result =
-        assertDoesNotThrow(() -> DeploymentInstaller.deploy(upload, NAME, destination, admin));
+    DeploymentResult result = assertDoesNotThrow(
+        () -> Deployer.deploy(upload, NAME, destination, admin, ClasspathRelease.NONE));
 
     Path deployed;
     try (Stream<Path> directories = Files.list(first.resolve(NAME))) {
@@ -164,8 +164,8 @@ final class DeploymentInstallerPublishedApplicationTest {
     InputStream upload = new ByteArrayInputStream(Files.readAllBytes(archive));
     String destination = root.toString();
 
-    DeploymentResult result =
-        assertDoesNotThrow(() -> DeploymentInstaller.deploy(upload, NAME, destination, admin));
+    DeploymentResult result = assertDoesNotThrow(
+        () -> Deployer.deploy(upload, NAME, destination, admin, ClasspathRelease.NONE));
 
     assertEquals(DeploymentResult.REPLACED, result);
     Path deployed;
@@ -207,7 +207,7 @@ final class DeploymentInstallerPublishedApplicationTest {
     Files.writeString(root.resolve(CURRENT_FILE), previous.getFileName().toString());
     String destination = root.toString();
 
-    assertDoesNotThrow(() -> DeploymentInstaller.undeploy(NAME, destination, admin));
+    assertDoesNotThrow(() -> Deployer.undeploy(NAME, destination, admin, ClasspathRelease.NONE));
 
     InOrder order = inOrder(configuration, owned, admin);
     order.verify(configuration).removeApplication(NAME);
@@ -231,12 +231,12 @@ final class DeploymentInstallerPublishedApplicationTest {
     Files.writeString(root.resolve(CURRENT_FILE), previous.getFileName().toString());
     ClasspathRelease release = mock(ClasspathRelease.class);
     Closeable hold = mock(Closeable.class);
-    when(release.find(CLASSPATH_NAME)).thenReturn(hold);
+    when(release.find(CLASSPATH_NAME)).thenReturn(Optional.of(hold));
     InputStream upload = new ByteArrayInputStream(Files.readAllBytes(archive));
     String destination = root.toString();
 
-    DeploymentResult result = assertDoesNotThrow(
-        () -> DeploymentInstaller.deploy(upload, NAME, destination, admin, release));
+    DeploymentResult result =
+        assertDoesNotThrow(() -> Deployer.deploy(upload, NAME, destination, admin, release));
 
     assertEquals(DeploymentResult.REPLACED, result);
     InOrder order = inOrder(release, configuration, owned, hold, admin);
@@ -261,7 +261,7 @@ final class DeploymentInstallerPublishedApplicationTest {
     Files.writeString(root.resolve(CURRENT_FILE), previous.getFileName().toString());
     ClasspathRelease release = mock(ClasspathRelease.class);
     Closeable hold = mock(Closeable.class);
-    when(release.find(CLASSPATH_NAME)).thenReturn(hold);
+    when(release.find(CLASSPATH_NAME)).thenReturn(Optional.of(hold));
     doAnswer(call -> {
       assertTrue(Files.isRegularFile(previous.resolve(APPLICATION_JAR)));
       return null;
@@ -269,7 +269,7 @@ final class DeploymentInstallerPublishedApplicationTest {
     String destination = root.toString();
 
     Optional<String> kept =
-        assertDoesNotThrow(() -> DeploymentInstaller.undeploy(NAME, destination, admin, release));
+        assertDoesNotThrow(() -> Deployer.undeploy(NAME, destination, admin, release));
 
     assertEquals(Optional.empty(), kept);
     InOrder order = inOrder(release, configuration, owned, admin, hold);
@@ -298,12 +298,12 @@ final class DeploymentInstallerPublishedApplicationTest {
     IOException failure;
     try {
       failure = assertThrows(IOException.class,
-          () -> DeploymentInstaller.undeploy(NAME, destination, admin));
+          () -> Deployer.undeploy(NAME, destination, admin, ClasspathRelease.NONE));
     } finally {
       assertTrue(Thread.interrupted());
     }
 
-    assertEquals(BBjAdminException.class, failure.getCause().getClass());
+    assertEquals(InterruptedException.class, failure.getCause().getClass());
     verify(admin, never()).setClasspath(CLASSPATH_NAME, null);
     assertTrue(Files.isRegularFile(previous.resolve(APPLICATION_JAR)));
   }
@@ -314,11 +314,10 @@ final class DeploymentInstallerPublishedApplicationTest {
     doThrow(new BBjAdminException("refused")).when(admin).setClasspath(CLASSPATH_NAME, null);
     ClasspathRelease release = mock(ClasspathRelease.class);
     Closeable hold = mock(Closeable.class);
-    when(release.find(CLASSPATH_NAME)).thenReturn(hold);
+    when(release.find(CLASSPATH_NAME)).thenReturn(Optional.of(hold));
     String destination = root.toString();
 
-    assertThrows(IOException.class,
-        () -> DeploymentInstaller.undeploy(NAME, destination, admin, release));
+    assertThrows(IOException.class, () -> Deployer.undeploy(NAME, destination, admin, release));
 
     verify(hold).close();
     assertTrue(Files.isRegularFile(previous.resolve(APPLICATION_JAR)));
@@ -329,12 +328,12 @@ final class DeploymentInstallerPublishedApplicationTest {
     Files.writeString(root.resolve(CURRENT_FILE), previous.getFileName().toString());
     ClasspathRelease release = mock(ClasspathRelease.class);
     Closeable hold = mock(Closeable.class);
-    when(release.find(CLASSPATH_NAME)).thenReturn(hold);
+    when(release.find(CLASSPATH_NAME)).thenReturn(Optional.of(hold));
     doThrow(new IOException("already closed")).when(hold).close();
     String destination = root.toString();
 
     Optional<String> kept =
-        assertDoesNotThrow(() -> DeploymentInstaller.undeploy(NAME, destination, admin, release));
+        assertDoesNotThrow(() -> Deployer.undeploy(NAME, destination, admin, release));
 
     assertEquals(Optional.empty(), kept);
     assertFalse(Files.exists(root.resolve(NAME)));
@@ -350,7 +349,8 @@ final class DeploymentInstallerPublishedApplicationTest {
 
     Optional<String> kept;
     try {
-      kept = assertDoesNotThrow(() -> DeploymentInstaller.undeploy(NAME, destination, admin));
+      kept = assertDoesNotThrow(
+          () -> Deployer.undeploy(NAME, destination, admin, ClasspathRelease.NONE));
     } finally {
       assertTrue(previous.resolve("bbj").toFile().setWritable(true));
     }
@@ -373,8 +373,8 @@ final class DeploymentInstallerPublishedApplicationTest {
     InputStream upload = new ByteArrayInputStream(Files.readAllBytes(archive));
     String destination = root.toString();
 
-    DeploymentResult result =
-        assertDoesNotThrow(() -> DeploymentInstaller.deploy(upload, NAME, destination, admin));
+    DeploymentResult result = assertDoesNotThrow(
+        () -> Deployer.deploy(upload, NAME, destination, admin, ClasspathRelease.NONE));
 
     assertEquals(DeploymentResult.REPLACED, result);
     verify(configuration).removeApplication(NAME);
@@ -394,7 +394,7 @@ final class DeploymentInstallerPublishedApplicationTest {
     Files.move(previous.resolve(removed), temporary.resolve("gone"));
     String destination = root.toString();
 
-    assertDoesNotThrow(() -> DeploymentInstaller.undeploy(NAME, destination, admin));
+    assertDoesNotThrow(() -> Deployer.undeploy(NAME, destination, admin, ClasspathRelease.NONE));
 
     verify(configuration).removeApplication(NAME);
     verify(admin).setClasspath(CLASSPATH_NAME, null);
@@ -412,8 +412,8 @@ final class DeploymentInstallerPublishedApplicationTest {
     InputStream firstUpload = new ByteArrayInputStream(Files.readAllBytes(archive));
     String destination = root.toString();
 
-    DeploymentResult first =
-        assertDoesNotThrow(() -> DeploymentInstaller.deploy(firstUpload, NAME, destination, admin));
+    DeploymentResult first = assertDoesNotThrow(
+        () -> Deployer.deploy(firstUpload, NAME, destination, admin, ClasspathRelease.NONE));
 
     assertEquals(DeploymentResult.REPLACED, first);
     String firstId = Files.readString(root.resolve(CURRENT_FILE));
@@ -429,7 +429,7 @@ final class DeploymentInstallerPublishedApplicationTest {
     InputStream secondUpload = new ByteArrayInputStream(Files.readAllBytes(archive));
 
     DeploymentResult second = assertDoesNotThrow(
-        () -> DeploymentInstaller.deploy(secondUpload, NAME, destination, admin));
+        () -> Deployer.deploy(secondUpload, NAME, destination, admin, ClasspathRelease.NONE));
 
     assertEquals(DeploymentResult.REPLACED, second);
     String secondId = Files.readString(root.resolve(CURRENT_FILE));
@@ -437,22 +437,5 @@ final class DeploymentInstallerPublishedApplicationTest {
       assertEquals(Set.of(CURRENT, secondId),
           entries.map(entry -> entry.getFileName().toString()).collect(Collectors.toSet()));
     }
-  }
-
-  @Test
-  void shouldResolveOnlyTheJarsDirectlyInsideTheDependenciesFolderInFileNameOrder()
-      throws IOException {
-    Path jar = previous.resolve(APPLICATION_JAR);
-    Path dependencies = Files.createDirectories(temporary.resolve("deployment/dependencies"));
-    Files.copy(jar, dependencies.resolve("00001-hello-app.jar"));
-    Files.copy(jar, dependencies.resolve("00000-hello-app.jar"));
-    Files.copy(jar, dependencies.resolve("00009-hello-app.zip"));
-    Files.createDirectories(dependencies.resolve("nested"));
-    Files.copy(jar, dependencies.resolve("nested/00009-hello-app.jar"));
-
-    List<Path> jars = DeploymentInstaller.resolveDependencyJars(temporary.resolve("deployment"));
-
-    assertEquals(List.of(dependencies.resolve("00000-hello-app.jar"),
-        dependencies.resolve("00001-hello-app.jar")), jars);
   }
 }

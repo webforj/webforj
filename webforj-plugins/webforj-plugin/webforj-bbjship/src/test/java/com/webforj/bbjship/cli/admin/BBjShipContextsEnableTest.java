@@ -1,5 +1,9 @@
 package com.webforj.bbjship.cli.admin;
 
+import static com.webforj.bbjship.cli.command.BBjServices.BBJSHIP_CONTEXT;
+import static com.webforj.bbjship.cli.command.Home.DEPLOYMENTS_FOLDER;
+import static com.webforj.bbjship.cli.command.Home.HTDOCS_FOLDER;
+import static com.webforj.bbjship.cli.command.Home.PLUGIN_FOLDER;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -30,24 +34,35 @@ import org.mockito.InOrder;
 
 class BBjShipContextsEnableTest extends EmptyWebAppServer {
 
+  private static final String NO_ANSWER_ON_PORT =
+      "The BBjServices web server does not answer on port ";
+  private static final String BBJSHIP_RESTART = """
+      {
+        "EXECUTOR": "CONTEXT:webforj-bbjship",
+        "DATA": {
+          "ACTION": "RESTART"
+        },
+        "ENABLED": true
+      }""";
+
   @Test
   void shouldCreateTheBbjShipContextAndStartIt() throws Exception {
     BBjAdminContextInfo created = mock(BBjAdminContextInfo.class);
-    when(server.createContext("webforj-bbjship")).thenReturn(created);
+    when(server.createContext(BBJSHIP_CONTEXT)).thenReturn(created);
     when(created.getString(BBjAdminContextInfo.JSON_DATA))
-        .thenReturn(CREATED.formatted("webforj-bbjship", ""));
-    when(server.getContextInfo("webforj-bbjship")).thenReturn(info);
+        .thenReturn(CREATED.formatted(BBJSHIP_CONTEXT, ""));
+    when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA))
-        .thenReturn(CREATED.formatted("webforj-bbjship", ""));
+        .thenReturn(CREATED.formatted(BBJSHIP_CONTEXT, ""));
     WebServer web = WebServer.startServingBBjShip();
     int port = web.getPort();
 
     try (web) {
-      contexts.enable(port, OptionalInt.empty(), false);
+      contexts.applyEndpoint(port, OptionalInt.empty(), false);
     }
 
-    Path folder = home.resolve("plugins/webforj-bbjship");
-    Path runtime = home.resolve("plugins/.webforj-bbjship-deployments");
+    Path folder = home.resolve(PLUGIN_FOLDER);
+    Path runtime = home.resolve(DEPLOYMENTS_FOLDER);
     InOrder calls = inOrder(created, server, admin);
     calls.verify(created).setString(BBjAdminContextInfo.JSON_DATA, """
         {
@@ -116,21 +131,21 @@ class BBjShipContextsEnableTest extends EmptyWebAppServer {
 
   @Test
   void shouldUpdateTheRunningBbjShipContextAndRestartIt() throws Exception {
-    Path documentRoot = home.resolve("plugins/.webforj-bbjship-deployments/htdocs");
+    Path documentRoot = home.resolve(HTDOCS_FOLDER);
     when(server.getContextNames())
-        .thenReturn(new BBjAdminAdapterList<>(List.of("root", "webforj-bbjship")));
-    when(server.getContextInfo("webforj-bbjship")).thenReturn(info);
+        .thenReturn(new BBjAdminAdapterList<>(List.of("root", BBJSHIP_CONTEXT)));
+    when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA))
-        .thenReturn(RUNNING.formatted("webforj-bbjship", documentRoot));
+        .thenReturn(RUNNING.formatted(BBJSHIP_CONTEXT, documentRoot));
     WebServer web = WebServer.startServingBBjShip();
     int port = web.getPort();
 
     try (web) {
-      contexts.enable(port, OptionalInt.empty(), false);
+      contexts.applyEndpoint(port, OptionalInt.empty(), false);
     }
 
-    Path folder = home.resolve("plugins/webforj-bbjship");
-    Path runtime = home.resolve("plugins/.webforj-bbjship-deployments");
+    Path folder = home.resolve(PLUGIN_FOLDER);
+    Path runtime = home.resolve(DEPLOYMENTS_FOLDER);
     verify(server, never()).createContext(anyString());
     verify(info).setString(BBjAdminContextInfo.JSON_DATA, """
         {
@@ -177,32 +192,25 @@ class BBjShipContextsEnableTest extends EmptyWebAppServer {
             }
           ]
         }""".formatted(folder, home, port, runtime));
-    verify(admin).jsonExecute("""
-        {
-          "EXECUTOR": "CONTEXT:webforj-bbjship",
-          "DATA": {
-            "ACTION": "RESTART"
-          },
-          "ENABLED": true
-        }""");
+    verify(admin).jsonExecute(BBJSHIP_RESTART);
   }
 
   @ParameterizedTest
   @MethodSource("getBBjShipChallenges")
   void shouldAcceptTheBbjShipChallenge(String challenge) throws Exception {
     BBjAdminContextInfo created = mock(BBjAdminContextInfo.class);
-    when(server.createContext("webforj-bbjship")).thenReturn(created);
+    when(server.createContext(BBJSHIP_CONTEXT)).thenReturn(created);
     when(created.getString(BBjAdminContextInfo.JSON_DATA))
-        .thenReturn(CREATED.formatted("webforj-bbjship", ""));
-    when(server.getContextInfo("webforj-bbjship")).thenReturn(info);
+        .thenReturn(CREATED.formatted(BBJSHIP_CONTEXT, ""));
+    when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA))
-        .thenReturn(CREATED.formatted("webforj-bbjship", ""));
+        .thenReturn(CREATED.formatted(BBJSHIP_CONTEXT, ""));
     WebServer web = WebServer.startServingBBjShipWith(challenge, 0);
     int httpPort = web.getPort();
     OptionalInt sslPort = OptionalInt.empty();
 
     try (web) {
-      assertDoesNotThrow(() -> contexts.enable(httpPort, sslPort, false));
+      assertDoesNotThrow(() -> contexts.applyEndpoint(httpPort, sslPort, false));
     }
 
     verify(server, never()).removeContext(anyString());
@@ -211,19 +219,19 @@ class BBjShipContextsEnableTest extends EmptyWebAppServer {
   @Test
   void shouldWaitForTheBbjShipContextThatAnswersNotFoundWhileItStarts() throws Exception {
     BBjAdminContextInfo created = mock(BBjAdminContextInfo.class);
-    when(server.createContext("webforj-bbjship")).thenReturn(created);
+    when(server.createContext(BBJSHIP_CONTEXT)).thenReturn(created);
     when(created.getString(BBjAdminContextInfo.JSON_DATA))
-        .thenReturn(CREATED.formatted("webforj-bbjship", ""));
-    when(server.getContextInfo("webforj-bbjship")).thenReturn(info);
+        .thenReturn(CREATED.formatted(BBJSHIP_CONTEXT, ""));
+    when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA))
-        .thenReturn(CREATED.formatted("webforj-bbjship", ""));
+        .thenReturn(CREATED.formatted(BBJSHIP_CONTEXT, ""));
     WebServer web = WebServer.startServingBBjShipWith(
         "Basic realm=\"webforj-bbjship\", Bearer realm=\"webforj-bbjship\"", 2);
     int httpPort = web.getPort();
     OptionalInt sslPort = OptionalInt.empty();
 
     try (web) {
-      assertDoesNotThrow(() -> contexts.enable(httpPort, sslPort, false));
+      assertDoesNotThrow(() -> contexts.applyEndpoint(httpPort, sslPort, false));
     }
 
     verify(server, never()).removeContext(anyString());
@@ -232,18 +240,18 @@ class BBjShipContextsEnableTest extends EmptyWebAppServer {
   @Test
   void shouldWaitForTheBbjShipContextWhosePortRefusesConnectionsWhileItStarts() throws Exception {
     BBjAdminContextInfo created = mock(BBjAdminContextInfo.class);
-    when(server.createContext("webforj-bbjship")).thenReturn(created);
+    when(server.createContext(BBJSHIP_CONTEXT)).thenReturn(created);
     when(created.getString(BBjAdminContextInfo.JSON_DATA))
-        .thenReturn(CREATED.formatted("webforj-bbjship", ""));
-    when(server.getContextInfo("webforj-bbjship")).thenReturn(info);
+        .thenReturn(CREATED.formatted(BBJSHIP_CONTEXT, ""));
+    when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA))
-        .thenReturn(CREATED.formatted("webforj-bbjship", ""));
+        .thenReturn(CREATED.formatted(BBJSHIP_CONTEXT, ""));
     WebServer web = WebServer.startServingBBjShipAfterClosing(3);
     int httpPort = web.getPort();
     OptionalInt sslPort = OptionalInt.empty();
 
     try (web) {
-      assertDoesNotThrow(() -> contexts.enable(httpPort, sslPort, false));
+      assertDoesNotThrow(() -> contexts.applyEndpoint(httpPort, sslPort, false));
     }
 
     verify(server, never()).removeContext(anyString());
@@ -251,11 +259,11 @@ class BBjShipContextsEnableTest extends EmptyWebAppServer {
 
   @Test
   void shouldRestoreTheBbjShipContextWhenTheBbjShipDoesNotAnswerOnThePort() throws Exception {
-    Path documentRoot = home.resolve("plugins/.webforj-bbjship-deployments/htdocs");
-    String running = RUNNING.formatted("webforj-bbjship", documentRoot);
+    Path documentRoot = home.resolve(HTDOCS_FOLDER);
+    String running = RUNNING.formatted(BBJSHIP_CONTEXT, documentRoot);
     when(server.getContextNames())
-        .thenReturn(new BBjAdminAdapterList<>(List.of("root", "webforj-bbjship")));
-    when(server.getContextInfo("webforj-bbjship")).thenReturn(info);
+        .thenReturn(new BBjAdminAdapterList<>(List.of("root", BBJSHIP_CONTEXT)));
+    when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn(running);
     contexts = new BBjShipContexts(admin, plugin, Duration.ofMillis(300));
     WebServer web = WebServer.startServingOther();
@@ -265,73 +273,66 @@ class BBjShipContextsEnableTest extends EmptyWebAppServer {
 
     IOException failure;
     try (web) {
-      failure = assertThrows(IOException.class, () -> contexts.enable(httpPort, sslPort, false));
+      failure =
+          assertThrows(IOException.class, () -> contexts.applyEndpoint(httpPort, sslPort, false));
     }
 
-    assertEquals("The BBjServices web server does not answer on port " + port
-        + ". Use the HTTP port of the BBjServices web server", failure.getMessage());
+    assertEquals(NO_ANSWER_ON_PORT + port + ". Use the HTTP port of the BBjServices web server",
+        failure.getMessage());
     InOrder calls = inOrder(info, server, admin);
     calls.verify(info).setString(anyString(), anyString());
     calls.verify(admin).jsonExecute(anyString());
     calls.verify(info).setString(BBjAdminContextInfo.JSON_DATA, running);
     calls.verify(info).commit();
     calls.verify(server).commit();
-    calls.verify(admin).jsonExecute("""
-        {
-          "EXECUTOR": "CONTEXT:webforj-bbjship",
-          "DATA": {
-            "ACTION": "RESTART"
-          },
-          "ENABLED": true
-        }""");
+    calls.verify(admin).jsonExecute(BBJSHIP_RESTART);
     verify(server, never()).removeContext(anyString());
   }
 
   @Test
   void shouldRemoveTheCreatedBbjShipContextWhenNothingAnswersOnThePort() throws Exception {
     BBjAdminContextInfo created = mock(BBjAdminContextInfo.class);
-    when(server.createContext("webforj-bbjship")).thenReturn(created);
+    when(server.createContext(BBJSHIP_CONTEXT)).thenReturn(created);
     when(created.getString(BBjAdminContextInfo.JSON_DATA))
-        .thenReturn(CREATED.formatted("webforj-bbjship", ""));
-    when(server.getContextInfo("webforj-bbjship")).thenReturn(info);
+        .thenReturn(CREATED.formatted(BBJSHIP_CONTEXT, ""));
+    when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA))
-        .thenReturn(CREATED.formatted("webforj-bbjship", ""));
+        .thenReturn(CREATED.formatted(BBJSHIP_CONTEXT, ""));
     contexts = new BBjShipContexts(admin, plugin, Duration.ofMillis(300));
     int port = WebServer.findClosedPort();
     int httpPort = port;
     OptionalInt sslPort = OptionalInt.empty();
 
     IOException failure =
-        assertThrows(IOException.class, () -> contexts.enable(httpPort, sslPort, false));
+        assertThrows(IOException.class, () -> contexts.applyEndpoint(httpPort, sslPort, false));
 
-    assertEquals("The BBjServices web server does not answer on port " + port
-        + ". Use the HTTP port of the BBjServices web server", failure.getMessage());
+    assertEquals(NO_ANSWER_ON_PORT + port + ". Use the HTTP port of the BBjServices web server",
+        failure.getMessage());
     InOrder calls = inOrder(server);
-    calls.verify(server).createContext("webforj-bbjship");
-    calls.verify(server).removeContext("webforj-bbjship");
+    calls.verify(server).createContext(BBJSHIP_CONTEXT);
+    calls.verify(server).removeContext(BBJSHIP_CONTEXT);
     calls.verify(server).commit();
   }
 
   @Test
   void shouldServeTheBbjShipContextOnTheHttpAndTheSslPort() throws Exception {
     BBjAdminContextInfo created = mock(BBjAdminContextInfo.class);
-    when(server.createContext("webforj-bbjship")).thenReturn(created);
-    when(created.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn("""
-        {"HTTP port": 8888}""");
-    when(server.getContextInfo("webforj-bbjship")).thenReturn(info);
+    when(server.createContext(BBJSHIP_CONTEXT)).thenReturn(created);
+    when(created.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn("{\"HTTP port\": 8888}");
+    when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA))
-        .thenReturn(CREATED.formatted("webforj-bbjship", ""));
+        .thenReturn(CREATED.formatted(BBJSHIP_CONTEXT, ""));
     WebServer web = WebServer.startServingBBjShip();
     WebServer secure = WebServer.startServingBBjShipOverHttps();
     int port = web.getPort();
     int sslPort = secure.getPort();
 
     try (web; secure) {
-      contexts.enable(port, OptionalInt.of(sslPort), false);
+      contexts.applyEndpoint(port, OptionalInt.of(sslPort), false);
     }
 
-    Path folder = home.resolve("plugins/webforj-bbjship");
-    Path runtime = home.resolve("plugins/.webforj-bbjship-deployments");
+    Path folder = home.resolve(PLUGIN_FOLDER);
+    Path runtime = home.resolve(DEPLOYMENTS_FOLDER);
     verify(created).setString(BBjAdminContextInfo.JSON_DATA, """
         {
           "HTTP port": %3$d,
@@ -361,12 +362,12 @@ class BBjShipContextsEnableTest extends EmptyWebAppServer {
   @Test
   void shouldRemoveTheCreatedBbjShipContextWhenNothingAnswersOnTheSslPort() throws Exception {
     BBjAdminContextInfo created = mock(BBjAdminContextInfo.class);
-    when(server.createContext("webforj-bbjship")).thenReturn(created);
+    when(server.createContext(BBJSHIP_CONTEXT)).thenReturn(created);
     when(created.getString(BBjAdminContextInfo.JSON_DATA))
-        .thenReturn(CREATED.formatted("webforj-bbjship", ""));
-    when(server.getContextInfo("webforj-bbjship")).thenReturn(info);
+        .thenReturn(CREATED.formatted(BBJSHIP_CONTEXT, ""));
+    when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA))
-        .thenReturn(CREATED.formatted("webforj-bbjship", ""));
+        .thenReturn(CREATED.formatted(BBJSHIP_CONTEXT, ""));
     contexts = new BBjShipContexts(admin, plugin, Duration.ofMillis(300));
     WebServer web = WebServer.startServingBBjShip();
     int port = WebServer.findClosedPort();
@@ -375,24 +376,25 @@ class BBjShipContextsEnableTest extends EmptyWebAppServer {
 
     IOException failure;
     try (web) {
-      failure = assertThrows(IOException.class, () -> contexts.enable(httpPort, sslPort, false));
+      failure =
+          assertThrows(IOException.class, () -> contexts.applyEndpoint(httpPort, sslPort, false));
     }
 
-    assertEquals("The BBjServices web server does not answer on port " + port
-        + ". Use the SSL port of the BBjServices web server", failure.getMessage());
+    assertEquals(NO_ANSWER_ON_PORT + port + ". Use the SSL port of the BBjServices web server",
+        failure.getMessage());
     InOrder calls = inOrder(server);
-    calls.verify(server).createContext("webforj-bbjship");
-    calls.verify(server).removeContext("webforj-bbjship");
+    calls.verify(server).createContext(BBJSHIP_CONTEXT);
+    calls.verify(server).removeContext(BBJSHIP_CONTEXT);
     calls.verify(server).commit();
   }
 
   @Test
   void shouldRestoreTheBbjShipContextWhenBbjServicesRefusesTheSslPort() throws Exception {
-    Path documentRoot = home.resolve("plugins/.webforj-bbjship-deployments/htdocs");
-    String running = RUNNING.formatted("webforj-bbjship", documentRoot);
+    Path documentRoot = home.resolve(HTDOCS_FOLDER);
+    String running = RUNNING.formatted(BBJSHIP_CONTEXT, documentRoot);
     when(server.getContextNames())
-        .thenReturn(new BBjAdminAdapterList<>(List.of("root", "webforj-bbjship")));
-    when(server.getContextInfo("webforj-bbjship")).thenReturn(info);
+        .thenReturn(new BBjAdminAdapterList<>(List.of("root", BBJSHIP_CONTEXT)));
+    when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn(running);
     doThrow(new BBjAdminException(
         "8888 is not a valid SSL port. The following are valid ports: [8443]")).doNothing()
@@ -400,7 +402,7 @@ class BBjShipContextsEnableTest extends EmptyWebAppServer {
     OptionalInt sslPort = OptionalInt.of(8888);
 
     BBjAdminException failure =
-        assertThrows(BBjAdminException.class, () -> contexts.enable(8080, sslPort, false));
+        assertThrows(BBjAdminException.class, () -> contexts.applyEndpoint(8080, sslPort, false));
 
     assertEquals("8888 is not a valid SSL port. The following are valid ports: [8443]",
         failure.getMessage());
@@ -410,28 +412,20 @@ class BBjShipContextsEnableTest extends EmptyWebAppServer {
     calls.verify(info).setString(BBjAdminContextInfo.JSON_DATA, running);
     calls.verify(info).commit();
     calls.verify(server).commit();
-    calls.verify(admin).jsonExecute("""
-        {
-          "EXECUTOR": "CONTEXT:webforj-bbjship",
-          "DATA": {
-            "ACTION": "RESTART"
-          },
-          "ENABLED": true
-        }""");
+    calls.verify(admin).jsonExecute(BBJSHIP_RESTART);
   }
 
   @Test
   void shouldRefuseContextOfAnotherApplication() throws Exception {
-    when(server.getContextNames())
-        .thenReturn(new BBjAdminAdapterList<>(List.of("webforj-bbjship")));
-    when(server.getContextInfo("webforj-bbjship")).thenReturn(info);
+    when(server.getContextNames()).thenReturn(new BBjAdminAdapterList<>(List.of(BBJSHIP_CONTEXT)));
+    when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA))
-        .thenReturn(RUNNING.formatted("webforj-bbjship", "/srv/other/htdocs"));
+        .thenReturn(RUNNING.formatted(BBJSHIP_CONTEXT, "/srv/other/htdocs"));
     int httpPort = 8888;
     OptionalInt sslPort = OptionalInt.empty();
 
     IOException failure =
-        assertThrows(IOException.class, () -> contexts.enable(httpPort, sslPort, false));
+        assertThrows(IOException.class, () -> contexts.applyEndpoint(httpPort, sslPort, false));
 
     assertEquals("The BBjShip context belongs to another application", failure.getMessage());
     verify(info, never()).commit();
@@ -444,7 +438,7 @@ class BBjShipContextsEnableTest extends EmptyWebAppServer {
     OptionalInt sslPort = OptionalInt.empty();
 
     IOException failure =
-        assertThrows(IOException.class, () -> contexts.enable(httpPort, sslPort, false));
+        assertThrows(IOException.class, () -> contexts.applyEndpoint(httpPort, sslPort, false));
 
     assertEquals("The BBj configuration file is missing. Check the BBj installation",
         failure.getMessage());
@@ -452,13 +446,13 @@ class BBjShipContextsEnableTest extends EmptyWebAppServer {
 
   @Test
   void shouldReportDocumentFolderThatCannotBeCreated() throws Exception {
-    Path runtime = Files.createDirectories(home.resolve("plugins/.webforj-bbjship-deployments"));
+    Path runtime = Files.createDirectories(home.resolve(DEPLOYMENTS_FOLDER));
     Files.writeString(runtime.resolve("htdocs"), "file");
     int httpPort = 8888;
     OptionalInt sslPort = OptionalInt.empty();
 
     IOException failure =
-        assertThrows(IOException.class, () -> contexts.enable(httpPort, sslPort, false));
+        assertThrows(IOException.class, () -> contexts.applyEndpoint(httpPort, sslPort, false));
 
     assertEquals("Cannot create the BBjShip document directory. Check the runtime folder",
         failure.getMessage());
@@ -467,19 +461,18 @@ class BBjShipContextsEnableTest extends EmptyWebAppServer {
   @Test
   void shouldReportContextThatDoesNotStart() throws Exception {
     BBjAdminContextInfo created = mock(BBjAdminContextInfo.class);
-    when(server.createContext("webforj-bbjship")).thenReturn(created);
+    when(server.createContext(BBJSHIP_CONTEXT)).thenReturn(created);
     when(created.getString(BBjAdminContextInfo.JSON_DATA))
-        .thenReturn(CREATED.formatted("webforj-bbjship", ""));
-    when(server.getContextInfo("webforj-bbjship")).thenReturn(info);
+        .thenReturn(CREATED.formatted(BBJSHIP_CONTEXT, ""));
+    when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA))
-        .thenReturn(CREATED.formatted("webforj-bbjship", ""));
-    when(admin.jsonExecute(anyString())).thenReturn("""
-        {"MESSAGE": "Address already in use"}""");
+        .thenReturn(CREATED.formatted(BBJSHIP_CONTEXT, ""));
+    when(admin.jsonExecute(anyString())).thenReturn("{\"MESSAGE\": \"Address already in use\"}");
     int httpPort = 8888;
     OptionalInt sslPort = OptionalInt.empty();
 
     IOException failure =
-        assertThrows(IOException.class, () -> contexts.enable(httpPort, sslPort, false));
+        assertThrows(IOException.class, () -> contexts.applyEndpoint(httpPort, sslPort, false));
 
     assertEquals("The BBjShip context did not start. Address already in use", failure.getMessage());
   }
@@ -489,7 +482,7 @@ class BBjShipContextsEnableTest extends EmptyWebAppServer {
     BBjAdminWebAppServer serverWithoutContexts = mock(BBjAdminWebAppServer.class);
     when(admin.getWebAppServer()).thenReturn(serverWithoutContexts);
 
-    IOException failure = assertThrows(IOException.class, contexts::disable);
+    IOException failure = assertThrows(IOException.class, contexts::removeEndpoint);
 
     assertEquals("BBjServices does not manage web contexts. Update BBj", failure.getMessage());
   }

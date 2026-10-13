@@ -8,12 +8,13 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import com.webforj.bbjship.cli.BBjShipCli;
+import com.webforj.bbjship.cli.TerminalLines;
+import com.webforj.plugin.foundation.bbj.BBjShipPlugin;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InOrder;
@@ -36,10 +37,10 @@ class RemoteDisableCommandTest {
           "Document Base": "%s"
         }""".formatted(home.resolve("plugins/.webforj-bbjship-deployments/htdocs")));
     ByteArrayOutputStream output = new ByteArrayOutputStream();
-    PrintStream stream = new PrintStream(output, true, StandardCharsets.UTF_8);
-    BBjShipCli cli = BBjShipCli.create(home).setInput(InputStream.nullInputStream())
-        .setEnvironment(Map.of()).setOutput(stream).setError(stream).setAnsi(Ansi.OFF)
-        .setConnector((username, password) -> services.getAdmin()).build();
+    Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+    BBjShipCli cli =
+        BBjShipCli.create(new BBjShipPlugin(home)).setTerminal(new TerminalLines(stream))
+            .setAnsi(Ansi.OFF).setSessions(login -> services.getAdmin()).build();
 
     int status = cli.run("remote", "disable");
 
@@ -58,10 +59,10 @@ class RemoteDisableCommandTest {
     BBjServices services = new BBjServices();
     services.addBBjShipConfiguration(home);
     ByteArrayOutputStream output = new ByteArrayOutputStream();
-    PrintStream stream = new PrintStream(output, true, StandardCharsets.UTF_8);
-    BBjShipCli cli = BBjShipCli.create(home).setInput(InputStream.nullInputStream())
-        .setEnvironment(Map.of()).setOutput(stream).setError(stream).setAnsi(Ansi.OFF)
-        .setConnector((username, password) -> services.getAdmin()).build();
+    Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+    BBjShipCli cli =
+        BBjShipCli.create(new BBjShipPlugin(home)).setTerminal(new TerminalLines(stream))
+            .setAnsi(Ansi.OFF).setSessions(login -> services.getAdmin()).build();
 
     int status = cli.run("remote", "disable");
 

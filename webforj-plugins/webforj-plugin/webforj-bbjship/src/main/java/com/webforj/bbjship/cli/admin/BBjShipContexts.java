@@ -12,12 +12,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.webforj.bbjship.BBjShipServlet;
-import com.webforj.bbjship.model.BBjShipVersion;
-import com.webforj.plugin.foundation.bbj.model.BBjCredentials;
+import com.webforj.plugin.foundation.bbj.BBjShipPlugin;
+import com.webforj.plugin.foundation.bbj.PollingWait;
 import java.io.IOException;
-import java.net.Authenticator;
-import java.net.HttpURLConnection;
-import java.net.PasswordAuthentication;
 import java.net.Socket;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -65,21 +62,18 @@ public final class BBjShipContexts {
    */
   private enum Context {
     // @formatter:off
-    BBJSHIP("webforj-bbjship", "/webforj-bbjship", "htdocs", "WebforjBBjDeploymentServlet",
-        "BBjShip"),
-    ASSETS("webforj-bbjship-assets", "/webforj", "assets", "WebforjBBjAssetsServlet", "assets");
+    BBJSHIP("webforj-bbjship", "/webforj-bbjship", "WebforjBBjDeploymentServlet", "BBjShip"),
+    ASSETS("webforj-bbjship-assets", "/webforj", "WebforjBBjAssetsServlet", "assets");
     // @formatter:on
 
     private final String contextName;
     private final String path;
-    private final String documentFolder;
     private final String servlet;
     private final String label;
 
-    Context(String contextName, String path, String documentFolder, String servlet, String label) {
+    Context(String contextName, String path, String servlet, String label) {
       this.contextName = contextName;
       this.path = path;
-      this.documentFolder = documentFolder;
       this.servlet = servlet;
       this.label = label;
     }
@@ -115,6 +109,7 @@ public final class BBjShipContexts {
   private static final Duration ANSWER_TIMEOUT = Duration.ofSeconds(30);
   static final Duration ANSWER_DEADLINE = Duration.ofSeconds(15);
   private static final Duration ANSWER_INTERVAL = Duration.ofMillis(250);
+  private static final String ANSWER_CHECK = "The answer check of a BBjShip context";
   private static final Gson GSON =
       new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
 
@@ -123,18 +118,14 @@ public final class BBjShipContexts {
   private final Duration answerDeadline;
 
   /**
-   * Creates the contexts of BBjShip.
+   * Creates the contexts of BBjShip with the longest wait for the BBjServices web server to answer
+   * on a port of a context.
    *
    * @param admin the administration session
    * @param plugin the BBjShip plugin of the BBj installation
+   * @param answerDeadline the longest wait for an answer
    */
-  public BBjShipContexts(BBjAdminBase admin, BBjShipPlugin plugin) {
-    this.admin = Objects.requireNonNull(admin);
-    this.plugin = Objects.requireNonNull(plugin);
-    this.answerDeadline = ANSWER_DEADLINE;
-  }
-
-  BBjShipContexts(BBjAdminBase admin, BBjShipPlugin plugin, Duration answerDeadline) {
+  public BBjShipContexts(BBjAdminBase admin, BBjShipPlugin plugin, Duration answerDeadline) {
     this.admin = Objects.requireNonNull(admin);
     this.plugin = Objects.requireNonNull(plugin);
     this.answerDeadline = answerDeadline;
@@ -160,10 +151,9 @@ public final class BBjShipContexts {
    * @throws IOException if a required file is missing, a context belongs to another application,
    *         does not start or does not answer on a port
    * @throws BBjAdminException if BBjServices refuses the configuration
-   * @throws InterruptedException if the thread is interrupted while waiting for the answer
    */
-  public void enable(int port, OptionalInt sslPort, boolean assetsStarted)
-      throws IOException, BBjAdminException, InterruptedException {
+  public void applyEndpoint(int port, OptionalInt sslPort, boolean assetsStarted)
+      throws IOException, BBjAdminException {
     BBjAdminWebAppServer_1500 server = getServer();
     Optional<String> previous = findOwnedData(server, Context.BBJSHIP);
     Optional<String> assets = findOwnedData(server, Context.ASSETS);
@@ -172,7 +162,7 @@ public final class BBjShipContexts {
     try {
       applyCheckedContext(server, Context.BBJSHIP, previous, ports,
           BBjShipContexts::isBBjShipChallenge);
-    } catch (IOException | BBjAdminException | InterruptedException | RuntimeException failure) {
+    } catch (IOException | BBjAdminException | RuntimeException failure) {
       if (assetsRestart) {
         startContext(server, Context.ASSETS, failure);
       }
@@ -193,7 +183,7 @@ public final class BBjShipContexts {
       } else if (assetsRestart) {
         startContext(server, Context.ASSETS);
       }
-    } catch (IOException | BBjAdminException | InterruptedException | RuntimeException failure) {
+    } catch (IOException | BBjAdminException | RuntimeException failure) {
       resetContext(server, Context.BBJSHIP, previous, failure);
       throw failure;
     }
@@ -228,7 +218,7 @@ public final class BBjShipContexts {
    * @throws IOException if the context belongs to another application or does not stop
    * @throws BBjAdminException if BBjServices refuses the removal
    */
-  public boolean disable() throws IOException, BBjAdminException {
+  public boolean removeEndpoint() throws IOException, BBjAdminException {
     BBjAdminWebAppServer_1500 server = getServer();
     if (!hasOwnedContext(server, Context.BBJSHIP)) {
       return false;
@@ -284,10 +274,9 @@ public final class BBjShipContexts {
    * @throws IOException if a required file is missing, a context belongs to another application,
    *         the assets context does not start or nothing answers on a port
    * @throws BBjAdminException if BBjServices refuses the configuration
-   * @throws InterruptedException if the thread is interrupted while waiting for the answer
    */
   boolean addAssets(OptionalInt httpPort, OptionalInt sslPort)
-      throws IOException, BBjAdminException, InterruptedException {
+      throws IOException, BBjAdminException {
     BBjAdminWebAppServer_1500 server = getServer();
     if (hasOwnedContext(server, Context.ASSETS)) {
       return false;
@@ -307,57 +296,9 @@ public final class BBjShipContexts {
     return true;
   }
 
-  /**
-   * Returns the ports of the BBjShip context, the HTTP port and the SSL port when the context has
-   * one.
-   *
-   * @return the ports, or an empty list when the BBjShip context does not exist
-   * @throws IOException if the context belongs to another application
-   * @throws BBjAdminException if BBjServices refuses the request
-   */
-  List<Integer> getPorts() throws IOException, BBjAdminException {
-    JsonObject data = readBBjShipPorts(getServer());
-    if (!data.has(HTTP_PORT)) {
-      return List.of();
-    }
-
-    List<Integer> ports = new ArrayList<>();
-    ports.add(data.get(HTTP_PORT).getAsInt());
-    readSslPort(data).ifPresent(ports::add);
-
-    return List.copyOf(ports);
-  }
-
-  /**
-   * Asks BBjShip on the HTTP port for its version with the credentials.
-   *
-   * @param port the HTTP port of the BBjShip context
-   * @param credentials the administration credentials
-   *
-   * @return the version answer, or empty when the request fails or the answer is not 200
-   * @throws InterruptedException if the thread is interrupted while waiting for the answer
-   */
-  Optional<BBjShipVersion> fetchVersion(int port, BBjCredentials credentials)
-      throws InterruptedException {
-    HttpRequest request =
-        HttpRequest.newBuilder(URI.create(toAddress(Listener.HTTP, port) + "/version"))
-            .timeout(ANSWER_TIMEOUT).build();
-    try (HttpClient client = HttpClient.newBuilder().connectTimeout(ANSWER_TIMEOUT)
-        .authenticator(new CredentialsAuthenticator(credentials)).build()) {
-      HttpResponse<String> answer = client.send(request, BodyHandlers.ofString());
-      if (answer.statusCode() != HttpURLConnection.HTTP_OK) {
-        return Optional.empty();
-      }
-
-      return Optional.of(GSON.fromJson(answer.body(), BBjShipVersion.class));
-    } catch (IOException unanswered) {
-      return Optional.empty();
-    }
-  }
-
   private void applyCheckedContext(BBjAdminWebAppServer_1500 server, Context context,
       Optional<String> previous, JsonObject ports, Predicate<HttpResponse<Void>> expected)
-      throws IOException, BBjAdminException, InterruptedException {
+      throws IOException, BBjAdminException {
     applyFileValidation(context);
     Optional<IOException> failure;
     try {
@@ -491,7 +432,7 @@ public final class BBjShipContexts {
   }
 
   private Path getDocumentRoot(Context context) {
-    return plugin.getRuntime().resolve(context.documentFolder);
+    return context == Context.BBJSHIP ? plugin.getStaticFiles() : plugin.getAssets();
   }
 
   private JsonArray createServlets(Context context, Path source, Path config) {
@@ -529,14 +470,12 @@ public final class BBjShipContexts {
   }
 
   private Optional<IOException> findPortFailure(OptionalInt httpPort, OptionalInt sslPort,
-      Predicate<HttpResponse<Void>> expected) throws InterruptedException {
-    if (httpPort.isPresent()
-        && fetchVersionAnswer(Listener.HTTP, httpPort.getAsInt(), expected).isEmpty()) {
+      Predicate<HttpResponse<Void>> expected) throws IOException {
+    if (httpPort.isPresent() && !isAnswered(Listener.HTTP, httpPort.getAsInt(), expected)) {
       return Optional.of(createPortFailure(Listener.HTTP, httpPort.getAsInt()));
     }
 
-    if (sslPort.isPresent()
-        && fetchVersionAnswer(Listener.SSL, sslPort.getAsInt(), expected).isEmpty()) {
+    if (sslPort.isPresent() && !isAnswered(Listener.SSL, sslPort.getAsInt(), expected)) {
       return Optional.of(createPortFailure(Listener.SSL, sslPort.getAsInt()));
     }
 
@@ -552,11 +491,10 @@ public final class BBjShipContexts {
    * credentials and expects the authentication challenge.
    * </p>
    */
-  private Optional<HttpResponse<Void>> fetchVersionAnswer(Listener listener, int port,
-      Predicate<HttpResponse<Void>> expected) throws InterruptedException {
+  private boolean isAnswered(Listener listener, int port, Predicate<HttpResponse<Void>> expected)
+      throws IOException {
     HttpRequest request = HttpRequest.newBuilder(URI.create(toAddress(listener, port) + "/version"))
         .timeout(ANSWER_TIMEOUT).build();
-    long deadline = System.nanoTime() + answerDeadline.toNanos();
     HttpClient.Builder builder = HttpClient.newBuilder().connectTimeout(ANSWER_TIMEOUT);
     if (listener == Listener.SSL) {
       builder.sslContext(createLoopbackSslContext());
@@ -566,13 +504,9 @@ public final class BBjShipContexts {
     // just created, refuses connections for a moment, so a refused request is retried like an
     // unexpected answer until the deadline
     try (HttpClient client = builder.build()) {
-      Optional<HttpResponse<Void>> answer = sendVersionRequest(client, request);
-      while (answer.filter(expected).isEmpty() && System.nanoTime() - deadline < 0) {
-        Thread.sleep(ANSWER_INTERVAL);
-        answer = sendVersionRequest(client, request);
-      }
-
-      return answer.filter(expected);
+      return PollingWait.create(ANSWER_CHECK, answerDeadline, ANSWER_INTERVAL).build()
+          .apply(() -> sendVersionRequest(client, request).filter(expected).isPresent())
+          .isPresent();
     }
   }
 
@@ -727,30 +661,6 @@ public final class BBjShipContexts {
     @Override
     public X509Certificate[] getAcceptedIssuers() {
       return new X509Certificate[0];
-    }
-  }
-
-  /**
-   * Answers the authentication challenge of BBjShip with the administration credentials.
-   *
-   * @author Hyyan Abo Fakher
-   * @since 26.03
-   */
-  private static final class CredentialsAuthenticator extends Authenticator {
-
-    private final BBjCredentials credentials;
-
-    CredentialsAuthenticator(BBjCredentials credentials) {
-      this.credentials = credentials;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected PasswordAuthentication getPasswordAuthentication() {
-      return new PasswordAuthentication(credentials.getUsername(),
-          credentials.getPassword().toCharArray());
     }
   }
 }

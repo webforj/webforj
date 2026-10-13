@@ -2,14 +2,13 @@ package com.webforj.bbjship;
 
 import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.BBjAdminException;
-import com.basis.api.admin.BBjAdminFactory;
 import com.google.common.net.HttpHeaders;
 import com.google.gson.Gson;
-import com.webforj.bbjship.DeploymentInstaller.DeploymentResult;
-import com.webforj.bbjship.cli.admin.BBjShipPlugin;
+import com.webforj.bbjship.Deployer.DeploymentResult;
 import com.webforj.bbjship.model.BBjShipDeployment;
 import com.webforj.bbjship.model.BBjShipProblem;
 import com.webforj.bbjship.model.BBjShipVersion;
+import com.webforj.plugin.foundation.bbj.BBjShipPlugin;
 import com.webforj.plugin.foundation.bbj.PublishNamePolicy;
 import com.webforj.plugin.foundation.bbj.model.BBjCredentials;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,7 +18,6 @@ import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.lang.management.ManagementFactory;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.util.Base64;
 import java.util.Optional;
 
@@ -37,36 +35,6 @@ import java.util.Optional;
  * @since 26.03
  */
 public final class BBjShipServlet {
-
-  /**
-   * Opens an administration session of BBjServices for a user or an authorization token.
-   *
-   * @author Hyyan Abo Fakher
-   * @since 26.03
-   */
-  interface AdminSessionFactory {
-
-    /**
-     * Opens a session with the given credentials.
-     *
-     * @param username the administration user
-     * @param password the password of the user
-     *
-     * @return the authenticated administration API
-     * @throws BBjAdminException if the server rejects the credentials
-     */
-    BBjAdminBase create(String username, String password) throws BBjAdminException;
-
-    /**
-     * Opens a session with the given authorization token.
-     *
-     * @param token the authorization token issued by BBjServices
-     *
-     * @return the authenticated administration API
-     * @throws BBjAdminException if the server rejects the token
-     */
-    BBjAdminBase create(String token) throws BBjAdminException;
-  }
 
   /**
    * Names the problems BBjShip answers, with their status code and standard reason phrase.
@@ -112,8 +80,6 @@ public final class BBjShipServlet {
    * The Basic challenge BBjShip answers a request without valid credentials with.
    */
   public static final String BASIC_CHALLENGE = BASIC + REALM;
-  private static final String INVALID_NAME =
-      "The publish name is invalid. " + PublishNamePolicy.INVALID_NAME_ADVICE;
 
   private BBjShipServlet() {}
 
@@ -127,25 +93,9 @@ public final class BBjShipServlet {
    */
   public static void handle(HttpServletRequest request, HttpServletResponse response)
       throws IOException {
-    BBjShipPlugin plugin = new BBjShipPlugin(Path.of(System.getProperty("basis.BBjHome")));
-    handle(request, response, plugin, new BBjServicesClasspathRelease(), new AdminSessionFactory() {
-
-      /**
-       * {@inheritDoc}
-       */
-      @Override
-      public BBjAdminBase create(String username, String password) throws BBjAdminException {
-        return BBjAdminFactory.getBBjAdmin(username, password);
-      }
-
-      /**
-       * {@inheritDoc}
-       */
-      @Override
-      public BBjAdminBase create(String token) throws BBjAdminException {
-        return BBjAdminFactory.getBBjAdmin(token);
-      }
-    });
+    BBjShipPlugin plugin = BBjShipPlugin.createFromBBjHome();
+    handle(request, response, plugin, new BBjServicesClasspathRelease(),
+        new BBjServicesAdminSessionFactory());
   }
 
   static void handle(HttpServletRequest request, HttpServletResponse response, BBjShipPlugin plugin,
@@ -184,7 +134,7 @@ public final class BBjShipServlet {
       }
 
       writeBody(response, HttpServletResponse.SC_OK, JSON, new BBjShipVersion(plugin.readVersion(),
-          ManagementFactory.getRuntimeMXBean().getInputArguments(), ProcessHandle.current().pid()));
+          ManagementFactory.getRuntimeMXBean().getInputArguments()));
       return;
     }
 
@@ -201,27 +151,22 @@ public final class BBjShipServlet {
     }
 
     String publishName = name.get();
-    if (PublishNamePolicy.isReserved(publishName)) {
-      writeProblem(response, Problem.BAD_REQUEST,
-          PublishNamePolicy.findRefusal(publishName).orElseThrow());
-      return;
-    }
-
-    if (!PublishNamePolicy.isValid(publishName)) {
-      writeProblem(response, Problem.BAD_REQUEST, INVALID_NAME);
+    Optional<String> refusal = PublishNamePolicy.findRefusal(publishName);
+    if (refusal.isPresent()) {
+      writeProblem(response, Problem.BAD_REQUEST, refusal.get());
       return;
     }
 
     String root = plugin.getDeployments().toString();
     if (DELETE.equals(method)) {
-      DeploymentInstaller.undeploy(publishName, root, admin, release);
+      Deployer.undeploy(publishName, root, admin, release);
       response.setStatus(HttpServletResponse.SC_NO_CONTENT);
       return;
     }
 
     DeploymentResult result =
-        DeploymentInstaller.deploy(request.getInputStream(), publishName, root, admin, release);
-    String url = DeploymentInstaller.getApplicationUrl(publishName);
+        Deployer.deploy(request.getInputStream(), publishName, root, admin, release);
+    String url = Deployer.getApplicationUrl(publishName);
     response.setHeader(HttpHeaders.LOCATION, url);
     int status = result == DeploymentResult.CREATED ? HttpServletResponse.SC_CREATED
         : HttpServletResponse.SC_OK;
@@ -238,7 +183,7 @@ public final class BBjShipServlet {
     String scheme = value.substring(0, separator);
     String parameter = value.substring(separator + 1).strip();
     if (BEARER.equalsIgnoreCase(scheme)) {
-      return Optional.of(BBjCredentials.ofToken(parameter));
+      return Optional.of(BBjCredentials.createToken(parameter));
     }
 
     if (!BASIC.equalsIgnoreCase(scheme)) {
@@ -258,14 +203,13 @@ public final class BBjShipServlet {
     }
 
     return Optional
-        .of(BBjCredentials.of(userPass.substring(0, colon), userPass.substring(colon + 1)));
+        .of(BBjCredentials.createUser(userPass.substring(0, colon), userPass.substring(colon + 1)));
   }
 
   private static Optional<BBjAdminBase> openSession(BBjCredentials credentials,
       AdminSessionFactory sessions) {
     try {
-      return Optional.of(credentials.isToken() ? sessions.create(credentials.getToken())
-          : sessions.create(credentials.getUsername(), credentials.getPassword()));
+      return Optional.of(sessions.create(credentials));
     } catch (BBjAdminException rejected) {
       return Optional.empty();
     }

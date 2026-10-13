@@ -7,14 +7,14 @@ import static org.mockito.Mockito.when;
 import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
 import com.webforj.bbjship.cli.BBjShipCli;
+import com.webforj.bbjship.cli.TerminalLines;
+import com.webforj.plugin.foundation.bbj.BBjShipPlugin;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.io.TempDir;
@@ -28,26 +28,18 @@ class BBjShipCommandGroupTest {
   @TempDir
   Path temporary;
 
-  private Path home;
   private ByteArrayOutputStream output;
-  private BBjAdminBase admin;
-  private List<String> credentials;
   private BBjShipCli cli;
 
   @BeforeEach
   void initCliOnTheBBjHomeFixture() throws Exception {
-    home = Home.createCopy(temporary.resolve("bbx"));
+    Path home = Home.createCopy(temporary.resolve("bbx"));
     output = new ByteArrayOutputStream();
-    admin = mock(BBjAdminBase.class);
+    BBjAdminBase admin = mock(BBjAdminBase.class);
     when(admin.getClasspathNames()).thenReturn(new BBjAdminAdapterList<>(List.of()));
-    credentials = new ArrayList<>();
-    PrintStream stream = new PrintStream(output, true, StandardCharsets.UTF_8);
-    cli = BBjShipCli.create(home).setInput(InputStream.nullInputStream()).setEnvironment(Map.of())
-        .setOutput(stream).setError(stream).setAnsi(Ansi.OFF).setConnector((username, password) -> {
-          credentials.add(username);
-          credentials.add(password);
-          return admin;
-        }).build();
+    Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+    cli = BBjShipCli.create(new BBjShipPlugin(home)).setTerminal(new TerminalLines(stream))
+        .setAnsi(Ansi.OFF).setSessions(login -> admin).build();
   }
 
   @ParameterizedTest
@@ -95,7 +87,7 @@ class BBjShipCommandGroupTest {
           -h, --help      Show this help message and exit.
           -V, --version   Print version information and exit.
         Commands:
-          restart  Restart the local BBjServices.
+          stop  Stop the local BBjServices.
         Specify a command. Use --help for available commands
         """));
   }

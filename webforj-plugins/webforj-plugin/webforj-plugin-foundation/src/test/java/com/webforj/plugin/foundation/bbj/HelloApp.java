@@ -25,7 +25,7 @@ public final class HelloApp {
   private static final String FIXTURE = "hello-app";
   private static final String EXCLUDED_ARTIFACT = "webforj-engine";
   private static final Pattern WEBFORJ_JAR =
-      Pattern.compile("(webforj(?:-[a-z]+)+)-(\\d+(?:\\.\\d+)*(?:-SNAPSHOT)?)\\.jar");
+      Pattern.compile("(webforj-[a-z]++(?:-[a-z]++)*+)-(\\d++(?:\\.\\d++)*+(?:-SNAPSHOT)?)\\.jar");
 
   private HelloApp() {}
 

@@ -1,7 +1,10 @@
 package com.webforj.bbjship;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -17,6 +20,20 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 final class BBjShipServletAccessTest extends AdministratorRequest {
 
+  private static final String AUTHORIZATION_HEADER = "Authorization";
+  private static final String CHALLENGE_HEADER = "WWW-Authenticate";
+  private static final String CHALLENGE =
+      "Basic realm=\"webforj-bbjship\", Bearer realm=\"webforj-bbjship\"";
+  private static final String VERSION_PATH = "/version";
+  private static final String ADMIN_USERNAME = "administrator";
+  private static final String UNAUTHORIZED_PROBLEM = """
+      {
+        "type": "about:blank",
+        "title": "Unauthorized",
+        "status": 401,
+        "detail": "Check the BBj administration credentials or token"
+      }""";
+
   @ParameterizedTest
   @ValueSource(strings = {"Basic YWRtaW5pc3RyYXRvcjpzZWNyZXQ6cGFzc3dvcmQ=",
       "basic YWRtaW5pc3RyYXRvcjpzZWNyZXQ6cGFzc3dvcmQ=",
@@ -25,14 +42,17 @@ final class BBjShipServletAccessTest extends AdministratorRequest {
       throws Exception {
     Files.writeString(plugin.getDirectory().resolve("version.properties"),
         "version=26.03-SNAPSHOT\n");
-    when(request.getHeader("Authorization")).thenReturn(authorization);
+    when(request.getHeader(AUTHORIZATION_HEADER)).thenReturn(authorization);
     when(request.getMethod()).thenReturn("GET");
-    when(request.getPathInfo()).thenReturn("/version");
-    when(sessions.create("administrator", "secret:password")).thenReturn(admin);
+    when(request.getPathInfo()).thenReturn(VERSION_PATH);
+    doReturn(admin).when(sessions)
+        .create(argThat(login -> ADMIN_USERNAME.equals(login.getUsername())
+            && "secret:password".equals(login.getPassword())));
 
     BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
-    verify(sessions).create("administrator", "secret:password");
+    verify(sessions).create(argThat(login -> ADMIN_USERNAME.equals(login.getUsername())
+        && "secret:password".equals(login.getPassword())));
     verify(response).setStatus(200);
     verify(admin).release();
   }
@@ -42,15 +62,15 @@ final class BBjShipServletAccessTest extends AdministratorRequest {
   void shouldOpenTheSessionWithTheBearerToken(String authorization) throws Exception {
     Files.writeString(plugin.getDirectory().resolve("version.properties"),
         "version=26.03-SNAPSHOT\n");
-    when(request.getHeader("Authorization")).thenReturn(authorization);
+    when(request.getHeader(AUTHORIZATION_HEADER)).thenReturn(authorization);
     when(request.getMethod()).thenReturn("GET");
-    when(request.getPathInfo()).thenReturn("/version");
-    when(sessions.create("c2VjcmV0")).thenReturn(admin);
+    when(request.getPathInfo()).thenReturn(VERSION_PATH);
+    doReturn(admin).when(sessions).create(argThat(login -> "c2VjcmV0".equals(login.getToken())));
 
     BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
-    verify(sessions).create("c2VjcmV0");
-    verify(sessions, never()).create(anyString(), anyString());
+    verify(sessions).create(argThat(login -> "c2VjcmV0".equals(login.getToken())));
+    verify(sessions, never()).create(argThat(login -> !login.isToken()));
     verify(response).setStatus(200);
     verify(admin).release();
   }
@@ -61,68 +81,51 @@ final class BBjShipServletAccessTest extends AdministratorRequest {
       "Digest username=\"administrator\""})
   void shouldAnswerUnauthorizedWithTheBasicAndBearerChallenges(String authorization)
       throws Exception {
-    when(request.getHeader("Authorization")).thenReturn(authorization);
+    when(request.getHeader(AUTHORIZATION_HEADER)).thenReturn(authorization);
     when(request.getMethod()).thenReturn("GET");
-    when(request.getPathInfo()).thenReturn("/version");
+    when(request.getPathInfo()).thenReturn(VERSION_PATH);
 
     BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
     verify(response).setStatus(401);
-    verify(response).setHeader("WWW-Authenticate",
-        "Basic realm=\"webforj-bbjship\", Bearer realm=\"webforj-bbjship\"");
+    verify(response).setHeader(CHALLENGE_HEADER, CHALLENGE);
     verify(response).setContentType("application/problem+json");
-    verify(sessions, never()).create(anyString(), anyString());
-    verify(sessions, never()).create(anyString());
-    assertEquals("""
-        {
-          "type": "about:blank",
-          "title": "Unauthorized",
-          "status": 401,
-          "detail": "Check the BBj administration credentials or token"
-        }""", JSON.toJson(JsonParser.parseString(body.toString(StandardCharsets.UTF_8))));
+    verify(sessions, never()).create(any());
+    assertEquals(UNAUTHORIZED_PROBLEM,
+        JSON.toJson(JsonParser.parseString(body.toString(StandardCharsets.UTF_8))));
   }
 
   @Test
   void shouldAnswerUnauthorizedWhenTheServerRejectsTheCredentials() throws Exception {
-    when(request.getHeader("Authorization")).thenReturn("Basic YWRtaW5pc3RyYXRvcjp3cm9uZw==");
+    when(request.getHeader(AUTHORIZATION_HEADER)).thenReturn("Basic YWRtaW5pc3RyYXRvcjp3cm9uZw==");
     when(request.getMethod()).thenReturn("GET");
-    when(request.getPathInfo()).thenReturn("/version");
-    when(sessions.create("administrator", "wrong"))
-        .thenThrow(new BBjAdminException("Invalid user or password"));
+    when(request.getPathInfo()).thenReturn(VERSION_PATH);
+    doThrow(new BBjAdminException("Invalid user or password")).when(sessions)
+        .create(argThat(login -> ADMIN_USERNAME.equals(login.getUsername())
+            && "wrong".equals(login.getPassword())));
 
     BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
     verify(response).setStatus(401);
-    verify(response).setHeader("WWW-Authenticate",
-        "Basic realm=\"webforj-bbjship\", Bearer realm=\"webforj-bbjship\"");
-    assertEquals("""
-        {
-          "type": "about:blank",
-          "title": "Unauthorized",
-          "status": 401,
-          "detail": "Check the BBj administration credentials or token"
-        }""", JSON.toJson(JsonParser.parseString(body.toString(StandardCharsets.UTF_8))));
+    verify(response).setHeader(CHALLENGE_HEADER, CHALLENGE);
+    assertEquals(UNAUTHORIZED_PROBLEM,
+        JSON.toJson(JsonParser.parseString(body.toString(StandardCharsets.UTF_8))));
   }
 
   @Test
   void shouldAnswerUnauthorizedWhenTheServerRejectsTheToken() throws Exception {
-    when(request.getHeader("Authorization")).thenReturn("Bearer ZXhwaXJlZA");
+    when(request.getHeader(AUTHORIZATION_HEADER)).thenReturn("Bearer ZXhwaXJlZA");
     when(request.getMethod()).thenReturn("GET");
-    when(request.getPathInfo()).thenReturn("/version");
-    when(sessions.create("ZXhwaXJlZA")).thenThrow(new BBjAdminException("Invalid token"));
+    when(request.getPathInfo()).thenReturn(VERSION_PATH);
+    doThrow(new BBjAdminException("Invalid token")).when(sessions)
+        .create(argThat(login -> "ZXhwaXJlZA".equals(login.getToken())));
 
     BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
     verify(response).setStatus(401);
-    verify(response).setHeader("WWW-Authenticate",
-        "Basic realm=\"webforj-bbjship\", Bearer realm=\"webforj-bbjship\"");
+    verify(response).setHeader(CHALLENGE_HEADER, CHALLENGE);
     verify(admin, never()).release();
-    assertEquals("""
-        {
-          "type": "about:blank",
-          "title": "Unauthorized",
-          "status": 401,
-          "detail": "Check the BBj administration credentials or token"
-        }""", JSON.toJson(JsonParser.parseString(body.toString(StandardCharsets.UTF_8))));
+    assertEquals(UNAUTHORIZED_PROBLEM,
+        JSON.toJson(JsonParser.parseString(body.toString(StandardCharsets.UTF_8))));
   }
 }

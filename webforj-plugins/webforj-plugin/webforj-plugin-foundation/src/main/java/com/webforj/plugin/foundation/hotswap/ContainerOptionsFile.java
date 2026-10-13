@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 public final class ContainerOptionsFile {
 
   private static final String FILE_NAME = "hotswap.options";
+  private static final String ARGUMENT_PREFIX = "-XX:VMOptionsFile=";
 
   private ContainerOptionsFile() {}
 
@@ -100,7 +101,24 @@ public final class ContainerOptionsFile {
    * @return the argument
    */
   public static String getArgument(Path directory) {
-    return "-XX:VMOptionsFile=" + getFile(directory).toAbsolutePath();
+    return ARGUMENT_PREFIX + getFile(directory).toAbsolutePath();
+  }
+
+  /**
+   * Checks whether a virtual machine argument names the options file of a directory.
+   *
+   * @param argument the argument
+   *
+   * @return true when the argument names an options file written by this class
+   */
+  public static boolean isArgument(String argument) {
+    if (!argument.startsWith(ARGUMENT_PREFIX)) {
+      return false;
+    }
+
+    Path file = Path.of(argument.substring(ARGUMENT_PREFIX.length())).getFileName();
+
+    return file != null && FILE_NAME.equals(file.toString());
   }
 
   private static String formatLine(String line) {

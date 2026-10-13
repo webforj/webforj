@@ -32,6 +32,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 final class BBjShipServletDevelopmentTest extends AdministratorRequest {
 
+  private static final String APP_NAME = "hello-app";
+  private static final String DEPLOYMENTS_FOLDER = "deployments/hello-app";
+  private static final String CLASSPATH_NAME = "webforj_bbjship_hello-app";
+
   private Path app;
   private Path classFolder;
   private Path archive;
@@ -39,7 +43,7 @@ final class BBjShipServletDevelopmentTest extends AdministratorRequest {
 
   @BeforeEach
   void initDevelopmentArchiveOfHelloAppWithDevelopmentRunsEnabled() throws Exception {
-    app = HelloApp.createCopy(temporary.resolve("hello-app"));
+    app = HelloApp.createCopy(temporary.resolve(APP_NAME));
     classFolder = app.resolve("src/main/resources");
     archive = HelloApp.writeArchive(app, temporary.resolve("hello-app.zip"));
     development = Files.copy(archive, temporary.resolve("development.zip"));
@@ -66,9 +70,11 @@ final class BBjShipServletDevelopmentTest extends AdministratorRequest {
     verify(response).setStatus(201);
     verify(response).setHeader("Location", "/webapp/hello-app");
     verify(admin).commit();
-    Path deployments = runtime.resolve("deployments/hello-app");
-    assertEquals(classFolder.toString(), Files.readString(deployments
-        .resolve(Files.readString(deployments.resolve("current"))).resolve("development")));
+    Path deployments = runtime.resolve(DEPLOYMENTS_FOLDER);
+    assertEquals(List.of(classFolder.toString()),
+        DeploymentArchive
+            .findClassFolders(deployments.resolve(Files.readString(deployments.resolve("current"))))
+            .orElseThrow());
     assertEquals("""
         {
           "name": "hello-app",
@@ -151,19 +157,19 @@ final class BBjShipServletDevelopmentTest extends AdministratorRequest {
   @MethodSource("getModeConflicts")
   void shouldAnswerConflictForApplicationOfTheOtherMode(boolean developmentPublished, String detail)
       throws Exception {
-    Path previous = Files.createDirectories(runtime.resolve("deployments/hello-app"))
+    Path previous = Files.createDirectories(runtime.resolve(DEPLOYMENTS_FOLDER))
         .resolve(UUID.randomUUID().toString());
     DeploymentArchive.read(archive, previous);
     if (developmentPublished) {
-      Files.writeString(previous.resolve("development"), classFolder.toString());
+      DevelopmentRunFiles.write(previous, classFolder);
     }
 
     BBjAdminAppDeploymentApplication registered = mock(BBjAdminAppDeploymentApplication.class);
-    when(registered.getString(BBjAdminAppDeploymentApplication.NAME)).thenReturn("hello-app");
+    when(registered.getString(BBjAdminAppDeploymentApplication.NAME)).thenReturn(APP_NAME);
     when(registered.getString(BBjAdminAppDeploymentApplication.PROGRAM))
         .thenReturn(previous.resolve("bbj/webforj.bbj").toString());
     when(registered.getString(BBjAdminAppDeploymentApplication.CLASSPATH))
-        .thenReturn("webforj_bbjship_hello-app");
+        .thenReturn(CLASSPATH_NAME);
     when(configuration.getApplications())
         .thenReturn(new BBjAdminAdapterList<>(List.of(registered)));
     ServletInputStream upload = mock(ServletInputStream.class, delegatesTo(new ByteArrayInputStream(
@@ -187,31 +193,31 @@ final class BBjShipServletDevelopmentTest extends AdministratorRequest {
 
   @Test
   void shouldRemoveTheDevelopmentRun() throws Exception {
-    Path previous = Files.createDirectories(runtime.resolve("deployments/hello-app"))
+    Path previous = Files.createDirectories(runtime.resolve(DEPLOYMENTS_FOLDER))
         .resolve(UUID.randomUUID().toString());
     DeploymentArchive.read(development, previous);
-    Files.writeString(previous.resolve("development"), classFolder.toString());
+    DevelopmentRunFiles.write(previous, classFolder);
     BBjAdminAppDeploymentApplication registered = mock(BBjAdminAppDeploymentApplication.class);
-    when(registered.getString(BBjAdminAppDeploymentApplication.NAME)).thenReturn("hello-app");
+    when(registered.getString(BBjAdminAppDeploymentApplication.NAME)).thenReturn(APP_NAME);
     when(registered.getString(BBjAdminAppDeploymentApplication.PROGRAM))
         .thenReturn(previous.resolve("bbj/webforj.bbj").toString());
     when(registered.getString(BBjAdminAppDeploymentApplication.CLASSPATH))
-        .thenReturn("webforj_bbjship_hello-app");
+        .thenReturn(CLASSPATH_NAME);
     when(registered.getProperties()).thenReturn(Map.of());
     when(registered.getArguments()).thenReturn(new BBjAdminAdapterList<>(List.of()));
     when(registered.getJavaArguments()).thenReturn(new BBjAdminAdapterList<>(List.of()));
     when(configuration.getApplications())
         .thenReturn(new BBjAdminAdapterList<>(List.of(registered)));
-    when(admin.getClasspath("webforj_bbjship_hello-app"))
+    when(admin.getClasspath(CLASSPATH_NAME))
         .thenReturn(new BBjAdminAdapterList<>(List.of(classFolder.toString())));
     when(request.getMethod()).thenReturn("DELETE");
 
     BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
     verify(response).setStatus(204);
-    verify(configuration).removeApplication("hello-app");
-    verify(admin).setClasspath("webforj_bbjship_hello-app", null);
-    assertFalse(Files.exists(runtime.resolve("deployments/hello-app")));
+    verify(configuration).removeApplication(APP_NAME);
+    verify(admin).setClasspath(CLASSPATH_NAME, null);
+    assertFalse(Files.exists(runtime.resolve(DEPLOYMENTS_FOLDER)));
   }
 
   private static Stream<Arguments> getModeConflicts() {

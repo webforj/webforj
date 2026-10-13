@@ -12,7 +12,6 @@ import java.net.URI;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.Duration;
@@ -21,6 +20,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.zip.ZipException;
 
 /**
  * Installs and configures BBjShip in a local BBj installation.
@@ -30,16 +30,12 @@ import java.util.function.Consumer;
  */
 public final class Setup {
 
-  private static final String PLUGIN = "webforj-bbjship";
   private static final String LAUNCHER_SCRIPT = "bbjship";
   private static final List<String> REQUIRED_FILES =
-      List.of("bbj-plugin.json", "version.properties", LAUNCHER_SCRIPT, "lib/webforj-bbjship.jar");
-  private static final String USERNAME_OPTION = "--username";
-  private static final String PASSWORD_OPTION = "--password-stdin";
+      List.of("bbj-plugin.json", "version.properties", LAUNCHER_SCRIPT, BBjShipPlugin.LIBRARY);
   private static final String HTTPS = "https";
   private static final Duration COMMAND_TIMEOUT = Duration.ofSeconds(120);
-  private static final Duration RESTART_TIMEOUT = Duration.ofSeconds(330);
-  private static final Duration START_TIMEOUT = Duration.ofSeconds(180);
+  private static final Duration RESTART_TIMEOUT = Duration.ofSeconds(450);
   private static final Duration POLL_INTERVAL = Duration.ofSeconds(2);
   private static final Duration PROGRESS_INTERVAL = Duration.ofSeconds(10);
   private static final String LAUNCHER =
@@ -57,7 +53,6 @@ public final class Setup {
   private final JavaSettings javaSettings;
   private final Duration commandTimeout;
   private final Duration restartTimeout;
-  private final Duration startTimeout;
   private final Duration pollInterval;
   private final Duration progressInterval;
   private final Consumer<String> log;
@@ -75,7 +70,6 @@ public final class Setup {
     this.javaSettings = builder.javaSettings;
     this.commandTimeout = builder.commandTimeout;
     this.restartTimeout = builder.restartTimeout;
-    this.startTimeout = builder.startTimeout;
     this.pollInterval = builder.pollInterval;
     this.progressInterval = builder.progressInterval;
     this.log = builder.log;
@@ -96,80 +90,50 @@ public final class Setup {
   }
 
   /**
-   * Resolves the local BBj installation directory.
-   *
-   * <p>
-   * Without a configured home the installation is taken from the BBJ_HOME variable, the running
-   * BBjServices, the install file of the installer, a bbj executable on the search path or the
-   * default folder of the installer, in that order.
-   * </p>
-   *
-   * @param configured the configured BBj home, null to detect it
-   *
-   * @return the real path of the BBj home
-   * @throws IOException if no installation is detected or the home is not a valid installation
-   */
-  public static Path resolveHome(Path configured) throws IOException {
-    if (configured != null) {
-      return resolveInstallation(configured);
-    }
-
-    String variable = System.getenv("BBJ_HOME");
-    if (variable != null && !variable.isBlank()) {
-      return resolveInstallation(Path.of(variable));
-    }
-
-    Optional<Path> detected = Installation.findInProcesses(ProcessHandle.allProcesses())
-        .or(() -> Installation.findInInstallRecord(Path.of(System.getProperty("user.home"))))
-        .or(() -> Installation.findOnPath(System.getenv("PATH"))).or(() -> Installation
-            .findDefault(System.getProperty("os.name"), Path.of("").toAbsolutePath().getRoot()));
-    if (detected.isEmpty()) {
-      throw new IOException("Cannot detect a BBj installation. Configure bbj.home or BBJ_HOME");
-    }
-
-    return resolveInstallation(detected.get());
-  }
-
-  /**
    * Installs BBjShip and configures local BBjServices.
    *
    * @throws IOException if setup is invalid or installation or configuration fails
+   * @throws IllegalArgumentException if the deployment URL is no valid BBjShip address
    */
   public void apply() throws IOException {
+    if (credentials.isToken()) {
+      throw new IOException("BBj setup requires the administration password. "
+          + "Configure bbj.admin.password instead of a token");
+    }
+
+    BBjShipClient bbjShip = BBjShipClient.create(deploymentUrl).setCredentials(credentials).build();
     applyLocalValidation();
-    Path installation = resolveHome(home);
-    Path plugins = installation.resolve("plugins");
-    Path destination = plugins.resolve(PLUGIN);
-    applyDirectoryValidation(plugins);
-    applyDirectoryValidation(destination);
-    String installed = readInstalledVersion(destination);
+    Path installation = Installation.resolveHome(home);
+    BBjShipPlugin plugin = new BBjShipPlugin(installation);
+    plugin.applyOwnershipValidation();
+    String installed = readInstalledVersion(plugin.getDirectory());
     if (installed != null && !version.equals(installed) && !force) {
       throw new IOException("Installed BBjShip version " + installed + " does not match " + version
           + ". Run webforj:bbj-setup with -Dwebforj.bbj.force=true to replace it");
     }
 
-    Path runtime = plugins.resolve(DeploymentArchive.RUNTIME_DIRECTORY);
-    applyDirectoryValidation(runtime);
+    Path runtime = plugin.getRuntime();
     Files.createDirectories(runtime);
     boolean current = version.equals(installed) && !force;
     Path workspace = FileTree.createPrivateDirectory(runtime);
     try {
       Path incoming = workspace.resolve("package");
       if (!current) {
-        DeploymentArchive.readPlugin(bundle, incoming);
+        DeploymentArchive.read(bundle, incoming, DeploymentArchive.MAX_BYTES,
+            Setup::applyPluginEntryValidation);
         applyPackageValidation(incoming);
       }
 
       log.accept("Using BBj home " + installation);
       if (current) {
         log.accept("BBjShip " + version + " is already installed");
-        applyConfiguration(installation, destination, runtime, workspace);
+        applyConfiguration(installation, plugin, workspace, bbjShip);
       } else {
-        applyInstallation(installation, destination, runtime, incoming, workspace, installed);
+        applyInstallation(installation, plugin, incoming, workspace, installed, bbjShip);
       }
 
       if (javaSettings != null) {
-        applyJavaSettings(installation, destination, runtime, workspace);
+        applyJavaSettings(installation, plugin, workspace, bbjShip);
       }
 
       log.accept("BBj setup completed");
@@ -179,11 +143,6 @@ public final class Setup {
   }
 
   private void applyLocalValidation() throws IOException {
-    if (credentials.isToken()) {
-      throw new IOException("BBj setup requires the administration password. "
-          + "Configure bbj.admin.password instead of a token");
-    }
-
     applyEndpointValidation();
     if (port < 1 || port > 65535) {
       throw new IOException("BBj setup requires a web server port from 1 to 65535");
@@ -191,13 +150,6 @@ public final class Setup {
   }
 
   private void applyEndpointValidation() throws IOException {
-    if (deploymentUrl.getHost() == null
-        || !("http".equalsIgnoreCase(deploymentUrl.getScheme())
-            || HTTPS.equalsIgnoreCase(deploymentUrl.getScheme()))
-        || deploymentUrl.getUserInfo() != null) {
-      throw new IOException("BBj setup requires a local HTTP or HTTPS deployment URL");
-    }
-
     InetAddress[] addresses;
     try {
       addresses = InetAddress.getAllByName(deploymentUrl.getHost());
@@ -209,37 +161,6 @@ public final class Setup {
     for (InetAddress address : addresses) {
       if (!address.isLoopbackAddress() && NetworkInterface.getByInetAddress(address) == null) {
         throw new IOException("BBj setup is local only. Run setup on the BBj host");
-      }
-    }
-  }
-
-  private static Path resolveInstallation(Path candidate) throws IOException {
-    if (!Installation.hasConfiguration(candidate)) {
-      throw new IOException("Invalid BBj home. Configure a local BBj installation");
-    }
-
-    Path installation = candidate.toRealPath();
-    resolveExecutable(installation);
-
-    return installation;
-  }
-
-  private static Path resolveExecutable(Path installation) throws IOException {
-    return Installation.findExecutable(installation).orElseThrow(
-        () -> new IOException("BBj executable is missing or not executable. Check bbj.home"));
-  }
-
-  private void applyDirectoryValidation(Path directory) throws IOException {
-    if (Files.isSymbolicLink(directory)
-        || Files.exists(directory, LinkOption.NOFOLLOW_LINKS) && !Files.isDirectory(directory)) {
-      throw new IOException("BBj plugin destination must be a directory without symbolic links");
-    }
-
-    if (Files.isDirectory(directory) && directory.getFileName().toString().equals(PLUGIN)) {
-      try (var paths = Files.walk(directory)) {
-        if (paths.anyMatch(Files::isSymbolicLink)) {
-          throw new IOException("BBj plugin destination must not contain symbolic links");
-        }
       }
     }
   }
@@ -279,16 +200,17 @@ public final class Setup {
     }
   }
 
-  private void applyInstallation(Path installation, Path destination, Path runtime, Path incoming,
-      Path workspace, String installed) throws IOException {
-    Path transaction = FileTree.createPrivateDirectory(runtime);
+  private void applyInstallation(Path installation, BBjShipPlugin plugin, Path incoming,
+      Path workspace, String installed, BBjShipClient bbjShip) throws IOException {
+    Path destination = plugin.getDirectory();
+    Path transaction = FileTree.createPrivateDirectory(plugin.getRuntime());
     Path replacement = transaction.resolve("replacement");
     Path backup = transaction.resolve("previous");
     InstallationStep step = InstallationStep.NONE;
     boolean configured = false;
     try {
       Files.createDirectory(replacement);
-      writeFiles(incoming, replacement);
+      FileTree.writeTree(incoming, replacement);
       log.accept(installed == null ? "Installing BBjShip " + version
           : "Replacing BBjShip " + installed + " with " + version);
       if (installed != null) {
@@ -298,7 +220,7 @@ public final class Setup {
 
       Files.move(replacement, destination, StandardCopyOption.ATOMIC_MOVE);
       step = InstallationStep.REPLACEMENT_MOVED;
-      applyConfiguration(installation, destination, runtime, workspace);
+      applyConfiguration(installation, plugin, workspace, bbjShip);
       configured = true;
     } catch (IOException | RuntimeException failure) {
       applyRollback(failure, destination, backup, step, installed != null);
@@ -337,59 +259,50 @@ public final class Setup {
     }
   }
 
-  private void writeFiles(Path source, Path destination) throws IOException {
-    try (var paths = Files.walk(source)) {
-      for (Path file : paths.toList()) {
-        Path relative = source.relativize(file);
-        if (Files.isDirectory(file)) {
-          Files.createDirectories(destination.resolve(relative));
-        } else {
-          Files.copy(file, destination.resolve(relative), StandardCopyOption.REPLACE_EXISTING,
-              StandardCopyOption.COPY_ATTRIBUTES);
-        }
-      }
-    }
-  }
-
-  private void applyConfiguration(Path installation, Path destination, Path runtime, Path workspace)
-      throws IOException {
-    String launcher = destination.resolve(LAUNCHER).toString();
-    boolean enabled = findVersion(createBBjShipClient()).map(VersionResponse::getVersion)
+  private void applyConfiguration(Path installation, BBjShipPlugin plugin, Path workspace,
+      BBjShipClient bbjShip) throws IOException {
+    String launcher = plugin.getDirectory().resolve(LAUNCHER).toString();
+    // A forced setup replaced the BBjShip jar, which BBjServices loads again only through the
+    // classpath reset of remote enable, so the answer of the running endpoint does not count
+    boolean enabled = !force && findVersion(bbjShip).map(VersionResponse::getVersion)
         .filter(version::equals).isPresent();
     if (enabled) {
       log.accept("BBjShip endpoint is enabled");
     } else {
       String portOption =
-          HTTPS.equalsIgnoreCase(deploymentUrl.getScheme()) ? "--ssl-port" : "--port";
+          HTTPS.equalsIgnoreCase(deploymentUrl.getScheme()) ? BBjShipCommandLine.SSL_PORT_OPTION
+              : BBjShipCommandLine.PORT_OPTION;
       log.accept("Enabling BBj remote deployment");
-      startCommand(
-          installation, workspace, List.of(launcher, "remote", "enable", USERNAME_OPTION,
-              credentials.getUsername(), portOption, Integer.toString(port), PASSWORD_OPTION),
+      startCommand(installation, workspace,
+          List.of(launcher, BBjShipCommandLine.REMOTE, BBjShipCommandLine.ENABLE,
+              BBjShipCommandLine.USERNAME_OPTION, credentials.getUsername(), portOption,
+              Integer.toString(port), BBjShipCommandLine.PASSWORD_STDIN_OPTION),
           commandTimeout);
     }
 
-    if (developmentEnabled
-        && !Files.exists(runtime.resolve(DeploymentArchive.DEVELOPMENT_SWITCH))) {
+    if (developmentEnabled && !Files.exists(plugin.getDevelopmentSwitch())) {
       log.accept("Enabling BBj development runs");
-      startCommand(installation, workspace, List.of(launcher, "development", "enable",
-          USERNAME_OPTION, credentials.getUsername(), PASSWORD_OPTION), commandTimeout);
+      startCommand(installation, workspace,
+          List.of(launcher, BBjShipCommandLine.DEVELOPMENT, BBjShipCommandLine.ENABLE,
+              BBjShipCommandLine.USERNAME_OPTION, credentials.getUsername(),
+              BBjShipCommandLine.PASSWORD_STDIN_OPTION),
+          commandTimeout);
     }
   }
 
-  private void applyJavaSettings(Path installation, Path destination, Path runtime, Path workspace)
-      throws IOException {
+  private void applyJavaSettings(Path installation, BBjShipPlugin plugin, Path workspace,
+      BBjShipClient bbjShip) throws IOException {
     Path file = javaSettings.getPropertiesFile()
-        .orElseGet(() -> installation.resolve(ServicesProperties.DEFAULT_FILE));
+        .orElseGet(() -> ServicesProperties.resolveDefaultFile(installation));
     Path optionsDirectory = javaSettings.getOptionsDirectory();
     String argument = ContainerOptionsFile.getArgument(optionsDirectory);
-    ServicesProperties properties = ServicesProperties.load(file, runtime);
+    ServicesProperties properties = ServicesProperties.load(file, plugin.getRuntime());
     if (!properties.hasJavaSettings(argument)) {
       log.accept("Updating the Java settings of BBjServices in " + file);
       properties.applyJavaSettings(argument);
     }
 
     List<String> lines = ContainerOptionsFile.readLines(optionsDirectory);
-    BBjShipClient bbjShip = createBBjShipClient();
     Optional<VersionResponse> running = findVersion(bbjShip);
     if (running.isPresent() && isHotswapRuntime(running.get(), lines)) {
       log.accept("BBjServices runs with the hotswap settings");
@@ -397,18 +310,21 @@ public final class Setup {
     }
 
     log.accept("Restarting BBjServices");
-    RestartProgress progress = new RestartProgress();
+    ServicesProcess services = new ServicesProcess(plugin);
+    services.setLog(log);
+    services.applyStartValidation();
+    PollingWait restartWait = PollingWait.create("BBj setup", restartTimeout, pollInterval)
+        .setLog(log).setProgressMessage("Waiting for BBjServices, ")
+        .setProgressInterval(progressInterval).build();
     startCommand(installation, workspace,
-        List.of(destination.resolve(LAUNCHER).toString(), "services", "restart", USERNAME_OPTION,
-            credentials.getUsername(), PASSWORD_OPTION),
-        process -> isRestartFinished(process, progress));
-    if (!isHotswapRuntime(fetchStartedVersion(bbjShip, progress), lines)) {
+        List.of(plugin.getDirectory().resolve(LAUNCHER).toString(), BBjShipCommandLine.SERVICES,
+            BBjShipCommandLine.STOP, BBjShipCommandLine.USERNAME_OPTION, credentials.getUsername(),
+            BBjShipCommandLine.PASSWORD_STDIN_OPTION),
+        process -> restartWait.apply(() -> !process.isAlive()).isPresent());
+    services.applyRestart(bbjShip);
+    if (!isHotswapRuntime(bbjShip.getVersion(), lines)) {
       throw new IOException("BBjServices restarted without the hotswap settings. Check " + file);
     }
-  }
-
-  private BBjShipClient createBBjShipClient() {
-    return BBjShipClient.create(deploymentUrl).setCredentials(credentials).build();
   }
 
   private Optional<VersionResponse> findVersion(BBjShipClient bbjShip) {
@@ -417,45 +333,6 @@ public final class Setup {
     } catch (IOException unanswered) {
       return Optional.empty();
     }
-  }
-
-  private VersionResponse fetchStartedVersion(BBjShipClient bbjShip, RestartProgress progress)
-      throws IOException {
-    long deadline = System.nanoTime() + startTimeout.toNanos();
-    while (System.nanoTime() - deadline < 0) {
-      progress.update();
-      Optional<VersionResponse> answer = findVersion(bbjShip);
-      if (answer.isPresent()) {
-        log.accept("BBjServices answered after " + progress.getSeconds() + " seconds");
-        return answer.get();
-      }
-
-      try {
-        Thread.sleep(pollInterval.toMillis());
-      } catch (InterruptedException failure) {
-        Thread.currentThread().interrupt();
-        throw new IOException("BBj setup was interrupted", failure);
-      }
-    }
-
-    throw new IOException("BBjServices did not answer at " + deploymentUrl + " within "
-        + startTimeout.toSeconds() + " seconds after the restart");
-  }
-
-  private boolean isRestartFinished(Process process, RestartProgress progress)
-      throws InterruptedException {
-    long deadline = System.nanoTime() + restartTimeout.toNanos();
-    long remaining = restartTimeout.toNanos();
-    while (!process.waitFor(Math.min(remaining, pollInterval.toNanos()), TimeUnit.NANOSECONDS)) {
-      remaining = deadline - System.nanoTime();
-      if (remaining <= 0) {
-        return false;
-      }
-
-      progress.update();
-    }
-
-    return true;
   }
 
   private void startCommand(Path installation, Path workspace, List<String> command,
@@ -469,8 +346,10 @@ public final class Setup {
     Path output = FileTree.createPrivateFile(workspace, "command", ".log");
     Process process = null;
     try {
-      process = new ProcessBuilder(command).directory(installation.toFile())
-          .redirectErrorStream(true).redirectOutput(output.toFile()).start();
+      ProcessBuilder builder = new ProcessBuilder(command).directory(installation.toFile())
+          .redirectErrorStream(true).redirectOutput(output.toFile());
+      builder.environment().put("NO_COLOR", "1");
+      process = builder.start();
       try (OutputStream input = process.getOutputStream()) {
         input.write((credentials.getPassword() + "\n").getBytes(StandardCharsets.UTF_8));
       }
@@ -531,6 +410,16 @@ public final class Setup {
     }
   }
 
+  private static void applyPluginEntryValidation(String name) throws IOException {
+    if (DeploymentArchive.isUnsafePath(name)) {
+      throw new ZipException("Invalid BBj plugin archive entry: " + name);
+    }
+
+    if (BBjShipPlugin.RUNTIME_NAMES.contains(name.split("/")[0])) {
+      throw new ZipException("BBj plugin archive must not contain runtime files");
+    }
+  }
+
   private static boolean isHotswapRuntime(VersionResponse answer, List<String> lines) {
     return answer.getJavaArguments().containsAll(lines);
   }
@@ -554,7 +443,6 @@ public final class Setup {
     private JavaSettings javaSettings;
     private Duration commandTimeout = COMMAND_TIMEOUT;
     private Duration restartTimeout = RESTART_TIMEOUT;
-    private Duration startTimeout = START_TIMEOUT;
     private Duration pollInterval = POLL_INTERVAL;
     private Duration progressInterval = PROGRESS_INTERVAL;
     private Consumer<String> log = line -> {
@@ -686,7 +574,7 @@ public final class Setup {
     /**
      * Sets how long the restart command of BBjServices may run.
      *
-     * @param restartTimeout the restart timeout, 330 seconds by default
+     * @param restartTimeout the restart timeout, 450 seconds by default
      *
      * @return this builder
      * @throws NullPointerException if restartTimeout is null
@@ -697,20 +585,7 @@ public final class Setup {
     }
 
     /**
-     * Sets how long BBjShip may take to answer after a restart of BBjServices.
-     *
-     * @param startTimeout the start timeout, 180 seconds by default
-     *
-     * @return this builder
-     * @throws NullPointerException if startTimeout is null
-     */
-    public Builder setStartTimeout(Duration startTimeout) {
-      this.startTimeout = Objects.requireNonNull(startTimeout);
-      return this;
-    }
-
-    /**
-     * Sets how long to wait between two requests to BBjShip after a restart of BBjServices.
+     * Sets how long to wait between two checks of the restart command of BBjServices.
      *
      * @param pollInterval the poll interval, 2 seconds by default
      *
@@ -795,7 +670,7 @@ public final class Setup {
   @FunctionalInterface
   private interface CommandWait {
 
-    boolean isFinished(Process process) throws InterruptedException;
+    boolean isFinished(Process process) throws IOException, InterruptedException;
   }
 
   /**
@@ -806,30 +681,5 @@ public final class Setup {
    */
   private enum InstallationStep {
     NONE, PREVIOUS_MOVED, REPLACEMENT_MOVED
-  }
-
-  /**
-   * Reports the wait for BBjServices during a restart of BBjServices.
-   *
-   * @author Hyyan Abo Fakher
-   * @since 26.03
-   */
-  private final class RestartProgress {
-
-    private final long start = System.nanoTime();
-    private long report = progressInterval.toNanos();
-
-    private void update() {
-      long elapsed = System.nanoTime() - start;
-      if (elapsed >= report) {
-        log.accept(
-            "Waiting for BBjServices, " + TimeUnit.NANOSECONDS.toSeconds(elapsed) + " seconds");
-        report = elapsed - elapsed % progressInterval.toNanos() + progressInterval.toNanos();
-      }
-    }
-
-    private long getSeconds() {
-      return TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - start);
-    }
   }
 }

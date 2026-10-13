@@ -11,24 +11,28 @@ import com.basis.api.admin.BBjAdminAppDeploymentApplication;
 import com.basis.api.admin.BBjAdminAppDeploymentConfiguration;
 import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
+import com.webforj.bbjship.DevelopmentRunFiles;
 import com.webforj.bbjship.cli.BBjShipCli;
+import com.webforj.bbjship.cli.TerminalLines;
+import com.webforj.plugin.foundation.bbj.BBjShipPlugin;
 import com.webforj.plugin.foundation.bbj.DeploymentArchive;
 import com.webforj.plugin.foundation.bbj.HelloApp;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import picocli.CommandLine.Help.Ansi;
 
 class AppsListCommandTest {
+
+  private static final String LONG_OPTION = "--long";
 
   @TempDir
   Path temporary;
@@ -39,7 +43,6 @@ class AppsListCommandTest {
   private BBjAdminBase admin;
   private BBjAdminAppDeploymentConfiguration configuration;
   private Path hello;
-  private Path shop;
   private BBjShipCli cli;
 
   @BeforeEach
@@ -54,10 +57,9 @@ class AppsListCommandTest {
     configuration = mock(BBjAdminAppDeploymentConfiguration.class);
     when(admin.getRemoteConfiguration()).thenReturn(configuration);
     when(configuration.getApplications()).thenReturn(new BBjAdminAdapterList<>(List.of()));
-    PrintStream stream = new PrintStream(output, true, StandardCharsets.UTF_8);
-    cli = BBjShipCli.create(home).setInput(InputStream.nullInputStream()).setEnvironment(Map.of())
-        .setOutput(stream).setError(stream).setAnsi(Ansi.OFF)
-        .setConnector((username, password) -> admin).build();
+    Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+    cli = BBjShipCli.create(new BBjShipPlugin(home)).setTerminal(new TerminalLines(stream))
+        .setAnsi(Ansi.OFF).setSessions(login -> admin).build();
   }
 
   @Test
@@ -76,10 +78,10 @@ class AppsListCommandTest {
   }
 
   @Test
-  void shouldListTheDeploymentFolderRelativeToThePluginWhenVerbose() throws Exception {
+  void shouldListTheDeploymentFolderRelativeToThePluginWithTheLongFormat() throws Exception {
     deployHelloAppAndShop();
 
-    int status = cli.run("apps", "list", "--verbose");
+    int status = cli.run("apps", "list", LONG_OPTION);
 
     assertEquals(0, status);
     assertEquals(FACTORY_ACCOUNT_WARNING + "\n" + """
@@ -91,12 +93,12 @@ class AppsListCommandTest {
   }
 
   @Test
-  void shouldListTheClassFolderOfDevelopmentRunWhenVerbose() throws Exception {
+  void shouldListTheClassFolderOfDevelopmentRunWithTheLongFormat() throws Exception {
     deployHelloAppAndShop();
     Path classFolder = temporary.resolve("hello-app/src/main/resources");
-    Files.writeString(hello.resolve("development"), classFolder.toString());
+    DevelopmentRunFiles.write(hello, classFolder);
 
-    int status = cli.run("apps", "list", "--verbose");
+    int status = cli.run("apps", "list", LONG_OPTION);
 
     assertEquals(0, status);
     assertEquals(FACTORY_ACCOUNT_WARNING + "\n" + """
@@ -109,16 +111,13 @@ class AppsListCommandTest {
 
   @Test
   @SuppressWarnings("checkstyle:LineLength")
-  void shouldListEveryClassFolderOfDevelopmentRunWhenVerbose() throws Exception {
+  void shouldListEveryClassFolderOfDevelopmentRunWithTheLongFormat() throws Exception {
     deployHelloAppAndShop();
     Path classes = temporary.resolve("hello-app/src/main/java");
     Path resources = temporary.resolve("hello-app/src/main/resources");
-    Files.writeString(hello.resolve("development"), """
-        %s
-        %s
-        """.formatted(classes, resources));
+    DevelopmentRunFiles.write(hello, classes, resources);
 
-    int status = cli.run("apps", "list", "--verbose");
+    int status = cli.run("apps", "list", "-l");
 
     assertEquals(0, status);
     assertEquals(
@@ -136,12 +135,12 @@ class AppsListCommandTest {
   @Test
   void shouldColorTheColumnsOnTerminalOutput() throws Exception {
     deployHelloAppAndShop();
-    PrintStream stream = new PrintStream(output, true, StandardCharsets.UTF_8);
-    BBjShipCli colored = BBjShipCli.create(home).setInput(InputStream.nullInputStream())
-        .setEnvironment(Map.of()).setOutput(stream).setError(stream).setAnsi(Ansi.ON)
-        .setConnector((username, password) -> admin).build();
+    Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+    BBjShipCli colored =
+        BBjShipCli.create(new BBjShipPlugin(home)).setTerminal(new TerminalLines(stream))
+            .setAnsi(Ansi.ON).setSessions(login -> admin).build();
 
-    int status = colored.run("apps", "list", "--verbose");
+    int status = colored.run("apps", "list", LONG_OPTION);
 
     String table = output.toString(StandardCharsets.UTF_8);
     assertEquals(0, status);
@@ -163,7 +162,7 @@ class AppsListCommandTest {
   private void deployHelloAppAndShop() throws Exception {
     Path deployments = home.resolve("plugins/.webforj-bbjship-deployments/deployments");
     hello = deployments.resolve("hello-app/0b8f4f0e-3f5c-4a8e-9a49-5d1a6f3c2b10");
-    shop = deployments.resolve("shop/6c1d2e3f-4a5b-4c6d-8e7f-90a1b2c3d4e5");
+    Path shop = deployments.resolve("shop/6c1d2e3f-4a5b-4c6d-8e7f-90a1b2c3d4e5");
     DeploymentArchive.read(archive,
         Files.createDirectories(hello.getParent()).resolve(hello.getFileName()));
     DeploymentArchive.read(archive,

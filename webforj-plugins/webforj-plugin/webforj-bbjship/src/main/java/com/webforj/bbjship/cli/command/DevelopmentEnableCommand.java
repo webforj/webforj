@@ -3,9 +3,9 @@ package com.webforj.bbjship.cli.command;
 import com.basis.api.admin.BBjAdminBase;
 import com.webforj.bbjship.cli.admin.BBjShipSession;
 import com.webforj.bbjship.cli.option.CredentialOptions;
-import java.nio.file.Files;
+import com.webforj.plugin.foundation.bbj.BBjShipCommandLine;
+import com.webforj.plugin.foundation.bbj.FileTree;
 import java.nio.file.Path;
-import java.nio.file.attribute.PosixFilePermissions;
 import java.util.List;
 import java.util.OptionalInt;
 import java.util.concurrent.Callable;
@@ -23,7 +23,7 @@ import picocli.CommandLine.Spec;
  * @author Hyyan Abo Fakher
  * @since 26.03
  */
-@Command(name = "enable", mixinStandardHelpOptions = true,
+@Command(name = BBjShipCommandLine.ENABLE, mixinStandardHelpOptions = true,
     description = "Enable development runs on this BBj machine.")
 public final class DevelopmentEnableCommand implements Callable<Integer> {
 
@@ -54,10 +54,7 @@ public final class DevelopmentEnableCommand implements Callable<Integer> {
     BBjAdminBase admin = session.openAdmin(credentials, OptionalInt.empty(), OptionalInt.empty());
     Path file = session.getPlugin().getDevelopmentSwitch();
     try {
-      Files.writeString(file, CONTENT);
-      if (file.getFileSystem().supportedFileAttributeViews().contains("posix")) {
-        Files.setPosixFilePermissions(file, PosixFilePermissions.fromString("rw-------"));
-      }
+      FileTree.writePrivateFile(file, CONTENT);
     } finally {
       admin.release();
     }

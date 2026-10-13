@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 
 class BBjDevelopmentOptionsTest {
 
+  private static final String CLASS_FOLDER = "/work/inventory/target/classes";
+
   @Test
   void shouldStartWithoutClassFolder() {
     BBjDevelopmentOptions options = new BBjDevelopmentOptions();
@@ -19,7 +21,7 @@ class BBjDevelopmentOptionsTest {
   @Test
   void shouldHoldTheConfiguredClassFolder() {
     BBjDevelopmentOptions options = new BBjDevelopmentOptions();
-    File classFolder = new File("/work/inventory/target/classes");
+    File classFolder = new File(CLASS_FOLDER);
 
     options.setClassFolder(classFolder);
 
@@ -29,7 +31,7 @@ class BBjDevelopmentOptionsTest {
   @Test
   void shouldRejectNullAndKeepTheConfiguredClassFolder() {
     BBjDevelopmentOptions options = new BBjDevelopmentOptions();
-    File classFolder = new File("/work/inventory/target/classes");
+    File classFolder = new File(CLASS_FOLDER);
     options.setClassFolder(classFolder);
     File missing = null;
 

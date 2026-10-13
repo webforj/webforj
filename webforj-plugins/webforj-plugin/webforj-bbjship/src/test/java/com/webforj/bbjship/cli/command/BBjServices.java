@@ -23,6 +23,21 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public final class BBjServices {
 
+  /**
+   * Holds the name of the BBjShip context.
+   */
+  public static final String BBJSHIP_CONTEXT = "webforj-bbjship";
+
+  /**
+   * Holds the name of the assets context.
+   */
+  public static final String ASSETS_CONTEXT = "webforj-bbjship-assets";
+
+  /**
+   * Holds the name of the classpath of the BBjShip command and servlets.
+   */
+  public static final String CLI_CLASSPATH = "_webforj_bbjship_cli";
+
   private static final String CREATED = """
       {
         "STOP": {"EXECUTOR": "CONTEXT:%1$s", "DATA": {"ACTION": "STOP"}, "ENABLED": false},
@@ -96,7 +111,10 @@ public final class BBjServices {
     classpaths.put(name, entries);
   }
 
-  BBjAdminContextInfo addContext(String name, String data) {
+  /**
+   * Adds a context with the given name and context data.
+   */
+  public BBjAdminContextInfo addContext(String name, String data) {
     AtomicReference<String> stored = new AtomicReference<>(data);
     BBjAdminContextInfo info = mock(BBjAdminContextInfo.class, invocation -> {
       if ("getString".equals(invocation.getMethod().getName())) {
@@ -118,17 +136,17 @@ public final class BBjServices {
    * Adds the classpaths and the assets context BBjShip expects in the given BBj home.
    */
   public void addBBjShipConfiguration(Path home) {
-    addClasspath("_webforj_bbjship_cli", List.of("(bbj_default)",
+    addClasspath(CLI_CLASSPATH, List.of("(bbj_default)",
         home.resolve("plugins/webforj-bbjship/lib/webforj-bbjship.jar").toString()));
     addClasspath("_webforj_bbjship", List.of(home.resolve(".lib/BBj.jar").toString(),
         home.resolve(".lib/BBjUtil.jar").toString()));
-    addContext("webforj-bbjship-assets", """
+    addContext(ASSETS_CONTEXT, """
         {
           "START": {"EXECUTOR": "CONTEXT:webforj-bbjship-assets", "DATA": {"ACTION": "START"},
             "ENABLED": false},
           "RESTART": {"EXECUTOR": "CONTEXT:webforj-bbjship-assets", "DATA": {"ACTION": "RESTART"},
             "ENABLED": true},
           "Document Base": "%s"
-        }""".formatted(home.resolve("plugins/.webforj-bbjship-deployments/assets")));
+        }""".formatted(home.resolve(Home.ASSETS_FOLDER)));
   }
 }

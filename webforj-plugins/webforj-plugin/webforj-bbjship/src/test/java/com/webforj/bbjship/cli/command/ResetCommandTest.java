@@ -1,5 +1,11 @@
 package com.webforj.bbjship.cli.command;
 
+import static com.webforj.bbjship.cli.command.BBjServices.ASSETS_CONTEXT;
+import static com.webforj.bbjship.cli.command.BBjServices.BBJSHIP_CONTEXT;
+import static com.webforj.bbjship.cli.command.BBjServices.CLI_CLASSPATH;
+import static com.webforj.bbjship.cli.command.Home.ASSETS_FOLDER;
+import static com.webforj.bbjship.cli.command.Home.DEPLOYMENTS_FOLDER;
+import static com.webforj.bbjship.cli.command.Home.HTDOCS_FOLDER;
 import static com.webforj.plugin.foundation.bbj.model.BBjCredentials.FACTORY_ACCOUNT_WARNING;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -7,10 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -21,26 +24,34 @@ import com.basis.api.admin.BBjAdminAppDeploymentConfiguration;
 import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
 import com.webforj.bbjship.cli.BBjShipCli;
-import com.webforj.bbjship.cli.admin.BBjShipServices;
+import com.webforj.bbjship.cli.TerminalLines;
+import com.webforj.plugin.foundation.bbj.BBjShipPlugin;
 import com.webforj.plugin.foundation.bbj.DeploymentArchive;
 import com.webforj.plugin.foundation.bbj.HelloApp;
 import com.webforj.plugin.foundation.bbj.ServicesProperties;
-import com.webforj.plugin.foundation.bbj.model.BBjCredentials;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
-import java.util.OptionalLong;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import picocli.CommandLine.Help.Ansi;
 
 class ResetCommandTest {
+
+  private static final String INVENTORY_APP_NAME = "inventory";
+  private static final String PROOF_APP_NAME = "proof-app";
+  private static final String BACKED_UP_PROPERTIES = "basis.cacheDirectory=/opt/bbx/cache\n";
+  private static final String RESET_COMMAND = "reset";
+  private static final String JAVA_ARGUMENTS_LINE = "%s=-Xmx1g%n";
+  private static final String YES_OPTION = "--yes";
+  private static final String PROGRAM_FILE = "webforj.bbj";
 
   @TempDir
   Path temporary;
@@ -54,7 +65,6 @@ class ResetCommandTest {
   private BBjServices bbjServices;
   private BBjAdminBase admin;
   private BBjAdminAppDeploymentConfiguration configuration;
-  private BBjShipServices services;
   private ByteArrayOutputStream output;
 
   @BeforeEach
@@ -76,26 +86,26 @@ class ResetCommandTest {
     backup = home.resolve("plugins/.webforj-bbjship-deployments/BBj.properties.before-webforj");
     bbjServices = new BBjServices();
     bbjServices.addBBjShipConfiguration(home);
-    bbjServices.addContext("webforj-bbjship-assets", """
+    bbjServices.addContext(ASSETS_CONTEXT, """
         {
           "STOP": {"EXECUTOR": "CONTEXT:webforj-bbjship-assets", "DATA": {"ACTION": "STOP"},
             "ENABLED": true},
           "Document Base": "%s"
-        }""".formatted(home.resolve("plugins/.webforj-bbjship-deployments/assets")));
-    bbjServices.addContext("webforj-bbjship", """
+        }""".formatted(home.resolve(ASSETS_FOLDER)));
+    bbjServices.addContext(BBJSHIP_CONTEXT, """
         {
           "STOP": {"EXECUTOR": "CONTEXT:webforj-bbjship", "DATA": {"ACTION": "STOP"},
             "ENABLED": true},
           "HTTP port": 8899,
           "Document Base": "%s"
-        }""".formatted(home.resolve("plugins/.webforj-bbjship-deployments/htdocs")));
+        }""".formatted(home.resolve(HTDOCS_FOLDER)));
     admin = bbjServices.getAdmin();
     configuration = mock(BBjAdminAppDeploymentConfiguration.class);
     when(admin.getRemoteConfiguration()).thenReturn(configuration);
     when(admin.getBBjProcesses()).thenReturn(List.of());
     BBjAdminAdapterList<BBjAdminAppDeploymentApplication> registrations =
         new BBjAdminAdapterList<>();
-    for (String name : List.of("inventory", "proof-app")) {
+    for (String name : List.of(INVENTORY_APP_NAME, PROOF_APP_NAME)) {
       Path directory = Files.createDirectories(deployments.resolve(name))
           .resolve("0b8f4f0e-3f5c-4a8e-9a49-5d1a6f3c2b10");
       DeploymentArchive.read(archive, directory);
@@ -113,87 +123,15 @@ class ResetCommandTest {
     }
 
     when(configuration.getApplications()).thenReturn(registrations);
-    services = mock(BBjShipServices.class);
-    when(services.readProcessId(eq(admin), argThat(BBjCredentials::isFactoryAccount)))
-        .thenReturn(OptionalLong.of(42));
     output = new ByteArrayOutputStream();
   }
 
   @Test
-  void shouldResetEverythingTheBbjShipConfiguredAfterConfirmation() throws Exception {
-    Files.writeString(backup, "basis.cacheDirectory=/opt/bbx/cache\n");
-    BBjShipCli cli = createCli(home, admin, "y\n");
-
-    int status = cli.run("reset");
-
-    assertEquals(0, status);
-    assertEquals(FACTORY_ACCOUNT_WARNING + "\n" + """
-        This resets BBjShip on this machine:
-          undeploy inventory
-          undeploy proof-app
-          disable development runs
-          remove the BBjShip HTTP endpoint and assets
-          restore the Java settings of BBjServices and restart it
-        Continue? [y/N]
-        Undeployed inventory
-        Undeployed proof-app
-        Disabled development runs
-        Disabled the BBjShip HTTP endpoint
-        Removed the BBjShip assets
-        Restored the Java settings of BBjServices
-        Restarted BBjServices
-        Reset BBjShip
-        """, output.toString(StandardCharsets.UTF_8));
-    verify(configuration).removeApplication("inventory");
-    verify(configuration).removeApplication("proof-app");
-    assertFalse(Files.exists(deployments.resolve("inventory")));
-    assertFalse(Files.exists(deployments.resolve("proof-app")));
-    assertFalse(Files.exists(developmentSwitch));
-    assertNull(bbjServices.getContext("webforj-bbjship"));
-    assertNull(bbjServices.getContext("webforj-bbjship-assets"));
-    assertEquals(List.of(), admin.getClasspathNames());
-    assertEquals("basis.cacheDirectory=/opt/bbx/cache\n", Files.readString(properties));
-    assertFalse(Files.exists(backup));
-    assertFalse(Files.exists(home.resolve("plugins/.webforj-bbjship-deployments")));
-    verify(services).restart(admin, OptionalLong.of(42));
-  }
-
-  @Test
-  void shouldReadTheConfirmationAfterThePasswordFromStandardInput() throws Exception {
-    Files.writeString(backup, "basis.cacheDirectory=/opt/bbx/cache\n");
-    BBjShipCli cli = createCli(home, admin, "admin123\ny\n");
-
-    int status = cli.run("reset", "--username", "admin", "--password-stdin");
-
-    assertEquals(0, status);
-    assertEquals("Reading the password from standard input\n" + FACTORY_ACCOUNT_WARNING + "\n" + """
-        This resets BBjShip on this machine:
-          undeploy inventory
-          undeploy proof-app
-          disable development runs
-          remove the BBjShip HTTP endpoint and assets
-          restore the Java settings of BBjServices and restart it
-        Continue? [y/N]
-        Undeployed inventory
-        Undeployed proof-app
-        Disabled development runs
-        Disabled the BBjShip HTTP endpoint
-        Removed the BBjShip assets
-        Restored the Java settings of BBjServices
-        Restarted BBjServices
-        Reset BBjShip
-        """, output.toString(StandardCharsets.UTF_8));
-    verify(configuration).removeApplication("inventory");
-    verify(configuration).removeApplication("proof-app");
-    verify(services).restart(admin, OptionalLong.of(42));
-  }
-
-  @Test
-  void shouldChangeNothingWhenTheResetIsNotConfirmed() throws Exception {
-    Files.writeString(backup, "basis.cacheDirectory=/opt/bbx/cache\n");
+  void shouldPlanTheResetAndChangeNothingWhenItIsNotConfirmed() throws Exception {
+    Files.writeString(backup, BACKED_UP_PROPERTIES);
     BBjShipCli cli = createCli(home, admin, "n\n");
 
-    int status = cli.run("reset");
+    int status = cli.run(RESET_COMMAND);
 
     assertEquals(1, status);
     assertEquals(FACTORY_ACCOUNT_WARNING + "\n" + """
@@ -202,29 +140,57 @@ class ResetCommandTest {
           undeploy proof-app
           disable development runs
           remove the BBjShip HTTP endpoint and assets
-          restore the Java settings of BBjServices and restart it
+          restore the Java settings of BBjServices
         Continue? [y/N]
         Reset cancelled
         """, output.toString(StandardCharsets.UTF_8));
     verify(configuration, never()).removeApplication(anyString());
-    assertTrue(Files.isDirectory(deployments.resolve("inventory")));
-    assertTrue(Files.isDirectory(deployments.resolve("proof-app")));
+    assertTrue(Files.isDirectory(deployments.resolve(INVENTORY_APP_NAME)));
+    assertTrue(Files.isDirectory(deployments.resolve(PROOF_APP_NAME)));
     assertTrue(Files.exists(developmentSwitch));
-    assertNotNull(bbjServices.getContext("webforj-bbjship"));
-    assertNotNull(bbjServices.getContext("webforj-bbjship-assets"));
-    assertEquals(List.of("_webforj_bbjship_cli", "_webforj_bbjship", "webforj_bbjship_inventory",
+    assertNotNull(bbjServices.getContext(BBJSHIP_CONTEXT));
+    assertNotNull(bbjServices.getContext(ASSETS_CONTEXT));
+    assertEquals(List.of(CLI_CLASSPATH, "_webforj_bbjship", "webforj_bbjship_inventory",
         "webforj_bbjship_proof-app"), admin.getClasspathNames());
     assertTrue(Files.exists(backup));
     verify(admin).release();
-    verify(services, never()).restart(any(), any());
+    verify(admin, never()).shutdownBBjServices(false);
   }
 
   @Test
-  void shouldResetWithoutAskingWithYes() throws Exception {
-    Files.writeString(backup, "basis.cacheDirectory=/opt/bbx/cache\n");
+  void shouldResetAfterTheConfirmationTypedAfterThePassword() throws Exception {
+    settings = JAVA_ARGUMENTS_LINE.formatted(ServicesProperties.JAVA_ARGUMENTS_KEY);
+    Files.writeString(properties, settings);
+    BBjShipCli cli = createCli(home, admin, "secret\ny\n");
+
+    int status = cli.run(RESET_COMMAND, "--username", "administrator", "--password-stdin");
+
+    assertEquals(0, status);
+    assertEquals("""
+        Reading the password from standard input
+        This resets BBjShip on this machine:
+          undeploy inventory
+          undeploy proof-app
+          disable development runs
+          remove the BBjShip HTTP endpoint and assets
+        Continue? [y/N]
+        Undeployed inventory
+        Undeployed proof-app
+        Disabled development runs
+        Disabled the BBjShip HTTP endpoint
+        Removed the BBjShip assets
+        Reset BBjShip
+        """, output.toString(StandardCharsets.UTF_8));
+    assertFalse(Files.exists(home.resolve(DEPLOYMENTS_FOLDER)));
+    verify(admin, never()).shutdownBBjServices(false);
+  }
+
+  @Test
+  void shouldResetWithoutAskingWithYesAndLeaveBbjServicesRunning() throws Exception {
+    Files.writeString(backup, BACKED_UP_PROPERTIES);
     BBjShipCli cli = createCli(home, admin, "");
 
-    int status = cli.run("reset", "--yes");
+    int status = cli.run(RESET_COMMAND, YES_OPTION);
 
     assertEquals(0, status);
     assertEquals(FACTORY_ACCOUNT_WARNING + "\n" + """
@@ -233,17 +199,29 @@ class ResetCommandTest {
           undeploy proof-app
           disable development runs
           remove the BBjShip HTTP endpoint and assets
-          restore the Java settings of BBjServices and restart it
+          restore the Java settings of BBjServices
         Undeployed inventory
         Undeployed proof-app
         Disabled development runs
         Disabled the BBjShip HTTP endpoint
         Removed the BBjShip assets
         Restored the Java settings of BBjServices
-        Restarted BBjServices
         Reset BBjShip
+        Restart BBjServices now to apply the restored Java settings
         """, output.toString(StandardCharsets.UTF_8));
-    verify(services).restart(admin, OptionalLong.of(42));
+    verify(configuration).removeApplication(INVENTORY_APP_NAME);
+    verify(configuration).removeApplication(PROOF_APP_NAME);
+    assertFalse(Files.exists(deployments.resolve(INVENTORY_APP_NAME)));
+    assertFalse(Files.exists(deployments.resolve(PROOF_APP_NAME)));
+    assertFalse(Files.exists(developmentSwitch));
+    assertNull(bbjServices.getContext(BBJSHIP_CONTEXT));
+    assertNull(bbjServices.getContext(ASSETS_CONTEXT));
+    assertEquals(List.of(), admin.getClasspathNames());
+    assertEquals(BACKED_UP_PROPERTIES, Files.readString(properties));
+    assertFalse(Files.exists(backup));
+    assertFalse(Files.exists(home.resolve(DEPLOYMENTS_FOLDER)));
+    verify(admin).release();
+    verify(admin, never()).shutdownBBjServices(false);
   }
 
   @Test
@@ -252,23 +230,23 @@ class ResetCommandTest {
     Path otherProperties = Files.writeString(elsewhere.resolve("BBj.properties"), settings);
     Path otherBackup = Files.writeString(
         home.resolve("plugins/.webforj-bbjship-deployments/BBj.properties.before-webforj"),
-        "basis.cacheDirectory=/opt/bbx/cache\n");
+        BACKED_UP_PROPERTIES);
     BBjShipCli cli = createCli(home, admin, "");
 
-    int status = cli.run("reset", "--yes", "--properties", otherProperties.toString());
+    int status = cli.run(RESET_COMMAND, YES_OPTION, "--properties", otherProperties.toString());
 
     assertEquals(0, status);
-    assertEquals("basis.cacheDirectory=/opt/bbx/cache\n", Files.readString(otherProperties));
+    assertEquals(BACKED_UP_PROPERTIES, Files.readString(otherProperties));
     assertFalse(Files.exists(otherBackup));
     assertEquals(settings, Files.readString(properties));
-    verify(services).restart(admin, OptionalLong.of(42));
+    verify(admin, never()).shutdownBBjServices(false);
   }
 
   @Test
-  void shouldReleaseTheSessionWithoutRestartWhenNoBackupExists() throws Exception {
-    BBjShipCli cli = createCli(home, admin, "y\n");
+  void shouldRemoveTheHotswapArgumentWithoutBackupAndLeaveBbjServicesRunning() throws Exception {
+    BBjShipCli cli = createCli(home, admin, "");
 
-    int status = cli.run("reset");
+    int status = cli.run(RESET_COMMAND, YES_OPTION);
 
     assertEquals(0, status);
     assertEquals(FACTORY_ACCOUNT_WARNING + "\n" + """
@@ -277,7 +255,39 @@ class ResetCommandTest {
           undeploy proof-app
           disable development runs
           remove the BBjShip HTTP endpoint and assets
-        Continue? [y/N]
+          restore the Java settings of BBjServices
+        Undeployed inventory
+        Undeployed proof-app
+        Disabled development runs
+        Disabled the BBjShip HTTP endpoint
+        Removed the BBjShip assets
+        Restored the Java settings of BBjServices
+        Reset BBjShip
+        Restart BBjServices now to apply the restored Java settings
+        """, output.toString(StandardCharsets.UTF_8));
+    ServicesProperties reset = ServicesProperties.load(properties, temporary);
+    assertEquals(List.of("-Xmx1g"), reset.getJavaArguments());
+    assertEquals(Optional.of(Path.of("/opt/jdk-21/bin/java")), reset.getJavaExecutable());
+    assertFalse(Files.exists(backup));
+    verify(admin).release();
+    verify(admin, never()).shutdownBBjServices(false);
+  }
+
+  @Test
+  void shouldReleaseTheSessionWithoutRestartWhenNoBackupExists() throws Exception {
+    settings = JAVA_ARGUMENTS_LINE.formatted(ServicesProperties.JAVA_ARGUMENTS_KEY);
+    Files.writeString(properties, settings);
+    BBjShipCli cli = createCli(home, admin, "");
+
+    int status = cli.run(RESET_COMMAND, YES_OPTION);
+
+    assertEquals(0, status);
+    assertEquals(FACTORY_ACCOUNT_WARNING + "\n" + """
+        This resets BBjShip on this machine:
+          undeploy inventory
+          undeploy proof-app
+          disable development runs
+          remove the BBjShip HTTP endpoint and assets
         Undeployed inventory
         Undeployed proof-app
         Disabled development runs
@@ -286,23 +296,24 @@ class ResetCommandTest {
         Reset BBjShip
         """, output.toString(StandardCharsets.UTF_8));
     assertEquals(settings, Files.readString(properties));
-    assertFalse(Files.exists(home.resolve("plugins/.webforj-bbjship-deployments")));
+    assertFalse(Files.exists(home.resolve(DEPLOYMENTS_FOLDER)));
     verify(admin).release();
-    verify(services, never()).readProcessId(any(), any());
-    verify(services, never()).restart(any(), any());
+    verify(admin, never()).shutdownBBjServices(false);
   }
 
   @Test
   void shouldReportTheRuntimeFolderWhoseFilesCannotBeRemovedAndEndAsDone() throws Exception {
     assumeTrue(deployments.getFileSystem().supportedFileAttributeViews().contains("posix"),
         "The removal failure needs a posix file system");
+    Files.writeString(properties,
+        JAVA_ARGUMENTS_LINE.formatted(ServicesProperties.JAVA_ARGUMENTS_KEY));
     Path held = deployments.resolve("inventory/0b8f4f0e-3f5c-4a8e-9a49-5d1a6f3c2b10/bbj");
     assertTrue(held.toFile().setWritable(false));
-    BBjShipCli cli = createCli(home, admin, "y\n");
+    BBjShipCli cli = createCli(home, admin, "");
 
     int status;
     try {
-      status = cli.run("reset");
+      status = cli.run(RESET_COMMAND, YES_OPTION);
     } finally {
       assertTrue(held.toFile().setWritable(true));
     }
@@ -316,7 +327,6 @@ class ResetCommandTest {
                   undeploy proof-app
                   disable development runs
                   remove the BBjShip HTTP endpoint and assets
-                Continue? [y/N]
                 Undeployed inventory
                 Not removed: %s. %s
                 Undeployed proof-app
@@ -325,17 +335,17 @@ class ResetCommandTest {
                 Removed the BBjShip assets
                 Not removed: %s. %s
                 Reset BBjShip
-                """.formatted(deployments.resolve("inventory"), held.resolve("webforj.bbj"),
-                home.resolve("plugins/.webforj-bbjship-deployments"), held.resolve("webforj.bbj")),
+                """.formatted(deployments.resolve(INVENTORY_APP_NAME), held.resolve(PROGRAM_FILE),
+                home.resolve(DEPLOYMENTS_FOLDER), held.resolve(PROGRAM_FILE)),
         output.toString(StandardCharsets.UTF_8));
-    verify(configuration).removeApplication("inventory");
-    verify(configuration).removeApplication("proof-app");
+    verify(configuration).removeApplication(INVENTORY_APP_NAME);
+    verify(configuration).removeApplication(PROOF_APP_NAME);
     assertEquals(List.of(), admin.getClasspathNames());
-    assertNull(bbjServices.getContext("webforj-bbjship"));
-    assertTrue(Files.isRegularFile(held.resolve("webforj.bbj")));
-    assertFalse(Files.exists(deployments.resolve("proof-app")));
+    assertNull(bbjServices.getContext(BBJSHIP_CONTEXT));
+    assertTrue(Files.isRegularFile(held.resolve(PROGRAM_FILE)));
+    assertFalse(Files.exists(deployments.resolve(PROOF_APP_NAME)));
     verify(admin).release();
-    verify(services, never()).restart(any(), any());
+    verify(admin, never()).shutdownBBjServices(false);
   }
 
   @Test
@@ -344,16 +354,16 @@ class ResetCommandTest {
     BBjServices emptyServices = new BBjServices();
     BBjShipCli cli = createCli(emptyHome, emptyServices.getAdmin(), "");
 
-    int status = cli.run("reset");
+    int status = cli.run(RESET_COMMAND);
 
     assertEquals(0, status);
     assertEquals(FACTORY_ACCOUNT_WARNING + "\n" + "Nothing to reset\n",
         output.toString(StandardCharsets.UTF_8));
-    assertNull(emptyServices.getContext("webforj-bbjship-assets"));
+    assertNull(emptyServices.getContext(ASSETS_CONTEXT));
     assertEquals(List.of(), emptyServices.getAdmin().getClasspathNames());
-    assertFalse(Files.exists(emptyHome.resolve("plugins/.webforj-bbjship-deployments")));
+    assertFalse(Files.exists(emptyHome.resolve(DEPLOYMENTS_FOLDER)));
     verify(emptyServices.getAdmin()).release();
-    verify(services, never()).restart(any(), any());
+    verify(emptyServices.getAdmin(), never()).shutdownBBjServices(false);
   }
 
   @Test
@@ -362,28 +372,26 @@ class ResetCommandTest {
     Path preserved = Files.createDirectories(emptyHome
         .resolve("plugins/.webforj-bbjship-deployments/.webforj-2041/previous/webforj-bbjship"));
     BBjServices emptyServices = new BBjServices();
-    BBjShipCli cli = createCli(emptyHome, emptyServices.getAdmin(), "y\n");
+    BBjShipCli cli = createCli(emptyHome, emptyServices.getAdmin(), "");
 
-    int status = cli.run("reset");
+    int status = cli.run(RESET_COMMAND, YES_OPTION);
 
     assertEquals(0, status);
     assertEquals(FACTORY_ACCOUNT_WARNING + "\n" + """
         This resets BBjShip on this machine:
           remove the BBjShip runtime folder
-        Continue? [y/N]
         Reset BBjShip
         """, output.toString(StandardCharsets.UTF_8));
     assertFalse(Files.exists(preserved));
-    assertFalse(Files.exists(emptyHome.resolve("plugins/.webforj-bbjship-deployments")));
+    assertFalse(Files.exists(emptyHome.resolve(DEPLOYMENTS_FOLDER)));
     verify(emptyServices.getAdmin()).release();
   }
 
   private BBjShipCli createCli(Path bbjHome, BBjAdminBase bbjAdmin, String input) {
-    PrintStream stream = new PrintStream(output, true, StandardCharsets.UTF_8);
+    Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
 
-    return BBjShipCli.create(bbjHome)
-        .setInput(new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8)))
-        .setEnvironment(Map.of()).setOutput(stream).setError(stream).setAnsi(Ansi.OFF)
-        .setConnector((username, password) -> bbjAdmin).setServices(services).build();
+    return BBjShipCli.create(new BBjShipPlugin(bbjHome))
+        .setTerminal(new TerminalLines(stream).setTyped(input.lines().toArray(String[]::new)))
+        .setAnsi(Ansi.OFF).setSessions(login -> bbjAdmin).build();
   }
 }

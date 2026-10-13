@@ -1,6 +1,7 @@
 package com.webforj.bbjship.cli.option;
 
 import com.webforj.bbjship.cli.BBjShipFailureHandler;
+import com.webforj.plugin.foundation.bbj.BBjShipCommandLine;
 import java.util.OptionalInt;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
@@ -39,18 +40,18 @@ public final class PortOption {
     return sslPort;
   }
 
-  @Option(names = "--port", paramLabel = "PORT", defaultValue = "8888",
+  @Option(names = BBjShipCommandLine.PORT_OPTION, paramLabel = "PORT", defaultValue = "8888",
       description = "HTTP port of the BBjServices web server the BBjShip contexts listen on, "
           + "from 1 to 65535, 8888 when absent.")
   void setPort(String value) {
-    port = parsePort("--port", value);
+    port = parsePort(BBjShipCommandLine.PORT_OPTION, value);
   }
 
-  @Option(names = "--ssl-port", paramLabel = "PORT",
+  @Option(names = BBjShipCommandLine.SSL_PORT_OPTION, paramLabel = "PORT",
       description = "SSL port of the BBjServices web server the BBjShip contexts also listen "
           + "on, from 1 to 65535.")
   void setSslPort(String value) {
-    sslPort = OptionalInt.of(parsePort("--ssl-port", value));
+    sslPort = OptionalInt.of(parsePort(BBjShipCommandLine.SSL_PORT_OPTION, value));
   }
 
   private int parsePort(String option, String value) {

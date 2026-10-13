@@ -18,15 +18,26 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 class InstallationTest {
 
+  private static final String MISSING_HOME = "missing";
+
   @TempDir
   Path temporary;
+
+  @Test
+  void shouldResolveTheConfiguredHomeToItsRealPath() throws IOException {
+    Path home = Home.createCopy(temporary.resolve("bbx"));
+
+    Path resolved = Installation.resolveHome(home.resolve("cfg/.."));
+
+    assertEquals(home.toRealPath(), resolved);
+  }
 
   @Test
   void shouldRecognizeBbjHomeByItsConfigurationAndExecutable() throws IOException {
     Path home = Home.createCopy(temporary.resolve("bbx"));
 
     assertTrue(Installation.isHome(home));
-    assertFalse(Installation.isHome(temporary.resolve("missing")));
+    assertFalse(Installation.isHome(temporary.resolve(MISSING_HOME)));
   }
 
   @ParameterizedTest
@@ -48,7 +59,7 @@ class InstallationTest {
   @Test
   void shouldNotFindInterpreterThatIsNotExecutable() throws IOException {
     Path home = Home.createCopy(temporary.resolve("bbx"));
-    home.resolve("bin/bbj").toFile().setExecutable(false);
+    assertTrue(home.resolve("bin/bbj").toFile().setExecutable(false));
 
     assertEquals(Optional.empty(), Installation.findExecutable(home));
     assertTrue(Installation.hasConfiguration(home));
@@ -63,14 +74,14 @@ class InstallationTest {
     Files.deleteIfExists(home.resolve(deleted));
 
     assertFalse(Installation.hasConfiguration(home));
-    assertFalse(Installation.hasConfiguration(temporary.resolve("missing")));
+    assertFalse(Installation.hasConfiguration(temporary.resolve(MISSING_HOME)));
   }
 
   @Test
   void shouldFindBbjHomeOfRunningService() throws Exception {
     Path home = Home.createCopy(temporary.resolve("bbx"));
     Process service =
-        new ProcessBuilder("sh", "-c", "sleep 30", "sh", "-Dbasis.BBjHome=" + home).start();
+        new ProcessBuilder("/bin/sh", "-c", "sleep 30", "sh", "-Dbasis.BBjHome=" + home).start();
     try {
       Optional<Path> found =
           Installation.findInProcesses(Stream.of(ProcessHandle.of(service.pid()).orElseThrow()));
@@ -83,8 +94,8 @@ class InstallationTest {
 
   @Test
   void shouldSkipServiceThatNamesNoBbjHome() throws Exception {
-    Process service = new ProcessBuilder("sh", "-c", "sleep 30", "sh",
-        "-Dbasis.BBjHome=" + temporary.resolve("missing")).start();
+    Process service = new ProcessBuilder("/bin/sh", "-c", "sleep 30", "sh",
+        "-Dbasis.BBjHome=" + temporary.resolve(MISSING_HOME)).start();
     try {
       Optional<Path> found =
           Installation.findInProcesses(Stream.of(ProcessHandle.of(service.pid()).orElseThrow()));

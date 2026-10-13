@@ -26,14 +26,4 @@
       </includes>
     </fileSet>
   </fileSets>
-  <dependencySets>
-    <dependencySet>
-      <outputDirectory>lib</outputDirectory>
-      <useProjectArtifact>false</useProjectArtifact>
-      <fileMode>0644</fileMode>
-      <includes>
-        <include>info.picocli:picocli</include>
-      </includes>
-    </dependencySet>
-  </dependencySets>
 </assembly>

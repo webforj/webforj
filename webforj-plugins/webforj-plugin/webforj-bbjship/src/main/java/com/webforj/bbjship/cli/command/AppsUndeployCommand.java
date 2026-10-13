@@ -1,14 +1,15 @@
 package com.webforj.bbjship.cli.command;
 
 import com.basis.api.admin.BBjAdminBase;
-import com.webforj.bbjship.DeploymentInstaller;
-import com.webforj.bbjship.cli.admin.BBjShipPlugin;
+import com.webforj.bbjship.BBjServicesClasspathRelease;
+import com.webforj.bbjship.Deployer;
 import com.webforj.bbjship.cli.admin.BBjShipSession;
 import com.webforj.bbjship.cli.option.CredentialOptions;
 import com.webforj.bbjship.model.PublishedApplication;
+import com.webforj.plugin.foundation.bbj.BBjShipCommandLine;
+import com.webforj.plugin.foundation.bbj.BBjShipPlugin;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
@@ -28,8 +29,9 @@ import picocli.CommandLine.Spec;
  * @author Hyyan Abo Fakher
  * @since 26.03
  */
-@Command(name = "undeploy", mixinStandardHelpOptions = true,
-    description = "Undeploy an application BBjShip deployed, or all with --all.")
+@Command(name = BBjShipCommandLine.UNDEPLOY, mixinStandardHelpOptions = true,
+    description = "Undeploy an application BBjShip deployed, or all with "
+        + BBjShipCommandLine.ALL_OPTION + ".")
 public final class AppsUndeployCommand implements Callable<Integer> {
 
   private final BBjShipSession session;
@@ -63,10 +65,10 @@ public final class AppsUndeployCommand implements Callable<Integer> {
     BBjAdminBase admin = session.openAdmin(credentials, OptionalInt.empty(), OptionalInt.empty());
     try {
       boolean found = false;
-      Optional<URI> endpoint = session.findUndeployEndpoint(admin);
-      for (PublishedApplication application : DeploymentInstaller.findApplications(root, admin)) {
+      for (PublishedApplication application : Deployer.getApplications(root, admin)) {
         if (target.all || application.getName().equals(target.name)) {
-          Optional<String> kept = session.undeploy(admin, endpoint, application.getName());
+          Optional<String> kept = Deployer.undeploy(application.getName(), root, admin,
+              new BBjServicesClasspathRelease());
           out.println(spec.commandLine().getColorScheme()
               .apply("Undeployed", List.of(Style.fg_green)).concat(" " + application.getName()));
           kept.ifPresent(out::println);
@@ -95,7 +97,8 @@ public final class AppsUndeployCommand implements Callable<Integer> {
     @Parameters(paramLabel = "NAME", description = "Publish name of the application.")
     private String name;
 
-    @Option(names = "--all", description = "Undeploy every application BBjShip deployed.")
+    @Option(names = BBjShipCommandLine.ALL_OPTION,
+        description = "Undeploy every application BBjShip deployed.")
     private boolean all;
   }
 }

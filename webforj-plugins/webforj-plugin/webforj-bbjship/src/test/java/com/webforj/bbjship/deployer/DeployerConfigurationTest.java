@@ -1,4 +1,4 @@
-package com.webforj.bbjship.deploymentinstaller;
+package com.webforj.bbjship.deployer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -19,8 +19,11 @@ import com.basis.api.admin.BBjAdminException;
 import com.basis.api.admin.BBjAdminList;
 import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
 import com.typesafe.config.ConfigException;
+import com.webforj.bbjship.ClasspathRelease;
+import com.webforj.bbjship.Deployer;
 import com.webforj.bbjship.DeploymentException;
-import com.webforj.bbjship.DeploymentInstaller;
+import com.webforj.bbjship.DevelopmentRunFiles;
+import com.webforj.plugin.foundation.bbj.DeploymentArchive;
 import com.webforj.plugin.foundation.bbj.HelloApp;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -31,6 +34,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -41,7 +45,17 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-final class DeploymentInstallerConfigurationTest {
+final class DeployerConfigurationTest {
+
+  private static final String NAME = "hello-app";
+  private static final String WEBFORJ_CONF = "src/main/resources/webforj.conf";
+  private static final String ARCHIVE = "hello-app.zip";
+  private static final String DEPLOYMENTS = "deployments";
+  private static final String DEVELOPMENT_PROPERTIES = "development.properties";
+  private static final String CURRENT_FILE = "hello-app/current";
+  private static final String CLASS_FOLDER_PROPERTY = """
+      classFolder=%s
+      """;
 
   @TempDir
   Path temporary;
@@ -64,8 +78,8 @@ final class DeploymentInstallerConfigurationTest {
 
   @Test
   void shouldRegisterEverySettingOfWebforjConf() throws Exception {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
-    Files.writeString(app.resolve("src/main/resources/webforj.conf"), """
+    Path app = HelloApp.createCopy(temporary.resolve(NAME));
+    Files.writeString(app.resolve(WEBFORJ_CONF), """
         webforj {
           entry = "org.example.Application"
           quiet = true
@@ -75,10 +89,10 @@ final class DeploymentInstallerConfigurationTest {
           disallowConsole = false
         }
         """);
-    Path archive = HelloApp.writeArchive(app, temporary.resolve("hello-app.zip"));
+    Path archive = HelloApp.writeArchive(app, temporary.resolve(ARCHIVE));
 
-    DeploymentInstaller.deploy(new ByteArrayInputStream(Files.readAllBytes(archive)), "hello-app",
-        temporary.resolve("deployments").toString(), admin);
+    Deployer.deploy(new ByteArrayInputStream(Files.readAllBytes(archive)), NAME,
+        temporary.resolve(DEPLOYMENTS).toString(), admin, ClasspathRelease.NONE);
 
     verify(application).setBoolean(BBjAdminAppDeploymentApplication.QUIET, true);
     verify(application).setBoolean(BBjAdminAppDeploymentApplication.SHOW_BROWSER_WARNING, false);
@@ -103,15 +117,15 @@ final class DeploymentInstallerConfigurationTest {
   @ParameterizedTest
   @ValueSource(booleans = {true, false})
   void shouldRegisterTheSecureSettingInPlaceOfTheServerDefault(boolean secure) throws Exception {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
-    Files.writeString(app.resolve("src/main/resources/webforj.conf"), """
+    Path app = HelloApp.createCopy(temporary.resolve(NAME));
+    Files.writeString(app.resolve(WEBFORJ_CONF), """
         webforj.entry = "org.example.Application"
         webforj.secure = %s
         """.formatted(secure));
-    Path archive = HelloApp.writeArchive(app, temporary.resolve("hello-app.zip"));
+    Path archive = HelloApp.writeArchive(app, temporary.resolve(ARCHIVE));
 
-    DeploymentInstaller.deploy(new ByteArrayInputStream(Files.readAllBytes(archive)), "hello-app",
-        temporary.resolve("deployments").toString(), admin);
+    Deployer.deploy(new ByteArrayInputStream(Files.readAllBytes(archive)), NAME,
+        temporary.resolve(DEPLOYMENTS).toString(), admin, ClasspathRelease.NONE);
 
     verify(application).setBoolean(BBjAdminAppDeploymentApplication.SECURE, secure);
     verify(application).setBoolean(BBjAdminAppDeploymentApplication.SECURE_USE_DEFAULT, false);
@@ -119,12 +133,12 @@ final class DeploymentInstallerConfigurationTest {
 
   @Test
   void shouldRegisterTheDefaultsWhenTheApplicationHasNoWebforjConf() throws Exception {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
-    Files.delete(app.resolve("src/main/resources/webforj.conf"));
-    Path archive = HelloApp.writeArchive(app, temporary.resolve("hello-app.zip"));
+    Path app = HelloApp.createCopy(temporary.resolve(NAME));
+    Files.delete(app.resolve(WEBFORJ_CONF));
+    Path archive = HelloApp.writeArchive(app, temporary.resolve(ARCHIVE));
 
-    DeploymentInstaller.deploy(new ByteArrayInputStream(Files.readAllBytes(archive)), "hello-app",
-        temporary.resolve("deployments").toString(), admin);
+    Deployer.deploy(new ByteArrayInputStream(Files.readAllBytes(archive)), NAME,
+        temporary.resolve(DEPLOYMENTS).toString(), admin, ClasspathRelease.NONE);
 
     verify(application).setBoolean(BBjAdminAppDeploymentApplication.SHOW_CONFIRM_CLOSE_DIALOG,
         false);
@@ -143,16 +157,16 @@ final class DeploymentInstallerConfigurationTest {
   @Test
   void shouldRegisterTheAbsoluteConfigFileAsItIs() throws Exception {
     Path configFile = temporary.toAbsolutePath().resolve("elsewhere/app.cfg");
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
-    Files.writeString(app.resolve("src/main/resources/webforj.conf"), """
+    Path app = HelloApp.createCopy(temporary.resolve(NAME));
+    Files.writeString(app.resolve(WEBFORJ_CONF), """
         webforj.entry = "org.example.Application"
         webforj.configFile = "%s"
         """.formatted(configFile.toString().replace("\\", "\\\\")));
-    Path archive = HelloApp.writeArchive(app, temporary.resolve("hello-app.zip"));
-    Path root = temporary.resolve("deployments");
+    Path archive = HelloApp.writeArchive(app, temporary.resolve(ARCHIVE));
+    Path root = temporary.resolve(DEPLOYMENTS);
 
-    DeploymentInstaller.deploy(new ByteArrayInputStream(Files.readAllBytes(archive)), "hello-app",
-        root.toString(), admin);
+    Deployer.deploy(new ByteArrayInputStream(Files.readAllBytes(archive)), NAME, root.toString(),
+        admin, ClasspathRelease.NONE);
 
     verify(application).setString(BBjAdminAppDeploymentApplication.CONFIG_FILE,
         configFile.toString());
@@ -161,16 +175,16 @@ final class DeploymentInstallerConfigurationTest {
   @ParameterizedTest
   @ValueSource(strings = {"config/app.cfg", "../outside.cfg", "cfg/config.bbx"})
   void shouldStoreTheConfigFileAsWritten(String configFile) throws Exception {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
-    Files.writeString(app.resolve("src/main/resources/webforj.conf"), """
+    Path app = HelloApp.createCopy(temporary.resolve(NAME));
+    Files.writeString(app.resolve(WEBFORJ_CONF), """
         webforj.entry = "org.example.Application"
         webforj.configFile = "%s"
         """.formatted(configFile));
-    Path archive = HelloApp.writeArchive(app, temporary.resolve("hello-app.zip"));
-    Path root = temporary.resolve("deployments");
+    Path archive = HelloApp.writeArchive(app, temporary.resolve(ARCHIVE));
+    Path root = temporary.resolve(DEPLOYMENTS);
 
-    DeploymentInstaller.deploy(new ByteArrayInputStream(Files.readAllBytes(archive)), "hello-app",
-        root.toString(), admin);
+    Deployer.deploy(new ByteArrayInputStream(Files.readAllBytes(archive)), NAME, root.toString(),
+        admin, ClasspathRelease.NONE);
 
     verify(application).setString(BBjAdminAppDeploymentApplication.CONFIG_FILE, configFile);
   }
@@ -179,15 +193,15 @@ final class DeploymentInstallerConfigurationTest {
   @MethodSource("getInvalidWebforjConfs")
   void shouldRefuseInvalidWebforjConfBeforeAnyChange(String webforjConf, String message)
       throws Exception {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
-    Files.writeString(app.resolve("src/main/resources/webforj.conf"), webforjConf);
-    Path archive = HelloApp.writeArchive(app, temporary.resolve("hello-app.zip"));
-    Path root = temporary.resolve("deployments");
+    Path app = HelloApp.createCopy(temporary.resolve(NAME));
+    Files.writeString(app.resolve(WEBFORJ_CONF), webforjConf);
+    Path archive = HelloApp.writeArchive(app, temporary.resolve(ARCHIVE));
+    Path root = temporary.resolve(DEPLOYMENTS);
     InputStream upload = new ByteArrayInputStream(Files.readAllBytes(archive));
     String destination = root.toString();
 
     DeploymentException failure = assertThrows(DeploymentException.class,
-        () -> DeploymentInstaller.deploy(upload, "hello-app", destination, admin));
+        () -> Deployer.deploy(upload, NAME, destination, admin, ClasspathRelease.NONE));
 
     assertEquals(message, failure.getMessage());
     assertInstanceOf(ConfigException.class, failure.getCause());
@@ -203,15 +217,15 @@ final class DeploymentInstallerConfigurationTest {
   void shouldRegisterTheProgramArgumentsInOrderInPlaceOfThePreviousOnes() throws Exception {
     BBjAdminList<String> arguments = new BBjAdminAdapterList<>(List.of("stale"));
     when(application.getArguments()).thenReturn(arguments);
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
-    Files.writeString(app.resolve("src/main/resources/webforj.conf"), """
+    Path app = HelloApp.createCopy(temporary.resolve(NAME));
+    Files.writeString(app.resolve(WEBFORJ_CONF), """
         webforj.entry = "org.example.Application"
         webforj.programArguments = ["--b", "--a"]
         """);
-    Path archive = HelloApp.writeArchive(app, temporary.resolve("hello-app.zip"));
+    Path archive = HelloApp.writeArchive(app, temporary.resolve(ARCHIVE));
 
-    DeploymentInstaller.deploy(new ByteArrayInputStream(Files.readAllBytes(archive)), "hello-app",
-        temporary.resolve("deployments").toString(), admin);
+    Deployer.deploy(new ByteArrayInputStream(Files.readAllBytes(archive)), NAME,
+        temporary.resolve(DEPLOYMENTS).toString(), admin, ClasspathRelease.NONE);
 
     assertEquals(List.of("--b", "--a"), arguments);
   }
@@ -239,14 +253,13 @@ final class DeploymentInstallerConfigurationTest {
 
     @BeforeEach
     void initDevelopmentArchiveOfHelloAppWithDevelopmentRunsEnabled() throws Exception {
-      Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
+      Path app = HelloApp.createCopy(temporary.resolve(NAME));
       classFolder = app.resolve("src/main/resources");
-      development = HelloApp.writeArchive(app, temporary.resolve("hello-app.zip"));
+      development = HelloApp.writeArchive(app, temporary.resolve(ARCHIVE));
       try (FileSystem zip = FileSystems.newFileSystem(development)) {
         Files.delete(zip.getPath("application.jar"));
-        Files.writeString(zip.getPath("development.properties"), """
-            classFolder=%s
-            """.formatted(classFolder.toString().replace("\\", "\\\\")));
+        Files.writeString(zip.getPath(DEVELOPMENT_PROPERTIES),
+            CLASS_FOLDER_PROPERTY.formatted(classFolder.toString().replace("\\", "\\\\")));
       }
 
       Files.createFile(temporary.resolve("development.enabled"));
@@ -259,21 +272,20 @@ final class DeploymentInstallerConfigurationTest {
           webforj.secure = true
           """);
 
-      DeploymentInstaller.deploy(new ByteArrayInputStream(Files.readAllBytes(development)),
-          "hello-app", temporary.resolve("deployments").toString(), admin);
+      Deployer.deploy(new ByteArrayInputStream(Files.readAllBytes(development)), NAME,
+          temporary.resolve(DEPLOYMENTS).toString(), admin, ClasspathRelease.NONE);
 
       verify(application).setBoolean(BBjAdminAppDeploymentApplication.SECURE, true);
     }
 
     @Test
     void shouldRegisterTheClassFolderAfterTheDependenciesWithoutApplicationJar() throws Exception {
-      Path root = temporary.resolve("deployments");
+      Path root = temporary.resolve(DEPLOYMENTS);
 
-      DeploymentInstaller.deploy(new ByteArrayInputStream(Files.readAllBytes(development)),
-          "hello-app", root.toString(), admin);
+      Deployer.deploy(new ByteArrayInputStream(Files.readAllBytes(development)), NAME,
+          root.toString(), admin, ClasspathRelease.NONE);
 
-      Path deployment =
-          root.resolve("hello-app").resolve(Files.readString(root.resolve("hello-app/current")));
+      Path deployment = root.resolve(NAME).resolve(Files.readString(root.resolve(CURRENT_FILE)));
       List<String> classpath = new ArrayList<>(List.of("(_webforj_bbjship)"));
       try (Stream<Path> jars = Files.list(deployment.resolve("dependencies"))) {
         jars.sorted().map(Path::toString).forEach(classpath::add);
@@ -285,32 +297,30 @@ final class DeploymentInstallerConfigurationTest {
 
     @Test
     void shouldWriteTheClassFolderIntoTheDevelopmentMarkerOfTheDeployment() throws Exception {
-      Path root = temporary.resolve("deployments");
+      Path root = temporary.resolve(DEPLOYMENTS);
 
-      DeploymentInstaller.deploy(new ByteArrayInputStream(Files.readAllBytes(development)),
-          "hello-app", root.toString(), admin);
+      Deployer.deploy(new ByteArrayInputStream(Files.readAllBytes(development)), NAME,
+          root.toString(), admin, ClasspathRelease.NONE);
 
-      Path deployment =
-          root.resolve("hello-app").resolve(Files.readString(root.resolve("hello-app/current")));
-      assertEquals(classFolder.toString(), Files.readString(deployment.resolve("development")));
+      Path deployment = root.resolve(NAME).resolve(Files.readString(root.resolve(CURRENT_FILE)));
+      assertEquals(Optional.of(List.of(classFolder.toString())),
+          DeploymentArchive.findClassFolders(deployment));
     }
 
     @Test
     void shouldRegisterEveryClassFolderInOrderAfterTheDependencies() throws Exception {
       Path classes = classFolder.resolveSibling("java");
       try (FileSystem zip = FileSystems.newFileSystem(development)) {
-        Files.writeString(zip.getPath("development.properties"), """
-            classFolder=%s
-            """.formatted((classes + File.pathSeparator + classFolder).replace("\\", "\\\\")));
+        Files.writeString(zip.getPath(DEVELOPMENT_PROPERTIES), CLASS_FOLDER_PROPERTY
+            .formatted((classes + File.pathSeparator + classFolder).replace("\\", "\\\\")));
       }
 
-      Path root = temporary.resolve("deployments");
+      Path root = temporary.resolve(DEPLOYMENTS);
 
-      DeploymentInstaller.deploy(new ByteArrayInputStream(Files.readAllBytes(development)),
-          "hello-app", root.toString(), admin);
+      Deployer.deploy(new ByteArrayInputStream(Files.readAllBytes(development)), NAME,
+          root.toString(), admin, ClasspathRelease.NONE);
 
-      Path deployment =
-          root.resolve("hello-app").resolve(Files.readString(root.resolve("hello-app/current")));
+      Path deployment = root.resolve(NAME).resolve(Files.readString(root.resolve(CURRENT_FILE)));
       List<String> classpath = new ArrayList<>(List.of("(_webforj_bbjship)"));
       try (Stream<Path> jars = Files.list(deployment.resolve("dependencies"))) {
         jars.sorted().map(Path::toString).forEach(classpath::add);
@@ -325,9 +335,8 @@ final class DeploymentInstallerConfigurationTest {
     void shouldRegisterTheWebforjConfOfTheFirstClassFolderThatHasIt() throws Exception {
       Path classes = classFolder.resolveSibling("java");
       try (FileSystem zip = FileSystems.newFileSystem(development)) {
-        Files.writeString(zip.getPath("development.properties"), """
-            classFolder=%s
-            """.formatted((classes + File.pathSeparator + classFolder).replace("\\", "\\\\")));
+        Files.writeString(zip.getPath(DEVELOPMENT_PROPERTIES), CLASS_FOLDER_PROPERTY
+            .formatted((classes + File.pathSeparator + classFolder).replace("\\", "\\\\")));
       }
 
       Files.writeString(classFolder.resolve("webforj.conf"), """
@@ -335,8 +344,8 @@ final class DeploymentInstallerConfigurationTest {
           webforj.secure = true
           """);
 
-      DeploymentInstaller.deploy(new ByteArrayInputStream(Files.readAllBytes(development)),
-          "hello-app", temporary.resolve("deployments").toString(), admin);
+      Deployer.deploy(new ByteArrayInputStream(Files.readAllBytes(development)), NAME,
+          temporary.resolve(DEPLOYMENTS).toString(), admin, ClasspathRelease.NONE);
 
       verify(application).setBoolean(BBjAdminAppDeploymentApplication.SECURE, true);
     }
@@ -345,20 +354,18 @@ final class DeploymentInstallerConfigurationTest {
     void shouldWriteEveryClassFolderIntoTheDevelopmentMarkerOneFolderPerLine() throws Exception {
       Path classes = classFolder.resolveSibling("java");
       try (FileSystem zip = FileSystems.newFileSystem(development)) {
-        Files.writeString(zip.getPath("development.properties"), """
-            classFolder=%s
-            """.formatted((classes + File.pathSeparator + classFolder).replace("\\", "\\\\")));
+        Files.writeString(zip.getPath(DEVELOPMENT_PROPERTIES), CLASS_FOLDER_PROPERTY
+            .formatted((classes + File.pathSeparator + classFolder).replace("\\", "\\\\")));
       }
 
-      Path root = temporary.resolve("deployments");
+      Path root = temporary.resolve(DEPLOYMENTS);
 
-      DeploymentInstaller.deploy(new ByteArrayInputStream(Files.readAllBytes(development)),
-          "hello-app", root.toString(), admin);
+      Deployer.deploy(new ByteArrayInputStream(Files.readAllBytes(development)), NAME,
+          root.toString(), admin, ClasspathRelease.NONE);
 
-      Path deployment =
-          root.resolve("hello-app").resolve(Files.readString(root.resolve("hello-app/current")));
-      assertEquals(classes + System.lineSeparator() + classFolder,
-          Files.readString(deployment.resolve("development")));
+      Path deployment = root.resolve(NAME).resolve(Files.readString(root.resolve(CURRENT_FILE)));
+      assertEquals(Optional.of(List.of(classes.toString(), classFolder.toString())),
+          DeploymentArchive.findClassFolders(deployment));
     }
   }
 }

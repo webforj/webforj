@@ -13,9 +13,12 @@ import org.junit.jupiter.api.io.TempDir;
 
 class JrebelAttachmentTest {
 
+  private static final String JREBEL_LIBRARY = "libjrebel64.dylib";
+  private static final String OPTIONS_FILE = "hotswap.options";
+
   @Test
   void shouldAttachTheNativeLibraryThroughAgentpath(@TempDir Path tmp) throws Exception {
-    Path library = Files.createFile(tmp.resolve("libjrebel64.dylib"));
+    Path library = Files.createFile(tmp.resolve(JREBEL_LIBRARY));
 
     assertEquals(
         List.of("-agentpath:" + library.toAbsolutePath(), JrebelAttachment.TOOL_ARGUMENT,
@@ -36,7 +39,7 @@ class JrebelAttachmentTest {
   @Test
   void shouldWriteTheSharedContainerOptionsAndReturnTheArgument(@TempDir Path tmp)
       throws Exception {
-    Path library = Files.createFile(tmp.resolve("libjrebel64.dylib"));
+    Path library = Files.createFile(tmp.resolve(JREBEL_LIBRARY));
     Path directory = tmp.resolve("shared");
     List<String> lines = new ArrayList<>();
     JrebelAttachment attachment =
@@ -44,20 +47,19 @@ class JrebelAttachmentTest {
 
     List<String> arguments = attachment.getSharedContainerArguments(directory);
 
-    String argument = "-XX:VMOptionsFile=" + directory.resolve("hotswap.options").toAbsolutePath();
+    String argument = "-XX:VMOptionsFile=" + directory.resolve(OPTIONS_FILE).toAbsolutePath();
     assertEquals(List.of(argument), arguments);
     assertEquals("""
         -agentpath:%s
         -Dwebforj.hotswap.tool=jrebel
         -Dwebforj.hotswap.level=full
-        """.formatted(library.toAbsolutePath()),
-        Files.readString(directory.resolve("hotswap.options")));
+        """.formatted(library.toAbsolutePath()), Files.readString(directory.resolve(OPTIONS_FILE)));
     assertEquals(List.of(), lines);
   }
 
   @Test
   void shouldRewriteTheSharedContainerOptionsForAnotherAgent(@TempDir Path tmp) throws Exception {
-    Path library = Files.createFile(tmp.resolve("libjrebel64.dylib"));
+    Path library = Files.createFile(tmp.resolve(JREBEL_LIBRARY));
     Path jar = Files.createFile(tmp.resolve("jrebel.jar"));
     Path directory = tmp.resolve("shared");
     List<String> lines = new ArrayList<>();
@@ -71,8 +73,7 @@ class JrebelAttachmentTest {
         -javaagent:%s
         -Dwebforj.hotswap.tool=jrebel
         -Dwebforj.hotswap.level=full
-        """.formatted(jar.toAbsolutePath()),
-        Files.readString(directory.resolve("hotswap.options")));
+        """.formatted(jar.toAbsolutePath()), Files.readString(directory.resolve(OPTIONS_FILE)));
   }
 
   @Test

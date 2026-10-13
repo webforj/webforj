@@ -14,12 +14,15 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 class BBjShipVersionFileTest {
 
+  private static final String PLUGIN_NAME = "webforj-bbjship";
+  private static final String VERSION_FILE = "version.properties";
+
   @TempDir
   Path temporary;
 
   @Test
   void shouldReadTheVersionOfTheBbjShipPlugin() throws IOException {
-    Path plugin = BBjShipPlugin.createCopy(temporary.resolve("webforj-bbjship"));
+    Path plugin = BBjShipPackage.createCopy(temporary.resolve(PLUGIN_NAME));
 
     String version = BBjShipVersionFile.readVersion(plugin);
 
@@ -29,8 +32,8 @@ class BBjShipVersionFileTest {
   @ParameterizedTest
   @ValueSource(strings = {"version=\n", "version=  \n", "name=bbjship\n"})
   void shouldRefuseVersionFileWithoutVersion(String content) throws IOException {
-    Path plugin = BBjShipPlugin.createCopy(temporary.resolve("webforj-bbjship"));
-    Files.writeString(plugin.resolve("version.properties"), content);
+    Path plugin = BBjShipPackage.createCopy(temporary.resolve(PLUGIN_NAME));
+    Files.writeString(plugin.resolve(VERSION_FILE), content);
 
     IOException failure =
         assertThrows(IOException.class, () -> BBjShipVersionFile.readVersion(plugin));
@@ -40,12 +43,12 @@ class BBjShipVersionFileTest {
 
   @Test
   void shouldNameTheVersionFileWhenItIsMissing() throws IOException {
-    Path plugin = BBjShipPlugin.createCopy(temporary.resolve("webforj-bbjship"));
-    Files.delete(plugin.resolve("version.properties"));
+    Path plugin = BBjShipPackage.createCopy(temporary.resolve(PLUGIN_NAME));
+    Files.delete(plugin.resolve(VERSION_FILE));
 
     NoSuchFileException failure =
         assertThrows(NoSuchFileException.class, () -> BBjShipVersionFile.readVersion(plugin));
 
-    assertEquals(plugin.resolve("version.properties").toString(), failure.getMessage());
+    assertEquals(plugin.resolve(VERSION_FILE).toString(), failure.getMessage());
   }
 }

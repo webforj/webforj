@@ -2,6 +2,7 @@ package com.webforj.bbjship.cli.admin;
 
 import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.BBjAdminException;
+import com.webforj.plugin.foundation.bbj.BBjShipPlugin;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,6 +27,16 @@ public final class BBjShipClasspaths {
 
   static final String SERVLET_CLASSPATH = "_webforj_bbjship_cli";
   private static final String BASE_CLASSPATH = "_webforj_bbjship";
+
+  /**
+   * The entry of an application classpath that includes the classpath of the BBj libraries.
+   */
+  public static final String BASE_CLASSPATH_ENTRY = "(" + BASE_CLASSPATH + ")";
+
+  /**
+   * The prefix of the classpath name of an application, followed by its publish name.
+   */
+  public static final String APPLICATION_CLASSPATH_PREFIX = "webforj_bbjship_";
   private static final String BBJ_DEFAULT = "(bbj_default)";
   private static final String UNOWNED_SERVLET_CLASSPATH =
       "The BBjShip command classpath belongs to another application";

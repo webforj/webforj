@@ -1,46 +1,48 @@
 package com.webforj.bbjship.cli.admin;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.stream.Stream;
+import com.webforj.bbjship.cli.TerminalLines;
+import java.io.StringWriter;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
 class BBjShipInputTest {
 
-  @ParameterizedTest
-  @MethodSource("getLines")
-  void shouldReadTheLineWithoutItsTerminator(String text, String expected) throws Exception {
-    InputStream input = new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));
+  private static final String PASSWORD = "secret";
 
-    assertEquals(expected, BBjShipInput.readLine(input));
+  @Test
+  void shouldReadEachTypedLineInTurnAndNothingAtTheEnd() {
+    BBjShipInput input =
+        new BBjShipInput(new TerminalLines(new StringWriter()).setTyped("admin123", "y"));
+
+    assertEquals(Optional.of("admin123"), input.readLine());
+    assertEquals(Optional.of("y"), input.readLine());
+    assertEquals(Optional.empty(), input.readLine());
   }
 
   @Test
-  void shouldReadEachLineOfTheSameStreamInTurn() throws Exception {
-    InputStream input = new ByteArrayInputStream("admin123\ny\n".getBytes(StandardCharsets.UTF_8));
+  void shouldPrintThePromptBeforeReadingThePassword() {
+    StringWriter printed = new StringWriter();
+    TerminalLines terminal = new TerminalLines(printed).setTyped(PASSWORD);
+    BBjShipInput input = new BBjShipInput(terminal);
 
-    assertEquals("admin123", BBjShipInput.readLine(input));
-    assertEquals("y", BBjShipInput.readLine(input));
-    assertNull(BBjShipInput.readLine(input));
+    Optional<String> password = input.readPassword("Enter the password");
+
+    assertEquals(Optional.of(PASSWORD), password);
+    assertEquals("Enter the password\n", printed.toString());
+    assertEquals(List.of(PASSWORD), terminal.getPasswordReads());
+    assertEquals(Optional.empty(), input.readPassword("Enter the password"));
   }
 
   @Test
-  void shouldReturnNullAtTheEndOfTheStream() throws Exception {
-    InputStream input = InputStream.nullInputStream();
+  void shouldFindOnlyTheVariablesTheTerminalSets() {
+    BBjShipInput input = new BBjShipInput(new TerminalLines(new StringWriter())
+        .setVariables(Map.of("WEBFORJ_BBJ_USERNAME", "operator")));
 
-    assertNull(BBjShipInput.readLine(input));
-  }
-
-  private static Stream<Arguments> getLines() {
-    return Stream.of(Arguments.of("secret\n", "secret"), Arguments.of("secret\r\n", "secret"),
-        Arguments.of("\n", ""), Arguments.of("geheim ü ✓ 密码\n", "geheim ü ✓ 密码"),
-        Arguments.of("secret", "secret"), Arguments.of("x".repeat(100) + "\n", "x".repeat(100)));
+    assertEquals(Optional.of("operator"), input.findVariable("WEBFORJ_BBJ_USERNAME"));
+    assertEquals(Optional.empty(), input.findVariable("WEBFORJ_BBJ_PASSWORD"));
   }
 }

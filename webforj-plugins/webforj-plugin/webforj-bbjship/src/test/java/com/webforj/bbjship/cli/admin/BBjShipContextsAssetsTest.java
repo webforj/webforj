@@ -1,5 +1,11 @@
 package com.webforj.bbjship.cli.admin;
 
+import static com.webforj.bbjship.cli.command.BBjServices.ASSETS_CONTEXT;
+import static com.webforj.bbjship.cli.command.BBjServices.BBJSHIP_CONTEXT;
+import static com.webforj.bbjship.cli.command.Home.ASSETS_FOLDER;
+import static com.webforj.bbjship.cli.command.Home.DEPLOYMENTS_FOLDER;
+import static com.webforj.bbjship.cli.command.Home.HTDOCS_FOLDER;
+import static com.webforj.bbjship.cli.command.Home.PLUGIN_FOLDER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -26,17 +32,17 @@ class BBjShipContextsAssetsTest extends EmptyWebAppServer {
   @Test
   void shouldCreateTheAssetsContextOnTheDefaultPortAndStartIt() throws Exception {
     BBjAdminContextInfo created = mock(BBjAdminContextInfo.class);
-    when(server.createContext("webforj-bbjship-assets")).thenReturn(created);
+    when(server.createContext(ASSETS_CONTEXT)).thenReturn(created);
     when(created.getString(BBjAdminContextInfo.JSON_DATA))
-        .thenReturn(CREATED.formatted("webforj-bbjship-assets", ""));
-    when(server.getContextInfo("webforj-bbjship-assets")).thenReturn(info);
+        .thenReturn(CREATED.formatted(ASSETS_CONTEXT, ""));
+    when(server.getContextInfo(ASSETS_CONTEXT)).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA))
-        .thenReturn(CREATED.formatted("webforj-bbjship-assets", ""));
+        .thenReturn(CREATED.formatted(ASSETS_CONTEXT, ""));
 
     contexts.addAssets(OptionalInt.empty(), OptionalInt.empty());
 
-    Path folder = home.resolve("plugins/webforj-bbjship");
-    Path runtime = home.resolve("plugins/.webforj-bbjship-deployments");
+    Path folder = home.resolve(PLUGIN_FOLDER);
+    Path runtime = home.resolve(DEPLOYMENTS_FOLDER);
     InOrder calls = inOrder(created, server, admin);
     calls.verify(created).setString(BBjAdminContextInfo.JSON_DATA, """
         {
@@ -106,22 +112,20 @@ class BBjShipContextsAssetsTest extends EmptyWebAppServer {
     BBjAdminContextInfo created = mock(BBjAdminContextInfo.class);
     BBjAdminContextInfo bbjShip = mock(BBjAdminContextInfo.class);
     when(server.getContextNames())
-        .thenReturn(new BBjAdminAdapterList<>(List.of("root", "webforj-bbjship")));
-    when(server.getContextInfo("webforj-bbjship")).thenReturn(bbjShip);
-    when(bbjShip.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn("""
-        {"HTTP port": 9090, "Document Base": "%s"}"""
-        .formatted(home.resolve("plugins/.webforj-bbjship-deployments/htdocs")));
-    when(server.createContext("webforj-bbjship-assets")).thenReturn(created);
-    when(created.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn("""
-        {"HTTP port": 8888}""");
-    when(server.getContextInfo("webforj-bbjship-assets")).thenReturn(info);
+        .thenReturn(new BBjAdminAdapterList<>(List.of("root", BBJSHIP_CONTEXT)));
+    when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(bbjShip);
+    when(bbjShip.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn(
+        "{\"HTTP port\": 9090, \"Document Base\": \"%s\"}".formatted(home.resolve(HTDOCS_FOLDER)));
+    when(server.createContext(ASSETS_CONTEXT)).thenReturn(created);
+    when(created.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn("{\"HTTP port\": 8888}");
+    when(server.getContextInfo(ASSETS_CONTEXT)).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA))
-        .thenReturn(CREATED.formatted("webforj-bbjship-assets", ""));
+        .thenReturn(CREATED.formatted(ASSETS_CONTEXT, ""));
 
     contexts.addAssets(OptionalInt.empty(), OptionalInt.empty());
 
-    Path folder = home.resolve("plugins/webforj-bbjship");
-    Path runtime = home.resolve("plugins/.webforj-bbjship-deployments");
+    Path folder = home.resolve(PLUGIN_FOLDER);
+    Path runtime = home.resolve(DEPLOYMENTS_FOLDER);
     verify(created).setString(BBjAdminContextInfo.JSON_DATA, """
         {
           "HTTP port": 9090,
@@ -148,12 +152,11 @@ class BBjShipContextsAssetsTest extends EmptyWebAppServer {
   @Test
   void shouldCreateTheAssetsContextOnTheSslPortOfTheCommand() throws Exception {
     BBjAdminContextInfo created = mock(BBjAdminContextInfo.class);
-    when(server.createContext("webforj-bbjship-assets")).thenReturn(created);
-    when(created.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn("""
-        {"HTTP port": 8888}""");
-    when(server.getContextInfo("webforj-bbjship-assets")).thenReturn(info);
+    when(server.createContext(ASSETS_CONTEXT)).thenReturn(created);
+    when(created.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn("{\"HTTP port\": 8888}");
+    when(server.getContextInfo(ASSETS_CONTEXT)).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA))
-        .thenReturn(CREATED.formatted("webforj-bbjship-assets", ""));
+        .thenReturn(CREATED.formatted(ASSETS_CONTEXT, ""));
     WebServer web = WebServer.startServingBBjShip();
     WebServer secure = WebServer.startServingBBjShipOverHttps();
     int port = web.getPort();
@@ -163,8 +166,8 @@ class BBjShipContextsAssetsTest extends EmptyWebAppServer {
       contexts.addAssets(OptionalInt.of(port), OptionalInt.of(sslPort));
     }
 
-    Path folder = home.resolve("plugins/webforj-bbjship");
-    Path runtime = home.resolve("plugins/.webforj-bbjship-deployments");
+    Path folder = home.resolve(PLUGIN_FOLDER);
+    Path runtime = home.resolve(DEPLOYMENTS_FOLDER);
     verify(created).setString(BBjAdminContextInfo.JSON_DATA, """
         {
           "HTTP port": %3$d,
@@ -194,12 +197,12 @@ class BBjShipContextsAssetsTest extends EmptyWebAppServer {
   @Test
   void shouldRemoveTheAssetsContextWhenNothingAnswersOnTheSslPort() throws Exception {
     BBjAdminContextInfo created = mock(BBjAdminContextInfo.class);
-    when(server.createContext("webforj-bbjship-assets")).thenReturn(created);
+    when(server.createContext(ASSETS_CONTEXT)).thenReturn(created);
     when(created.getString(BBjAdminContextInfo.JSON_DATA))
-        .thenReturn(CREATED.formatted("webforj-bbjship-assets", ""));
-    when(server.getContextInfo("webforj-bbjship-assets")).thenReturn(info);
+        .thenReturn(CREATED.formatted(ASSETS_CONTEXT, ""));
+    when(server.getContextInfo(ASSETS_CONTEXT)).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA))
-        .thenReturn(CREATED.formatted("webforj-bbjship-assets", ""));
+        .thenReturn(CREATED.formatted(ASSETS_CONTEXT, ""));
     contexts = new BBjShipContexts(admin, plugin, Duration.ofMillis(300));
     WebServer web = WebServer.startServingBBjShip();
     int port = WebServer.findClosedPort();
@@ -213,7 +216,7 @@ class BBjShipContextsAssetsTest extends EmptyWebAppServer {
 
     assertEquals("The BBjServices web server does not answer on port " + port
         + ". Use the SSL port of the BBjServices web server", failure.getMessage());
-    verify(server).removeContext("webforj-bbjship-assets");
+    verify(server).removeContext(ASSETS_CONTEXT);
   }
 
   @Test
@@ -221,22 +224,21 @@ class BBjShipContextsAssetsTest extends EmptyWebAppServer {
     BBjAdminContextInfo created = mock(BBjAdminContextInfo.class);
     BBjAdminContextInfo bbjShip = mock(BBjAdminContextInfo.class);
     when(server.getContextNames())
-        .thenReturn(new BBjAdminAdapterList<>(List.of("root", "webforj-bbjship")));
-    when(server.getContextInfo("webforj-bbjship")).thenReturn(bbjShip);
-    when(bbjShip.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn("""
-        {"HTTP port": 8888, "SSL port": 8443, "Document Base": "%s"}"""
-        .formatted(home.resolve("plugins/.webforj-bbjship-deployments/htdocs")));
-    when(server.createContext("webforj-bbjship-assets")).thenReturn(created);
-    when(created.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn("""
-        {"HTTP port": 8080}""");
-    when(server.getContextInfo("webforj-bbjship-assets")).thenReturn(info);
+        .thenReturn(new BBjAdminAdapterList<>(List.of("root", BBJSHIP_CONTEXT)));
+    when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(bbjShip);
+    when(bbjShip.getString(BBjAdminContextInfo.JSON_DATA))
+        .thenReturn("{\"HTTP port\": 8888, \"SSL port\": 8443, \"Document Base\": \"%s\"}"
+            .formatted(home.resolve(HTDOCS_FOLDER)));
+    when(server.createContext(ASSETS_CONTEXT)).thenReturn(created);
+    when(created.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn("{\"HTTP port\": 8080}");
+    when(server.getContextInfo(ASSETS_CONTEXT)).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA))
-        .thenReturn(CREATED.formatted("webforj-bbjship-assets", ""));
+        .thenReturn(CREATED.formatted(ASSETS_CONTEXT, ""));
 
     contexts.addAssets(OptionalInt.empty(), OptionalInt.empty());
 
-    Path folder = home.resolve("plugins/webforj-bbjship");
-    Path runtime = home.resolve("plugins/.webforj-bbjship-deployments");
+    Path folder = home.resolve(PLUGIN_FOLDER);
+    Path runtime = home.resolve(DEPLOYMENTS_FOLDER);
     verify(created).setString(BBjAdminContextInfo.JSON_DATA, """
         {
           "HTTP port": 8888,
@@ -264,10 +266,10 @@ class BBjShipContextsAssetsTest extends EmptyWebAppServer {
   @Test
   void shouldLeaveTheAssetsContextTheBbjShipOwnsAsItIs() throws Exception {
     when(server.getContextNames())
-        .thenReturn(new BBjAdminAdapterList<>(List.of("root", "webforj-bbjship-assets")));
-    when(server.getContextInfo("webforj-bbjship-assets")).thenReturn(info);
-    when(info.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn(RUNNING.formatted(
-        "webforj-bbjship-assets", home.resolve("plugins/.webforj-bbjship-deployments/assets")));
+        .thenReturn(new BBjAdminAdapterList<>(List.of("root", ASSETS_CONTEXT)));
+    when(server.getContextInfo(ASSETS_CONTEXT)).thenReturn(info);
+    when(info.getString(BBjAdminContextInfo.JSON_DATA))
+        .thenReturn(RUNNING.formatted(ASSETS_CONTEXT, home.resolve(ASSETS_FOLDER)));
 
     contexts.addAssets(OptionalInt.of(8443), OptionalInt.empty());
 

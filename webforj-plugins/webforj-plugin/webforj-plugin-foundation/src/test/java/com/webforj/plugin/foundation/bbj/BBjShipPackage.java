@@ -19,11 +19,11 @@ import java.util.zip.ZipOutputStream;
  * @author Hyyan Abo Fakher
  * @since 26.03
  */
-public final class BBjShipPlugin {
+public final class BBjShipPackage {
 
   private static final String JAR_FOLDER = ".jar.d";
 
-  private BBjShipPlugin() {}
+  private BBjShipPackage() {}
 
   /**
    * Copies the plugin files of the fixture into a folder.

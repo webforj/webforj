@@ -36,6 +36,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 final class AssetsServletTest {
 
+  private static final String APP_NAME = "hello-app";
+  private static final String APP_CSS_PATH = "/hello-app/static/app.css"; // NOSONAR
+
   @TempDir
   Path temporary;
 
@@ -47,11 +50,11 @@ final class AssetsServletTest {
 
   @BeforeEach
   void initHelloAppDeployed() throws Exception {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
+    Path app = HelloApp.createCopy(temporary.resolve(APP_NAME));
     Path archive = HelloApp.writeArchive(app, temporary.resolve("hello-app.zip"));
     root = temporary.resolve("plugins/.webforj-bbjship-deployments/deployments");
     String id = UUID.randomUUID().toString();
-    deployed = Files.createDirectories(root.resolve("hello-app")).resolve(id);
+    deployed = Files.createDirectories(root.resolve(APP_NAME)).resolve(id);
     DeploymentArchive.read(archive, deployed);
     Files.writeString(root.resolve("hello-app/current"), id);
     request = mock(HttpServletRequest.class);
@@ -70,7 +73,7 @@ final class AssetsServletTest {
   void shouldServeTheAssetFromTheDeploymentsOfTheBbjHome() throws Exception {
     System.setProperty("basis.BBjHome", temporary.toString());
     when(request.getMethod()).thenReturn("GET");
-    when(request.getPathInfo()).thenReturn("/hello-app/static/app.css");
+    when(request.getPathInfo()).thenReturn(APP_CSS_PATH);
 
     AssetsServlet.handle(request, response);
 
@@ -81,7 +84,7 @@ final class AssetsServletTest {
   @Test
   void shouldServeTheStylesheetOfTheApplication() throws Exception {
     when(request.getMethod()).thenReturn("GET");
-    when(request.getPathInfo()).thenReturn("/hello-app/static/app.css");
+    when(request.getPathInfo()).thenReturn(APP_CSS_PATH);
 
     AssetsServlet.handle(request, response, root);
 
@@ -111,7 +114,7 @@ final class AssetsServletTest {
   @Test
   void shouldAnswerNotModifiedForTheEntityTagTheClientHolds() throws Exception {
     String entityTag = DeployedAssets
-        .read(root.toString(), AssetRequest.create("hello-app", "icons/icon.png").build())
+        .read(root.toString(), AssetRequest.create(APP_NAME, "icons/icon.png").build())
         .getEntityTag();
     when(request.getMethod()).thenReturn("GET");
     when(request.getPathInfo()).thenReturn("/hello-app/icons/icon.png");
@@ -145,7 +148,7 @@ final class AssetsServletTest {
   @ValueSource(strings = {"POST", "PUT", "DELETE"})
   void shouldAnswerMethodNotAllowedForMethodOtherThanGetAndHead(String method) throws Exception {
     when(request.getMethod()).thenReturn(method);
-    when(request.getPathInfo()).thenReturn("/hello-app/static/app.css");
+    when(request.getPathInfo()).thenReturn(APP_CSS_PATH);
 
     AssetsServlet.handle(request, response, root);
 
@@ -170,9 +173,9 @@ final class AssetsServletTest {
 
   @Test
   void shouldAnswerInternalServerErrorWhenTheDeploymentCannotBeRead() throws Exception {
-    Files.writeString(deployed.resolve("application.jar"), "hello-app");
+    Files.writeString(deployed.resolve("application.jar"), APP_NAME);
     when(request.getMethod()).thenReturn("GET");
-    when(request.getPathInfo()).thenReturn("/hello-app/static/app.css");
+    when(request.getPathInfo()).thenReturn(APP_CSS_PATH);
 
     AssetsServlet.handle(request, response, root);
 

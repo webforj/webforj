@@ -47,6 +47,14 @@ import org.mockito.ArgumentCaptor;
 
 class BBjSetupMojoTest {
 
+  private static final String WEBFORJ_VERSION = "26.03-SNAPSHOT";
+  private static final String LOCAL_DEPLOYMENT_URL = "http://localhost:8888/webforj-bbjship";
+  private static final String ADMIN_USERNAME = "administrator";
+  private static final String ADMIN_PASSWORD = "secret";
+  private static final String SECURE_DEPLOYMENT_URL = "https://localhost/webforj-bbjship";
+  private static final String SETUP_FAILED_MESSAGE =
+      "BBj setup failed. Check the BBj plugin artifact and setup settings";
+
   @TempDir
   Path temporary;
 
@@ -66,11 +74,11 @@ class BBjSetupMojoTest {
         new RemoteRepository.Builder("releases", "default", "https://repo.example.test/releases")
             .build()));
     mojo.pluginDescriptor = new PluginDescriptor();
-    mojo.pluginDescriptor.setVersion("26.03-SNAPSHOT");
+    mojo.pluginDescriptor.setVersion(WEBFORJ_VERSION);
     mojo.bbj.setHome(temporary.resolve("bbx").toFile());
-    mojo.bbj.getDeployment().setUrl("http://localhost:8888/webforj-bbjship");
-    mojo.bbj.getAdmin().setUsername("administrator");
-    mojo.bbj.getAdmin().setPassword("secret");
+    mojo.bbj.getDeployment().setUrl(LOCAL_DEPLOYMENT_URL);
+    mojo.bbj.getAdmin().setUsername(ADMIN_USERNAME);
+    mojo.bbj.getAdmin().setPassword(ADMIN_PASSWORD);
     log = mock(Log.class);
     mojo.setLog(log);
     bundle = temporary.resolve("webforj-bbjship-26.03-SNAPSHOT-bbj-plugin.zip");
@@ -89,7 +97,7 @@ class BBjSetupMojoTest {
     mojo.force = true;
 
     try (var setups = mockStatic(Setup.class)) {
-      setups.when(() -> Setup.create(bundle, "26.03-SNAPSHOT")).thenReturn(setupBuilder);
+      setups.when(() -> Setup.create(bundle, WEBFORJ_VERSION)).thenReturn(setupBuilder);
 
       mojo.execute();
     }
@@ -101,13 +109,13 @@ class BBjSetupMojoTest {
     assertEquals("https://repo.example.test/releases",
         request.getValue().getRepositories().get(0).getUrl());
     verify(setupBuilder).setHome(temporary.resolve("bbx"));
-    verify(setupBuilder).setDeploymentUrl(URI.create("http://localhost:8888/webforj-bbjship"));
+    verify(setupBuilder).setDeploymentUrl(URI.create(LOCAL_DEPLOYMENT_URL));
     verify(setupBuilder).setPort(8888);
     verify(setupBuilder).setForce(true);
     ArgumentCaptor<BBjCredentials> credentials = ArgumentCaptor.forClass(BBjCredentials.class);
     verify(setupBuilder).setCredentials(credentials.capture());
-    assertEquals("administrator", credentials.getValue().getUsername());
-    assertEquals("secret", credentials.getValue().getPassword());
+    assertEquals(ADMIN_USERNAME, credentials.getValue().getUsername());
+    assertEquals(ADMIN_PASSWORD, credentials.getValue().getPassword());
     ArgumentCaptor<Consumer<String>> logChannel = ArgumentCaptor.captor();
     verify(setupBuilder).setLog(logChannel.capture());
     logChannel.getValue().accept("Installed the webforJ plugin");
@@ -122,18 +130,18 @@ class BBjSetupMojoTest {
   @Test
   void shouldPreferTheCommandLineOverTheConfiguration() throws Exception {
     mojo.home = temporary.resolve("bbx-25").toFile();
-    mojo.deploymentUrl = "https://localhost/webforj-bbjship";
+    mojo.deploymentUrl = SECURE_DEPLOYMENT_URL;
     mojo.username = "installer";
     mojo.password = "installer-secret";
 
     try (var setups = mockStatic(Setup.class)) {
-      setups.when(() -> Setup.create(bundle, "26.03-SNAPSHOT")).thenReturn(setupBuilder);
+      setups.when(() -> Setup.create(bundle, WEBFORJ_VERSION)).thenReturn(setupBuilder);
 
       mojo.execute();
     }
 
     verify(setupBuilder).setHome(temporary.resolve("bbx-25"));
-    verify(setupBuilder).setDeploymentUrl(URI.create("https://localhost/webforj-bbjship"));
+    verify(setupBuilder).setDeploymentUrl(URI.create(SECURE_DEPLOYMENT_URL));
     ArgumentCaptor<BBjCredentials> credentials = ArgumentCaptor.forClass(BBjCredentials.class);
     verify(setupBuilder).setCredentials(credentials.capture());
     assertEquals("installer", credentials.getValue().getUsername());
@@ -143,10 +151,10 @@ class BBjSetupMojoTest {
   @Test
   void shouldLeaveTheHomeToSetupWhenNoneIsConfigured() throws Exception {
     mojo.bbj = new BBjOptions();
-    mojo.bbj.getDeployment().setUrl("http://localhost:8888/webforj-bbjship");
+    mojo.bbj.getDeployment().setUrl(LOCAL_DEPLOYMENT_URL);
 
     try (var setups = mockStatic(Setup.class)) {
-      setups.when(() -> Setup.create(bundle, "26.03-SNAPSHOT")).thenReturn(setupBuilder);
+      setups.when(() -> Setup.create(bundle, WEBFORJ_VERSION)).thenReturn(setupBuilder);
 
       mojo.execute();
     }
@@ -161,7 +169,7 @@ class BBjSetupMojoTest {
     mojo.bbj.getDeployment().setUrl(url);
 
     try (var setups = mockStatic(Setup.class)) {
-      setups.when(() -> Setup.create(bundle, "26.03-SNAPSHOT")).thenReturn(setupBuilder);
+      setups.when(() -> Setup.create(bundle, WEBFORJ_VERSION)).thenReturn(setupBuilder);
 
       mojo.execute();
     }
@@ -175,8 +183,8 @@ class BBjSetupMojoTest {
 
     MojoExecutionException failure = assertThrows(MojoExecutionException.class, mojo::execute);
 
-    assertEquals("BBj setup requires bbj.deployment.url. Set it in plugin configuration or pass "
-        + "-Dwebforj.bbj.deployment.url=<URL>", failure.getMessage());
+    assertEquals("BBj deployment requires bbj.deployment.url. Set it in plugin configuration or "
+        + "pass -Dwebforj.bbj.deployment.url=<URL>", failure.getMessage());
     verifyNoInteractions(repositorySystem);
   }
 
@@ -186,8 +194,7 @@ class BBjSetupMojoTest {
 
     MojoExecutionException failure = assertThrows(MojoExecutionException.class, mojo::execute);
 
-    assertEquals("BBj setup failed. Check the BBj plugin artifact and setup settings",
-        failure.getMessage());
+    assertEquals(SETUP_FAILED_MESSAGE, failure.getMessage());
     verifyNoInteractions(repositorySystem);
   }
 
@@ -198,19 +205,18 @@ class BBjSetupMojoTest {
 
     MojoExecutionException failure = assertThrows(MojoExecutionException.class, mojo::execute);
 
-    assertEquals("BBj setup failed. Check the BBj plugin artifact and setup settings",
-        failure.getMessage());
+    assertEquals(SETUP_FAILED_MESSAGE, failure.getMessage());
     assertSame(missing, failure.getCause());
   }
 
   @Test
   void shouldSetUpWithThePasswordWhenTheTokenIsConfiguredToo() throws Exception {
-    mojo.bbj.getAdmin().setUsername("administrator");
-    mojo.bbj.getAdmin().setPassword("secret");
+    mojo.bbj.getAdmin().setUsername(ADMIN_USERNAME);
+    mojo.bbj.getAdmin().setPassword(ADMIN_PASSWORD);
     mojo.bbj.getAdmin().setToken("4f2a9c");
 
     try (var setups = mockStatic(Setup.class)) {
-      setups.when(() -> Setup.create(bundle, "26.03-SNAPSHOT")).thenReturn(setupBuilder);
+      setups.when(() -> Setup.create(bundle, WEBFORJ_VERSION)).thenReturn(setupBuilder);
 
       mojo.execute();
     }
@@ -218,8 +224,8 @@ class BBjSetupMojoTest {
     ArgumentCaptor<BBjCredentials> credentials = ArgumentCaptor.forClass(BBjCredentials.class);
     verify(setupBuilder).setCredentials(credentials.capture());
     assertFalse(credentials.getValue().isToken());
-    assertEquals("administrator", credentials.getValue().getUsername());
-    assertEquals("secret", credentials.getValue().getPassword());
+    assertEquals(ADMIN_USERNAME, credentials.getValue().getUsername());
+    assertEquals(ADMIN_PASSWORD, credentials.getValue().getPassword());
   }
 
   @ParameterizedTest
@@ -228,12 +234,11 @@ class BBjSetupMojoTest {
     doThrow(setupFailure).when(setup).apply();
 
     try (var setups = mockStatic(Setup.class)) {
-      setups.when(() -> Setup.create(bundle, "26.03-SNAPSHOT")).thenReturn(setupBuilder);
+      setups.when(() -> Setup.create(bundle, WEBFORJ_VERSION)).thenReturn(setupBuilder);
 
       MojoExecutionException failure = assertThrows(MojoExecutionException.class, mojo::execute);
 
-      assertEquals("BBj setup failed. Check the BBj plugin artifact and setup settings",
-          failure.getMessage());
+      assertEquals(SETUP_FAILED_MESSAGE, failure.getMessage());
       assertSame(setupFailure, failure.getCause());
     }
   }
@@ -247,7 +252,7 @@ class BBjSetupMojoTest {
     mojo.password = password;
 
     try (var setups = mockStatic(Setup.class)) {
-      setups.when(() -> Setup.create(bundle, "26.03-SNAPSHOT")).thenReturn(setupBuilder);
+      setups.when(() -> Setup.create(bundle, WEBFORJ_VERSION)).thenReturn(setupBuilder);
 
       mojo.execute();
     }
@@ -267,23 +272,23 @@ class BBjSetupMojoTest {
 
     MojoExecutionException failure = assertThrows(MojoExecutionException.class, mojo::execute);
 
-    assertEquals(
-        "BBj administration requires bbj.admin.username and bbj.admin.password. " + missing,
+    assertEquals(missing + ". Configure bbj.admin.username and bbj.admin.password",
         failure.getMessage());
   }
 
   private static Stream<Arguments> getAccounts() {
     return Stream.of(Arguments.of(null, null, 1), Arguments.of("admin", "admin123", 1),
-        Arguments.of("admin", "secret", 0));
+        Arguments.of("admin", ADMIN_PASSWORD, 0));
   }
 
   private static Stream<Arguments> getIncompleteCredentials() {
-    return Stream.of(Arguments.of(null, "secret", "bbj.admin.username is missing"),
-        Arguments.of("deployer", null, "bbj.admin.password is missing"));
+    return Stream.of(
+        Arguments.of(null, ADMIN_PASSWORD, "The BBj administration user name is missing"),
+        Arguments.of("deployer", null, "The BBj administration password is missing"));
   }
 
   private static Stream<Arguments> getPorts() {
-    return Stream.of(Arguments.of("https://localhost/webforj-bbjship", 443),
+    return Stream.of(Arguments.of(SECURE_DEPLOYMENT_URL, 443),
         Arguments.of("http://localhost/webforj-bbjship", 80));
   }
 

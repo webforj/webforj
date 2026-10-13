@@ -15,12 +15,14 @@ import org.junit.jupiter.api.Test;
 
 final class BBjShipServletVersionTest extends AdministratorRequest {
 
+  private static final String VERSION_PATH = "/version";
+
   @Test
   void shouldAnswerTheVersionOfTheInstalledBbjShip() throws Exception {
     Files.writeString(plugin.getDirectory().resolve("version.properties"),
         "version=26.03-SNAPSHOT\n");
     when(request.getMethod()).thenReturn("GET");
-    when(request.getPathInfo()).thenReturn("/version");
+    when(request.getPathInfo()).thenReturn(VERSION_PATH);
 
     BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
@@ -34,15 +36,14 @@ final class BBjShipServletVersionTest extends AdministratorRequest {
     assertEquals("26.03-SNAPSHOT", answer.get("version").getAsString());
     assertEquals(JSON.toJsonTree(ManagementFactory.getRuntimeMXBean().getInputArguments()),
         answer.get("javaArguments"));
-    assertEquals(ProcessHandle.current().pid(), answer.get("pid").getAsLong());
-    assertEquals(3, answer.size());
+    assertEquals(2, answer.size());
   }
 
   @Test
   void shouldAnswerInternalServerErrorWhenTheVersionIsBlank() throws Exception {
     Files.writeString(plugin.getDirectory().resolve("version.properties"), "version=\n");
     when(request.getMethod()).thenReturn("GET");
-    when(request.getPathInfo()).thenReturn("/version");
+    when(request.getPathInfo()).thenReturn(VERSION_PATH);
 
     BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
@@ -53,7 +54,7 @@ final class BBjShipServletVersionTest extends AdministratorRequest {
   @Test
   void shouldAnswerInternalServerErrorWhenTheVersionCannotBeRead() throws Exception {
     when(request.getMethod()).thenReturn("GET");
-    when(request.getPathInfo()).thenReturn("/version");
+    when(request.getPathInfo()).thenReturn(VERSION_PATH);
 
     BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 

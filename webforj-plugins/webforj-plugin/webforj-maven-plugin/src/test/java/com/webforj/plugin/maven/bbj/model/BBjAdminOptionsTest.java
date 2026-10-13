@@ -8,6 +8,10 @@ import org.junit.jupiter.api.Test;
 
 class BBjAdminOptionsTest {
 
+  private static final String ADMIN_USERNAME = "administrator";
+  private static final String ADMIN_PASSWORD = "secret";
+  private static final String ADMIN_TOKEN = "4f2a9c";
+
   @Test
   void shouldStartEmpty() {
     BBjAdminOptions options = new BBjAdminOptions();
@@ -21,29 +25,29 @@ class BBjAdminOptionsTest {
   void shouldHoldTheConfiguredValues() {
     BBjAdminOptions options = new BBjAdminOptions();
 
-    options.setUsername("administrator");
-    options.setPassword("secret");
-    options.setToken("4f2a9c");
+    options.setUsername(ADMIN_USERNAME);
+    options.setPassword(ADMIN_PASSWORD);
+    options.setToken(ADMIN_TOKEN);
 
-    assertEquals("administrator", options.getUsername());
-    assertEquals("secret", options.getPassword());
-    assertEquals("4f2a9c", options.getToken());
+    assertEquals(ADMIN_USERNAME, options.getUsername());
+    assertEquals(ADMIN_PASSWORD, options.getPassword());
+    assertEquals(ADMIN_TOKEN, options.getToken());
   }
 
   @Test
   void shouldRejectNullAndKeepTheConfiguredValues() {
     BBjAdminOptions options = new BBjAdminOptions();
-    options.setUsername("administrator");
-    options.setPassword("secret");
-    options.setToken("4f2a9c");
+    options.setUsername(ADMIN_USERNAME);
+    options.setPassword(ADMIN_PASSWORD);
+    options.setToken(ADMIN_TOKEN);
     String missing = null;
 
     assertThrows(NullPointerException.class, () -> options.setUsername(missing));
     assertThrows(NullPointerException.class, () -> options.setPassword(missing));
     assertThrows(NullPointerException.class, () -> options.setToken(missing));
 
-    assertEquals("administrator", options.getUsername());
-    assertEquals("secret", options.getPassword());
-    assertEquals("4f2a9c", options.getToken());
+    assertEquals(ADMIN_USERNAME, options.getUsername());
+    assertEquals(ADMIN_PASSWORD, options.getPassword());
+    assertEquals(ADMIN_TOKEN, options.getToken());
   }
 }

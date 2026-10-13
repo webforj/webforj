@@ -2,10 +2,12 @@
 # Stands in for the BBjShip command line launcher.
 # Records each call and answers with the status line of the remote enable command.
 # The development enable command writes the switch file into the runtime folder of the plugins.
-# The services restart command writes the restarted file into the home.
+# The services stop command writes the restarted file into the home.
+# Records the NO_COLOR variable of each call, unset when the caller did not set it.
 # A sleep file in the home names a command and the seconds it waits before answering.
 home=$(dirname "$(dirname "$(dirname "$0")")")
 printf '%s\n' "$@" END >> "$home/invocations"
+printf '%s\n' "${NO_COLOR-unset}" >> "$home/no-color"
 
 command=''
 for argument in "$@"
@@ -52,7 +54,7 @@ case $command in
     ;;
   services)
     printf '%s\n' restarted > "$home/services-restarted"
-    printf '%s\n' 'Restarted BBjServices'
+    printf '%s\n' 'Stopping BBjServices'
     ;;
   *)
     exit 2

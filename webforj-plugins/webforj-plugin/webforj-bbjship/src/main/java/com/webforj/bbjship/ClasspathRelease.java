@@ -1,6 +1,7 @@
 package com.webforj.bbjship;
 
 import java.io.Closeable;
+import java.util.Optional;
 
 /**
  * Finds what holds the files of a classpath open in BBjServices, so that an undeploy can release
@@ -21,8 +22,7 @@ public interface ClasspathRelease {
   /**
    * Releases nothing, for a process outside BBjServices.
    */
-  ClasspathRelease NONE = classpathName -> () -> {
-  };
+  ClasspathRelease NONE = classpathName -> Optional.empty();
 
   /**
    * Finds the hold on the files of a classpath. The classpath is still registered when this is
@@ -30,8 +30,8 @@ public interface ClasspathRelease {
    *
    * @param classpathName the classpath name
    *
-   * @return the hold, closing it releases the files, a hold that does nothing when the classpath
-   *         holds no files in this process
+   * @return the hold, closing it releases the files, empty when the classpath holds no files in
+   *         this process
    */
-  Closeable find(String classpathName);
+  Optional<Closeable> find(String classpathName);
 }

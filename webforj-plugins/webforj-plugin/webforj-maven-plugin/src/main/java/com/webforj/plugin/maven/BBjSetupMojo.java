@@ -75,19 +75,9 @@ public final class BBjSetupMojo extends AbstractMojo {
   public void execute() throws MojoExecutionException {
     DeploymentSettings configured = DeploymentSettings.create(bbj).setUrl(deploymentUrl)
         .setUsername(username).setPassword(password).setHome(home);
-    String url = configured.getUrl();
-    if (url.isBlank()) {
-      throw new MojoExecutionException("BBj setup requires bbj.deployment.url. Set it in plugin "
-          + "configuration or pass -Dwebforj.bbj.deployment.url=<URL>");
-    }
-
-    BBjCredentials credentials = configured.getPasswordCredentials();
-    if (credentials.isFactoryAccount()) {
-      getLog().warn(BBjCredentials.FACTORY_ACCOUNT_WARNING);
-    }
-
+    BBjCredentials credentials = configured.getPasswordCredentials(getLog()::warn);
     try {
-      URI deploymentUri = URI.create(url);
+      URI deploymentUri = configured.resolveUrl();
       Path bundle = MavenArtifacts.resolveBBjShipPackage(repositorySystem, repositorySession,
           project.getRemoteProjectRepositories(), pluginDescriptor.getVersion());
       Setup.Builder setup = Setup.create(bundle, pluginDescriptor.getVersion())

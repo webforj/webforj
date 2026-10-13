@@ -27,30 +27,31 @@ import org.junit.jupiter.api.Test;
 
 final class BBjShipServletPublishedApplicationsTest extends AdministratorRequest {
 
+  private static final String APP_NAME = "hello-app";
+  private static final String CLASSPATH_NAME = "webforj_bbjship_hello-app";
+
   private Path archive;
 
   @BeforeEach
   void initServerWithHelloAppPublished() throws Exception {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
+    Path app = HelloApp.createCopy(temporary.resolve(APP_NAME));
     archive = HelloApp.writeArchive(app, temporary.resolve("hello-app.zip"));
     Path previous = Files.createDirectories(runtime.resolve("deployments/hello-app"))
         .resolve(UUID.randomUUID().toString());
     DeploymentArchive.read(archive, previous);
     Files.writeString(previous.resolveSibling("current"), previous.getFileName().toString());
     BBjAdminAppDeploymentApplication registered = mock(BBjAdminAppDeploymentApplication.class);
-    when(registered.getString(BBjAdminAppDeploymentApplication.NAME)).thenReturn("hello-app");
+    when(registered.getString(BBjAdminAppDeploymentApplication.NAME)).thenReturn(APP_NAME);
     when(registered.getString(BBjAdminAppDeploymentApplication.PROGRAM))
         .thenReturn(previous.resolve("bbj/webforj.bbj").toString());
     when(registered.getString(BBjAdminAppDeploymentApplication.CLASSPATH))
-        .thenReturn("webforj_bbjship_hello-app");
+        .thenReturn(CLASSPATH_NAME);
     when(registered.getArguments()).thenReturn(new BBjAdminAdapterList<>(List.of()));
     when(registered.getJavaArguments()).thenReturn(new BBjAdminAdapterList<>(List.of()));
     when(configuration.getApplications())
         .thenReturn(new BBjAdminAdapterList<>(List.of(registered)));
-    when(admin.getClasspathNames())
-        .thenReturn(new BBjAdminAdapterList<>(List.of("webforj_bbjship_hello-app")));
-    when(admin.getClasspath("webforj_bbjship_hello-app"))
-        .thenReturn(new BBjAdminAdapterList<>(List.of()));
+    when(admin.getClasspathNames()).thenReturn(new BBjAdminAdapterList<>(List.of(CLASSPATH_NAME)));
+    when(admin.getClasspath(CLASSPATH_NAME)).thenReturn(new BBjAdminAdapterList<>(List.of()));
   }
 
   @Test
@@ -65,7 +66,7 @@ final class BBjShipServletPublishedApplicationsTest extends AdministratorRequest
 
     verify(response).setStatus(200);
     verify(response).setHeader("Location", "/webapp/hello-app");
-    verify(configuration).removeApplication("hello-app");
+    verify(configuration).removeApplication(APP_NAME);
     assertEquals("""
         {
           "name": "hello-app",
@@ -105,7 +106,7 @@ final class BBjShipServletPublishedApplicationsTest extends AdministratorRequest
     verify(response).setStatus(204);
     verify(response, never()).setContentType(anyString());
     verify(response, never()).setContentLength(anyInt());
-    verify(configuration).removeApplication("hello-app");
+    verify(configuration).removeApplication(APP_NAME);
     verify(admin).release();
     assertEquals(0, body.size());
     try (Stream<Path> folders = Files.list(runtime.resolve("deployments"))) {

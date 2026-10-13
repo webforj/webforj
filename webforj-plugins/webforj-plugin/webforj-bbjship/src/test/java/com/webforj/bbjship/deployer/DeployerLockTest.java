@@ -1,4 +1,4 @@
-package com.webforj.bbjship.deploymentinstaller;
+package com.webforj.bbjship.deployer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -14,9 +14,10 @@ import com.basis.api.admin.BBjAdminAppDeploymentApplication;
 import com.basis.api.admin.BBjAdminAppDeploymentConfiguration;
 import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
+import com.webforj.bbjship.ClasspathRelease;
+import com.webforj.bbjship.Deployer;
+import com.webforj.bbjship.Deployer.DeploymentResult;
 import com.webforj.bbjship.DeploymentException;
-import com.webforj.bbjship.DeploymentInstaller;
-import com.webforj.bbjship.DeploymentInstaller.DeploymentResult;
 import com.webforj.plugin.foundation.bbj.HelloApp;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -44,7 +45,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-final class DeploymentInstallerLockTest {
+final class DeployerLockTest {
+
+  private static final String NAME = "hello-app";
+  private static final String LOCK_FILE = ".lock";
 
   @TempDir
   Path temporary;
@@ -59,7 +63,7 @@ final class DeploymentInstallerLockTest {
 
   @BeforeEach
   void initServerThatHoldsTheFirstDeploymentInsideTheAdministrationSession() throws Exception {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
+    Path app = HelloApp.createCopy(temporary.resolve(NAME));
     archive = Files.readAllBytes(HelloApp.writeArchive(app, temporary.resolve("hello-app.zip")));
     root = temporary.resolve("deployments");
     admin = mock(BBjAdminBase.class);
@@ -89,10 +93,10 @@ final class DeploymentInstallerLockTest {
 
     try (executor) {
       Future<DeploymentResult> deployment = executor
-          .submit(() -> DeploymentInstaller.deploy(upload, "hello-app", destination, admin));
+          .submit(() -> Deployer.deploy(upload, NAME, destination, admin, ClasspathRelease.NONE));
       entered.await();
-      try (
-          FileChannel channel = FileChannel.open(root.resolve(".lock"), StandardOpenOption.WRITE)) {
+      try (FileChannel channel =
+          FileChannel.open(root.resolve(LOCK_FILE), StandardOpenOption.WRITE)) {
         assertThrows(OverlappingFileLockException.class, channel::tryLock);
       } finally {
         released.countDown();
@@ -101,10 +105,37 @@ final class DeploymentInstallerLockTest {
       assertEquals(DeploymentResult.CREATED, deployment.get());
     }
 
-    try (FileChannel channel = FileChannel.open(root.resolve(".lock"), StandardOpenOption.WRITE);
+    try (FileChannel channel = FileChannel.open(root.resolve(LOCK_FILE), StandardOpenOption.WRITE);
         FileLock lock = channel.tryLock()) {
       assertNotNull(lock);
     }
+  }
+
+  @Test
+  void shouldWaitForTheLockHeldByAnotherLoaderOfTheProcess() throws Exception {
+    released.countDown();
+    InputStream upload = new ByteArrayInputStream(archive);
+    String destination = root.toString();
+    FutureTask<DeploymentResult> deployment = new FutureTask<>(
+        () -> Deployer.deploy(upload, NAME, destination, admin, ClasspathRelease.NONE));
+    Thread deploymentThread = new Thread(deployment);
+    Files.createDirectories(root);
+
+    try (FileChannel channel = FileChannel.open(root.resolve(LOCK_FILE), StandardOpenOption.CREATE,
+        StandardOpenOption.WRITE)) {
+      channel.lock();
+      deploymentThread.start();
+      while (deploymentThread.isAlive()
+          && deploymentThread.getState() != Thread.State.TIMED_WAITING) {
+        Thread.onSpinWait();
+      }
+
+      assertEquals(Thread.State.TIMED_WAITING, deploymentThread.getState());
+      assertEquals(0, readings.get());
+    }
+
+    assertEquals(DeploymentResult.CREATED, deployment.get());
+    assertEquals(1, readings.get());
   }
 
   @Test
@@ -112,10 +143,10 @@ final class DeploymentInstallerLockTest {
     InputStream first = new ByteArrayInputStream(archive);
     InputStream second = new ByteArrayInputStream(archive);
     String destination = root.toString();
-    FutureTask<DeploymentResult> blocked =
-        new FutureTask<>(() -> DeploymentInstaller.deploy(first, "hello-app", destination, admin));
+    FutureTask<DeploymentResult> blocked = new FutureTask<>(
+        () -> Deployer.deploy(first, NAME, destination, admin, ClasspathRelease.NONE));
     FutureTask<DeploymentResult> waiting = new FutureTask<>(
-        () -> DeploymentInstaller.deploy(second, "second-app", destination, admin));
+        () -> Deployer.deploy(second, "second-app", destination, admin, ClasspathRelease.NONE));
     Thread waitingThread = new Thread(waiting);
 
     new Thread(blocked).start();
@@ -139,7 +170,7 @@ final class DeploymentInstallerLockTest {
       throws Exception {
     Path classFolder = temporary.resolve("hello-app/src/main/resources");
     Path development =
-        HelloApp.writeArchive(temporary.resolve("hello-app"), temporary.resolve("development.zip"));
+        HelloApp.writeArchive(temporary.resolve(NAME), temporary.resolve("development.zip"));
     try (FileSystem zip = FileSystems.newFileSystem(development)) {
       Files.delete(zip.getPath("application.jar"));
       Files.writeString(zip.getPath("development.properties"), """
@@ -165,10 +196,10 @@ final class DeploymentInstallerLockTest {
     InputStream first = new ByteArrayInputStream(archive);
     InputStream second = new ByteArrayInputStream(Files.readAllBytes(development));
     String destination = root.toString();
-    FutureTask<DeploymentResult> blocked =
-        new FutureTask<>(() -> DeploymentInstaller.deploy(first, "hello-app", destination, admin));
-    FutureTask<DeploymentResult> waiting =
-        new FutureTask<>(() -> DeploymentInstaller.deploy(second, "hello-app", destination, admin));
+    FutureTask<DeploymentResult> blocked = new FutureTask<>(
+        () -> Deployer.deploy(first, NAME, destination, admin, ClasspathRelease.NONE));
+    FutureTask<DeploymentResult> waiting = new FutureTask<>(
+        () -> Deployer.deploy(second, NAME, destination, admin, ClasspathRelease.NONE));
     Thread waitingThread = new Thread(waiting);
 
     new Thread(blocked).start();
@@ -184,12 +215,11 @@ final class DeploymentInstallerLockTest {
     ExecutionException failure = assertThrows(ExecutionException.class, waiting::get);
     DeploymentException refusal = assertInstanceOf(DeploymentException.class, failure.getCause());
     assertEquals("hello-app is deployed from an archive. Undeploy it first", refusal.getMessage());
-    Path current =
-        root.resolve("hello-app").resolve(Files.readString(root.resolve("hello-app/current")));
-    try (Stream<Path> directories = Files.list(root.resolve("hello-app"))) {
+    Path current = root.resolve(NAME).resolve(Files.readString(root.resolve("hello-app/current")));
+    try (Stream<Path> directories = Files.list(root.resolve(NAME))) {
       assertEquals(List.of(current), directories.filter(Files::isDirectory).toList());
     }
 
-    assertFalse(Files.exists(current.resolve("development")));
+    assertFalse(Files.exists(current.resolve("development.properties")));
   }
 }

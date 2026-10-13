@@ -29,6 +29,7 @@ class SpringDevtoolsInjectionTest {
   private static final String VERSION = "26.02-SNAPSHOT";
   private static final String DEVTOOLS = "webforj-spring-devtools";
   private static final String FRAMEWORK = "webforj-foundation";
+  private static final String WEBFORJ_GROUP_ID = "com.webforj";
 
   @Test
   void shouldHandTheDevtoolsDeltaToTheSpringBootFork(@TempDir Path tmp) throws Exception {
@@ -40,11 +41,11 @@ class SpringDevtoolsInjectionTest {
     newInjection(project, new Properties(), (groupId, artifactId, version) -> {
       requested.set(version);
       if (FRAMEWORK.equals(artifactId)) {
-        return List.of(jar("com.webforj", FRAMEWORK, tmp.resolve("foundation.jar")),
+        return List.of(jar(WEBFORJ_GROUP_ID, FRAMEWORK, tmp.resolve("foundation.jar")),
             jar("com.fasterxml.jackson.core", "jackson-core", tmp.resolve("j.jar")));
       }
 
-      return List.of(jar("com.webforj", DEVTOOLS, devtools),
+      return List.of(jar(WEBFORJ_GROUP_ID, DEVTOOLS, devtools),
           jar("com.fasterxml.jackson.core", "jackson-core", tmp.resolve("j2.jar")),
           jar("org.java-websocket", "Java-WebSocket", tmp.resolve("dupe.jar")));
     }).apply();
@@ -90,11 +91,11 @@ class SpringDevtoolsInjectionTest {
   @Test
   void shouldDoNothingWhenTheApplicationCarriesEverything(@TempDir Path tmp) throws Exception {
     MavenProject project =
-        newProject(Set.of(framework(), artifact("com.webforj", DEVTOOLS, VERSION)), SPRING);
+        newProject(Set.of(framework(), artifact(WEBFORJ_GROUP_ID, DEVTOOLS, VERSION)), SPRING);
 
     newInjection(project, new Properties(),
         (groupId, artifactId, version) -> FRAMEWORK.equals(artifactId) ? List.of()
-            : List.of(jar("com.webforj", DEVTOOLS, tmp.resolve("devtools.jar"))))
+            : List.of(jar(WEBFORJ_GROUP_ID, DEVTOOLS, tmp.resolve("devtools.jar"))))
         .apply();
 
     assertNull(
@@ -107,7 +108,7 @@ class SpringDevtoolsInjectionTest {
     Path devtools = tmp.resolve("webforj-spring-devtools.jar");
     ArtifactResolver resolver =
         (groupId, artifactId, version) -> FRAMEWORK.equals(artifactId) ? List.of()
-            : List.of(jar("com.webforj", DEVTOOLS, devtools));
+            : List.of(jar(WEBFORJ_GROUP_ID, DEVTOOLS, devtools));
 
     MavenProject buildConfigured = newProject(Set.of(framework()), SPRING);
     buildConfigured.getProperties().setProperty(SpringDevtoolsInjection.SPRING_ADDITIONAL_CLASSPATH,
@@ -138,7 +139,7 @@ class SpringDevtoolsInjectionTest {
   }
 
   private static Artifact framework() {
-    return artifact("com.webforj", FRAMEWORK, VERSION);
+    return artifact(WEBFORJ_GROUP_ID, FRAMEWORK, VERSION);
   }
 
   private static Artifact artifact(String groupId, String artifactId, String version) {

@@ -19,6 +19,11 @@ import org.junit.jupiter.api.Test;
 
 class WebforjLifecycleParticipantTest {
 
+  private static final String BUNDLE_GOAL = "bundle";
+  private static final String BBJ_DEPLOY_GOAL = "bbj-deploy";
+  private static final String CONFIGURATION_ELEMENT = "configuration";
+  private static final String EAGER_ELEMENT = "eager";
+
   @Test
   void shouldBindBundleTestAndCleanGoals() {
     MavenProject project = projectWithPlugin();
@@ -26,7 +31,7 @@ class WebforjLifecycleParticipantTest {
     runParticipant(project);
 
     Plugin plugin = webforjPlugin(project);
-    assertExecution(plugin, "prepare-package", "bundle");
+    assertExecution(plugin, "prepare-package", BUNDLE_GOAL);
     assertExecution(plugin, "test", "test");
     assertExecution(plugin, "clean", "clean");
   }
@@ -48,13 +53,13 @@ class WebforjLifecycleParticipantTest {
     PluginExecution custom = new PluginExecution();
     custom.setId("my-bundle");
     custom.setPhase("package");
-    custom.addGoal("bundle");
+    custom.addGoal(BUNDLE_GOAL);
     plugin.addExecution(custom);
 
     runParticipant(project);
 
     long bundleBindings = plugin.getExecutions().stream()
-        .filter(execution -> execution.getGoals().contains("bundle")).count();
+        .filter(execution -> execution.getGoals().contains(BUNDLE_GOAL)).count();
     assertEquals(1, bundleBindings);
   }
 
@@ -62,8 +67,8 @@ class WebforjLifecycleParticipantTest {
   void shouldCopyPluginConfigurationToBoundGoals() {
     MavenProject project = projectWithPlugin();
     Plugin plugin = webforjPlugin(project);
-    Xpp3Dom configuration = new Xpp3Dom("configuration");
-    Xpp3Dom eager = new Xpp3Dom("eager");
+    Xpp3Dom configuration = new Xpp3Dom(CONFIGURATION_ELEMENT);
+    Xpp3Dom eager = new Xpp3Dom(EAGER_ELEMENT);
     eager.setValue("true");
     configuration.addChild(eager);
     plugin.setConfiguration(configuration);
@@ -74,7 +79,7 @@ class WebforjLifecycleParticipantTest {
       Xpp3Dom copy = (Xpp3Dom) execution.getConfiguration();
       assertNotNull(copy, "expected configuration on execution " + execution.getId());
       assertNotSame(configuration, copy);
-      assertEquals("true", copy.getChild("eager").getValue());
+      assertEquals("true", copy.getChild(EAGER_ELEMENT).getValue());
     }
   }
 
@@ -98,8 +103,8 @@ class WebforjLifecycleParticipantTest {
     runParticipant(project);
 
     assertExecution(plugin, "package", "bbj-package");
-    assertExecution(plugin, "install", "bbj-deploy");
-    assertExecution(plugin, "prepare-package", "bundle");
+    assertExecution(plugin, "install", BBJ_DEPLOY_GOAL);
+    assertExecution(plugin, "prepare-package", BUNDLE_GOAL);
     assertEquals(5, plugin.getExecutions().size());
   }
 
@@ -107,8 +112,8 @@ class WebforjLifecycleParticipantTest {
   void shouldNotBindBbjGoalsWithoutBbjChild() {
     MavenProject project = projectWithPlugin();
     Plugin plugin = webforjPlugin(project);
-    Xpp3Dom configuration = new Xpp3Dom("configuration");
-    configuration.addChild(new Xpp3Dom("eager"));
+    Xpp3Dom configuration = new Xpp3Dom(CONFIGURATION_ELEMENT);
+    configuration.addChild(new Xpp3Dom(EAGER_ELEMENT));
     plugin.setConfiguration(configuration);
 
     runParticipant(project);
@@ -135,13 +140,13 @@ class WebforjLifecycleParticipantTest {
     PluginExecution custom = new PluginExecution();
     custom.setId("my-deploy");
     custom.setPhase("deploy");
-    custom.addGoal("bbj-deploy");
+    custom.addGoal(BBJ_DEPLOY_GOAL);
     plugin.addExecution(custom);
 
     runParticipant(project);
 
     long deployBindings = plugin.getExecutions().stream()
-        .filter(execution -> execution.getGoals().contains("bbj-deploy")).count();
+        .filter(execution -> execution.getGoals().contains(BBJ_DEPLOY_GOAL)).count();
     assertEquals(1, deployBindings);
   }
 
@@ -178,7 +183,7 @@ class WebforjLifecycleParticipantTest {
   }
 
   private Xpp3Dom createBbjConfiguration() {
-    Xpp3Dom configuration = new Xpp3Dom("configuration");
+    Xpp3Dom configuration = new Xpp3Dom(CONFIGURATION_ELEMENT);
     configuration.addChild(new Xpp3Dom("bbj"));
 
     return configuration;

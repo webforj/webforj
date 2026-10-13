@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.webforj.plugin.foundation.bbj.BBjShipPlugin;
+import com.webforj.plugin.foundation.bbj.BBjShipPackage;
 import com.webforj.plugin.foundation.bbj.Home;
 import com.webforj.plugin.foundation.bbj.Setup;
 import com.webforj.plugin.foundation.bbj.model.BBjCredentials;
@@ -25,31 +25,53 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 class SetupInstallationTest {
 
+  private static final String PLUGIN_NAME = "webforj-bbjship";
+  private static final String PLUGIN_ZIP = "webforj-bbjship.zip";
+  private static final String SHIP_VERSION = "26.03";
+  private static final String DEPLOYMENT_URL = "http://localhost:1/webforj-bbjship";
+  private static final String ADMIN_USERNAME = "administrator";
+  private static final String ADMIN_PASSWORD = "secret-password";
+  private static final String PLUGIN_PATH = "plugins/webforj-bbjship";
+  private static final String VERSION_FILE = "version.properties";
+  private static final String PLUGIN_DESCRIPTOR = "bbj-plugin.json";
+  private static final String PLUGIN_SCRIPT = "bbjship";
+  private static final String INVOCATIONS_FILE = "invocations";
+  private static final String PREVIOUS_PLUGIN_NAME = "webforj-bbjship-26.02";
+  private static final String PREVIOUS_VERSION_LINE = "version=26.02\n";
+  private static final String PREVIOUS_ZIP = "previous.zip";
+  private static final String PREVIOUS_VERSION = "26.02";
+  private static final String INSTALLED_VERSION_FILE = "plugins/webforj-bbjship/version.properties";
+  private static final String APP_DEPLOYMENT = "deployments/hello-app";
+  private static final String APP_JAR = "deployments/hello-app/application.jar";
+  private static final String APP_JAR_CONTENT = "hello-app";
+  private static final String VERSION_LINE = "version=26.03\n";
+  private static final String DEVELOPMENT_FLAG = "development.enabled";
+
   @TempDir
   Path temporary;
 
   @Test
   void shouldInstallBbjShipAndRunRemoteEnableWithPasswordOnStandardInput() throws IOException {
     Path home = Home.createCopy(temporary.resolve("bbx")).toRealPath();
-    Path plugin = BBjShipPlugin.createCopy(temporary.resolve("webforj-bbjship"));
-    Path zip = BBjShipPlugin.writeZip(plugin, temporary.resolve("webforj-bbjship.zip"));
+    Path plugin = BBjShipPackage.createCopy(temporary.resolve(PLUGIN_NAME));
+    Path zip = BBjShipPackage.writeZip(plugin, temporary.resolve(PLUGIN_ZIP));
     List<String> messages = new ArrayList<>();
-    Setup setup = Setup.create(zip, "26.03").setHome(home)
-        .setDeploymentUrl(URI.create("http://localhost:1/webforj-bbjship"))
-        .setCredentials(BBjCredentials.of("administrator", "secret-password")).setPort(8888)
-        .setLog(messages::add).build();
+    Setup setup =
+        Setup.create(zip, SHIP_VERSION).setHome(home).setDeploymentUrl(URI.create(DEPLOYMENT_URL))
+            .setCredentials(BBjCredentials.createUser(ADMIN_USERNAME, ADMIN_PASSWORD)).setPort(8888)
+            .setLog(messages::add).build();
 
     setup.apply();
 
-    Path installed = home.resolve("plugins/webforj-bbjship");
+    Path installed = home.resolve(PLUGIN_PATH);
     try (Stream<Path> files = Files.walk(installed)) {
       assertEquals(
-          List.of("bbj-plugin.json", "bbjship", "lib/webforj-bbjship.jar", "version.properties"),
+          List.of(PLUGIN_DESCRIPTOR, PLUGIN_SCRIPT, "lib/webforj-bbjship.jar", VERSION_FILE),
           files.filter(Files::isRegularFile).map(file -> installed.relativize(file).toString())
               .sorted().toList());
     }
 
-    assertTrue(Files.isExecutable(installed.resolve("bbjship")));
+    assertTrue(Files.isExecutable(installed.resolve(PLUGIN_SCRIPT)));
     assertEquals("""
         remote
         enable
@@ -59,7 +81,7 @@ class SetupInstallationTest {
         8888
         --password-stdin
         END
-        """, Files.readString(home.resolve("invocations")));
+        """, Files.readString(home.resolve(INVOCATIONS_FILE)));
     assertEquals("""
         secret-password
         """, Files.readString(home.resolve("stdin")));
@@ -70,13 +92,29 @@ class SetupInstallationTest {
   }
 
   @Test
+  void shouldRunBbjShipCommandsWithoutColors() throws IOException {
+    Path home = Home.createCopy(temporary.resolve("bbx")).toRealPath();
+    Path zip = BBjShipPackage.writeZip(BBjShipPackage.createCopy(temporary.resolve(PLUGIN_NAME)),
+        temporary.resolve(PLUGIN_ZIP));
+    Setup setup =
+        Setup.create(zip, SHIP_VERSION).setHome(home).setDeploymentUrl(URI.create(DEPLOYMENT_URL))
+            .setCredentials(BBjCredentials.createUser(ADMIN_USERNAME, ADMIN_PASSWORD)).setPort(8888)
+            .setLog(message -> {
+            }).build();
+
+    setup.apply();
+
+    assertEquals("1\n", Files.readString(home.resolve("no-color")));
+  }
+
+  @Test
   void shouldRunRemoteEnableOnTheSslPortOfHttpsDeploymentUrl() throws IOException {
     Path home = Home.createCopy(temporary.resolve("bbx")).toRealPath();
-    Path plugin = BBjShipPlugin.createCopy(temporary.resolve("webforj-bbjship"));
-    Path zip = BBjShipPlugin.writeZip(plugin, temporary.resolve("webforj-bbjship.zip"));
-    Setup setup = Setup.create(zip, "26.03").setHome(home)
+    Path plugin = BBjShipPackage.createCopy(temporary.resolve(PLUGIN_NAME));
+    Path zip = BBjShipPackage.writeZip(plugin, temporary.resolve(PLUGIN_ZIP));
+    Setup setup = Setup.create(zip, SHIP_VERSION).setHome(home)
         .setDeploymentUrl(URI.create("https://localhost:1/webforj-bbjship"))
-        .setCredentials(BBjCredentials.of("administrator", "secret-password")).setPort(8443)
+        .setCredentials(BBjCredentials.createUser(ADMIN_USERNAME, ADMIN_PASSWORD)).setPort(8443)
         .build();
 
     setup.apply();
@@ -90,19 +128,19 @@ class SetupInstallationTest {
         8443
         --password-stdin
         END
-        """, Files.readString(home.resolve("invocations")));
+        """, Files.readString(home.resolve(INVOCATIONS_FILE)));
   }
 
   @Test
   void shouldRemoveFreshBbjShipWhenRemoteEnableFails() throws IOException {
     Path home = Home.createCopy(temporary.resolve("bbx")).toRealPath();
     Files.writeString(home.resolve("failure"), "remote");
-    Path plugin = BBjShipPlugin.createCopy(temporary.resolve("webforj-bbjship"));
-    Path zip = BBjShipPlugin.writeZip(plugin, temporary.resolve("webforj-bbjship.zip"));
-    Setup setup = Setup.create(zip, "26.03").setHome(home)
-        .setDeploymentUrl(URI.create("http://localhost:1/webforj-bbjship"))
-        .setCredentials(BBjCredentials.of("administrator", "secret-password")).setPort(8888)
-        .build();
+    Path plugin = BBjShipPackage.createCopy(temporary.resolve(PLUGIN_NAME));
+    Path zip = BBjShipPackage.writeZip(plugin, temporary.resolve(PLUGIN_ZIP));
+    Setup setup =
+        Setup.create(zip, SHIP_VERSION).setHome(home).setDeploymentUrl(URI.create(DEPLOYMENT_URL))
+            .setCredentials(BBjCredentials.createUser(ADMIN_USERNAME, ADMIN_PASSWORD)).setPort(8888)
+            .build();
 
     IOException failure = assertThrows(IOException.class, setup::apply);
 
@@ -117,30 +155,32 @@ class SetupInstallationTest {
         8888
         --password-stdin
         END
-        """, Files.readString(home.resolve("invocations")));
+        """, Files.readString(home.resolve(INVOCATIONS_FILE)));
     assertEquals("""
         secret-password
         """, Files.readString(home.resolve("stdin")));
     assertFalse(Files.exists(home.resolve("remote-enabled")));
-    assertFalse(Files.exists(home.resolve("plugins/webforj-bbjship")));
+    assertFalse(Files.exists(home.resolve(PLUGIN_PATH)));
   }
 
   @Test
   void shouldRefuseInstalledBbjShipOfAnotherVersionWithoutForce() throws IOException {
     Path home = Home.createCopy(temporary.resolve("bbx"));
-    Path previous = BBjShipPlugin.createCopy(temporary.resolve("webforj-bbjship-26.02"));
-    Files.writeString(previous.resolve("version.properties"), "version=26.02\n");
-    Setup.create(BBjShipPlugin.writeZip(previous, temporary.resolve("previous.zip")), "26.02")
-        .setHome(home).setDeploymentUrl(URI.create("http://localhost:1/webforj-bbjship"))
-        .setCredentials(BBjCredentials.of("administrator", "secret-password")).setPort(8888).build()
-        .apply();
-    String invocations = Files.readString(home.resolve("invocations"));
-    Path plugin = BBjShipPlugin.createCopy(temporary.resolve("webforj-bbjship"));
-    Path zip = BBjShipPlugin.writeZip(plugin, temporary.resolve("webforj-bbjship.zip"));
-    Setup setup = Setup.create(zip, "26.03").setHome(home)
-        .setDeploymentUrl(URI.create("http://localhost:1/webforj-bbjship"))
-        .setCredentials(BBjCredentials.of("administrator", "secret-password")).setPort(8888)
-        .build();
+    Path previous = BBjShipPackage.createCopy(temporary.resolve(PREVIOUS_PLUGIN_NAME));
+    Files.writeString(previous.resolve(VERSION_FILE), PREVIOUS_VERSION_LINE);
+    Setup
+        .create(BBjShipPackage.writeZip(previous, temporary.resolve(PREVIOUS_ZIP)),
+            PREVIOUS_VERSION)
+        .setHome(home).setDeploymentUrl(URI.create(DEPLOYMENT_URL))
+        .setCredentials(BBjCredentials.createUser(ADMIN_USERNAME, ADMIN_PASSWORD)).setPort(8888)
+        .build().apply();
+    String invocations = Files.readString(home.resolve(INVOCATIONS_FILE));
+    Path plugin = BBjShipPackage.createCopy(temporary.resolve(PLUGIN_NAME));
+    Path zip = BBjShipPackage.writeZip(plugin, temporary.resolve(PLUGIN_ZIP));
+    Setup setup =
+        Setup.create(zip, SHIP_VERSION).setHome(home).setDeploymentUrl(URI.create(DEPLOYMENT_URL))
+            .setCredentials(BBjCredentials.createUser(ADMIN_USERNAME, ADMIN_PASSWORD)).setPort(8888)
+            .build();
 
     IOException failure = assertThrows(IOException.class, setup::apply);
 
@@ -148,9 +188,8 @@ class SetupInstallationTest {
         "Installed BBjShip version 26.02 does not match 26.03. "
             + "Run webforj:bbj-setup with -Dwebforj.bbj.force=true to replace it",
         failure.getMessage());
-    assertEquals("version=26.02\n",
-        Files.readString(home.resolve("plugins/webforj-bbjship/version.properties")));
-    assertEquals(invocations, Files.readString(home.resolve("invocations")));
+    assertEquals(PREVIOUS_VERSION_LINE, Files.readString(home.resolve(INSTALLED_VERSION_FILE)));
+    assertEquals(invocations, Files.readString(home.resolve(INVOCATIONS_FILE)));
   }
 
   @ParameterizedTest
@@ -158,15 +197,15 @@ class SetupInstallationTest {
   void shouldRefuseInstalledBbjShipWithoutVersionWithoutForce(String installedVersion)
       throws IOException {
     Path home = Home.createCopy(temporary.resolve("bbx"));
-    Path plugin = BBjShipPlugin.createCopy(temporary.resolve("webforj-bbjship"));
-    Path zip = BBjShipPlugin.writeZip(plugin, temporary.resolve("webforj-bbjship.zip"));
-    Setup setup = Setup.create(zip, "26.03").setHome(home)
-        .setDeploymentUrl(URI.create("http://localhost:1/webforj-bbjship"))
-        .setCredentials(BBjCredentials.of("administrator", "secret-password")).setPort(8888)
-        .build();
+    Path plugin = BBjShipPackage.createCopy(temporary.resolve(PLUGIN_NAME));
+    Path zip = BBjShipPackage.writeZip(plugin, temporary.resolve(PLUGIN_ZIP));
+    Setup setup =
+        Setup.create(zip, SHIP_VERSION).setHome(home).setDeploymentUrl(URI.create(DEPLOYMENT_URL))
+            .setCredentials(BBjCredentials.createUser(ADMIN_USERNAME, ADMIN_PASSWORD)).setPort(8888)
+            .build();
     setup.apply();
-    Files.writeString(home.resolve("plugins/webforj-bbjship/version.properties"), installedVersion);
-    String invocations = Files.readString(home.resolve("invocations"));
+    Files.writeString(home.resolve(INSTALLED_VERSION_FILE), installedVersion);
+    String invocations = Files.readString(home.resolve(INVOCATIONS_FILE));
 
     IOException failure = assertThrows(IOException.class, setup::apply);
 
@@ -174,9 +213,8 @@ class SetupInstallationTest {
         "Installed BBjShip version is missing. "
             + "Run webforj:bbj-setup with -Dwebforj.bbj.force=true to replace the package",
         failure.getMessage());
-    assertEquals(installedVersion,
-        Files.readString(home.resolve("plugins/webforj-bbjship/version.properties")));
-    assertEquals(invocations, Files.readString(home.resolve("invocations")));
+    assertEquals(installedVersion, Files.readString(home.resolve(INSTALLED_VERSION_FILE)));
+    assertEquals(invocations, Files.readString(home.resolve(INVOCATIONS_FILE)));
   }
 
   @ParameterizedTest
@@ -184,18 +222,18 @@ class SetupInstallationTest {
   void shouldReplaceInstalledBbjShipWithForceAndLeaveTheRuntimeFolderUntouched(String version,
       String installedVersion) throws IOException {
     Path home = Home.createCopy(temporary.resolve("bbx"));
-    Path previous = BBjShipPlugin.createCopy(temporary.resolve("webforj-bbjship-" + version));
-    Files.writeString(previous.resolve("version.properties"), "version=" + version + "\n");
-    Setup.create(BBjShipPlugin.writeZip(previous, temporary.resolve("previous.zip")), version)
-        .setHome(home).setDeploymentUrl(URI.create("http://localhost:1/webforj-bbjship"))
-        .setCredentials(BBjCredentials.of("administrator", "secret-password")).setPort(8888).build()
-        .apply();
-    Path installed = home.resolve("plugins/webforj-bbjship");
+    Path previous = BBjShipPackage.createCopy(temporary.resolve("webforj-bbjship-" + version));
+    Files.writeString(previous.resolve(VERSION_FILE), "version=" + version + "\n");
+    Setup.create(BBjShipPackage.writeZip(previous, temporary.resolve(PREVIOUS_ZIP)), version)
+        .setHome(home).setDeploymentUrl(URI.create(DEPLOYMENT_URL))
+        .setCredentials(BBjCredentials.createUser(ADMIN_USERNAME, ADMIN_PASSWORD)).setPort(8888)
+        .build().apply();
+    Path installed = home.resolve(PLUGIN_PATH);
     Path runtime = home.resolve("plugins/.webforj-bbjship-deployments");
-    Files.writeString(installed.resolve("version.properties"), installedVersion);
-    Files.writeString(installed.resolve("bbj-plugin.json"), "{}");
-    Files.createDirectories(installed.resolve("deployments/hello-app"));
-    Files.writeString(installed.resolve("deployments/hello-app/application.jar"), "hello-app");
+    Files.writeString(installed.resolve(VERSION_FILE), installedVersion);
+    Files.writeString(installed.resolve(PLUGIN_DESCRIPTOR), "{}");
+    Files.createDirectories(installed.resolve(APP_DEPLOYMENT));
+    Files.writeString(installed.resolve(APP_JAR), APP_JAR_CONTENT);
     Files.createDirectories(installed.resolve("htdocs/hello-app"));
     Files.writeString(installed.resolve("htdocs/hello-app/index.html"), "<html></html>");
     Files.createDirectories(installed.resolve("assets/hello-app"));
@@ -205,97 +243,98 @@ class SetupInstallationTest {
     Files.writeString(installed.resolve("lib/removed.jar"), "removed");
     Files.createDirectories(installed.resolve("configuration"));
     Files.writeString(installed.resolve("configuration/local.properties"), "removed=true");
-    Files.createDirectories(runtime.resolve("deployments/hello-app"));
-    Files.writeString(runtime.resolve("deployments/hello-app/application.jar"), "hello-app");
+    Files.createDirectories(runtime.resolve(APP_DEPLOYMENT));
+    Files.writeString(runtime.resolve(APP_JAR), APP_JAR_CONTENT);
     Files.createDirectories(runtime.resolve("htdocs"));
     Files.createDirectories(runtime.resolve("assets"));
     Files.createDirectories(home.resolve("plugins/other"));
     Files.writeString(home.resolve("plugins/other/plugin.bbj"), "rem other plugin");
-    Path plugin = BBjShipPlugin.createCopy(temporary.resolve("webforj-bbjship"));
-    Path zip = BBjShipPlugin.writeZip(plugin, temporary.resolve("webforj-bbjship.zip"));
-    Setup setup = Setup.create(zip, "26.03").setHome(home)
-        .setDeploymentUrl(URI.create("http://localhost:1/webforj-bbjship"))
-        .setCredentials(BBjCredentials.of("administrator", "secret-password")).setPort(8888)
-        .setForce(true).build();
+    Path plugin = BBjShipPackage.createCopy(temporary.resolve(PLUGIN_NAME));
+    Path zip = BBjShipPackage.writeZip(plugin, temporary.resolve(PLUGIN_ZIP));
+    Setup setup =
+        Setup.create(zip, SHIP_VERSION).setHome(home).setDeploymentUrl(URI.create(DEPLOYMENT_URL))
+            .setCredentials(BBjCredentials.createUser(ADMIN_USERNAME, ADMIN_PASSWORD)).setPort(8888)
+            .setForce(true).build();
 
     setup.apply();
 
-    assertEquals("version=26.03\n", Files.readString(installed.resolve("version.properties")));
-    assertEquals("", Files.readString(installed.resolve("bbj-plugin.json")));
+    assertEquals(VERSION_LINE, Files.readString(installed.resolve(VERSION_FILE)));
+    assertEquals("", Files.readString(installed.resolve(PLUGIN_DESCRIPTOR)));
     try (Stream<Path> files = Files.walk(installed)) {
       assertEquals(
-          List.of("bbj-plugin.json", "bbjship", "lib/webforj-bbjship.jar", "version.properties"),
+          List.of(PLUGIN_DESCRIPTOR, PLUGIN_SCRIPT, "lib/webforj-bbjship.jar", VERSION_FILE),
           files.filter(Files::isRegularFile).map(file -> installed.relativize(file).toString())
               .sorted().toList());
     }
 
     try (Stream<Path> files = Files.walk(runtime)) {
-      assertEquals(
-          List.of("", "assets", "deployments", "deployments/hello-app",
-              "deployments/hello-app/application.jar", "htdocs"),
+      assertEquals(List.of("", "assets", "deployments", APP_DEPLOYMENT, APP_JAR, "htdocs"),
           files.map(file -> runtime.relativize(file).toString()).sorted().toList());
     }
 
-    assertEquals("hello-app",
-        Files.readString(runtime.resolve("deployments/hello-app/application.jar")));
+    assertEquals(APP_JAR_CONTENT, Files.readString(runtime.resolve(APP_JAR)));
     assertEquals("rem other plugin", Files.readString(home.resolve("plugins/other/plugin.bbj")));
   }
 
   @Test
   void shouldKeepDevelopmentSwitchWhenForceReplacesInstalledBbjShip() throws IOException {
     Path home = Home.createCopy(temporary.resolve("bbx"));
-    Path previous = BBjShipPlugin.createCopy(temporary.resolve("webforj-bbjship-26.02"));
-    Files.writeString(previous.resolve("version.properties"), "version=26.02\n");
-    Setup.create(BBjShipPlugin.writeZip(previous, temporary.resolve("previous.zip")), "26.02")
-        .setHome(home).setDeploymentUrl(URI.create("http://localhost:1/webforj-bbjship"))
-        .setCredentials(BBjCredentials.of("administrator", "secret-password")).setPort(8888).build()
-        .apply();
-    Path installed = home.resolve("plugins/webforj-bbjship");
+    Path previous = BBjShipPackage.createCopy(temporary.resolve(PREVIOUS_PLUGIN_NAME));
+    Files.writeString(previous.resolve(VERSION_FILE), PREVIOUS_VERSION_LINE);
+    Setup
+        .create(BBjShipPackage.writeZip(previous, temporary.resolve(PREVIOUS_ZIP)),
+            PREVIOUS_VERSION)
+        .setHome(home).setDeploymentUrl(URI.create(DEPLOYMENT_URL))
+        .setCredentials(BBjCredentials.createUser(ADMIN_USERNAME, ADMIN_PASSWORD)).setPort(8888)
+        .build().apply();
+    Path installed = home.resolve(PLUGIN_PATH);
     Path runtime = home.resolve("plugins/.webforj-bbjship-deployments");
-    Files.writeString(runtime.resolve("development.enabled"),
+    Files.writeString(runtime.resolve(DEVELOPMENT_FLAG),
         "development runs are enabled on this machine");
-    Path plugin = BBjShipPlugin.createCopy(temporary.resolve("webforj-bbjship"));
-    Path zip = BBjShipPlugin.writeZip(plugin, temporary.resolve("webforj-bbjship.zip"));
-    Setup setup = Setup.create(zip, "26.03").setHome(home)
-        .setDeploymentUrl(URI.create("http://localhost:1/webforj-bbjship"))
-        .setCredentials(BBjCredentials.of("administrator", "secret-password")).setPort(8888)
-        .setForce(true).build();
+    Path plugin = BBjShipPackage.createCopy(temporary.resolve(PLUGIN_NAME));
+    Path zip = BBjShipPackage.writeZip(plugin, temporary.resolve(PLUGIN_ZIP));
+    Setup setup =
+        Setup.create(zip, SHIP_VERSION).setHome(home).setDeploymentUrl(URI.create(DEPLOYMENT_URL))
+            .setCredentials(BBjCredentials.createUser(ADMIN_USERNAME, ADMIN_PASSWORD)).setPort(8888)
+            .setForce(true).build();
 
     setup.apply();
 
-    assertEquals("version=26.03\n", Files.readString(installed.resolve("version.properties")));
+    assertEquals(VERSION_LINE, Files.readString(installed.resolve(VERSION_FILE)));
     assertEquals("development runs are enabled on this machine",
-        Files.readString(runtime.resolve("development.enabled")));
-    assertFalse(Files.exists(installed.resolve("development.enabled")));
+        Files.readString(runtime.resolve(DEVELOPMENT_FLAG)));
+    assertFalse(Files.exists(installed.resolve(DEVELOPMENT_FLAG)));
   }
 
   @Test
   void shouldNotCreateDevelopmentSwitchWhenForceReplacesBbjShipWithoutOne() throws IOException {
     Path home = Home.createCopy(temporary.resolve("bbx"));
-    Path previous = BBjShipPlugin.createCopy(temporary.resolve("webforj-bbjship-26.02"));
-    Files.writeString(previous.resolve("version.properties"), "version=26.02\n");
-    Setup.create(BBjShipPlugin.writeZip(previous, temporary.resolve("previous.zip")), "26.02")
-        .setHome(home).setDeploymentUrl(URI.create("http://localhost:1/webforj-bbjship"))
-        .setCredentials(BBjCredentials.of("administrator", "secret-password")).setPort(8888).build()
-        .apply();
-    Path installed = home.resolve("plugins/webforj-bbjship");
-    Path plugin = BBjShipPlugin.createCopy(temporary.resolve("webforj-bbjship"));
-    Path zip = BBjShipPlugin.writeZip(plugin, temporary.resolve("webforj-bbjship.zip"));
-    Setup setup = Setup.create(zip, "26.03").setHome(home)
-        .setDeploymentUrl(URI.create("http://localhost:1/webforj-bbjship"))
-        .setCredentials(BBjCredentials.of("administrator", "secret-password")).setPort(8888)
-        .setForce(true).build();
+    Path previous = BBjShipPackage.createCopy(temporary.resolve(PREVIOUS_PLUGIN_NAME));
+    Files.writeString(previous.resolve(VERSION_FILE), PREVIOUS_VERSION_LINE);
+    Setup
+        .create(BBjShipPackage.writeZip(previous, temporary.resolve(PREVIOUS_ZIP)),
+            PREVIOUS_VERSION)
+        .setHome(home).setDeploymentUrl(URI.create(DEPLOYMENT_URL))
+        .setCredentials(BBjCredentials.createUser(ADMIN_USERNAME, ADMIN_PASSWORD)).setPort(8888)
+        .build().apply();
+    Path installed = home.resolve(PLUGIN_PATH);
+    Path plugin = BBjShipPackage.createCopy(temporary.resolve(PLUGIN_NAME));
+    Path zip = BBjShipPackage.writeZip(plugin, temporary.resolve(PLUGIN_ZIP));
+    Setup setup =
+        Setup.create(zip, SHIP_VERSION).setHome(home).setDeploymentUrl(URI.create(DEPLOYMENT_URL))
+            .setCredentials(BBjCredentials.createUser(ADMIN_USERNAME, ADMIN_PASSWORD)).setPort(8888)
+            .setForce(true).build();
 
     setup.apply();
 
-    assertEquals("version=26.03\n", Files.readString(installed.resolve("version.properties")));
-    assertFalse(Files.exists(installed.resolve("development.enabled")));
+    assertEquals(VERSION_LINE, Files.readString(installed.resolve(VERSION_FILE)));
+    assertFalse(Files.exists(installed.resolve(DEVELOPMENT_FLAG)));
     assertFalse(
         Files.exists(home.resolve("plugins/.webforj-bbjship-deployments/development.enabled")));
   }
 
   private static Stream<Arguments> getInstalledBBjShips() {
-    return Stream.of(Arguments.of("26.02", "version=26.02\n"), Arguments.of("26.03", "version=\n"),
-        Arguments.of("26.03", "version=26.03\n"));
+    return Stream.of(Arguments.of(PREVIOUS_VERSION, PREVIOUS_VERSION_LINE),
+        Arguments.of(SHIP_VERSION, "version=\n"), Arguments.of(SHIP_VERSION, VERSION_LINE));
   }
 }

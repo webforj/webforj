@@ -10,14 +10,14 @@ import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.BBjAdminException;
 import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
 import com.webforj.bbjship.cli.command.Home;
+import com.webforj.plugin.foundation.bbj.BBjShipPlugin;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,12 +29,17 @@ import picocli.CommandLine.Help.Ansi;
 
 class BBjShipFailureHandlerTest {
 
+  private static final String PORT_OPTION = "--port";
+  private static final String REMOTE_COMMAND = "remote";
+  private static final String ENABLE_COMMAND = "enable";
+  private static final String ALL_OPTION = "--all";
+  private static final String UNDEPLOY_COMMAND = "undeploy";
+
   @TempDir
   Path temporary;
 
   private Path home;
   private ByteArrayOutputStream output;
-  private BBjAdminBase admin;
   private List<String> credentials;
   private BBjShipCli cli;
 
@@ -42,14 +47,14 @@ class BBjShipFailureHandlerTest {
   void initCliOnTheBBjHomeFixture() throws Exception {
     home = Home.createCopy(temporary.resolve("bbx"));
     output = new ByteArrayOutputStream();
-    admin = mock(BBjAdminBase.class);
+    BBjAdminBase admin = mock(BBjAdminBase.class);
     when(admin.getClasspathNames()).thenReturn(new BBjAdminAdapterList<>(List.of()));
     credentials = new ArrayList<>();
-    PrintStream stream = new PrintStream(output, true, StandardCharsets.UTF_8);
-    cli = BBjShipCli.create(home).setInput(InputStream.nullInputStream()).setEnvironment(Map.of())
-        .setOutput(stream).setError(stream).setAnsi(Ansi.OFF).setConnector((username, password) -> {
-          credentials.add(username);
-          credentials.add(password);
+    Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+    cli = BBjShipCli.create(new BBjShipPlugin(home)).setTerminal(new TerminalLines(stream))
+        .setAnsi(Ansi.OFF).setSessions(login -> {
+          credentials.add(login.getUsername());
+          credentials.add(login.getPassword());
           return admin;
         }).build();
   }
@@ -66,10 +71,9 @@ class BBjShipFailureHandlerTest {
 
   @Test
   void shouldReportRefusedPassword() {
-    PrintStream stream = new PrintStream(output, true, StandardCharsets.UTF_8);
-    BBjShipCli refusing = BBjShipCli.create(home).setInput(InputStream.nullInputStream())
-        .setEnvironment(Map.of()).setOutput(stream).setError(stream).setAnsi(Ansi.OFF)
-        .setConnector((username, password) -> {
+    Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+    BBjShipCli refusing = BBjShipCli.create(new BBjShipPlugin(home))
+        .setTerminal(new TerminalLines(stream)).setAnsi(Ansi.OFF).setSessions(login -> {
           throw new BBjAdminException("Server failed login: Authentication failed for user"
               + " 'admin'. Invalid username/password.");
         }).build();
@@ -84,10 +88,9 @@ class BBjShipFailureHandlerTest {
 
   @Test
   void shouldNameFailureThatCarriesNoMessage() {
-    PrintStream stream = new PrintStream(output, true, StandardCharsets.UTF_8);
-    BBjShipCli failing = BBjShipCli.create(home).setInput(InputStream.nullInputStream())
-        .setEnvironment(Map.of()).setOutput(stream).setError(stream).setAnsi(Ansi.OFF)
-        .setConnector((username, password) -> {
+    Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+    BBjShipCli failing = BBjShipCli.create(new BBjShipPlugin(home))
+        .setTerminal(new TerminalLines(stream)).setAnsi(Ansi.OFF).setSessions(login -> {
           throw new IllegalStateException();
         }).build();
 
@@ -103,33 +106,33 @@ class BBjShipFailureHandlerTest {
     return Stream.of(
         Arguments.of(List.of("deploy"),
             "Unknown command deploy. Use --help for available commands"),
-        Arguments.of(List.of("remote", "enable", "extra", "--port", "8888"),
+        Arguments.of(List.of(REMOTE_COMMAND, ENABLE_COMMAND, "extra", PORT_OPTION, "8888"),
             "Unknown command remote enable extra. Use --help for available commands"),
-        Arguments.of(List.of("--all"),
+        Arguments.of(List.of(ALL_OPTION),
             "Option --all is not available for bbjship. Use --help for available options"),
-        Arguments.of(List.of("remote", "start"),
+        Arguments.of(List.of(REMOTE_COMMAND, "start"),
             "Unknown command remote start. Use --help for available commands"),
-        Arguments.of(List.of("remote", "enable", "--port", "8888", "--force"),
+        Arguments.of(List.of(REMOTE_COMMAND, ENABLE_COMMAND, PORT_OPTION, "8888", "--force"),
             "Unknown option --force. Use --help for available options"),
-        Arguments.of(List.of("remote", "enable", "--port", "8888", "--all"),
+        Arguments.of(List.of(REMOTE_COMMAND, ENABLE_COMMAND, PORT_OPTION, "8888", ALL_OPTION),
             "Option --all is not available for remote enable. Use --help for available options"),
-        Arguments.of(List.of("remote", "disable", "--port", "8888"),
+        Arguments.of(List.of(REMOTE_COMMAND, "disable", PORT_OPTION, "8888"),
             "Option --port is not available for remote disable. Use --help for available options"),
-        Arguments.of(List.of("apps", "list", "--port", "8888"),
+        Arguments.of(List.of("apps", "list", PORT_OPTION, "8888"),
             "Option --port is not available for apps list. Use --help for available options"),
+        Arguments.of(List.of(REMOTE_COMMAND, ENABLE_COMMAND, PORT_OPTION, "8888", "--username",
+            "--password-stdin"), "Specify a user name after --username"),
+        Arguments.of(List.of(REMOTE_COMMAND, ENABLE_COMMAND, PORT_OPTION, "8888", "--username", ""),
+            "Specify a user name after --username"),
         Arguments.of(
-            List.of("remote", "enable", "--port", "8888", "--username", "--password-stdin"),
-            "Specify a user name after --username"),
-        Arguments.of(List.of("remote", "enable", "--port", "8888", "--username", ""),
-            "Specify a user name after --username"),
-        Arguments.of(List.of("remote", "enable", "--port", "8888", "--port", "8889"),
+            List.of(REMOTE_COMMAND, ENABLE_COMMAND, PORT_OPTION, "8888", PORT_OPTION, "8889"),
             "Specify --port only once"),
         Arguments.of(List.of("apps", "deploy"),
             "Specify the path of a deployment archive ending in .zip"),
-        Arguments.of(List.of("apps", "undeploy"), "Specify an application name or --all"),
-        Arguments.of(List.of("apps", "undeploy", "hello-app", "--all"),
+        Arguments.of(List.of("apps", UNDEPLOY_COMMAND), "Specify an application name or --all"),
+        Arguments.of(List.of("apps", UNDEPLOY_COMMAND, "hello-app", ALL_OPTION),
             "Specify an application name or --all"),
-        Arguments.of(List.of("apps", "undeploy", "hello-app", "other-app"),
+        Arguments.of(List.of("apps", UNDEPLOY_COMMAND, "hello-app", "other-app"),
             "Specify one application name"));
   }
 }

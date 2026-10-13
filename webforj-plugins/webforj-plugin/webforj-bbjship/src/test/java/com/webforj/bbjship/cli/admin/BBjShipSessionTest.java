@@ -1,5 +1,9 @@
 package com.webforj.bbjship.cli.admin;
 
+import static com.webforj.bbjship.cli.command.BBjServices.ASSETS_CONTEXT;
+import static com.webforj.bbjship.cli.command.BBjServices.CLI_CLASSPATH;
+import static com.webforj.bbjship.cli.command.Home.DEPLOYMENTS_FOLDER;
+import static com.webforj.bbjship.cli.command.Home.PLUGIN_FOLDER;
 import static com.webforj.plugin.foundation.bbj.model.BBjCredentials.FACTORY_ACCOUNT_WARNING;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -10,17 +14,21 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.basis.api.admin.BBjAdminContextInfo;
+import com.basis.api.admin.BBjAdminException;
 import com.webforj.bbjship.cli.BBjShipCli;
+import com.webforj.bbjship.cli.TerminalLines;
 import com.webforj.bbjship.cli.command.BBjServices;
 import com.webforj.bbjship.cli.command.Home;
+import com.webforj.plugin.foundation.bbj.BBjShipPlugin;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.io.TempDir;
@@ -40,14 +48,13 @@ class BBjShipSessionTest {
   private BBjShipCli cli;
 
   @BeforeEach
-  void initCliOnAnEmptyServer() throws Exception {
+  void initCliOnAnEmptyServer() throws IOException, URISyntaxException, BBjAdminException {
     home = Home.createCopy(temporary.resolve("bbx"));
     output = new ByteArrayOutputStream();
     services = new BBjServices();
-    PrintStream stream = new PrintStream(output, true, StandardCharsets.UTF_8);
-    cli = BBjShipCli.create(home).setInput(InputStream.nullInputStream()).setEnvironment(Map.of())
-        .setOutput(stream).setError(stream).setAnsi(Ansi.OFF)
-        .setConnector((username, password) -> services.getAdmin()).build();
+    Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+    cli = BBjShipCli.create(new BBjShipPlugin(home)).setTerminal(new TerminalLines(stream))
+        .setAnsi(Ansi.OFF).setSessions(login -> services.getAdmin()).build();
   }
 
   @ParameterizedTest
@@ -57,57 +64,55 @@ class BBjShipSessionTest {
     int status = cli.run(command.toArray(String[]::new));
 
     assertEquals(0, status);
-    verify(services.getAdmin()).setClasspath("_webforj_bbjship_cli", List.of("(bbj_default)",
+    verify(services.getAdmin()).setClasspath(CLI_CLASSPATH, List.of("(bbj_default)",
         home.resolve("plugins/webforj-bbjship/lib/webforj-bbjship.jar").toString()));
     verify(services.getAdmin()).setClasspath("_webforj_bbjship", List
         .of(home.resolve(".lib/BBj.jar").toString(), home.resolve(".lib/BBjUtil.jar").toString()));
     verify(services.getAdmin(), times(2)).setClasspath(anyString(), any());
-    verify(services.getServer()).createContext("webforj-bbjship-assets");
-    verify(services.getContext("webforj-bbjship-assets")).setString(BBjAdminContextInfo.JSON_DATA,
-        """
+    verify(services.getServer()).createContext(ASSETS_CONTEXT);
+    verify(services.getContext(ASSETS_CONTEXT)).setString(BBjAdminContextInfo.JSON_DATA, """
+        {
+          "STOP": {
+            "EXECUTOR": "CONTEXT:webforj-bbjship-assets",
+            "DATA": {
+              "ACTION": "STOP"
+            },
+            "ENABLED": false
+          },
+          "START": {
+            "EXECUTOR": "CONTEXT:webforj-bbjship-assets",
+            "DATA": {
+              "ACTION": "START"
+            },
+            "ENABLED": true
+          },
+          "RESTART": {
+            "EXECUTOR": "CONTEXT:webforj-bbjship-assets",
+            "DATA": {
+              "ACTION": "RESTART"
+            },
+            "ENABLED": false
+          },
+          "HTTP port": %3$d,
+          "Name": "webforj-bbjship-assets",
+          "Path": "/webforj",
+          "Document Base": "%4$s/assets",
+          "BBx Servlets": [
             {
-              "STOP": {
-                "EXECUTOR": "CONTEXT:webforj-bbjship-assets",
-                "DATA": {
-                  "ACTION": "STOP"
-                },
-                "ENABLED": false
-              },
-              "START": {
-                "EXECUTOR": "CONTEXT:webforj-bbjship-assets",
-                "DATA": {
-                  "ACTION": "START"
-                },
-                "ENABLED": true
-              },
-              "RESTART": {
-                "EXECUTOR": "CONTEXT:webforj-bbjship-assets",
-                "DATA": {
-                  "ACTION": "RESTART"
-                },
-                "ENABLED": false
-              },
-              "HTTP port": %3$d,
-              "Name": "webforj-bbjship-assets",
-              "Path": "/webforj",
-              "Document Base": "%4$s/assets",
-              "BBx Servlets": [
-                {
-                  "Enabled": "true",
-                  "URL Mapping": "/*",
-                  "Source File": "%1$s/servlets/WebforjBBjAssetsServlet.bbj",
-                  "Class Name": "WebforjBBjAssetsServlet",
-                  "Method Name": "service",
-                  "Config File": "%2$s/cfg/config.bbx",
-                  "SSCP": "_webforj_bbjship_cli",
-                  "Terminal Alias": "",
-                  "Working Directory": "",
-                  "User": "",
-                  "Parameters": []
-                }
-              ]
-            }""".formatted(home.resolve("plugins/webforj-bbjship"), home, 8888,
-            home.resolve("plugins/.webforj-bbjship-deployments")));
+              "Enabled": "true",
+              "URL Mapping": "/*",
+              "Source File": "%1$s/servlets/WebforjBBjAssetsServlet.bbj",
+              "Class Name": "WebforjBBjAssetsServlet",
+              "Method Name": "service",
+              "Config File": "%2$s/cfg/config.bbx",
+              "SSCP": "_webforj_bbjship_cli",
+              "Terminal Alias": "",
+              "Working Directory": "",
+              "User": "",
+              "Parameters": []
+            }
+          ]
+        }""".formatted(home.resolve(PLUGIN_FOLDER), home, 8888, home.resolve(DEPLOYMENTS_FOLDER)));
     verify(services.getAdmin()).release();
   }
 
@@ -120,9 +125,8 @@ class BBjShipSessionTest {
 
     assertEquals(0, status);
     verify(services.getAdmin(), never()).setClasspath(anyString(), any());
-    verify(services.getServer(), never()).createContext("webforj-bbjship-assets");
-    verify(services.getContext("webforj-bbjship-assets"), never()).setString(anyString(),
-        anyString());
+    verify(services.getServer(), never()).createContext(ASSETS_CONTEXT);
+    verify(services.getContext(ASSETS_CONTEXT), never()).setString(anyString(), anyString());
     verify(services.getAdmin(), never()).jsonExecute(anyString());
     verify(services.getAdmin()).release();
   }
@@ -132,7 +136,7 @@ class BBjShipSessionTest {
   void shouldCreateTheMissingRuntimeFoldersOfConfiguredServer(List<String> command)
       throws Exception {
     services.addBBjShipConfiguration(home);
-    Path runtime = home.resolve("plugins/.webforj-bbjship-deployments");
+    Path runtime = home.resolve(DEPLOYMENTS_FOLDER);
 
     int status = cli.run(command.toArray(String[]::new));
 
@@ -146,7 +150,7 @@ class BBjShipSessionTest {
   @ParameterizedTest
   @MethodSource("getCommands")
   void shouldRefuseTheCommandClasspathOfAnotherApplication(List<String> command) throws Exception {
-    services.addClasspath("_webforj_bbjship_cli", List.of("(bbj_default)", "/srv/other.jar"));
+    services.addClasspath(CLI_CLASSPATH, List.of("(bbj_default)", "/srv/other.jar"));
 
     int status = cli.run(command.toArray(String[]::new));
 
@@ -158,15 +162,15 @@ class BBjShipSessionTest {
     verify(services.getAdmin(), never()).setClasspath(anyString(), any());
     verify(services.getServer(), never()).createContext(anyString());
     verify(services.getAdmin()).release();
-    assertFalse(Files.exists(home.resolve("plugins/.webforj-bbjship-deployments")));
+    assertFalse(Files.exists(home.resolve(DEPLOYMENTS_FOLDER)));
   }
 
   @ParameterizedTest
   @MethodSource("getCommands")
   void shouldRefusePluginFolderThatIsSymbolicLinkBeforeOpeningTheSession(List<String> command)
       throws Exception {
-    Path moved = Files.move(home.resolve("plugins/webforj-bbjship"), temporary.resolve("moved"));
-    Files.createSymbolicLink(home.resolve("plugins/webforj-bbjship"), moved);
+    Path moved = Files.move(home.resolve(PLUGIN_FOLDER), temporary.resolve("moved"));
+    Files.createSymbolicLink(home.resolve(PLUGIN_FOLDER), moved);
 
     int status = cli.run(command.toArray(String[]::new));
 

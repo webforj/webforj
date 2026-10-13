@@ -20,20 +20,30 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 class BBjShipClientUndeploymentTest {
 
+  private static final String VERSION_ANSWER = """
+      {
+        "version": "26.03"
+      }
+      """;
+  private static final String LOOPBACK_ADDRESS = "127.0.0.1";
+  private static final String VERSION_PATH = "/webforj-bbjship/version";
+  private static final String CONTENT_TYPE = "Content-Type";
+  private static final String ENDPOINT_FORMAT = "http://127.0.0.1:%d/webforj-bbjship";
+  private static final String CLIENT_VERSION = "26.03";
+  private static final String ADMIN_USERNAME = "administrator";
+  private static final String ADMIN_PASSWORD = "secret-password";
+  private static final String PROBLEM_JSON = "application/problem+json";
+
   @ParameterizedTest
   @MethodSource("getCredentials")
   void shouldDeleteTheApplicationByNameWithCredentialsAndNoBody(BBjCredentials credentials,
       String authorization) throws IOException {
     List<String> requests = new ArrayList<>();
-    HttpServer bbjShip = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
-    bbjShip.createContext("/webforj-bbjship/version", exchange -> {
+    HttpServer bbjShip = HttpServer.create(new InetSocketAddress(LOOPBACK_ADDRESS, 0), 0);
+    bbjShip.createContext(VERSION_PATH, exchange -> {
       exchange.getRequestBody().readAllBytes();
-      String answer = """
-          {
-            "version": "26.03"
-          }
-          """;
-      exchange.getResponseHeaders().set("Content-Type", "application/json");
+      String answer = VERSION_ANSWER;
+      exchange.getResponseHeaders().set(CONTENT_TYPE, "application/json");
       exchange.sendResponseHeaders(200, answer.length());
       exchange.getResponseBody().write(answer.getBytes(StandardCharsets.UTF_8));
       exchange.close();
@@ -46,11 +56,10 @@ class BBjShipClientUndeploymentTest {
       exchange.close();
     });
     bbjShip.start();
-    URI endpoint =
-        URI.create("http://127.0.0.1:%d/webforj-bbjship".formatted(bbjShip.getAddress().getPort()));
+    URI endpoint = URI.create(ENDPOINT_FORMAT.formatted(bbjShip.getAddress().getPort()));
     try {
-      BBjShipClient client =
-          BBjShipClient.create(endpoint).setCredentials(credentials).setVersion("26.03").build();
+      BBjShipClient client = BBjShipClient.create(endpoint).setCredentials(credentials)
+          .setVersion(CLIENT_VERSION).build();
 
       client.undeploy("hello-app");
 
@@ -65,32 +74,27 @@ class BBjShipClientUndeploymentTest {
   @Test
   void shouldSendPublishNameWithSlashesAsOneEncodedPathSegment() throws IOException {
     List<String> paths = new ArrayList<>();
-    HttpServer bbjShip = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+    HttpServer bbjShip = HttpServer.create(new InetSocketAddress(LOOPBACK_ADDRESS, 0), 0);
     bbjShip.createContext("/", exchange -> {
       exchange.getRequestBody().readAllBytes();
       paths.add(exchange.getRequestURI().getRawPath());
-      String answer = """
-          {
-            "version": "26.03"
-          }
-          """;
-      exchange.getResponseHeaders().set("Content-Type", "application/json");
+      String answer = VERSION_ANSWER;
+      exchange.getResponseHeaders().set(CONTENT_TYPE, "application/json");
       exchange.sendResponseHeaders(200, answer.length());
       exchange.getResponseBody().write(answer.getBytes(StandardCharsets.UTF_8));
       exchange.close();
     });
     bbjShip.start();
-    URI endpoint =
-        URI.create("http://127.0.0.1:%d/webforj-bbjship".formatted(bbjShip.getAddress().getPort()));
+    URI endpoint = URI.create(ENDPOINT_FORMAT.formatted(bbjShip.getAddress().getPort()));
     try {
       BBjShipClient client = BBjShipClient.create(endpoint)
-          .setCredentials(BBjCredentials.of("administrator", "secret-password")).setVersion("26.03")
-          .build();
+          .setCredentials(BBjCredentials.createUser(ADMIN_USERNAME, ADMIN_PASSWORD))
+          .setVersion(CLIENT_VERSION).build();
 
       client.undeploy("../plugins/hello app");
 
-      assertEquals(List.of("/webforj-bbjship/version",
-          "/webforj-bbjship/applications/..%2Fplugins%2Fhello%20app"), paths);
+      assertEquals(
+          List.of(VERSION_PATH, "/webforj-bbjship/applications/..%2Fplugins%2Fhello%20app"), paths);
     } finally {
       bbjShip.stop(0);
     }
@@ -101,42 +105,36 @@ class BBjShipClientUndeploymentTest {
   void shouldFailWithoutFollowingRedirectWhenTheBbjShipRefuses(int status, String contentType,
       String answer, String message) throws IOException {
     List<String> paths = new ArrayList<>();
-    HttpServer bbjShip = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+    HttpServer bbjShip = HttpServer.create(new InetSocketAddress(LOOPBACK_ADDRESS, 0), 0);
     bbjShip.createContext("/", exchange -> {
       exchange.getRequestBody().readAllBytes();
       paths.add(exchange.getRequestURI().getPath());
       String body = answer;
       int code = status;
       if (exchange.getRequestURI().getPath().endsWith("/version")) {
-        body = """
-            {
-              "version": "26.03"
-            }
-            """;
+        body = VERSION_ANSWER;
         code = 200;
       } else {
         exchange.getResponseHeaders().set("Location", "/redirected");
       }
 
-      exchange.getResponseHeaders().set("Content-Type", contentType);
+      exchange.getResponseHeaders().set(CONTENT_TYPE, contentType);
       exchange.sendResponseHeaders(code, body.isEmpty() ? -1 : body.length());
       exchange.getResponseBody().write(body.getBytes(StandardCharsets.UTF_8));
       exchange.close();
     });
     bbjShip.start();
-    URI endpoint =
-        URI.create("http://127.0.0.1:%d/webforj-bbjship".formatted(bbjShip.getAddress().getPort()));
+    URI endpoint = URI.create(ENDPOINT_FORMAT.formatted(bbjShip.getAddress().getPort()));
     try {
       BBjShipClient client = BBjShipClient.create(endpoint)
-          .setCredentials(BBjCredentials.of("administrator", "secret-password")).setVersion("26.03")
-          .build();
+          .setCredentials(BBjCredentials.createUser(ADMIN_USERNAME, ADMIN_PASSWORD))
+          .setVersion(CLIENT_VERSION).build();
       String publishName = "hello-app";
 
       IOException failure = assertThrows(IOException.class, () -> client.undeploy(publishName));
 
       assertEquals(message, failure.getMessage());
-      assertEquals(List.of("/webforj-bbjship/version", "/webforj-bbjship/applications/hello-app"),
-          paths);
+      assertEquals(List.of(VERSION_PATH, "/webforj-bbjship/applications/hello-app"), paths);
     } finally {
       bbjShip.stop(0);
     }
@@ -144,16 +142,16 @@ class BBjShipClientUndeploymentTest {
 
   private static Stream<Arguments> getCredentials() {
     return Stream.of(
-        Arguments.of(BBjCredentials.of("administrator", "secret-password"),
+        Arguments.of(BBjCredentials.createUser(ADMIN_USERNAME, ADMIN_PASSWORD),
             "Basic YWRtaW5pc3RyYXRvcjpzZWNyZXQtcGFzc3dvcmQ="),
-        Arguments.of(BBjCredentials.ofToken("4f2a9c"), "Bearer 4f2a9c"));
+        Arguments.of(BBjCredentials.createToken("4f2a9c"), "Bearer 4f2a9c"));
   }
 
   private static Stream<Arguments> getRefusedUndeployments() {
     String failed = "BBj undeployment failed with HTTP %d. Check the endpoint, administration "
         + "credentials and BBjServices log";
     return Stream.of(
-        Arguments.of(404, "application/problem+json", """
+        Arguments.of(404, PROBLEM_JSON, """
             {
               "type": "about:blank",
               "title": "Not Found",
@@ -165,8 +163,7 @@ class BBjShipClientUndeploymentTest {
                 + "deployed by BBjShip"),
         Arguments.of(403, "text/plain", "denied", failed.formatted(403)),
         Arguments.of(302, "text/plain", "", failed.formatted(302)),
-        Arguments.of(500, "application/problem+json", "{}", failed.formatted(500)),
-        Arguments.of(500, "application/problem+json", "x".repeat(65537),
-            "BBj undeployment response exceeds the allowed size"));
+        Arguments.of(500, PROBLEM_JSON, "{}", failed.formatted(500)), Arguments.of(500,
+            PROBLEM_JSON, "x".repeat(65537), "BBj undeployment response exceeds the allowed size"));
   }
 }

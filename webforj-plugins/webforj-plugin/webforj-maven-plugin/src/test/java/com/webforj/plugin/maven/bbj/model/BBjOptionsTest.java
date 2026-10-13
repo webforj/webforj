@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 
 class BBjOptionsTest {
 
+  private static final String PUBLISH_NAME = "example";
+
   @Test
   void shouldStartWithDefaults() {
     BBjOptions options = new BBjOptions();
@@ -31,12 +33,12 @@ class BBjOptionsTest {
     BBjDeploymentOptions deployment = new BBjDeploymentOptions();
 
     options.setHome(home);
-    options.setPublishName("example");
+    options.setPublishName(PUBLISH_NAME);
     options.setAdmin(admin);
     options.setDeployment(deployment);
 
     assertSame(home, options.getHome());
-    assertEquals("example", options.getPublishName());
+    assertEquals(PUBLISH_NAME, options.getPublishName());
     assertSame(admin, options.getAdmin());
     assertSame(deployment, options.getDeployment());
   }
@@ -48,7 +50,7 @@ class BBjOptionsTest {
     BBjAdminOptions admin = new BBjAdminOptions();
     BBjDeploymentOptions deployment = new BBjDeploymentOptions();
     options.setHome(home);
-    options.setPublishName("example");
+    options.setPublishName(PUBLISH_NAME);
     options.setAdmin(admin);
     options.setDeployment(deployment);
     File missingHome = null;
@@ -61,7 +63,7 @@ class BBjOptionsTest {
     assertThrows(NullPointerException.class, () -> options.setDeployment(missingDeployment));
 
     assertSame(home, options.getHome());
-    assertEquals("example", options.getPublishName());
+    assertEquals(PUBLISH_NAME, options.getPublishName());
     assertSame(admin, options.getAdmin());
     assertSame(deployment, options.getDeployment());
   }

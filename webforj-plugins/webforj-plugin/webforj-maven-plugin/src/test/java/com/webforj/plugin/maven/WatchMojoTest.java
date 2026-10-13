@@ -26,6 +26,7 @@ import com.webforj.plugin.foundation.WatchPortFile;
 import com.webforj.plugin.foundation.bbj.BBjShipClient;
 import com.webforj.plugin.foundation.bbj.HelloApp;
 import com.webforj.plugin.foundation.bbj.Home;
+import com.webforj.plugin.foundation.bbj.Installation;
 import com.webforj.plugin.foundation.bbj.ServicesProperties;
 import com.webforj.plugin.foundation.bbj.Setup;
 import com.webforj.plugin.foundation.bbj.model.BBjCredentials;
@@ -82,6 +83,25 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
 class WatchMojoTest {
+
+  private static final String APPLICATION_NAME = "hello-app";
+  private static final String WEBFORJ_GROUP_ID = "com.webforj";
+  private static final String WEBFORJ_VERSION = "26.03-SNAPSHOT";
+  private static final String DEPLOYMENT_URL = "https://bbj.example.test/webforj-bbjship";
+  private static final String COMPILE_GOAL = "compile";
+  private static final String WATCH_GOAL = "webforj:watch";
+  private static final String INTERRUPTION_MESSAGE = "only the wait ends with the interruption";
+  private static final String CLASSES_DIRECTORY = "target/classes";
+  private static final String HOTSWAP_DIRECTORY = "hotswap";
+  private static final String DEVELOPMENT_PROPERTIES = "development.properties";
+  private static final String CONFIGURED_CLASS_FOLDER = "/work/hello-app/target/classes";
+  private static final String DEVELOPMENT_RUN_FAILURE =
+      "BBj development run failed. Check the deployment settings and that ";
+  private static final String DEVELOPMENT_RUNS_HINT =
+      "development runs are enabled on the BBj machine";
+  private static final String SERVICES_PROPERTIES_PATH = "bbx/cfg/BBj.properties";
+  private static final String JBR_JAVA = "/opt/jbr/bin/java";
+  private static final String JDK_JAVA = "/opt/jdk/bin/java";
 
   @Test
   void shouldSkipWhenThereIsNoSourceRoot() {
@@ -148,7 +168,7 @@ class WatchMojoTest {
     WatchSession watchSession = mock(WatchSession.class);
     when(execution.watch(any(), any(), any())).thenReturn(watchSession);
     WatchMojo mojo = newMojo(execution, tmp);
-    mojo.session = Development.newSession(List.of("compile", "webforj:watch"));
+    mojo.session = Development.newSession(List.of(COMPILE_GOAL, WATCH_GOAL));
     mojo.mojoExecution = Development.newWatchExecution();
     Log log = mock(Log.class);
     mojo.setLog(log);
@@ -162,7 +182,7 @@ class WatchMojoTest {
     try {
       mojo.execute();
 
-      assertTrue(Thread.interrupted(), "only the wait ends with the interruption");
+      assertTrue(Thread.interrupted(), INTERRUPTION_MESSAGE);
       verify(log).info(Development.LAST_GOAL_LINE);
       verify(log, never()).info(Development.STOP_LINE);
     } finally {
@@ -202,26 +222,27 @@ class WatchMojoTest {
 
     @BeforeEach
     void createMojo() throws Exception {
-      app = HelloApp.createCopy(temporary.resolve("hello-app"));
+      app = HelloApp.createCopy(temporary.resolve(APPLICATION_NAME));
+      Files.createDirectories(app.resolve(CLASSES_DIRECTORY));
       foundation = Path.of(App.class.getProtectionDomain().getCodeSource().getLocation().toURI());
       devtools = temporary.resolve("webforj-devtools.jar");
       new JarOutputStream(Files.newOutputStream(devtools)).close();
       archive = app.resolve("target/bbj/hello-app.zip");
-      DefaultArtifact framework = new DefaultArtifact("com.webforj", "webforj-foundation",
-          "26.03-SNAPSHOT", "compile", "jar", null, new DefaultArtifactHandler("jar"));
+      DefaultArtifact framework = new DefaultArtifact(WEBFORJ_GROUP_ID, "webforj-foundation",
+          WEBFORJ_VERSION, COMPILE_GOAL, "jar", null, new DefaultArtifactHandler("jar"));
       framework.setFile(foundation.toFile());
       toolchainManager = mock(ToolchainManager.class);
       repositorySystem = mock(RepositorySystem.class);
       mojo = new WatchMojo(toolchainManager, repositorySystem);
       mojo.project = new MavenProject();
       mojo.project.getBuild().setDirectory(app.resolve("target").toString());
-      mojo.project.getBuild().setOutputDirectory(app.resolve("target/classes").toString());
+      mojo.project.getBuild().setOutputDirectory(app.resolve(CLASSES_DIRECTORY).toString());
       mojo.project.setArtifacts(Set.of(framework));
       mojo.sourceRoot = app.resolve("src/main/frontend").toFile();
       mojo.pluginDescriptor = new PluginDescriptor();
-      mojo.pluginDescriptor.setVersion("26.03-SNAPSHOT");
-      mojo.bbj.setPublishName("hello-app");
-      mojo.bbj.getDeployment().setUrl("https://bbj.example.test/webforj-bbjship");
+      mojo.pluginDescriptor.setVersion(WEBFORJ_VERSION);
+      mojo.bbj.setPublishName(APPLICATION_NAME);
+      mojo.bbj.getDeployment().setUrl(DEPLOYMENT_URL);
       mojo.bbj.getAdmin().setUsername("administrator");
       mojo.bbj.getAdmin().setPassword("secret");
       log = mock(Log.class);
@@ -229,13 +250,13 @@ class WatchMojoTest {
       bbjShip = mock(BBjShipClient.class);
       bbjShipBuilder = mock(BBjShipClient.Builder.class, Answers.RETURNS_SELF);
       when(bbjShipBuilder.build()).thenReturn(bbjShip);
-      when(bbjShip.deploy(archive, "hello-app"))
+      when(bbjShip.deploy(archive, APPLICATION_NAME))
           .thenReturn(URI.create("https://bbj.example.test/webapp/hello-app"));
       deliveryBuilder = mock(DevtoolsDelivery.Builder.class, Answers.RETURNS_SELF);
       DevtoolsDelivery delivery = mock(DevtoolsDelivery.class);
       when(deliveryBuilder.build()).thenReturn(delivery);
-      when(delivery.getJars()).thenReturn(
-          List.of(new ResolvedJar("com.webforj", "webforj-devtools", "26.03-SNAPSHOT", devtools)));
+      when(delivery.getJars()).thenReturn(List
+          .of(new ResolvedJar(WEBFORJ_GROUP_ID, "webforj-devtools", WEBFORJ_VERSION, devtools)));
       bundle = temporary.resolve("webforj-bbjship-26.03-SNAPSHOT-bbj-plugin.zip");
       Artifact bbjShipPackage = mock(Artifact.class);
       when(bbjShipPackage.getFile()).thenReturn(bundle.toFile());
@@ -245,7 +266,7 @@ class WatchMojoTest {
       setup = mock(Setup.class);
       setupBuilder = mock(Setup.Builder.class, Answers.RETURNS_SELF);
       when(setupBuilder.build()).thenReturn(setup);
-      optionsDirectory = temporary.resolve("hotswap");
+      optionsDirectory = temporary.resolve(HOTSWAP_DIRECTORY);
       injection = mock(HotswapInjection.class);
       when(injection.apply())
           .thenReturn(List.of("-XX:VMOptionsFile=" + optionsDirectory.resolve("hotswap.options")));
@@ -275,25 +296,23 @@ class WatchMojoTest {
       try (var bbjShips = mockStatic(BBjShipClient.class);
           var deliveries = mockStatic(DevtoolsDelivery.class);
           var setups = mockStatic(Setup.class)) {
-        bbjShips
-            .when(
-                () -> BBjShipClient.create(URI.create("https://bbj.example.test/webforj-bbjship")))
+        bbjShips.when(() -> BBjShipClient.create(URI.create(DEPLOYMENT_URL)))
             .thenReturn(bbjShipBuilder);
         deliveries.when(DevtoolsDelivery::create).thenReturn(deliveryBuilder);
-        setups.when(() -> Setup.create(bundle, "26.03-SNAPSHOT")).thenReturn(setupBuilder);
+        setups.when(() -> Setup.create(bundle, WEBFORJ_VERSION)).thenReturn(setupBuilder);
 
         mojo.execute();
       }
 
       verify(deliveryBuilder).setArtifactId("webforj-devtools");
-      verify(bbjShip).deploy(archive, "hello-app");
+      verify(bbjShip).deploy(archive, APPLICATION_NAME);
       try (ZipFile zip = new ZipFile(archive.toFile())) {
         assertEquals(List.of("dependencies/00000-" + foundation.getFileName(),
-            "dependencies/00001-webforj-devtools.jar", "development.properties", "bbj/webforj.bbj"),
+            "dependencies/00001-webforj-devtools.jar", DEVELOPMENT_PROPERTIES, "bbj/webforj.bbj"),
             zip.stream().map(ZipEntry::getName).toList());
-        try (InputStream input = zip.getInputStream(zip.getEntry("development.properties"))) {
+        try (InputStream input = zip.getInputStream(zip.getEntry(DEVELOPMENT_PROPERTIES))) {
           String text = new String(input.readAllBytes(), StandardCharsets.UTF_8);
-          assertEquals("classFolder=" + app.resolve("target/classes").toAbsolutePath()
+          assertEquals("classFolder=" + app.resolve(CLASSES_DIRECTORY).toAbsolutePath()
               + System.lineSeparator(), text.substring(text.indexOf('\n') + 1));
         }
       }
@@ -303,72 +322,84 @@ class WatchMojoTest {
 
     @Test
     void shouldSendTheConfiguredClassFolder() throws Exception {
-      mojo.bbj.getDevelopment().setClassFolder(new File("/work/hello-app/target/classes"));
+      mojo.bbj.getDevelopment().setClassFolder(new File(CONFIGURED_CLASS_FOLDER));
 
       try (var bbjShips = mockStatic(BBjShipClient.class);
           var deliveries = mockStatic(DevtoolsDelivery.class);
           var setups = mockStatic(Setup.class)) {
-        bbjShips
-            .when(
-                () -> BBjShipClient.create(URI.create("https://bbj.example.test/webforj-bbjship")))
+        bbjShips.when(() -> BBjShipClient.create(URI.create(DEPLOYMENT_URL)))
             .thenReturn(bbjShipBuilder);
         deliveries.when(DevtoolsDelivery::create).thenReturn(deliveryBuilder);
-        setups.when(() -> Setup.create(bundle, "26.03-SNAPSHOT")).thenReturn(setupBuilder);
+        setups.when(() -> Setup.create(bundle, WEBFORJ_VERSION)).thenReturn(setupBuilder);
 
         mojo.execute();
       }
 
       try (ZipFile zip = new ZipFile(archive.toFile());
-          InputStream input = zip.getInputStream(zip.getEntry("development.properties"))) {
+          InputStream input = zip.getInputStream(zip.getEntry(DEVELOPMENT_PROPERTIES))) {
         String text = new String(input.readAllBytes(), StandardCharsets.UTF_8);
-        assertEquals("classFolder=" + Path.of("/work/hello-app/target/classes").toAbsolutePath()
+        assertEquals("classFolder=" + Path.of(CONFIGURED_CLASS_FOLDER).toAbsolutePath()
             + System.lineSeparator(), text.substring(text.indexOf('\n') + 1));
       }
+    }
+
+    @Test
+    void shouldFailBeforeTheSetupWhenTheClassFolderDoesNotExist() throws Exception {
+      Files.delete(app.resolve(CLASSES_DIRECTORY));
+
+      try (var bbjShips = mockStatic(BBjShipClient.class);
+          var deliveries = mockStatic(DevtoolsDelivery.class);
+          var setups = mockStatic(Setup.class)) {
+        MojoExecutionException failure = assertThrows(MojoExecutionException.class, mojo::execute);
+
+        assertEquals("The class folder " + app.resolve(CLASSES_DIRECTORY).toAbsolutePath()
+            + " does not exist. Run compile before webforj:watch", failure.getMessage());
+        bbjShips.verifyNoInteractions();
+        deliveries.verifyNoInteractions();
+        setups.verifyNoInteractions();
+      }
+
+      assertFalse(Files.exists(archive));
     }
 
     @Test
     void shouldFailTheGoalWhenTheBbjShipRefusesTheDevelopmentRun() throws Exception {
       IOException refusal = new IOException("BBj deployment failed. Development runs are not "
           + "enabled on this BBj machine. Run cli development enable");
-      when(bbjShip.deploy(archive, "hello-app")).thenThrow(refusal);
+      when(bbjShip.deploy(archive, APPLICATION_NAME)).thenThrow(refusal);
 
       try (var bbjShips = mockStatic(BBjShipClient.class);
           var deliveries = mockStatic(DevtoolsDelivery.class);
           var setups = mockStatic(Setup.class)) {
-        bbjShips
-            .when(
-                () -> BBjShipClient.create(URI.create("https://bbj.example.test/webforj-bbjship")))
+        bbjShips.when(() -> BBjShipClient.create(URI.create(DEPLOYMENT_URL)))
             .thenReturn(bbjShipBuilder);
         deliveries.when(DevtoolsDelivery::create).thenReturn(deliveryBuilder);
-        setups.when(() -> Setup.create(bundle, "26.03-SNAPSHOT")).thenReturn(setupBuilder);
+        setups.when(() -> Setup.create(bundle, WEBFORJ_VERSION)).thenReturn(setupBuilder);
 
         MojoExecutionException failure = assertThrows(MojoExecutionException.class, mojo::execute);
 
-        assertEquals("BBj development run failed. Check the deployment settings and that "
-            + "development runs are enabled on the BBj machine", failure.getMessage());
+        assertEquals(DEVELOPMENT_RUN_FAILURE + DEVELOPMENT_RUNS_HINT, failure.getMessage());
         assertSame(refusal, failure.getCause());
       }
     }
 
     @Test
     void shouldSetUpTheBbjShipForDevelopmentRunsBeforeTheDeploy() throws Exception {
-      try (var bbjShips = mockStatic(BBjShipClient.class);
+      try (var bbjShips = mockStatic(BBjShipClient.class, Answers.CALLS_REAL_METHODS);
           var deliveries = mockStatic(DevtoolsDelivery.class);
           var setups = mockStatic(Setup.class)) {
-        bbjShips
-            .when(
-                () -> BBjShipClient.create(URI.create("https://bbj.example.test/webforj-bbjship")))
+        bbjShips.when(() -> BBjShipClient.create(URI.create(DEPLOYMENT_URL)))
             .thenReturn(bbjShipBuilder);
         deliveries.when(DevtoolsDelivery::create).thenReturn(deliveryBuilder);
-        setups.when(() -> Setup.create(bundle, "26.03-SNAPSHOT")).thenReturn(setupBuilder);
+        setups.when(() -> Setup.create(bundle, WEBFORJ_VERSION)).thenReturn(setupBuilder);
 
         mojo.execute();
       }
 
       InOrder order = inOrder(setup, bbjShip);
       order.verify(setup).apply();
-      order.verify(bbjShip).deploy(archive, "hello-app");
-      verify(setupBuilder).setDeploymentUrl(URI.create("https://bbj.example.test/webforj-bbjship"));
+      order.verify(bbjShip).deploy(archive, APPLICATION_NAME);
+      verify(setupBuilder).setDeploymentUrl(URI.create(DEPLOYMENT_URL));
       verify(setupBuilder).setPort(443);
       verify(setupBuilder).setDevelopmentEnabled(true);
       ArgumentCaptor<BBjCredentials> credentials = ArgumentCaptor.forClass(BBjCredentials.class);
@@ -390,8 +421,8 @@ class WatchMojoTest {
     @Test
     void shouldHandTheHotswapSettingsToTheSetup() throws Exception {
       mojo.bbj.setHome(temporary.resolve("bbx").toFile());
-      mojo.bbj.setProperties(temporary.resolve("bbx/cfg/BBj.properties").toFile());
-      mojo.session = newSession(List.of("compile", "webforj:watch"));
+      mojo.bbj.setProperties(temporary.resolve(SERVICES_PROPERTIES_PATH).toFile());
+      mojo.session = newSession(List.of(COMPILE_GOAL, WATCH_GOAL));
       Toolchain toolchain = mock(Toolchain.class);
       Path java = temporary.resolve("jdk/bin/java");
       when(toolchain.findTool("java")).thenReturn(java.toString());
@@ -402,12 +433,10 @@ class WatchMojoTest {
           var deliveries = mockStatic(DevtoolsDelivery.class);
           var setups = mockStatic(Setup.class);
           var injections = mockStatic(HotswapInjection.class)) {
-        bbjShips
-            .when(
-                () -> BBjShipClient.create(URI.create("https://bbj.example.test/webforj-bbjship")))
+        bbjShips.when(() -> BBjShipClient.create(URI.create(DEPLOYMENT_URL)))
             .thenReturn(bbjShipBuilder);
         deliveries.when(DevtoolsDelivery::create).thenReturn(deliveryBuilder);
-        setups.when(() -> Setup.create(bundle, "26.03-SNAPSHOT")).thenReturn(setupBuilder);
+        setups.when(() -> Setup.create(bundle, WEBFORJ_VERSION)).thenReturn(setupBuilder);
         injections.when(HotswapInjection::create).thenReturn(injectionBuilder);
 
         mojo.execute();
@@ -416,7 +445,7 @@ class WatchMojoTest {
       verify(setupBuilder).setHome(temporary.resolve("bbx"));
       ArgumentCaptor<JavaSettings> settings = ArgumentCaptor.forClass(JavaSettings.class);
       verify(setupBuilder).setJavaSettings(settings.capture());
-      assertEquals(Optional.of(temporary.resolve("bbx/cfg/BBj.properties")),
+      assertEquals(Optional.of(temporary.resolve(SERVICES_PROPERTIES_PATH)),
           settings.getValue().getPropertiesFile());
       assertEquals(optionsDirectory, settings.getValue().getOptionsDirectory());
     }
@@ -424,7 +453,7 @@ class WatchMojoTest {
     @Test
     void shouldPreferTheCommandLineHomeAndProperties() throws Exception {
       mojo.bbj.setHome(temporary.resolve("bbx").toFile());
-      mojo.bbj.setProperties(temporary.resolve("bbx/cfg/BBj.properties").toFile());
+      mojo.bbj.setProperties(temporary.resolve(SERVICES_PROPERTIES_PATH).toFile());
       mojo.home = temporary.resolve("bbx-25").toFile();
       mojo.properties = temporary.resolve("bbx-25/cfg/BBj.properties").toFile();
 
@@ -432,12 +461,10 @@ class WatchMojoTest {
           var deliveries = mockStatic(DevtoolsDelivery.class);
           var setups = mockStatic(Setup.class);
           var injections = mockStatic(HotswapInjection.class)) {
-        bbjShips
-            .when(
-                () -> BBjShipClient.create(URI.create("https://bbj.example.test/webforj-bbjship")))
+        bbjShips.when(() -> BBjShipClient.create(URI.create(DEPLOYMENT_URL)))
             .thenReturn(bbjShipBuilder);
         deliveries.when(DevtoolsDelivery::create).thenReturn(deliveryBuilder);
-        setups.when(() -> Setup.create(bundle, "26.03-SNAPSHOT")).thenReturn(setupBuilder);
+        setups.when(() -> Setup.create(bundle, WEBFORJ_VERSION)).thenReturn(setupBuilder);
         injections.when(HotswapInjection::create).thenReturn(injectionBuilder);
 
         mojo.execute();
@@ -456,12 +483,10 @@ class WatchMojoTest {
           var deliveries = mockStatic(DevtoolsDelivery.class);
           var setups = mockStatic(Setup.class);
           var injections = mockStatic(HotswapInjection.class)) {
-        bbjShips
-            .when(
-                () -> BBjShipClient.create(URI.create("https://bbj.example.test/webforj-bbjship")))
+        bbjShips.when(() -> BBjShipClient.create(URI.create(DEPLOYMENT_URL)))
             .thenReturn(bbjShipBuilder);
         deliveries.when(DevtoolsDelivery::create).thenReturn(deliveryBuilder);
-        setups.when(() -> Setup.create(bundle, "26.03-SNAPSHOT")).thenReturn(setupBuilder);
+        setups.when(() -> Setup.create(bundle, WEBFORJ_VERSION)).thenReturn(setupBuilder);
         injections.when(HotswapInjection::create).thenReturn(injectionBuilder);
 
         mojo.execute();
@@ -486,13 +511,10 @@ class WatchMojoTest {
           var deliveries = mockStatic(DevtoolsDelivery.class);
           var setups = mockStatic(Setup.class);
           var injections = mockStatic(HotswapInjection.class)) {
-        bbjShips
-            .when(
-                () -> BBjShipClient.create(URI.create("https://bbj.example.test/webforj-bbjship")))
+        bbjShips.when(() -> BBjShipClient.create(URI.create(DEPLOYMENT_URL)))
             .thenReturn(bbjShipBuilder);
         deliveries.when(DevtoolsDelivery::create).thenReturn(deliveryBuilder);
-        setups.when(() -> Setup.create(bundle, "26.03-SNAPSHOT")).thenReturn(setupBuilder);
-        setups.when(() -> Setup.resolveHome(bbx)).thenCallRealMethod();
+        setups.when(() -> Setup.create(bundle, WEBFORJ_VERSION)).thenReturn(setupBuilder);
         injections.when(HotswapInjection::create).thenReturn(injectionBuilder);
 
         mojo.execute();
@@ -515,13 +537,10 @@ class WatchMojoTest {
           var setups = mockStatic(Setup.class);
           var injections = mockStatic(HotswapInjection.class);
           var services = mockStatic(ServicesProperties.class, Answers.CALLS_REAL_METHODS)) {
-        bbjShips
-            .when(
-                () -> BBjShipClient.create(URI.create("https://bbj.example.test/webforj-bbjship")))
+        bbjShips.when(() -> BBjShipClient.create(URI.create(DEPLOYMENT_URL)))
             .thenReturn(bbjShipBuilder);
         deliveries.when(DevtoolsDelivery::create).thenReturn(deliveryBuilder);
-        setups.when(() -> Setup.create(bundle, "26.03-SNAPSHOT")).thenReturn(setupBuilder);
-        setups.when(() -> Setup.resolveHome(bbx)).thenCallRealMethod();
+        setups.when(() -> Setup.create(bundle, WEBFORJ_VERSION)).thenReturn(setupBuilder);
         injections.when(HotswapInjection::create).thenReturn(injectionBuilder);
 
         mojo.execute();
@@ -529,7 +548,7 @@ class WatchMojoTest {
         services.verify(() -> ServicesProperties.findJavaExecutable(bbx, null));
       }
 
-      verify(injectionBuilder).setJavaExecutable(Path.of("/opt/jbr/bin/java"));
+      verify(injectionBuilder).setJavaExecutable(Path.of(JBR_JAVA));
     }
 
     @ParameterizedTest
@@ -542,23 +561,22 @@ class WatchMojoTest {
           """);
       mojo.properties = file.toFile();
       mojo.hotswapSelection = selection;
-      mojo.session = newSession(List.of("compile", "webforj:watch"));
+      mojo.session = newSession(List.of(COMPILE_GOAL, WATCH_GOAL));
       Toolchain toolchain = mock(Toolchain.class);
-      when(toolchain.findTool("java")).thenReturn("/opt/jdk/bin/java");
+      when(toolchain.findTool("java")).thenReturn(JDK_JAVA);
       when(toolchainManager.getToolchainFromBuildContext("jdk", mojo.session))
           .thenReturn(toolchain);
 
       try (var bbjShips = mockStatic(BBjShipClient.class);
           var deliveries = mockStatic(DevtoolsDelivery.class);
           var setups = mockStatic(Setup.class);
+          var installations = mockStatic(Installation.class);
           var injections = mockStatic(HotswapInjection.class)) {
-        bbjShips
-            .when(
-                () -> BBjShipClient.create(URI.create("https://bbj.example.test/webforj-bbjship")))
+        bbjShips.when(() -> BBjShipClient.create(URI.create(DEPLOYMENT_URL)))
             .thenReturn(bbjShipBuilder);
         deliveries.when(DevtoolsDelivery::create).thenReturn(deliveryBuilder);
-        setups.when(() -> Setup.create(bundle, "26.03-SNAPSHOT")).thenReturn(setupBuilder);
-        setups.when(() -> Setup.resolveHome(null)).thenReturn(temporary);
+        setups.when(() -> Setup.create(bundle, WEBFORJ_VERSION)).thenReturn(setupBuilder);
+        installations.when(() -> Installation.resolveHome(null)).thenReturn(temporary);
         injections.when(HotswapInjection::create).thenReturn(injectionBuilder);
 
         mojo.execute();
@@ -569,19 +587,17 @@ class WatchMojoTest {
 
     @Test
     void shouldHandNoJavaToTheHotswapCheckWithoutThePropertiesFileOfBbjServices() throws Exception {
-      mojo.bbj.setProperties(temporary.resolve("bbx/cfg/BBj.properties").toFile());
+      mojo.bbj.setProperties(temporary.resolve(SERVICES_PROPERTIES_PATH).toFile());
       mojo.hotswap = new HotswapOptions();
 
       try (var bbjShips = mockStatic(BBjShipClient.class);
           var deliveries = mockStatic(DevtoolsDelivery.class);
           var setups = mockStatic(Setup.class);
           var injections = mockStatic(HotswapInjection.class)) {
-        bbjShips
-            .when(
-                () -> BBjShipClient.create(URI.create("https://bbj.example.test/webforj-bbjship")))
+        bbjShips.when(() -> BBjShipClient.create(URI.create(DEPLOYMENT_URL)))
             .thenReturn(bbjShipBuilder);
         deliveries.when(DevtoolsDelivery::create).thenReturn(deliveryBuilder);
-        setups.when(() -> Setup.create(bundle, "26.03-SNAPSHOT")).thenReturn(setupBuilder);
+        setups.when(() -> Setup.create(bundle, WEBFORJ_VERSION)).thenReturn(setupBuilder);
         injections.when(HotswapInjection::create).thenReturn(injectionBuilder);
 
         mojo.execute();
@@ -596,9 +612,9 @@ class WatchMojoTest {
           new IOException("Cannot detect a BBj installation. Configure bbj.home or BBJ_HOME");
       mojo.hotswap = new HotswapOptions();
 
-      try (var setups = mockStatic(Setup.class);
+      try (var installations = mockStatic(Installation.class);
           var injections = mockStatic(HotswapInjection.class)) {
-        setups.when(() -> Setup.resolveHome(null)).thenThrow(missing);
+        installations.when(() -> Installation.resolveHome(null)).thenThrow(missing);
         injections.when(HotswapInjection::create).thenReturn(injectionBuilder);
 
         MojoExecutionException failure = assertThrows(MojoExecutionException.class, mojo::execute);
@@ -613,24 +629,22 @@ class WatchMojoTest {
 
     @Test
     void shouldHandTheCommandLineHotswapDirectoryToTheInjection() throws Exception {
-      mojo.hotswapDirectory = temporary.resolve("hotswap").toFile();
+      mojo.hotswapDirectory = temporary.resolve(HOTSWAP_DIRECTORY).toFile();
 
       try (var bbjShips = mockStatic(BBjShipClient.class);
           var deliveries = mockStatic(DevtoolsDelivery.class);
           var setups = mockStatic(Setup.class);
           var injections = mockStatic(HotswapInjection.class)) {
-        bbjShips
-            .when(
-                () -> BBjShipClient.create(URI.create("https://bbj.example.test/webforj-bbjship")))
+        bbjShips.when(() -> BBjShipClient.create(URI.create(DEPLOYMENT_URL)))
             .thenReturn(bbjShipBuilder);
         deliveries.when(DevtoolsDelivery::create).thenReturn(deliveryBuilder);
-        setups.when(() -> Setup.create(bundle, "26.03-SNAPSHOT")).thenReturn(setupBuilder);
+        setups.when(() -> Setup.create(bundle, WEBFORJ_VERSION)).thenReturn(setupBuilder);
         injections.when(HotswapInjection::create).thenReturn(injectionBuilder);
 
         mojo.execute();
       }
 
-      verify(injectionBuilder).setDirectory(temporary.resolve("hotswap"));
+      verify(injectionBuilder).setDirectory(temporary.resolve(HOTSWAP_DIRECTORY));
     }
 
     @Test
@@ -640,7 +654,7 @@ class WatchMojoTest {
       mojo.project.getBuild().addPlugin(runner);
       mojo.hotswap = new HotswapOptions();
       Path java = temporary.resolve("jdk/bin/java");
-      mojo.session = newSession(List.of("compile", "webforj:watch"));
+      mojo.session = newSession(List.of(COMPILE_GOAL, WATCH_GOAL));
       Toolchain toolchain = mock(Toolchain.class);
       when(toolchain.findTool("java")).thenReturn(java.toString());
       when(toolchainManager.getToolchainFromBuildContext("jdk", mojo.session))
@@ -651,12 +665,10 @@ class WatchMojoTest {
           var deliveries = mockStatic(DevtoolsDelivery.class);
           var setups = mockStatic(Setup.class);
           var injections = mockStatic(HotswapInjection.class)) {
-        bbjShips
-            .when(
-                () -> BBjShipClient.create(URI.create("https://bbj.example.test/webforj-bbjship")))
+        bbjShips.when(() -> BBjShipClient.create(URI.create(DEPLOYMENT_URL)))
             .thenReturn(bbjShipBuilder);
         deliveries.when(DevtoolsDelivery::create).thenReturn(deliveryBuilder);
-        setups.when(() -> Setup.create(bundle, "26.03-SNAPSHOT")).thenReturn(setupBuilder);
+        setups.when(() -> Setup.create(bundle, WEBFORJ_VERSION)).thenReturn(setupBuilder);
         injections.when(HotswapInjection::create).thenReturn(injectionBuilder);
 
         mojo.execute();
@@ -676,12 +688,10 @@ class WatchMojoTest {
       try (var bbjShips = mockStatic(BBjShipClient.class);
           var deliveries = mockStatic(DevtoolsDelivery.class);
           var setups = mockStatic(Setup.class)) {
-        bbjShips
-            .when(
-                () -> BBjShipClient.create(URI.create("https://bbj.example.test/webforj-bbjship")))
+        bbjShips.when(() -> BBjShipClient.create(URI.create(DEPLOYMENT_URL)))
             .thenReturn(bbjShipBuilder);
         deliveries.when(DevtoolsDelivery::create).thenReturn(deliveryBuilder);
-        setups.when(() -> Setup.create(bundle, "26.03-SNAPSHOT")).thenReturn(setupBuilder);
+        setups.when(() -> Setup.create(bundle, WEBFORJ_VERSION)).thenReturn(setupBuilder);
 
         mojo.execute();
       }
@@ -699,12 +709,10 @@ class WatchMojoTest {
       try (var bbjShips = mockStatic(BBjShipClient.class);
           var deliveries = mockStatic(DevtoolsDelivery.class);
           var setups = mockStatic(Setup.class)) {
-        bbjShips
-            .when(
-                () -> BBjShipClient.create(URI.create("https://bbj.example.test/webforj-bbjship")))
+        bbjShips.when(() -> BBjShipClient.create(URI.create(DEPLOYMENT_URL)))
             .thenReturn(bbjShipBuilder);
         deliveries.when(DevtoolsDelivery::create).thenReturn(deliveryBuilder);
-        setups.when(() -> Setup.create(bundle, "26.03-SNAPSHOT")).thenReturn(setupBuilder);
+        setups.when(() -> Setup.create(bundle, WEBFORJ_VERSION)).thenReturn(setupBuilder);
 
         mojo.execute();
       }
@@ -722,17 +730,14 @@ class WatchMojoTest {
       try (var bbjShips = mockStatic(BBjShipClient.class);
           var deliveries = mockStatic(DevtoolsDelivery.class);
           var setups = mockStatic(Setup.class)) {
-        bbjShips
-            .when(
-                () -> BBjShipClient.create(URI.create("https://bbj.example.test/webforj-bbjship")))
+        bbjShips.when(() -> BBjShipClient.create(URI.create(DEPLOYMENT_URL)))
             .thenReturn(bbjShipBuilder);
         deliveries.when(DevtoolsDelivery::create).thenReturn(deliveryBuilder);
-        setups.when(() -> Setup.create(bundle, "26.03-SNAPSHOT")).thenReturn(setupBuilder);
+        setups.when(() -> Setup.create(bundle, WEBFORJ_VERSION)).thenReturn(setupBuilder);
 
         MojoExecutionException failure = assertThrows(MojoExecutionException.class, mojo::execute);
 
-        assertEquals("BBj development run failed. Check the deployment settings and that "
-            + "development runs are enabled on the BBj machine", failure.getMessage());
+        assertEquals(DEVELOPMENT_RUN_FAILURE + DEVELOPMENT_RUNS_HINT, failure.getMessage());
         assertSame(refusal, failure.getCause());
       }
 
@@ -746,8 +751,7 @@ class WatchMojoTest {
 
       MojoExecutionException failure = assertThrows(MojoExecutionException.class, mojo::execute);
 
-      assertEquals("BBj development run failed. Check the deployment settings and that "
-          + "development runs are enabled on the BBj machine", failure.getMessage());
+      assertEquals(DEVELOPMENT_RUN_FAILURE + DEVELOPMENT_RUNS_HINT, failure.getMessage());
       assertSame(missing, failure.getCause());
     }
 
@@ -757,18 +761,16 @@ class WatchMojoTest {
       try (var bbjShips = mockStatic(BBjShipClient.class);
           var deliveries = mockStatic(DevtoolsDelivery.class);
           var setups = mockStatic(Setup.class)) {
-        bbjShips
-            .when(
-                () -> BBjShipClient.create(URI.create("https://bbj.example.test/webforj-bbjship")))
+        bbjShips.when(() -> BBjShipClient.create(URI.create(DEPLOYMENT_URL)))
             .thenReturn(bbjShipBuilder);
         deliveries.when(DevtoolsDelivery::create).thenReturn(deliveryBuilder);
-        setups.when(() -> Setup.create(bundle, "26.03-SNAPSHOT")).thenReturn(setupBuilder);
+        setups.when(() -> Setup.create(bundle, WEBFORJ_VERSION)).thenReturn(setupBuilder);
         run = mojo.startDevelopmentRun();
       }
 
       mojo.stopDevelopmentRun(run.orElseThrow());
 
-      verify(bbjShip).undeploy("hello-app");
+      verify(bbjShip).undeploy(APPLICATION_NAME);
       verify(log).info("webforJ watch: development run of hello-app stopped");
     }
 
@@ -778,17 +780,15 @@ class WatchMojoTest {
       try (var bbjShips = mockStatic(BBjShipClient.class);
           var deliveries = mockStatic(DevtoolsDelivery.class);
           var setups = mockStatic(Setup.class)) {
-        bbjShips
-            .when(
-                () -> BBjShipClient.create(URI.create("https://bbj.example.test/webforj-bbjship")))
+        bbjShips.when(() -> BBjShipClient.create(URI.create(DEPLOYMENT_URL)))
             .thenReturn(bbjShipBuilder);
         deliveries.when(DevtoolsDelivery::create).thenReturn(deliveryBuilder);
-        setups.when(() -> Setup.create(bundle, "26.03-SNAPSHOT")).thenReturn(setupBuilder);
+        setups.when(() -> Setup.create(bundle, WEBFORJ_VERSION)).thenReturn(setupBuilder);
         run = mojo.startDevelopmentRun();
       }
 
       doThrow(new IOException("BBj undeployment failed. BBjShip is not reachable")).when(bbjShip)
-          .undeploy("hello-app");
+          .undeploy(APPLICATION_NAME);
 
       assertDoesNotThrow(() -> mojo.stopDevelopmentRun(run.orElseThrow()));
 
@@ -814,17 +814,15 @@ class WatchMojoTest {
       try (var bbjShips = mockStatic(BBjShipClient.class);
           var deliveries = mockStatic(DevtoolsDelivery.class);
           var setups = mockStatic(Setup.class)) {
-        bbjShips
-            .when(
-                () -> BBjShipClient.create(URI.create("https://bbj.example.test/webforj-bbjship")))
+        bbjShips.when(() -> BBjShipClient.create(URI.create(DEPLOYMENT_URL)))
             .thenReturn(bbjShipBuilder);
         deliveries.when(DevtoolsDelivery::create).thenReturn(deliveryBuilder);
-        setups.when(() -> Setup.create(bundle, "26.03-SNAPSHOT")).thenReturn(setupBuilder);
+        setups.when(() -> Setup.create(bundle, WEBFORJ_VERSION)).thenReturn(setupBuilder);
 
         mojo.execute();
       }
 
-      assertEquals(kept, Thread.interrupted(), "only the wait ends with the interruption");
+      assertEquals(kept, Thread.interrupted(), INTERRUPTION_MESSAGE);
       verify(log, times(kept ? 1 : 0)).info(STOP_LINE);
     }
 
@@ -843,18 +841,15 @@ class WatchMojoTest {
       try (var bbjShips = mockStatic(BBjShipClient.class);
           var deliveries = mockStatic(DevtoolsDelivery.class);
           var setups = mockStatic(Setup.class)) {
-        bbjShips
-            .when(
-                () -> BBjShipClient.create(URI.create("https://bbj.example.test/webforj-bbjship")))
+        bbjShips.when(() -> BBjShipClient.create(URI.create(DEPLOYMENT_URL)))
             .thenReturn(bbjShipBuilder);
         deliveries.when(DevtoolsDelivery::create).thenReturn(deliveryBuilder);
-        setups.when(() -> Setup.create(bundle, "26.03-SNAPSHOT")).thenReturn(setupBuilder);
+        setups.when(() -> Setup.create(bundle, WEBFORJ_VERSION)).thenReturn(setupBuilder);
 
         mojo.execute();
       }
 
-      assertEquals(expected.contains(STOP_LINE), Thread.interrupted(),
-          "only the wait ends with the interruption");
+      assertEquals(expected.contains(STOP_LINE), Thread.interrupted(), INTERRUPTION_MESSAGE);
       ArgumentCaptor<CharSequence> lines = ArgumentCaptor.forClass(CharSequence.class);
       verify(log, atLeastOnce()).info(lines.capture());
       List<CharSequence> logged = lines.getAllValues();
@@ -865,7 +860,7 @@ class WatchMojoTest {
     @Test
     void shouldReturnAtOnceWhenTheGoalHadNothingToDo() throws Exception {
       mojo.bbj.getDeployment().setUrl("");
-      mojo.session = newSession(List.of("compile", "webforj:watch"));
+      mojo.session = newSession(List.of(COMPILE_GOAL, WATCH_GOAL));
       mojo.mojoExecution = newWatchExecution();
 
       mojo.execute();
@@ -874,13 +869,13 @@ class WatchMojoTest {
     }
 
     private static Stream<Arguments> getGoals() {
-      return Stream.of(Arguments.of(List.of("compile", "webforj:watch"), null, true),
+      return Stream.of(Arguments.of(List.of(COMPILE_GOAL, WATCH_GOAL), null, true),
           Arguments.of(List.of("com.webforj:webforj-maven-plugin:watch"), null, true),
           Arguments.of(List.of("com.webforj:webforj-maven-plugin:26.03:watch"), null, true),
           Arguments.of(List.of("webforj:watch@development"), null, true),
           Arguments.of(List.of(), "compile webforj:watch", true),
-          Arguments.of(List.of("webforj:watch", "jetty:run"), null, false),
-          Arguments.of(List.of("webforj:watch", "spring-boot:run"), null, false),
+          Arguments.of(List.of(WATCH_GOAL, "jetty:run"), null, false),
+          Arguments.of(List.of(WATCH_GOAL, "spring-boot:run"), null, false),
           Arguments.of(List.of("other:watch"), null, false),
           Arguments.of(List.of("org.example:webforj-maven-plugin:watch"), null, false),
           Arguments.of(List.of("watch"), null, false), Arguments.of(List.of(), null, false));
@@ -888,15 +883,15 @@ class WatchMojoTest {
 
     private static Stream<Arguments> getAddressLines() {
       return Stream.of(
-          Arguments.of(List.of("compile", "webforj:watch"), List.of(ADDRESS_LINE, STOP_LINE)),
-          Arguments.of(List.of("webforj:watch", "jetty:run"), List.of(ADDRESS_LINE)));
+          Arguments.of(List.of(COMPILE_GOAL, WATCH_GOAL), List.of(ADDRESS_LINE, STOP_LINE)),
+          Arguments.of(List.of(WATCH_GOAL, "jetty:run"), List.of(ADDRESS_LINE)));
     }
 
     private static Stream<Arguments> getServicesProperties() {
       return Stream.of(Arguments.of("""
           basis.java.jvm.BBjServices=/opt/jbr/bin/java
           basis.java.jvm.Default=/opt/zulu/bin/java
-          """, Path.of("/opt/jbr/bin/java")), Arguments.of("""
+          """, Path.of(JBR_JAVA)), Arguments.of("""
           basis.java.jvm.Default=/opt/zulu/bin/java
           """, Path.of("/opt/zulu/bin/java")), Arguments.of("""
           basis.cacheDirectory=/opt/bbx/cache
@@ -904,9 +899,8 @@ class WatchMojoTest {
     }
 
     private static Stream<Arguments> getSelections() {
-      return Stream.of(Arguments.of("hotswapAgent", Path.of("/opt/jbr/bin/java")),
-          Arguments.of("", Path.of("/opt/jdk/bin/java")),
-          Arguments.of(null, Path.of("/opt/jdk/bin/java")));
+      return Stream.of(Arguments.of("hotswapAgent", Path.of(JBR_JAVA)),
+          Arguments.of("", Path.of(JDK_JAVA)), Arguments.of(null, Path.of(JDK_JAVA)));
     }
 
     private static MavenSession newSession(List<String> goals) {
@@ -919,7 +913,7 @@ class WatchMojoTest {
 
     private static MojoExecution newWatchExecution() {
       PluginDescriptor plugin = new PluginDescriptor();
-      plugin.setGroupId("com.webforj");
+      plugin.setGroupId(WEBFORJ_GROUP_ID);
       plugin.setArtifactId("webforj-maven-plugin");
       plugin.setGoalPrefix("webforj");
       MojoDescriptor descriptor = new MojoDescriptor();
@@ -932,7 +926,7 @@ class WatchMojoTest {
 
   private static WatchMojo newMojo(BundlerExecution execution, Path tmp) throws Exception {
     final Path frontend = Files.createDirectories(tmp.resolve("src/main/frontend"));
-    Path classes = Files.createDirectories(tmp.resolve("target/classes"));
+    Path classes = Files.createDirectories(tmp.resolve(CLASSES_DIRECTORY));
 
     Build build = new Build();
     build.setOutputDirectory(classes.toString());

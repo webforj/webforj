@@ -1,7 +1,7 @@
 package com.webforj.plugin.maven.bbj;
 
 import com.webforj.plugin.foundation.bbj.Deployment;
-import com.webforj.plugin.foundation.bbj.DeploymentPolicy;
+import com.webforj.plugin.foundation.bbj.DeploymentArchive;
 import com.webforj.plugin.maven.resolve.MavenArtifacts;
 import java.io.File;
 import java.nio.file.Path;
@@ -61,7 +61,7 @@ public final class ProjectDeployment {
   public static Path resolveArchive(MavenProject project, String publishName)
       throws MojoExecutionException {
     try {
-      return DeploymentPolicy.resolveArchive(Path.of(project.getBuild().getDirectory()),
+      return DeploymentArchive.resolveArchive(Path.of(project.getBuild().getDirectory()),
           publishName);
     } catch (IllegalArgumentException refusal) {
       throw new MojoExecutionException(refusal.getMessage(), refusal);

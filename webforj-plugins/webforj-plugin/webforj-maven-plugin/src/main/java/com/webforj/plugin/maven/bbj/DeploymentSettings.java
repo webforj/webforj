@@ -1,5 +1,6 @@
 package com.webforj.plugin.maven.bbj;
 
+import com.webforj.plugin.foundation.bbj.BBjShipClient;
 import com.webforj.plugin.foundation.bbj.DeploymentPolicy;
 import com.webforj.plugin.foundation.bbj.DeploymentPolicy.Authentication;
 import com.webforj.plugin.foundation.bbj.model.BBjCredentials;
@@ -7,7 +8,9 @@ import com.webforj.plugin.maven.bbj.model.BBjOptions;
 import java.io.File;
 import java.net.URI;
 import java.util.Objects;
+import java.util.function.Consumer;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
 
 /**
  * Resolves the effective BBj settings of one goal from the plugin configuration and the command
@@ -17,6 +20,9 @@ import org.apache.maven.plugin.MojoExecutionException;
  * @since 26.03
  */
 public final class DeploymentSettings {
+
+  private static final String SUPPLY = "Configure bbj.admin.username and bbj.admin.password";
+  private static final String TOKEN_SUPPLY = SUPPLY + ", or webforj.bbj.admin.token";
 
   private final BBjOptions options;
   private String url;
@@ -163,6 +169,46 @@ public final class DeploymentSettings {
   }
 
   /**
+   * Resolves the effective BBjShip base address.
+   *
+   * @return the base address
+   * @throws MojoExecutionException if no base address is set
+   * @throws IllegalArgumentException if the base address is not a valid URI
+   */
+  public URI resolveUrl() throws MojoExecutionException {
+    String effective = getUrl();
+    if (effective.isBlank()) {
+      throw new MojoExecutionException("BBj deployment requires bbj.deployment.url. Set it in "
+          + "plugin configuration or pass -Dwebforj.bbj.deployment.url=<URL>");
+    }
+
+    return URI.create(effective);
+  }
+
+  /**
+   * Creates the client of the effective BBjShip with the effective credentials and version.
+   *
+   * <p>
+   * The warning of the factory administrator account, the progress and the warnings of the client
+   * are reported to the log.
+   * </p>
+   *
+   * @param log the log of the goal
+   *
+   * @return the client
+   * @throws MojoExecutionException if no base address is set, or only one of username and password
+   *         is given or one is blank
+   * @throws IllegalArgumentException if the base address is no valid BBjShip address
+   */
+  public BBjShipClient createBBjShipClient(Log log) throws MojoExecutionException {
+    URI effective = resolveUrl();
+    BBjCredentials credentials = getCredentials(log::warn);
+
+    return BBjShipClient.create(effective).setCredentials(credentials).setVersion(version)
+        .setLog(log::info).setWarn(log::warn).build();
+  }
+
+  /**
    * Gets the effective publish name.
    *
    * @return the publish name, the default when none is set
@@ -180,11 +226,13 @@ public final class DeploymentSettings {
    * and without a password, the credentials are the factory administrator account of BBj.
    * </p>
    *
+   * @param warn where the warning of the factory administrator account is reported
+   *
    * @return the credentials
    * @throws MojoExecutionException if only one of username and password is given or one is blank
    */
-  public BBjCredentials getCredentials() throws MojoExecutionException {
-    return createCredentials(Authentication.PASSWORD_OR_TOKEN);
+  public BBjCredentials getCredentials(Consumer<String> warn) throws MojoExecutionException {
+    return createCredentials(Authentication.PASSWORD_OR_TOKEN, warn);
   }
 
   /**
@@ -195,11 +243,14 @@ public final class DeploymentSettings {
    * account of BBj.
    * </p>
    *
+   * @param warn where the warning of the factory administrator account is reported
+   *
    * @return the username and password credentials
    * @throws MojoExecutionException if only one of username and password is given or one is blank
    */
-  public BBjCredentials getPasswordCredentials() throws MojoExecutionException {
-    return createCredentials(Authentication.PASSWORD);
+  public BBjCredentials getPasswordCredentials(Consumer<String> warn)
+      throws MojoExecutionException {
+    return createCredentials(Authentication.PASSWORD, warn);
   }
 
   /**
@@ -236,18 +287,19 @@ public final class DeploymentSettings {
    * @throws IllegalArgumentException if the base address is not a valid URI
    */
   public int getPort() {
-    return DeploymentPolicy.getPort(URI.create(getUrl()));
+    return BBjShipClient.getPort(URI.create(getUrl()));
   }
 
-  private BBjCredentials createCredentials(Authentication authentication)
+  private BBjCredentials createCredentials(Authentication authentication, Consumer<String> warn)
       throws MojoExecutionException {
     try {
       return DeploymentPolicy.resolveCredentials(
           resolve(username, options.getAdmin().getUsername()),
           resolve(password, options.getAdmin().getPassword()),
-          resolve(token, options.getAdmin().getToken()), authentication);
+          resolve(token, options.getAdmin().getToken()), authentication, warn);
     } catch (IllegalArgumentException refusal) {
-      throw new MojoExecutionException(refusal.getMessage(), refusal);
+      String supply = authentication == Authentication.PASSWORD_OR_TOKEN ? TOKEN_SUPPLY : SUPPLY;
+      throw new MojoExecutionException(refusal.getMessage() + ". " + supply, refusal);
     }
   }
 

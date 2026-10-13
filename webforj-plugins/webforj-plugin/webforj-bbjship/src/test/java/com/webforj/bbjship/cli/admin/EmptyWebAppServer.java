@@ -9,6 +9,7 @@ import com.basis.api.admin.BBjAdminContextInfo;
 import com.basis.api.admin.BBjAdminWebAppServer_1500;
 import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
 import com.webforj.bbjship.cli.command.Home;
+import com.webforj.plugin.foundation.bbj.BBjShipPlugin;
 import java.nio.file.Path;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -133,6 +134,6 @@ abstract class EmptyWebAppServer {
     when(admin.getWebAppServer()).thenReturn(server);
     when(admin.jsonExecute(anyString())).thenReturn("{}");
     when(server.getContextNames()).thenReturn(new BBjAdminAdapterList<>(List.of("root")));
-    contexts = new BBjShipContexts(admin, plugin);
+    contexts = new BBjShipContexts(admin, plugin, BBjShipContexts.ANSWER_DEADLINE);
   }
 }

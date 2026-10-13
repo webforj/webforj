@@ -16,6 +16,26 @@ import java.util.stream.Stream;
  */
 public final class Home {
 
+  /**
+   * Holds the plugin folder relative to the BBj home.
+   */
+  public static final String PLUGIN_FOLDER = "plugins/webforj-bbjship";
+
+  /**
+   * Holds the deployments folder relative to the BBj home.
+   */
+  public static final String DEPLOYMENTS_FOLDER = "plugins/.webforj-bbjship-deployments";
+
+  /**
+   * Holds the document base of the BBjShip context relative to the BBj home.
+   */
+  public static final String HTDOCS_FOLDER = "plugins/.webforj-bbjship-deployments/htdocs";
+
+  /**
+   * Holds the document base of the assets context relative to the BBj home.
+   */
+  public static final String ASSETS_FOLDER = "plugins/.webforj-bbjship-deployments/assets";
+
   private static final String JAR_FOLDER = ".jar.d";
 
   private Home() {}

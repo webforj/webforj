@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 
 class BBjDeploymentOptionsTest {
 
+  private static final String DEPLOYMENT_URL = "https://example.test/webforj-bbjship";
+
   @Test
   void shouldStartWithoutUrl() {
     BBjDeploymentOptions options = new BBjDeploymentOptions();
@@ -18,19 +20,19 @@ class BBjDeploymentOptionsTest {
   void shouldHoldTheConfiguredUrl() {
     BBjDeploymentOptions options = new BBjDeploymentOptions();
 
-    options.setUrl("https://example.test/webforj-bbjship");
+    options.setUrl(DEPLOYMENT_URL);
 
-    assertEquals("https://example.test/webforj-bbjship", options.getUrl());
+    assertEquals(DEPLOYMENT_URL, options.getUrl());
   }
 
   @Test
   void shouldRejectNullAndKeepTheConfiguredUrl() {
     BBjDeploymentOptions options = new BBjDeploymentOptions();
-    options.setUrl("https://example.test/webforj-bbjship");
+    options.setUrl(DEPLOYMENT_URL);
     String missing = null;
 
     assertThrows(NullPointerException.class, () -> options.setUrl(missing));
 
-    assertEquals("https://example.test/webforj-bbjship", options.getUrl());
+    assertEquals(DEPLOYMENT_URL, options.getUrl());
   }
 }

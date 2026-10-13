@@ -3,6 +3,7 @@ package com.webforj.bbjship.cli.command;
 import com.basis.api.admin.BBjAdminBase;
 import com.webforj.bbjship.cli.admin.BBjShipSession;
 import com.webforj.bbjship.cli.option.CredentialOptions;
+import com.webforj.plugin.foundation.bbj.BBjShipCommandLine;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.OptionalInt;
@@ -20,7 +21,7 @@ import picocli.CommandLine.Spec;
  * @author Hyyan Abo Fakher
  * @since 26.03
  */
-@Command(name = "disable", mixinStandardHelpOptions = true,
+@Command(name = BBjShipCommandLine.DISABLE, mixinStandardHelpOptions = true,
     description = "Disable development runs on this BBj machine.")
 public final class DevelopmentDisableCommand implements Callable<Integer> {
 

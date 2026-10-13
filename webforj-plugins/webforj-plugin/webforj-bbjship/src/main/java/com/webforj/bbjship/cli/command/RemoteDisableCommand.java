@@ -3,6 +3,7 @@ package com.webforj.bbjship.cli.command;
 import com.basis.api.admin.BBjAdminBase;
 import com.webforj.bbjship.cli.admin.BBjShipSession;
 import com.webforj.bbjship.cli.option.CredentialOptions;
+import com.webforj.plugin.foundation.bbj.BBjShipCommandLine;
 import java.util.List;
 import java.util.OptionalInt;
 import java.util.concurrent.Callable;
@@ -19,7 +20,7 @@ import picocli.CommandLine.Spec;
  * @author Hyyan Abo Fakher
  * @since 26.03
  */
-@Command(name = "disable", mixinStandardHelpOptions = true,
+@Command(name = BBjShipCommandLine.DISABLE, mixinStandardHelpOptions = true,
     description = "Disable the BBjShip HTTP endpoint.")
 public final class RemoteDisableCommand implements Callable<Integer> {
 
@@ -48,7 +49,7 @@ public final class RemoteDisableCommand implements Callable<Integer> {
     BBjAdminBase admin = session.openAdmin(credentials, OptionalInt.empty(), OptionalInt.empty());
     boolean disabled;
     try {
-      disabled = session.createContexts(admin).disable();
+      disabled = session.createContexts(admin).removeEndpoint();
     } finally {
       admin.release();
     }

@@ -2,7 +2,6 @@ package com.webforj.plugin.maven;
 
 import com.webforj.plugin.foundation.bbj.BBjShipClient;
 import com.webforj.plugin.foundation.bbj.Deployment;
-import com.webforj.plugin.foundation.bbj.model.BBjCredentials;
 import com.webforj.plugin.maven.bbj.DeploymentSettings;
 import com.webforj.plugin.maven.bbj.ProjectDeployment;
 import com.webforj.plugin.maven.bbj.model.BBjOptions;
@@ -61,22 +60,10 @@ public final class BBjDeployMojo extends AbstractMojo {
         DeploymentSettings.create(bbj).setUrl(deploymentUrl).setPublishName(publishName)
             .setDefaultPublishName(project.getBuild().getFinalName()).setUsername(username)
             .setPassword(password).setToken(token).setVersion(pluginDescriptor.getVersion());
-    if (settings.getUrl().isBlank()) {
-      throw new MojoExecutionException("BBj deployment requires bbj.deployment.url. Set it in "
-          + "plugin configuration or pass -Dwebforj.bbj.deployment.url=<URL>");
-    }
-
     Deployment deployment =
         ProjectDeployment.create(project, settings.getPublishName(), "bbj-deploy");
-    BBjCredentials credentials = settings.getCredentials();
-    if (credentials.isFactoryAccount()) {
-      getLog().warn(BBjCredentials.FACTORY_ACCOUNT_WARNING);
-    }
-
     try {
-      BBjShipClient bbjShip = BBjShipClient.create(URI.create(settings.getUrl()))
-          .setCredentials(credentials).setVersion(settings.getVersion()).setLog(getLog()::info)
-          .setWarn(getLog()::warn).build();
+      BBjShipClient bbjShip = settings.createBBjShipClient(getLog());
       getLog().info("Deploying " + settings.getPublishName() + " to " + settings.getUrl());
       Path archive = deployment.writeArchive();
       URI published = bbjShip.deploy(archive, settings.getPublishName());

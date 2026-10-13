@@ -1,49 +1,57 @@
 package com.webforj.bbjship.cli.admin;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+import com.webforj.bbjship.cli.BBjShipTerminal;
+import java.util.Optional;
 
 /**
- * Reads the lines a BBjShip command takes from its standard input.
+ * Reads what a BBjShip command takes from the terminal that runs it.
  *
  * @author Hyyan Abo Fakher
  * @since 26.03
  */
 public final class BBjShipInput {
 
-  private BBjShipInput() {}
+  private final BBjShipTerminal terminal;
 
   /**
-   * Reads the next line of the input, leaving every byte after the line in the input.
+   * Creates the input of a terminal.
    *
-   * @param input the standard input of the command
-   *
-   * @return the line without its line terminator, or null when the input has ended
-   * @throws IOException if the input cannot be read
+   * @param terminal the terminal that runs the command
    */
-  public static String readLine(InputStream input) throws IOException {
-    int next = input.read();
-    if (next == -1) {
-      return null;
-    }
+  public BBjShipInput(BBjShipTerminal terminal) {
+    this.terminal = terminal;
+  }
 
-    byte[] line = new byte[64];
-    int length = 0;
-    while (next != -1 && next != '\n') {
-      if (length == line.length) {
-        line = Arrays.copyOf(line, length * 2);
-      }
+  /**
+   * Reads the next line the terminal types.
+   *
+   * @return the line without its line terminator, empty when the input has ended
+   */
+  public Optional<String> readLine() {
+    return Optional.ofNullable(terminal.readLine());
+  }
 
-      line[length++] = (byte) next;
-      next = input.read();
-    }
+  /**
+   * Prints a prompt and reads the password the terminal types.
+   *
+   * @param prompt the prompt line
+   *
+   * @return the password, empty when the input has ended
+   */
+  public Optional<String> readPassword(String prompt) {
+    terminal.print(prompt);
 
-    if (length > 0 && line[length - 1] == '\r') {
-      length--;
-    }
+    return Optional.ofNullable(terminal.readPassword());
+  }
 
-    return new String(line, 0, length, StandardCharsets.UTF_8);
+  /**
+   * Finds an environment variable of the terminal.
+   *
+   * @param name the name of the variable
+   *
+   * @return the value, empty when the variable is not set
+   */
+  public Optional<String> findVariable(String name) {
+    return Optional.ofNullable(terminal.getVariable(name));
   }
 }

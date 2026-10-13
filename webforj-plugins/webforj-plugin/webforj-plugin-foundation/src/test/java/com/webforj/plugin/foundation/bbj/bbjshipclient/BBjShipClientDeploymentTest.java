@@ -52,6 +52,33 @@ import org.mockito.MockedStatic;
 
 class BBjShipClientDeploymentTest {
 
+  private static final String VERSION_ANSWER = """
+      {
+        "version": "26.03"
+      }
+      """;
+  private static final String DEPLOYMENT_ANSWER = """
+      {
+        "name": "hello-app",
+        "url": "/webapp/hello-app"
+      }
+      """;
+  private static final String APP_NAME = "hello-app";
+  private static final String ARCHIVE_FILE = "hello-app.zip";
+  private static final String LOOPBACK_ADDRESS = "127.0.0.1";
+  private static final String VERSION_PATH = "/webforj-bbjship/version";
+  private static final String CONTENT_TYPE = "Content-Type";
+  private static final String JSON = "application/json";
+  private static final String APP_PATH = "/webforj-bbjship/applications/hello-app"; // NOSONAR
+  private static final String LOCATION = "Location";
+  private static final String PUBLISHED_PATH = "/webapp/hello-app";
+  private static final String ENDPOINT_FORMAT = "http://127.0.0.1:%d/webforj-bbjship";
+  private static final String CLIENT_VERSION = "26.03";
+  private static final String ADMIN_USERNAME = "administrator";
+  private static final String ADMIN_PASSWORD = "secret-password";
+  private static final String UPLOAD_COMPLETE =
+      "Upload complete, waiting for BBj deployment confirmation";
+
   @TempDir
   Path temporary;
 
@@ -59,50 +86,40 @@ class BBjShipClientDeploymentTest {
   @MethodSource("getCredentials")
   void shouldPutHelloAppArchiveWithCredentialsAndReturnThePublishedAddress(
       BBjCredentials credentials, String authorization) throws IOException {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
-    Path archive = HelloApp.writeArchive(app, temporary.resolve("hello-app.zip"));
+    Path app = HelloApp.createCopy(temporary.resolve(APP_NAME));
+    Path archive = HelloApp.writeArchive(app, temporary.resolve(ARCHIVE_FILE));
     List<String> requests = new ArrayList<>();
     AtomicReference<byte[]> upload = new AtomicReference<>();
-    HttpServer bbjShip = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
-    bbjShip.createContext("/webforj-bbjship/version", exchange -> {
+    HttpServer bbjShip = HttpServer.create(new InetSocketAddress(LOOPBACK_ADDRESS, 0), 0);
+    bbjShip.createContext(VERSION_PATH, exchange -> {
       exchange.getRequestBody().readAllBytes();
-      String version = """
-          {
-            "version": "26.03"
-          }
-          """;
-      exchange.getResponseHeaders().set("Content-Type", "application/json");
+      String version = VERSION_ANSWER;
+      exchange.getResponseHeaders().set(CONTENT_TYPE, JSON);
       exchange.sendResponseHeaders(200, version.length());
       exchange.getResponseBody().write(version.getBytes(StandardCharsets.UTF_8));
       exchange.close();
     });
-    bbjShip.createContext("/webforj-bbjship/applications/hello-app", exchange -> {
+    bbjShip.createContext(APP_PATH, exchange -> {
       upload.set(exchange.getRequestBody().readAllBytes());
       requests.add(exchange.getRequestMethod() + " " + exchange.getRequestURI().getPath() + " "
-          + exchange.getRequestHeaders().getFirst("Content-Type") + " "
+          + exchange.getRequestHeaders().getFirst(CONTENT_TYPE) + " "
           + exchange.getRequestHeaders().getFirst("Authorization"));
-      String answer = """
-          {
-            "name": "hello-app",
-            "url": "/webapp/hello-app"
-          }
-          """;
-      exchange.getResponseHeaders().set("Content-Type", "application/json");
-      exchange.getResponseHeaders().set("Location", "/webapp/hello-app");
+      String answer = DEPLOYMENT_ANSWER;
+      exchange.getResponseHeaders().set(CONTENT_TYPE, JSON);
+      exchange.getResponseHeaders().set(LOCATION, PUBLISHED_PATH);
       exchange.sendResponseHeaders(201, answer.length());
       exchange.getResponseBody().write(answer.getBytes(StandardCharsets.UTF_8));
       exchange.close();
     });
     bbjShip.start();
-    URI endpoint =
-        URI.create("http://127.0.0.1:%d/webforj-bbjship".formatted(bbjShip.getAddress().getPort()));
+    URI endpoint = URI.create(ENDPOINT_FORMAT.formatted(bbjShip.getAddress().getPort()));
     try {
-      BBjShipClient client =
-          BBjShipClient.create(endpoint).setCredentials(credentials).setVersion("26.03").build();
+      BBjShipClient client = BBjShipClient.create(endpoint).setCredentials(credentials)
+          .setVersion(CLIENT_VERSION).build();
 
-      URI published = client.deploy(archive, "hello-app");
+      URI published = client.deploy(archive, APP_NAME);
 
-      assertEquals(endpoint.resolve("/webapp/hello-app"), published);
+      assertEquals(endpoint.resolve(PUBLISHED_PATH), published);
       assertEquals(
           List.of("PUT /webforj-bbjship/applications/hello-app application/zip " + authorization),
           requests);
@@ -116,43 +133,38 @@ class BBjShipClientDeploymentTest {
   @MethodSource("getRefusedDeployments")
   void shouldFailWithoutReportingSuccessWhenTheBbjShipRefusesOrDoesNotConfirm(int status,
       String contentType, String answer, String message) throws IOException {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
-    Path archive = HelloApp.writeArchive(app, temporary.resolve("hello-app.zip"));
+    Path app = HelloApp.createCopy(temporary.resolve(APP_NAME));
+    Path archive = HelloApp.writeArchive(app, temporary.resolve(ARCHIVE_FILE));
     List<String> messages = new ArrayList<>();
-    HttpServer bbjShip = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
-    bbjShip.createContext("/webforj-bbjship/version", exchange -> {
+    HttpServer bbjShip = HttpServer.create(new InetSocketAddress(LOOPBACK_ADDRESS, 0), 0);
+    bbjShip.createContext(VERSION_PATH, exchange -> {
       exchange.getRequestBody().readAllBytes();
-      String version = """
-          {
-            "version": "26.03"
-          }
-          """;
-      exchange.getResponseHeaders().set("Content-Type", "application/json");
+      String version = VERSION_ANSWER;
+      exchange.getResponseHeaders().set(CONTENT_TYPE, JSON);
       exchange.sendResponseHeaders(200, version.length());
       exchange.getResponseBody().write(version.getBytes(StandardCharsets.UTF_8));
       exchange.close();
     });
-    bbjShip.createContext("/webforj-bbjship/applications/hello-app", exchange -> {
+    bbjShip.createContext(APP_PATH, exchange -> {
       exchange.getRequestBody().readAllBytes();
-      exchange.getResponseHeaders().set("Content-Type", contentType);
+      exchange.getResponseHeaders().set(CONTENT_TYPE, contentType);
       exchange.sendResponseHeaders(status, answer.isEmpty() ? -1 : answer.length());
       exchange.getResponseBody().write(answer.getBytes(StandardCharsets.UTF_8));
       exchange.close();
     });
     bbjShip.start();
-    URI endpoint =
-        URI.create("http://127.0.0.1:%d/webforj-bbjship".formatted(bbjShip.getAddress().getPort()));
+    URI endpoint = URI.create(ENDPOINT_FORMAT.formatted(bbjShip.getAddress().getPort()));
     try {
       BBjShipClient client = BBjShipClient.create(endpoint)
-          .setCredentials(BBjCredentials.of("administrator", "secret-password")).setVersion("26.03")
-          .setLog(messages::add).build();
-      String publishName = "hello-app";
+          .setCredentials(BBjCredentials.createUser(ADMIN_USERNAME, ADMIN_PASSWORD))
+          .setVersion(CLIENT_VERSION).setLog(messages::add).build();
+      String publishName = APP_NAME;
 
       IOException failure =
           assertThrows(IOException.class, () -> client.deploy(archive, publishName));
 
       assertEquals(message, failure.getMessage());
-      assertEquals("Upload complete, waiting for BBj deployment confirmation", messages.getLast());
+      assertEquals(UPLOAD_COMPLETE, messages.getLast());
     } finally {
       bbjShip.stop(0);
     }
@@ -160,8 +172,8 @@ class BBjShipClientDeploymentTest {
 
   @Test
   void shouldNameTheCertificateWhenTheHttpsConnectionFails() throws Exception {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
-    Path archive = HelloApp.writeArchive(app, temporary.resolve("hello-app.zip"));
+    Path app = HelloApp.createCopy(temporary.resolve(APP_NAME));
+    Path archive = HelloApp.writeArchive(app, temporary.resolve(ARCHIVE_FILE));
     ServerSocket bbjShip = new ServerSocket(0, 1, InetAddress.getLoopbackAddress());
     Thread plainHttp = new Thread(() -> {
       try (Socket socket = bbjShip.accept()) {
@@ -177,9 +189,9 @@ class BBjShipClientDeploymentTest {
         URI.create("https://127.0.0.1:%d/webforj-bbjship".formatted(bbjShip.getLocalPort()));
     try {
       BBjShipClient client = BBjShipClient.create(endpoint)
-          .setCredentials(BBjCredentials.of("administrator", "secret-password")).setVersion("26.03")
-          .build();
-      String publishName = "hello-app";
+          .setCredentials(BBjCredentials.createUser(ADMIN_USERNAME, ADMIN_PASSWORD))
+          .setVersion(CLIENT_VERSION).build();
+      String publishName = APP_NAME;
 
       IOException failure =
           assertThrows(IOException.class, () -> client.deploy(archive, publishName));
@@ -196,8 +208,8 @@ class BBjShipClientDeploymentTest {
 
   @Test
   void shouldNameTheCertificateWhenTheHttpsFailureHasNoDetail() throws IOException {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
-    Path archive = HelloApp.writeArchive(app, temporary.resolve("hello-app.zip"));
+    Path app = HelloApp.createCopy(temporary.resolve(APP_NAME));
+    Path archive = HelloApp.writeArchive(app, temporary.resolve(ARCHIVE_FILE));
     CloseableHttpClient connection = mock(CloseableHttpClient.class);
     when(connection.execute(any(ClassicHttpRequest.class), any(HttpContext.class), any()))
         .thenThrow(new SSLException((String) null));
@@ -205,9 +217,9 @@ class BBjShipClientDeploymentTest {
     when(connections.build()).thenReturn(connection);
     URI endpoint = URI.create("https://build.example/webforj-bbjship");
     BBjShipClient client = BBjShipClient.create(endpoint)
-        .setCredentials(BBjCredentials.of("administrator", "secret-password")).setVersion("26.03")
-        .build();
-    String publishName = "hello-app";
+        .setCredentials(BBjCredentials.createUser(ADMIN_USERNAME, ADMIN_PASSWORD))
+        .setVersion(CLIENT_VERSION).build();
+    String publishName = APP_NAME;
 
     try (MockedStatic<HttpClients> clients = mockStatic(HttpClients.class)) {
       clients.when(HttpClients::custom).thenReturn(connections);
@@ -225,10 +237,10 @@ class BBjShipClientDeploymentTest {
   @Test
   void shouldRefuseMissingArchiveBeforeAnyRequest() {
     BBjShipClient client = BBjShipClient.create(URI.create("http://localhost:8888/webforj-bbjship"))
-        .setCredentials(BBjCredentials.of("administrator", "secret-password")).setVersion("26.03")
-        .build();
-    Path archive = temporary.resolve("hello-app.zip");
-    String publishName = "hello-app";
+        .setCredentials(BBjCredentials.createUser(ADMIN_USERNAME, ADMIN_PASSWORD))
+        .setVersion(CLIENT_VERSION).build();
+    Path archive = temporary.resolve(ARCHIVE_FILE);
+    String publishName = APP_NAME;
 
     IOException failure =
         assertThrows(IOException.class, () -> client.deploy(archive, publishName));
@@ -240,53 +252,41 @@ class BBjShipClientDeploymentTest {
   @Test
   void shouldReportUploadProgressOfHelloAppArchiveBeforeWaitingForConfirmation()
       throws IOException {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
-    Path archive = HelloApp.writeArchive(app, temporary.resolve("hello-app.zip"));
+    Path app = HelloApp.createCopy(temporary.resolve(APP_NAME));
+    Path archive = HelloApp.writeArchive(app, temporary.resolve(ARCHIVE_FILE));
     long size = Files.size(archive);
     List<String> messages = new ArrayList<>();
-    HttpServer bbjShip = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
-    bbjShip.createContext("/webforj-bbjship/version", exchange -> {
+    HttpServer bbjShip = HttpServer.create(new InetSocketAddress(LOOPBACK_ADDRESS, 0), 0);
+    bbjShip.createContext(VERSION_PATH, exchange -> {
       exchange.getRequestBody().readAllBytes();
-      String version = """
-          {
-            "version": "26.03"
-          }
-          """;
-      exchange.getResponseHeaders().set("Content-Type", "application/json");
+      String version = VERSION_ANSWER;
+      exchange.getResponseHeaders().set(CONTENT_TYPE, JSON);
       exchange.sendResponseHeaders(200, version.length());
       exchange.getResponseBody().write(version.getBytes(StandardCharsets.UTF_8));
       exchange.close();
     });
-    bbjShip.createContext("/webforj-bbjship/applications/hello-app", exchange -> {
+    bbjShip.createContext(APP_PATH, exchange -> {
       exchange.getRequestBody().readAllBytes();
-      String answer = """
-          {
-            "name": "hello-app",
-            "url": "/webapp/hello-app"
-          }
-          """;
-      exchange.getResponseHeaders().set("Content-Type", "application/json");
-      exchange.getResponseHeaders().set("Location", "/webapp/hello-app");
+      String answer = DEPLOYMENT_ANSWER;
+      exchange.getResponseHeaders().set(CONTENT_TYPE, JSON);
+      exchange.getResponseHeaders().set(LOCATION, PUBLISHED_PATH);
       exchange.sendResponseHeaders(201, answer.length());
       exchange.getResponseBody().write(answer.getBytes(StandardCharsets.UTF_8));
       exchange.close();
     });
     bbjShip.start();
-    URI endpoint =
-        URI.create("http://127.0.0.1:%d/webforj-bbjship".formatted(bbjShip.getAddress().getPort()));
+    URI endpoint = URI.create(ENDPOINT_FORMAT.formatted(bbjShip.getAddress().getPort()));
     try {
       BBjShipClient client = BBjShipClient.create(endpoint)
-          .setCredentials(BBjCredentials.of("administrator", "secret-password")).setVersion("26.03")
-          .setLog(messages::add).build();
+          .setCredentials(BBjCredentials.createUser(ADMIN_USERNAME, ADMIN_PASSWORD))
+          .setVersion(CLIENT_VERSION).setLog(messages::add).build();
 
-      client.deploy(archive, "hello-app");
+      client.deploy(archive, APP_NAME);
 
       assertEquals("Uploading BBj deployment, 0 of %d bytes (0%%)".formatted(size),
           messages.getFirst());
-      assertEquals(
-          List.of("Uploading BBj deployment, %d of %d bytes (100%%)".formatted(size, size),
-              "Upload complete, waiting for BBj deployment confirmation"),
-          messages.subList(messages.size() - 2, messages.size()));
+      assertEquals(List.of("Uploading BBj deployment, %d of %d bytes (100%%)".formatted(size, size),
+          UPLOAD_COMPLETE), messages.subList(messages.size() - 2, messages.size()));
       Pattern progress =
           Pattern.compile("Uploading BBj deployment, (\\d+) of " + size + " bytes \\((\\d+)%\\)");
       long previous = -1;
@@ -309,46 +309,35 @@ class BBjShipClientDeploymentTest {
   void shouldReportProgressOfAnEmptyArchive() throws IOException {
     Path archive = Files.createFile(temporary.resolve("empty.zip"));
     List<String> messages = new ArrayList<>();
-    HttpServer bbjShip = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
-    bbjShip.createContext("/webforj-bbjship/version", exchange -> {
+    HttpServer bbjShip = HttpServer.create(new InetSocketAddress(LOOPBACK_ADDRESS, 0), 0);
+    bbjShip.createContext(VERSION_PATH, exchange -> {
       exchange.getRequestBody().readAllBytes();
-      String version = """
-          {
-            "version": "26.03"
-          }
-          """;
-      exchange.getResponseHeaders().set("Content-Type", "application/json");
+      String version = VERSION_ANSWER;
+      exchange.getResponseHeaders().set(CONTENT_TYPE, JSON);
       exchange.sendResponseHeaders(200, version.length());
       exchange.getResponseBody().write(version.getBytes(StandardCharsets.UTF_8));
       exchange.close();
     });
-    bbjShip.createContext("/webforj-bbjship/applications/hello-app", exchange -> {
+    bbjShip.createContext(APP_PATH, exchange -> {
       exchange.getRequestBody().readAllBytes();
-      String answer = """
-          {
-            "name": "hello-app",
-            "url": "/webapp/hello-app"
-          }
-          """;
-      exchange.getResponseHeaders().set("Content-Type", "application/json");
-      exchange.getResponseHeaders().set("Location", "/webapp/hello-app");
+      String answer = DEPLOYMENT_ANSWER;
+      exchange.getResponseHeaders().set(CONTENT_TYPE, JSON);
+      exchange.getResponseHeaders().set(LOCATION, PUBLISHED_PATH);
       exchange.sendResponseHeaders(201, answer.length());
       exchange.getResponseBody().write(answer.getBytes(StandardCharsets.UTF_8));
       exchange.close();
     });
     bbjShip.start();
-    URI endpoint =
-        URI.create("http://127.0.0.1:%d/webforj-bbjship".formatted(bbjShip.getAddress().getPort()));
+    URI endpoint = URI.create(ENDPOINT_FORMAT.formatted(bbjShip.getAddress().getPort()));
     try {
       BBjShipClient client = BBjShipClient.create(endpoint)
-          .setCredentials(BBjCredentials.of("administrator", "secret-password")).setVersion("26.03")
-          .setLog(messages::add).build();
+          .setCredentials(BBjCredentials.createUser(ADMIN_USERNAME, ADMIN_PASSWORD))
+          .setVersion(CLIENT_VERSION).setLog(messages::add).build();
 
-      client.deploy(archive, "hello-app");
+      client.deploy(archive, APP_NAME);
 
       assertEquals(List.of("Uploading BBj deployment, 0 of 0 bytes (0%)",
-          "Uploading BBj deployment, 0 of 0 bytes (100%)",
-          "Upload complete, waiting for BBj deployment confirmation"), messages);
+          "Uploading BBj deployment, 0 of 0 bytes (100%)", UPLOAD_COMPLETE), messages);
     } finally {
       bbjShip.stop(0);
     }
@@ -356,64 +345,54 @@ class BBjShipClientDeploymentTest {
 
   @Test
   void shouldReportWaitingWhileTheBbjShipHoldsTheConfirmation() throws Exception {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
-    Path archive = HelloApp.writeArchive(app, temporary.resolve("hello-app.zip"));
+    Path app = HelloApp.createCopy(temporary.resolve(APP_NAME));
+    Path archive = HelloApp.writeArchive(app, temporary.resolve(ARCHIVE_FILE));
     CountDownLatch waiting = new CountDownLatch(1);
     CountDownLatch confirmation = new CountDownLatch(1);
     Consumer<String> log = message -> {
-      if ("Upload complete, waiting for BBj deployment confirmation".equals(message)) {
+      if (UPLOAD_COMPLETE.equals(message)) {
         waiting.countDown();
       }
     };
-    HttpServer bbjShip = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
-    bbjShip.createContext("/webforj-bbjship/version", exchange -> {
+    HttpServer bbjShip = HttpServer.create(new InetSocketAddress(LOOPBACK_ADDRESS, 0), 0);
+    bbjShip.createContext(VERSION_PATH, exchange -> {
       exchange.getRequestBody().readAllBytes();
-      String version = """
-          {
-            "version": "26.03"
-          }
-          """;
-      exchange.getResponseHeaders().set("Content-Type", "application/json");
+      String version = VERSION_ANSWER;
+      exchange.getResponseHeaders().set(CONTENT_TYPE, JSON);
       exchange.sendResponseHeaders(200, version.length());
       exchange.getResponseBody().write(version.getBytes(StandardCharsets.UTF_8));
       exchange.close();
     });
-    bbjShip.createContext("/webforj-bbjship/applications/hello-app", exchange -> {
+    bbjShip.createContext(APP_PATH, exchange -> {
       exchange.getRequestBody().readAllBytes();
       try {
-        confirmation.await(30, TimeUnit.SECONDS);
+        confirmation.await();
       } catch (InterruptedException stopped) {
         Thread.currentThread().interrupt();
       }
 
-      String answer = """
-          {
-            "name": "hello-app",
-            "url": "/webapp/hello-app"
-          }
-          """;
-      exchange.getResponseHeaders().set("Content-Type", "application/json");
-      exchange.getResponseHeaders().set("Location", "/webapp/hello-app");
+      String answer = DEPLOYMENT_ANSWER;
+      exchange.getResponseHeaders().set(CONTENT_TYPE, JSON);
+      exchange.getResponseHeaders().set(LOCATION, PUBLISHED_PATH);
       exchange.sendResponseHeaders(201, answer.length());
       exchange.getResponseBody().write(answer.getBytes(StandardCharsets.UTF_8));
       exchange.close();
     });
     bbjShip.start();
-    URI endpoint =
-        URI.create("http://127.0.0.1:%d/webforj-bbjship".formatted(bbjShip.getAddress().getPort()));
+    URI endpoint = URI.create(ENDPOINT_FORMAT.formatted(bbjShip.getAddress().getPort()));
 
     ExecutorService executor = Executors.newSingleThreadExecutor();
     try {
       BBjShipClient client = BBjShipClient.create(endpoint)
-          .setCredentials(BBjCredentials.of("administrator", "secret-password")).setVersion("26.03")
-          .setLog(log).build();
+          .setCredentials(BBjCredentials.createUser(ADMIN_USERNAME, ADMIN_PASSWORD))
+          .setVersion(CLIENT_VERSION).setLog(log).build();
 
-      Future<URI> deployment = executor.submit(() -> client.deploy(archive, "hello-app"));
+      Future<URI> deployment = executor.submit(() -> client.deploy(archive, APP_NAME));
 
       assertTrue(waiting.await(5, TimeUnit.SECONDS));
       assertFalse(deployment.isDone());
       confirmation.countDown();
-      assertEquals(endpoint.resolve("/webapp/hello-app"), deployment.get(5, TimeUnit.SECONDS));
+      assertEquals(endpoint.resolve(PUBLISHED_PATH), deployment.get(5, TimeUnit.SECONDS));
     } finally {
       confirmation.countDown();
       bbjShip.stop(0);
@@ -423,50 +402,40 @@ class BBjShipClientDeploymentTest {
 
   @Test
   void shouldKeepTheLogAfterRejectingNullLog() throws IOException {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
-    Path archive = HelloApp.writeArchive(app, temporary.resolve("hello-app.zip"));
+    Path app = HelloApp.createCopy(temporary.resolve(APP_NAME));
+    Path archive = HelloApp.writeArchive(app, temporary.resolve(ARCHIVE_FILE));
     List<String> messages = new ArrayList<>();
-    HttpServer bbjShip = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
-    bbjShip.createContext("/webforj-bbjship/version", exchange -> {
+    HttpServer bbjShip = HttpServer.create(new InetSocketAddress(LOOPBACK_ADDRESS, 0), 0);
+    bbjShip.createContext(VERSION_PATH, exchange -> {
       exchange.getRequestBody().readAllBytes();
-      String version = """
-          {
-            "version": "26.03"
-          }
-          """;
-      exchange.getResponseHeaders().set("Content-Type", "application/json");
+      String version = VERSION_ANSWER;
+      exchange.getResponseHeaders().set(CONTENT_TYPE, JSON);
       exchange.sendResponseHeaders(200, version.length());
       exchange.getResponseBody().write(version.getBytes(StandardCharsets.UTF_8));
       exchange.close();
     });
-    bbjShip.createContext("/webforj-bbjship/applications/hello-app", exchange -> {
+    bbjShip.createContext(APP_PATH, exchange -> {
       exchange.getRequestBody().readAllBytes();
-      String answer = """
-          {
-            "name": "hello-app",
-            "url": "/webapp/hello-app"
-          }
-          """;
-      exchange.getResponseHeaders().set("Content-Type", "application/json");
-      exchange.getResponseHeaders().set("Location", "/webapp/hello-app");
+      String answer = DEPLOYMENT_ANSWER;
+      exchange.getResponseHeaders().set(CONTENT_TYPE, JSON);
+      exchange.getResponseHeaders().set(LOCATION, PUBLISHED_PATH);
       exchange.sendResponseHeaders(201, answer.length());
       exchange.getResponseBody().write(answer.getBytes(StandardCharsets.UTF_8));
       exchange.close();
     });
     bbjShip.start();
-    URI endpoint =
-        URI.create("http://127.0.0.1:%d/webforj-bbjship".formatted(bbjShip.getAddress().getPort()));
+    URI endpoint = URI.create(ENDPOINT_FORMAT.formatted(bbjShip.getAddress().getPort()));
     try {
       BBjShipClient.Builder builder = BBjShipClient.create(endpoint)
-          .setCredentials(BBjCredentials.of("administrator", "secret-password"))
-          .setVersion("26.03");
+          .setCredentials(BBjCredentials.createUser(ADMIN_USERNAME, ADMIN_PASSWORD))
+          .setVersion(CLIENT_VERSION);
       Consumer<String> log = null;
 
       assertSame(builder, builder.setLog(messages::add));
       assertThrows(NullPointerException.class, () -> builder.setLog(log));
 
-      builder.build().deploy(archive, "hello-app");
-      assertEquals("Upload complete, waiting for BBj deployment confirmation", messages.getLast());
+      builder.build().deploy(archive, APP_NAME);
+      assertEquals(UPLOAD_COMPLETE, messages.getLast());
     } finally {
       bbjShip.stop(0);
     }
@@ -474,9 +443,9 @@ class BBjShipClientDeploymentTest {
 
   private static Stream<Arguments> getCredentials() {
     return Stream.of(
-        Arguments.of(BBjCredentials.of("administrator", "secret-password"),
+        Arguments.of(BBjCredentials.createUser(ADMIN_USERNAME, ADMIN_PASSWORD),
             "Basic YWRtaW5pc3RyYXRvcjpzZWNyZXQtcGFzc3dvcmQ="),
-        Arguments.of(BBjCredentials.ofToken("4f2a9c"), "Bearer 4f2a9c"));
+        Arguments.of(BBjCredentials.createToken("4f2a9c"), "Bearer 4f2a9c"));
   }
 
   private static Stream<Arguments> getRefusedDeployments() {
@@ -484,7 +453,7 @@ class BBjShipClientDeploymentTest {
         + "credentials and BBjServices log";
     String unconfirmed = "BBj deployment did not confirm the requested application. Check the "
         + "BBjShip version and BBjServices log";
-    String json = "application/json";
+    String json = JSON;
     String problem = "application/problem+json";
     return Stream.of(Arguments.of(409, problem, """
         {

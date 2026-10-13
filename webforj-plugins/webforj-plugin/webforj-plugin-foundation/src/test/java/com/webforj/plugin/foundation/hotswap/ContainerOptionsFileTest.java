@@ -16,28 +16,32 @@ import org.junit.jupiter.api.io.TempDir;
 
 class ContainerOptionsFileTest {
 
+  private static final String SHARED_FOLDER = "shared";
+  private static final String JREBEL_TOOL_ARGUMENT = "-Dwebforj.hotswap.tool=jrebel";
+  private static final String OPTIONS_FILE = "hotswap.options";
+
   @TempDir
   Path temporary;
 
   @Test
   void shouldWriteOneLinePerArgumentAndQuoteTheLinesWithWhitespace() throws IOException {
-    Path directory = temporary.resolve("shared");
+    Path directory = temporary.resolve(SHARED_FOLDER);
 
     boolean changed =
         ContainerOptionsFile.write(directory, List.of("-XX:+AllowEnhancedClassRedefinition",
-            "-javaagent:/home/dev with space/agent.jar", "-Dwebforj.hotswap.tool=jrebel"));
+            "-javaagent:/home/dev with space/agent.jar", JREBEL_TOOL_ARGUMENT));
 
     assertFalse(changed);
     assertEquals("""
         -XX:+AllowEnhancedClassRedefinition
         "-javaagent:/home/dev with space/agent.jar"
         -Dwebforj.hotswap.tool=jrebel
-        """, Files.readString(directory.resolve("hotswap.options")));
+        """, Files.readString(directory.resolve(OPTIONS_FILE)));
   }
 
   @Test
   void shouldRefuseLineHoldingDoubleQuote() {
-    Path directory = temporary.resolve("shared");
+    Path directory = temporary.resolve(SHARED_FOLDER);
     List<String> lines = List.of("-javaagent:/home/dev/agent\".jar");
 
     IOException failure =
@@ -45,18 +49,17 @@ class ContainerOptionsFileTest {
 
     assertEquals("the options file cannot contain a double quote: -javaagent:/home/dev/agent\".jar",
         failure.getMessage());
-    assertFalse(Files.exists(directory.resolve("hotswap.options")));
+    assertFalse(Files.exists(directory.resolve(OPTIONS_FILE)));
   }
 
   @Test
   void shouldKeepTheFileWhenTheContentIsUnchanged() throws IOException {
-    Path directory = temporary.resolve("shared");
-    Path file = directory.resolve("hotswap.options");
-    ContainerOptionsFile.write(directory, List.of("-Dwebforj.hotswap.tool=jrebel"));
+    Path directory = temporary.resolve(SHARED_FOLDER);
+    Path file = directory.resolve(OPTIONS_FILE);
+    ContainerOptionsFile.write(directory, List.of(JREBEL_TOOL_ARGUMENT));
     Files.setLastModifiedTime(file, FileTime.fromMillis(0));
 
-    boolean changed =
-        ContainerOptionsFile.write(directory, List.of("-Dwebforj.hotswap.tool=jrebel"));
+    boolean changed = ContainerOptionsFile.write(directory, List.of(JREBEL_TOOL_ARGUMENT));
 
     assertFalse(changed);
     assertEquals(FileTime.fromMillis(0), Files.getLastModifiedTime(file));
@@ -67,8 +70,8 @@ class ContainerOptionsFileTest {
 
   @Test
   void shouldRewriteTheFileWhenTheContentChanged() throws IOException {
-    Path directory = temporary.resolve("shared");
-    ContainerOptionsFile.write(directory, List.of("-Dwebforj.hotswap.tool=jrebel"));
+    Path directory = temporary.resolve(SHARED_FOLDER);
+    ContainerOptionsFile.write(directory, List.of(JREBEL_TOOL_ARGUMENT));
 
     boolean changed =
         ContainerOptionsFile.write(directory, List.of("-Dwebforj.hotswap.tool=hotswapAgent"));
@@ -76,16 +79,16 @@ class ContainerOptionsFileTest {
     assertTrue(changed);
     assertEquals("""
         -Dwebforj.hotswap.tool=hotswapAgent
-        """, Files.readString(directory.resolve("hotswap.options")));
+        """, Files.readString(directory.resolve(OPTIONS_FILE)));
   }
 
   @Test
   void shouldReadTheLinesTheFileWasWrittenWith() throws IOException {
-    Path directory = temporary.resolve("shared");
+    Path directory = temporary.resolve(SHARED_FOLDER);
     List<String> lines = List.of("-XX:+AllowEnhancedClassRedefinition",
-        "-javaagent:/home/dev with space/agent.jar", "-Dwebforj.hotswap.tool=jrebel");
+        "-javaagent:/home/dev with space/agent.jar", JREBEL_TOOL_ARGUMENT);
     ContainerOptionsFile.write(directory, lines);
-    Files.writeString(directory.resolve("hotswap.options"), "\n", StandardOpenOption.APPEND);
+    Files.writeString(directory.resolve(OPTIONS_FILE), "\n", StandardOpenOption.APPEND);
 
     List<String> read = ContainerOptionsFile.readLines(directory);
 
@@ -94,10 +97,10 @@ class ContainerOptionsFileTest {
 
   @Test
   void shouldNameTheFileInsideTheDirectory() {
-    Path directory = temporary.resolve("shared");
+    Path directory = temporary.resolve(SHARED_FOLDER);
 
     Path file = ContainerOptionsFile.getFile(directory);
 
-    assertEquals(directory.resolve("hotswap.options"), file);
+    assertEquals(directory.resolve(OPTIONS_FILE), file);
   }
 }

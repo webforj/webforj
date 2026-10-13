@@ -1,11 +1,12 @@
 package com.webforj.bbjship.cli.command;
 
 import com.basis.api.admin.BBjAdminBase;
-import com.webforj.bbjship.DeploymentInstaller;
-import com.webforj.bbjship.cli.admin.BBjShipPlugin;
+import com.webforj.bbjship.Deployer;
 import com.webforj.bbjship.cli.admin.BBjShipSession;
 import com.webforj.bbjship.cli.option.CredentialOptions;
 import com.webforj.bbjship.model.PublishedApplication;
+import com.webforj.plugin.foundation.bbj.BBjShipCommandLine;
+import com.webforj.plugin.foundation.bbj.BBjShipPlugin;
 import java.io.File;
 import java.io.PrintWriter;
 import java.nio.file.Path;
@@ -33,7 +34,7 @@ import picocli.CommandLine.Spec;
  * @author Hyyan Abo Fakher
  * @since 26.03
  */
-@Command(name = "list", mixinStandardHelpOptions = true,
+@Command(name = BBjShipCommandLine.LIST, mixinStandardHelpOptions = true,
     description = "List the applications BBjShip deployed.")
 public final class AppsListCommand implements Callable<Integer> {
 
@@ -51,10 +52,10 @@ public final class AppsListCommand implements Callable<Integer> {
   @Mixin
   private CredentialOptions credentials;
 
-  @Option(names = "--verbose",
+  @Option(names = {BBjShipCommandLine.LONG_SHORT_OPTION, BBjShipCommandLine.LONG_OPTION},
       description = "Also show the deployment folder of each application, relative to the plugin "
           + "folder, and the class folders of each development run.")
-  private boolean verbose;
+  private boolean longFormat;
 
   /**
    * Creates the command.
@@ -74,8 +75,7 @@ public final class AppsListCommand implements Callable<Integer> {
     BBjAdminBase admin = session.openAdmin(credentials, OptionalInt.empty(), OptionalInt.empty());
     List<PublishedApplication> applications;
     try {
-      applications =
-          DeploymentInstaller.findApplications(plugin.getDeployments().toString(), admin);
+      applications = Deployer.getApplications(plugin.getDeployments().toString(), admin);
     } finally {
       admin.release();
     }
@@ -110,9 +110,9 @@ public final class AppsListCommand implements Callable<Integer> {
     List<Text> titles = new ArrayList<>();
     columns.add(new Column(nameWidth + GAP, 0, Overflow.SPAN));
     titles.add(colors.apply(NAME, header));
-    columns.add(new Column(urlWidth + (verbose ? GAP : 0), 0, Overflow.SPAN));
+    columns.add(new Column(urlWidth + (longFormat ? GAP : 0), 0, Overflow.SPAN));
     titles.add(colors.apply(URL, header));
-    if (verbose) {
+    if (longFormat) {
       columns.add(new Column(deploymentWidth + GAP, 0, Overflow.SPAN));
       titles.add(colors.apply(DEPLOYMENT, header));
       columns.add(new Column(classFolderWidth, 0, Overflow.SPAN));
@@ -125,7 +125,7 @@ public final class AppsListCommand implements Callable<Integer> {
       List<Text> row = new ArrayList<>();
       row.add(colors.apply(application.getName(), List.of(Style.fg_green)));
       row.add(colors.apply(application.getUrl(), List.of(Style.fg_cyan)));
-      if (verbose) {
+      if (longFormat) {
         String deployment = runtime.relativize(application.getDirectory()).toString();
         row.add(colors.apply(deployment, List.of(Style.faint)));
         String classFolders = formatClassFolders(application.getClassFolders());

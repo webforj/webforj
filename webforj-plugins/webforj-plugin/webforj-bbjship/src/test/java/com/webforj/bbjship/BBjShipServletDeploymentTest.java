@@ -27,14 +27,18 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 final class BBjShipServletDeploymentTest extends AdministratorRequest {
 
+  private static final String APP_NAME = "hello-app";
+  private static final String ARCHIVE_NAME = "hello-app.zip";
+  private static final String APPLICATION_PATH = "/applications/hello-app";
+
   @Test
   void shouldCreateTheApplicationAndAnswerItsLocation() throws Exception {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
-    Path archive = HelloApp.writeArchive(app, temporary.resolve("hello-app.zip"));
+    Path app = HelloApp.createCopy(temporary.resolve(APP_NAME));
+    Path archive = HelloApp.writeArchive(app, temporary.resolve(ARCHIVE_NAME));
     ServletInputStream upload = mock(ServletInputStream.class,
         delegatesTo(new ByteArrayInputStream(Files.readAllBytes(archive))));
     when(request.getMethod()).thenReturn("PUT");
-    when(request.getPathInfo()).thenReturn("/applications/hello-app");
+    when(request.getPathInfo()).thenReturn(APPLICATION_PATH);
     when(request.getInputStream()).thenReturn(upload);
 
     BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
@@ -55,9 +59,9 @@ final class BBjShipServletDeploymentTest extends AdministratorRequest {
   @Test
   void shouldAnswerBadRequestForBodyThatIsNotAnArchive() throws Exception {
     ServletInputStream upload = mock(ServletInputStream.class,
-        delegatesTo(new ByteArrayInputStream("hello-app".getBytes(StandardCharsets.UTF_8))));
+        delegatesTo(new ByteArrayInputStream(APP_NAME.getBytes(StandardCharsets.UTF_8))));
     when(request.getMethod()).thenReturn("PUT");
-    when(request.getPathInfo()).thenReturn("/applications/hello-app");
+    when(request.getPathInfo()).thenReturn(APPLICATION_PATH);
     when(request.getInputStream()).thenReturn(upload);
 
     BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
@@ -76,16 +80,16 @@ final class BBjShipServletDeploymentTest extends AdministratorRequest {
 
   @Test
   void shouldAnswerBadRequestForInvalidWebforjConf() throws Exception {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
+    Path app = HelloApp.createCopy(temporary.resolve(APP_NAME));
     Files.writeString(app.resolve("src/main/resources/webforj.conf"), """
         webforj.entry = "org.example.Application"
         webforj.quiet = [true
         """);
-    Path archive = HelloApp.writeArchive(app, temporary.resolve("hello-app.zip"));
+    Path archive = HelloApp.writeArchive(app, temporary.resolve(ARCHIVE_NAME));
     ServletInputStream upload = mock(ServletInputStream.class,
         delegatesTo(new ByteArrayInputStream(Files.readAllBytes(archive))));
     when(request.getMethod()).thenReturn("PUT");
-    when(request.getPathInfo()).thenReturn("/applications/hello-app");
+    when(request.getPathInfo()).thenReturn(APPLICATION_PATH);
     when(request.getInputStream()).thenReturn(upload);
 
     BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
@@ -104,16 +108,16 @@ final class BBjShipServletDeploymentTest extends AdministratorRequest {
 
   @Test
   void shouldAnswerCreatedForRelativeConfigFile() throws Exception {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
+    Path app = HelloApp.createCopy(temporary.resolve(APP_NAME));
     Files.writeString(app.resolve("src/main/resources/webforj.conf"), """
         webforj.entry = "org.example.Application"
         webforj.configFile = "config/app.cfg"
         """);
-    Path archive = HelloApp.writeArchive(app, temporary.resolve("hello-app.zip"));
+    Path archive = HelloApp.writeArchive(app, temporary.resolve(ARCHIVE_NAME));
     ServletInputStream upload = mock(ServletInputStream.class,
         delegatesTo(new ByteArrayInputStream(Files.readAllBytes(archive))));
     when(request.getMethod()).thenReturn("PUT");
-    when(request.getPathInfo()).thenReturn("/applications/hello-app");
+    when(request.getPathInfo()).thenReturn(APPLICATION_PATH);
     when(request.getInputStream()).thenReturn(upload);
 
     BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
@@ -126,7 +130,7 @@ final class BBjShipServletDeploymentTest extends AdministratorRequest {
   void shouldAnswerConflictForNameThatDiffersOnlyByLetterCase() throws Exception {
     Files.createDirectories(runtime.resolve("deployments/Hello-App"));
     when(request.getMethod()).thenReturn("PUT");
-    when(request.getPathInfo()).thenReturn("/applications/hello-app");
+    when(request.getPathInfo()).thenReturn(APPLICATION_PATH);
 
     BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 
@@ -147,7 +151,7 @@ final class BBjShipServletDeploymentTest extends AdministratorRequest {
     when(upload.read(any(byte[].class))).thenThrow(new DeploymentException(Reason.ARCHIVE_TOO_LARGE,
         "BBj deployment archive exceeds the allowed size of 1 GiB"));
     when(request.getMethod()).thenReturn("PUT");
-    when(request.getPathInfo()).thenReturn("/applications/hello-app");
+    when(request.getPathInfo()).thenReturn(APPLICATION_PATH);
     when(request.getInputStream()).thenReturn(upload);
 
     BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
@@ -169,7 +173,7 @@ final class BBjShipServletDeploymentTest extends AdministratorRequest {
     ServletInputStream upload = mock(ServletInputStream.class);
     when(upload.read(any(byte[].class))).thenThrow(tooLarge);
     when(request.getMethod()).thenReturn("PUT");
-    when(request.getPathInfo()).thenReturn("/applications/hello-app");
+    when(request.getPathInfo()).thenReturn(APPLICATION_PATH);
     when(request.getInputStream()).thenReturn(upload);
 
     BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
@@ -188,7 +192,7 @@ final class BBjShipServletDeploymentTest extends AdministratorRequest {
   @MethodSource("getUnexpectedFailures")
   void shouldAnswerInternalServerErrorWithoutTheRawError(Exception failure) throws Exception {
     when(request.getMethod()).thenReturn("PUT");
-    when(request.getPathInfo()).thenReturn("/applications/hello-app");
+    when(request.getPathInfo()).thenReturn(APPLICATION_PATH);
     when(request.getInputStream()).thenThrow(failure);
 
     BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
@@ -207,7 +211,7 @@ final class BBjShipServletDeploymentTest extends AdministratorRequest {
   @Test
   void shouldAnswerNotFoundForRemovalOfApplicationTheBbjShipDidNotDeploy() throws Exception {
     when(request.getMethod()).thenReturn("DELETE");
-    when(request.getPathInfo()).thenReturn("/applications/hello-app");
+    when(request.getPathInfo()).thenReturn(APPLICATION_PATH);
 
     BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
 

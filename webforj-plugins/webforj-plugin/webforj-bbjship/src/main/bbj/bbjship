@@ -2,12 +2,5 @@
 
 plugin_dir=$(CDPATH= cd -P "$(dirname "$0")" && pwd -P) || exit 1
 home=$(CDPATH= cd -P "$plugin_dir/../.." && pwd -P) || exit 1
-classpath="$home/.lib/*:$plugin_dir/lib/*"
 
-load_environment() {
-  . "$home/bin/.envsetup"
-}
-
-load_environment
-eval "exec \"\$BASIS_JAVAEXE\" $BASIS_JAVAARGS \"-Dbasis.BBjHome=\$home\" -cp \"\$classpath\"" \
-  com.webforj.bbjship.cli.BBjShipCli '"$@"'
+exec "$home/bin/bbj" -tIO -q "$plugin_dir/bbjship.bbj" - "$@"

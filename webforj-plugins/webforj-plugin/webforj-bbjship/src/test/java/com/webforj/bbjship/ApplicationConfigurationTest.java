@@ -20,13 +20,23 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 final class ApplicationConfigurationTest {
 
+  private static final String APP_NAME = "hello-app";
+  private static final String CONF_PATH = "src/main/resources/webforj.conf";
+  private static final String RESOURCES_FOLDER = "src/main/resources";
+  private static final String CONF_FILE = "webforj.conf";
+  private static final String ENTRY_CLASS = "org.example.Application";
+  private static final String QUIET_ENTRY_CONF = """
+      webforj.entry = "org.example.Application"
+      webforj.quiet = true
+      """;
+
   @TempDir
   Path temporary;
 
   @Test
   void shouldUseDefaultsWhenTheJarHasNoWebforjConf() throws IOException {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
-    Files.delete(app.resolve("src/main/resources/webforj.conf"));
+    Path app = HelloApp.createCopy(temporary.resolve(APP_NAME));
+    Files.delete(app.resolve(CONF_PATH));
     Path jar = HelloApp.writeJar(app);
 
     ApplicationConfiguration configuration = ApplicationConfiguration.load(jar);
@@ -50,8 +60,8 @@ final class ApplicationConfigurationTest {
 
   @Test
   void shouldReadEveryKeyOfWebforjConf() throws IOException {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
-    Files.writeString(app.resolve("src/main/resources/webforj.conf"), """
+    Path app = HelloApp.createCopy(temporary.resolve(APP_NAME));
+    Files.writeString(app.resolve(CONF_PATH), """
         webforj {
           entry = "org.example.Application"
           assetsDir = "\\\\public"
@@ -73,7 +83,7 @@ final class ApplicationConfigurationTest {
 
     ApplicationConfiguration configuration = ApplicationConfiguration.load(jar);
 
-    assertEquals(Optional.of("org.example.Application"), configuration.getEntryClass());
+    assertEquals(Optional.of(ENTRY_CLASS), configuration.getEntryClass());
     assertEquals("public/", configuration.getAssetsPrefix());
     assertEquals("images/", configuration.getIconsPrefix());
     assertEquals(List.of("home.html", "index.htm"), configuration.getIndexes());
@@ -92,8 +102,8 @@ final class ApplicationConfigurationTest {
   @ParameterizedTest
   @ValueSource(strings = {"/", "//", " "})
   void shouldReadNoAssetsPrefixWhenAssetsDirIsTheRoot(String assetsDir) throws IOException {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
-    Files.writeString(app.resolve("src/main/resources/webforj.conf"), """
+    Path app = HelloApp.createCopy(temporary.resolve(APP_NAME));
+    Files.writeString(app.resolve(CONF_PATH), """
         webforj.entry = "org.example.Application"
         webforj.assetsDir = "%s"
         """.formatted(assetsDir));
@@ -107,8 +117,8 @@ final class ApplicationConfigurationTest {
   @ParameterizedTest
   @ValueSource(booleans = {true, false})
   void shouldReadTheSecureSetting(boolean secure) throws IOException {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
-    Files.writeString(app.resolve("src/main/resources/webforj.conf"), """
+    Path app = HelloApp.createCopy(temporary.resolve(APP_NAME));
+    Files.writeString(app.resolve(CONF_PATH), """
         webforj.entry = "org.example.Application"
         webforj.secure = %s
         """.formatted(secure));
@@ -121,8 +131,8 @@ final class ApplicationConfigurationTest {
 
   @Test
   void shouldReadSingleStringProgramArgumentsAsOneArgument() throws IOException {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
-    Files.writeString(app.resolve("src/main/resources/webforj.conf"), """
+    Path app = HelloApp.createCopy(temporary.resolve(APP_NAME));
+    Files.writeString(app.resolve(CONF_PATH), """
         webforj.entry = "org.example.Application"
         webforj.programArguments = "--only"
         """);
@@ -135,8 +145,8 @@ final class ApplicationConfigurationTest {
 
   @Test
   void shouldHandOutUnmodifiableIndexesAndProgramArguments() throws IOException {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
-    Files.writeString(app.resolve("src/main/resources/webforj.conf"), """
+    Path app = HelloApp.createCopy(temporary.resolve(APP_NAME));
+    Files.writeString(app.resolve(CONF_PATH), """
         webforj.entry = "org.example.Application"
         webforj.assetsIndex = ["home.html"]
         webforj.programArguments = ["--one"]
@@ -153,7 +163,7 @@ final class ApplicationConfigurationTest {
 
   @Test
   void shouldFailWhenTheJarCannotBeRead() throws IOException {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
+    Path app = HelloApp.createCopy(temporary.resolve(APP_NAME));
     Path jar = app.resolve("src/main/resources/static/app.css");
 
     assertThrows(IOException.class, () -> ApplicationConfiguration.load(jar));
@@ -161,7 +171,7 @@ final class ApplicationConfigurationTest {
 
   @Test
   void shouldReadNoConfigurationFromMissingJar() throws IOException {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
+    Path app = HelloApp.createCopy(temporary.resolve(APP_NAME));
     Path jar = app.resolve("target/hello-app-1.0-SNAPSHOT.jar");
 
     ApplicationConfiguration configuration = ApplicationConfiguration.load(jar);
@@ -171,8 +181,8 @@ final class ApplicationConfigurationTest {
 
   @Test
   void shouldFailWithMessageWhenWebforjConfIsInvalid() throws IOException {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
-    Files.writeString(app.resolve("src/main/resources/webforj.conf"), """
+    Path app = HelloApp.createCopy(temporary.resolve(APP_NAME));
+    Files.writeString(app.resolve(CONF_PATH), """
         webforj.entry = "org.example.Application"
         webforj.quiet = maybe
         """);
@@ -185,56 +195,47 @@ final class ApplicationConfigurationTest {
 
   @Test
   void shouldReadWebforjConfOfClassFolder() throws IOException {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
-    Path classFolder = app.resolve("src/main/resources");
-    Files.writeString(classFolder.resolve("webforj.conf"), """
-        webforj.entry = "org.example.Application"
-        webforj.quiet = true
-        """);
+    Path app = HelloApp.createCopy(temporary.resolve(APP_NAME));
+    Path classFolder = app.resolve(RESOURCES_FOLDER);
+    Files.writeString(classFolder.resolve(CONF_FILE), QUIET_ENTRY_CONF);
 
     ApplicationConfiguration configuration = ApplicationConfiguration.load(classFolder);
 
-    assertEquals(Optional.of("org.example.Application"), configuration.getEntryClass());
+    assertEquals(Optional.of(ENTRY_CLASS), configuration.getEntryClass());
     assertEquals(Optional.of(true), configuration.getQuietMode());
   }
 
   @Test
   void shouldReadWebforjConfOfTheFirstClassFolderThatHasIt() throws IOException {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
+    Path app = HelloApp.createCopy(temporary.resolve(APP_NAME));
     Path classes = app.resolve("src/main/java");
-    Path resources = app.resolve("src/main/resources");
-    Files.writeString(resources.resolve("webforj.conf"), """
-        webforj.entry = "org.example.Application"
-        webforj.quiet = true
-        """);
+    Path resources = app.resolve(RESOURCES_FOLDER);
+    Files.writeString(resources.resolve(CONF_FILE), QUIET_ENTRY_CONF);
 
     ApplicationConfiguration configuration = ApplicationConfiguration.load(classes, resources);
 
-    assertEquals(Optional.of("org.example.Application"), configuration.getEntryClass());
+    assertEquals(Optional.of(ENTRY_CLASS), configuration.getEntryClass());
     assertEquals(Optional.of(true), configuration.getQuietMode());
   }
 
   @Test
   void shouldReadNoConfigurationFromMissingSource() throws IOException {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
+    Path app = HelloApp.createCopy(temporary.resolve(APP_NAME));
     Path missing = temporary.resolve("removed-classes");
-    Path resources = app.resolve("src/main/resources");
-    Files.writeString(resources.resolve("webforj.conf"), """
-        webforj.entry = "org.example.Application"
-        webforj.quiet = true
-        """);
+    Path resources = app.resolve(RESOURCES_FOLDER);
+    Files.writeString(resources.resolve(CONF_FILE), QUIET_ENTRY_CONF);
 
     ApplicationConfiguration configuration = ApplicationConfiguration.load(missing, resources);
 
-    assertEquals(Optional.of("org.example.Application"), configuration.getEntryClass());
+    assertEquals(Optional.of(ENTRY_CLASS), configuration.getEntryClass());
     assertEquals(Optional.of(true), configuration.getQuietMode());
   }
 
   @Test
   void shouldUseDefaultsWhenTheClassFolderHasNoWebforjConf() throws IOException {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
-    Path classFolder = app.resolve("src/main/resources");
-    Files.delete(classFolder.resolve("webforj.conf"));
+    Path app = HelloApp.createCopy(temporary.resolve(APP_NAME));
+    Path classFolder = app.resolve(RESOURCES_FOLDER);
+    Files.delete(classFolder.resolve(CONF_FILE));
 
     ApplicationConfiguration configuration = ApplicationConfiguration.load(classFolder);
 
@@ -245,9 +246,9 @@ final class ApplicationConfigurationTest {
 
   @Test
   void shouldFailWithMessageWhenWebforjConfOfClassFolderIsInvalid() throws IOException {
-    Path app = HelloApp.createCopy(temporary.resolve("hello-app"));
-    Path classFolder = app.resolve("src/main/resources");
-    Files.writeString(classFolder.resolve("webforj.conf"), """
+    Path app = HelloApp.createCopy(temporary.resolve(APP_NAME));
+    Path classFolder = app.resolve(RESOURCES_FOLDER);
+    Files.writeString(classFolder.resolve(CONF_FILE), """
         webforj.entry = "org.example.Application"
         webforj.quiet = maybe
         """);

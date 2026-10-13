@@ -9,9 +9,11 @@ import org.junit.jupiter.api.Test;
 
 class WatchPortFileTest {
 
+  private static final String PROJECT_DIRECTORY = "/home/dev/project";
+
   @Test
   void shouldResolveUnderTempDirectoryWithExpectedName() {
-    Path file = WatchPortFile.resolve("/home/dev/project");
+    Path file = WatchPortFile.resolve(PROJECT_DIRECTORY);
     Path tmp = Path.of(System.getProperty("java.io.tmpdir"));
 
     assertEquals(tmp.toAbsolutePath().normalize(), file.getParent().toAbsolutePath().normalize());
@@ -21,8 +23,8 @@ class WatchPortFileTest {
 
   @Test
   void shouldResolveDeterministicallyForTheSamePath() {
-    assertEquals(WatchPortFile.resolve("/home/dev/project"),
-        WatchPortFile.resolve("/home/dev/project"));
+    assertEquals(WatchPortFile.resolve(PROJECT_DIRECTORY),
+        WatchPortFile.resolve(PROJECT_DIRECTORY));
   }
 
   @Test

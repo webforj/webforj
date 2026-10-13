@@ -251,21 +251,23 @@ public class WatchMojo extends AbstractBundlerMojo {
     settings.setDefaultPublishName(project.getBuild().getFinalName())
         .setVersion(pluginDescriptor.getVersion());
     String name = settings.getPublishName();
-    BBjCredentials credentials = settings.getCredentials();
-    if (credentials.isFactoryAccount()) {
-      getLog().warn(BBjCredentials.FACTORY_ACCOUNT_WARNING);
-    }
+    BBjCredentials credentials = settings.getCredentials(getLog()::warn);
 
     Path archive = ProjectDeployment.resolveArchive(project, name);
+    File configured = bbj.getDevelopment().getClassFolder();
+    Path classFolder = (configured != null ? configured.toPath()
+        : Path.of(project.getBuild().getOutputDirectory())).toAbsolutePath().normalize();
+    if (configured == null && !Files.isDirectory(classFolder)) {
+      throw new MojoExecutionException(
+          "The class folder " + classFolder + " does not exist. Run compile before webforj:watch");
+    }
+
     try {
       Path bundle = MavenArtifacts.resolveBBjShipPackage(repositorySystem, repositorySession,
           project.getRemoteProjectRepositories(), settings.getVersion());
-      File configured = bbj.getDevelopment().getClassFolder();
-      Path classFolder = (configured != null ? configured.toPath()
-          : Path.of(project.getBuild().getOutputDirectory())).toAbsolutePath().normalize();
       Development.Builder development = Development.create(bundle, settings.getVersion())
-          .setDeploymentUrl(URI.create(settings.getUrl())).setPublishName(name)
-          .setCredentials(credentials).setArchive(archive).setClassFolders(List.of(classFolder))
+          .setDeploymentUrl(settings.resolveUrl()).setPublishName(name).setCredentials(credentials)
+          .setArchive(archive).setClassFolders(List.of(classFolder))
           .setApplicationClasspath(MavenArtifacts.getApplicationClasspath(project))
           .setRuntimeClasspath(MavenArtifacts.getRuntimeClasspath(project))
           .setResolver(getArtifactResolver()).setLog(getLog()::info).setWarn(getLog()::warn)

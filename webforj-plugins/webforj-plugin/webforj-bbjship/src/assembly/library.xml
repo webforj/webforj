@@ -12,9 +12,6 @@
       <useProjectArtifact>true</useProjectArtifact>
       <unpack>true</unpack>
       <scope>runtime</scope>
-      <excludes>
-        <exclude>info.picocli:picocli</exclude>
-      </excludes>
     </dependencySet>
   </dependencySets>
 </assembly>

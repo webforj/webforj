@@ -110,6 +110,21 @@ public final class BBjShipClient {
   }
 
   /**
+   * Gets the web server port of a BBjShip base address.
+   *
+   * @param url the base address
+   *
+   * @return the port of the address, or the default port of its scheme
+   */
+  public static int getPort(URI url) {
+    if (url.getPort() != -1) {
+      return url.getPort();
+    }
+
+    return "https".equalsIgnoreCase(url.getScheme()) ? 443 : 80;
+  }
+
+  /**
    * Uploads an archive and verifies publication of the requested application.
    *
    * @param archive the deployment archive
