@@ -27,6 +27,7 @@ Verification:
 1. Run the formatter: `mvn -o -q -pl <module> spotless:apply`.
 2. Verify the module: `mvn -o -pl <module> verify > verify.log 2>&1`, then capture `$?` and read the summary lines of the log. Spotless check and checkstyle run there.
 3. On failure, fix and go back to step 1. Continue only when the log says `BUILD SUCCESS`.
+4. `-pl` names the changed modules and any new parent pom, never `-am`. Upstream modules are installed already, and `-am` rebuilds all of them with their tests on every run.
 
 Rules:
 - Never trust an exit code after a pipe. A background run is judged by its log (`BUILD SUCCESS` or `[ERROR]`), never by the notification's exit code.

@@ -1,7 +1,7 @@
 package com.webforj.plugin.gradle.hotswap;
 
+import com.webforj.bbjship.foundation.ApplicationClasspath;
 import com.webforj.plugin.foundation.hotswap.HotswapLaunch;
-import com.webforj.plugin.foundation.resolve.ApplicationClasspath;
 import com.webforj.plugin.foundation.resolve.ArtifactResolver;
 import com.webforj.plugin.gradle.resolve.GradleArtifacts;
 import java.io.IOException;

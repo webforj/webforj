@@ -15,8 +15,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.webforj.plugin.foundation.bbj.Setup;
-import com.webforj.plugin.foundation.bbj.model.BBjCredentials;
+import com.webforj.bbjship.foundation.Setup;
+import com.webforj.bbjship.foundation.model.BBjCredentials;
 import com.webforj.plugin.maven.bbj.model.BBjAdminOptions;
 import com.webforj.plugin.maven.bbj.model.BBjOptions;
 import java.io.IOException;
@@ -81,11 +81,11 @@ class BBjSetupMojoTest {
     mojo.bbj.getAdmin().setPassword(ADMIN_PASSWORD);
     log = mock(Log.class);
     mojo.setLog(log);
-    bundle = temporary.resolve("webforj-bbjship-26.03-SNAPSHOT-bbj-plugin.zip");
+    bundle = temporary.resolve("webforj-bbjship-plugin-26.03-SNAPSHOT-bbj-plugin.zip");
     mojo.repositorySession = mock(RepositorySystemSession.class);
     when(repositorySystem.resolveArtifact(eq(mojo.repositorySession), any()))
         .thenReturn(new ArtifactResult(new ArtifactRequest()).setArtifact(
-            new DefaultArtifact("com.webforj:webforj-bbjship:zip:bbj-plugin:26.03-SNAPSHOT")
+            new DefaultArtifact("com.webforj:webforj-bbjship-plugin:zip:bbj-plugin:26.03-SNAPSHOT")
                 .setFile(bundle.toFile())));
     setup = mock(Setup.class);
     setupBuilder = mock(Setup.Builder.class, Answers.RETURNS_SELF);
@@ -104,7 +104,7 @@ class BBjSetupMojoTest {
 
     ArgumentCaptor<ArtifactRequest> request = ArgumentCaptor.forClass(ArtifactRequest.class);
     verify(repositorySystem).resolveArtifact(eq(mojo.repositorySession), request.capture());
-    assertEquals("com.webforj:webforj-bbjship:zip:bbj-plugin:26.03-SNAPSHOT",
+    assertEquals("com.webforj:webforj-bbjship-plugin:zip:bbj-plugin:26.03-SNAPSHOT",
         request.getValue().getArtifact().toString());
     assertEquals("https://repo.example.test/releases",
         request.getValue().getRepositories().get(0).getUrl());

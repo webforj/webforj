@@ -8,7 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.webforj.App;
-import com.webforj.plugin.foundation.bbj.HelloApp;
+import com.webforj.bbjship.foundation.HelloApp;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;

@@ -20,19 +20,19 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.webforj.App;
+import com.webforj.bbjship.foundation.ApplicationClasspath.ResolvedJar;
+import com.webforj.bbjship.foundation.BBjShipClient;
+import com.webforj.bbjship.foundation.HelloApp;
+import com.webforj.bbjship.foundation.Home;
+import com.webforj.bbjship.foundation.Installation;
+import com.webforj.bbjship.foundation.ServicesProperties;
+import com.webforj.bbjship.foundation.Setup;
+import com.webforj.bbjship.foundation.model.BBjCredentials;
+import com.webforj.bbjship.foundation.model.JavaSettings;
 import com.webforj.bundle.bun.BundlerExecution;
 import com.webforj.bundle.bun.WatchSession;
 import com.webforj.plugin.foundation.WatchPortFile;
-import com.webforj.plugin.foundation.bbj.BBjShipClient;
-import com.webforj.plugin.foundation.bbj.HelloApp;
-import com.webforj.plugin.foundation.bbj.Home;
-import com.webforj.plugin.foundation.bbj.Installation;
-import com.webforj.plugin.foundation.bbj.ServicesProperties;
-import com.webforj.plugin.foundation.bbj.Setup;
-import com.webforj.plugin.foundation.bbj.model.BBjCredentials;
-import com.webforj.plugin.foundation.bbj.model.JavaSettings;
 import com.webforj.plugin.foundation.devtools.DevtoolsDelivery;
-import com.webforj.plugin.foundation.resolve.ApplicationClasspath.ResolvedJar;
 import com.webforj.plugin.maven.hotswap.HotswapInjection;
 import com.webforj.plugin.maven.hotswap.HotswapOptions;
 import com.webforj.plugin.maven.hotswap.jrebel.JrebelOptions;
@@ -257,7 +257,7 @@ class WatchMojoTest {
       when(deliveryBuilder.build()).thenReturn(delivery);
       when(delivery.getJars()).thenReturn(List
           .of(new ResolvedJar(WEBFORJ_GROUP_ID, "webforj-devtools", WEBFORJ_VERSION, devtools)));
-      bundle = temporary.resolve("webforj-bbjship-26.03-SNAPSHOT-bbj-plugin.zip");
+      bundle = temporary.resolve("webforj-bbjship-plugin-26.03-SNAPSHOT-bbj-plugin.zip");
       Artifact bbjShipPackage = mock(Artifact.class);
       when(bbjShipPackage.getFile()).thenReturn(bundle.toFile());
       mojo.repositorySession = mock(RepositorySystemSession.class);

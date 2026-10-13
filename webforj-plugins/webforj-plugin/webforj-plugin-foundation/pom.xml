@@ -15,6 +15,10 @@
   <description>Pure Java watch logic shared by every webforJ build plugin and the runtime live reload. Internal implementation.</description>
   <dependencies>
     <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-bbjship-foundation</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.httpcomponents.core5</groupId>
       <artifactId>httpcore5</artifactId>
       <optional>true</optional>
@@ -25,15 +29,18 @@
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.interaso</groupId>
       <artifactId>webpush</artifactId>
       <optional>true</optional>
     </dependency>
 
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-bbjship-foundation</artifactId>
+      <version>${project.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-foundation</artifactId>

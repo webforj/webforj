@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.webforj.plugin.foundation.resolve.ApplicationClasspath;
-import com.webforj.plugin.foundation.resolve.ApplicationClasspath.ResolvedJar;
+import com.webforj.bbjship.foundation.ApplicationClasspath;
+import com.webforj.bbjship.foundation.ApplicationClasspath.ResolvedJar;
 import com.webforj.plugin.foundation.resolve.ArtifactResolver;
 import com.webforj.plugin.gradle.WebforjExtension;
 import com.webforj.plugin.gradle.WebforjPlugin;

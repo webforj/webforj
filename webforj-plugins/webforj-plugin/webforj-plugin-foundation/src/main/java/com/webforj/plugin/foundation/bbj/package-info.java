@@ -1,5 +1,5 @@
 /**
- * BBj deployment archives, the BBjShip client and the setup of a local BBj installation.
+ * BBj development runs of the build plugins.
  *
  * <p>
  * Internal implementation of the webforJ build plugins. Not public API.

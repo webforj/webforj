@@ -1,6 +1,6 @@
 package com.webforj.plugin.maven;
 
-import com.webforj.plugin.foundation.bbj.Deployment;
+import com.webforj.bbjship.foundation.Deployment;
 import com.webforj.plugin.maven.bbj.DeploymentSettings;
 import com.webforj.plugin.maven.bbj.ProjectDeployment;
 import com.webforj.plugin.maven.bbj.model.BBjOptions;

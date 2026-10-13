@@ -1,7 +1,7 @@
 package com.webforj.plugin.maven.resolve;
 
-import com.webforj.plugin.foundation.resolve.ApplicationClasspath;
-import com.webforj.plugin.foundation.resolve.ApplicationClasspath.ResolvedJar;
+import com.webforj.bbjship.foundation.ApplicationClasspath;
+import com.webforj.bbjship.foundation.ApplicationClasspath.ResolvedJar;
 import com.webforj.plugin.foundation.resolve.ArtifactResolver;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -124,7 +124,7 @@ public final class MavenArtifacts {
   public static Path resolveBBjShipPackage(RepositorySystem system, RepositorySystemSession session,
       List<RemoteRepository> repositories, String version) throws ArtifactResolutionException {
     DefaultArtifact artifact =
-        new DefaultArtifact("com.webforj", "webforj-bbjship", "bbj-plugin", "zip", version);
+        new DefaultArtifact("com.webforj", "webforj-bbjship-plugin", "bbj-plugin", "zip", version);
     ArtifactRequest request = new ArtifactRequest(artifact, repositories, null);
 
     return system.resolveArtifact(session, request).getArtifact().getFile().toPath();

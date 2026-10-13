@@ -1,9 +1,9 @@
 package com.webforj.plugin.maven.bbj;
 
-import com.webforj.plugin.foundation.bbj.BBjShipClient;
-import com.webforj.plugin.foundation.bbj.DeploymentPolicy;
-import com.webforj.plugin.foundation.bbj.DeploymentPolicy.Authentication;
-import com.webforj.plugin.foundation.bbj.model.BBjCredentials;
+import com.webforj.bbjship.foundation.BBjShipClient;
+import com.webforj.bbjship.foundation.DeploymentPolicy;
+import com.webforj.bbjship.foundation.DeploymentPolicy.Authentication;
+import com.webforj.bbjship.foundation.model.BBjCredentials;
 import com.webforj.plugin.maven.bbj.model.BBjOptions;
 import java.io.File;
 import java.net.URI;

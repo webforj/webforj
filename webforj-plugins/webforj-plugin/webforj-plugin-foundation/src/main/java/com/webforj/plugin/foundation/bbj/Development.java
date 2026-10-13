@@ -1,10 +1,13 @@
 package com.webforj.plugin.foundation.bbj;
 
-import com.webforj.plugin.foundation.bbj.model.BBjCredentials;
-import com.webforj.plugin.foundation.bbj.model.JavaSettings;
+import com.webforj.bbjship.foundation.ApplicationClasspath;
+import com.webforj.bbjship.foundation.ApplicationClasspath.ResolvedJar;
+import com.webforj.bbjship.foundation.BBjShipClient;
+import com.webforj.bbjship.foundation.Deployment;
+import com.webforj.bbjship.foundation.Setup;
+import com.webforj.bbjship.foundation.model.BBjCredentials;
+import com.webforj.bbjship.foundation.model.JavaSettings;
 import com.webforj.plugin.foundation.devtools.DevtoolsDelivery;
-import com.webforj.plugin.foundation.resolve.ApplicationClasspath;
-import com.webforj.plugin.foundation.resolve.ApplicationClasspath.ResolvedJar;
 import com.webforj.plugin.foundation.resolve.ArtifactResolver;
 import java.io.IOException;
 import java.net.URI;

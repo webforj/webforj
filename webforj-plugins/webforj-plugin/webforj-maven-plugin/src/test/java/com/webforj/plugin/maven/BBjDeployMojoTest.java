@@ -13,9 +13,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.webforj.App;
-import com.webforj.plugin.foundation.bbj.BBjShipClient;
-import com.webforj.plugin.foundation.bbj.HelloApp;
-import com.webforj.plugin.foundation.bbj.model.BBjCredentials;
+import com.webforj.bbjship.foundation.BBjShipClient;
+import com.webforj.bbjship.foundation.HelloApp;
+import com.webforj.bbjship.foundation.model.BBjCredentials;
 import com.webforj.plugin.maven.bbj.model.BBjAdminOptions;
 import java.io.IOException;
 import java.io.InputStream;

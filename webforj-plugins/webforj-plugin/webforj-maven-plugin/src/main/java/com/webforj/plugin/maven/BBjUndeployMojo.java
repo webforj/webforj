@@ -1,7 +1,7 @@
 package com.webforj.plugin.maven;
 
-import com.webforj.plugin.foundation.bbj.BBjShipClient;
-import com.webforj.plugin.foundation.bbj.PublishNamePolicy;
+import com.webforj.bbjship.foundation.BBjShipClient;
+import com.webforj.bbjship.foundation.PublishNamePolicy;
 import com.webforj.plugin.maven.bbj.DeploymentSettings;
 import com.webforj.plugin.maven.bbj.model.BBjOptions;
 import java.io.IOException;

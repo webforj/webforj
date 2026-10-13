@@ -1,7 +1,7 @@
 package com.webforj.plugin.maven;
 
-import com.webforj.plugin.foundation.bbj.Setup;
-import com.webforj.plugin.foundation.bbj.model.BBjCredentials;
+import com.webforj.bbjship.foundation.Setup;
+import com.webforj.bbjship.foundation.model.BBjCredentials;
 import com.webforj.plugin.maven.bbj.DeploymentSettings;
 import com.webforj.plugin.maven.bbj.model.BBjOptions;
 import com.webforj.plugin.maven.resolve.MavenArtifacts;

@@ -1,5 +1,8 @@
 package com.webforj.plugin.maven;
 
+import com.webforj.bbjship.foundation.ServicesProperties;
+import com.webforj.bbjship.foundation.model.BBjCredentials;
+import com.webforj.bbjship.foundation.model.JavaSettings;
 import com.webforj.bundle.bun.BundleLogger;
 import com.webforj.bundle.bun.BundlerExecution;
 import com.webforj.bundle.bun.WatchSession;
@@ -8,9 +11,6 @@ import com.webforj.plugin.foundation.WatchPortFile;
 import com.webforj.plugin.foundation.WatchProtocol;
 import com.webforj.plugin.foundation.WatchSocketServer;
 import com.webforj.plugin.foundation.bbj.Development;
-import com.webforj.plugin.foundation.bbj.ServicesProperties;
-import com.webforj.plugin.foundation.bbj.model.BBjCredentials;
-import com.webforj.plugin.foundation.bbj.model.JavaSettings;
 import com.webforj.plugin.foundation.hotswap.HotswapLaunch;
 import com.webforj.plugin.foundation.resolve.ArtifactResolver;
 import com.webforj.plugin.maven.bbj.DeploymentSettings;

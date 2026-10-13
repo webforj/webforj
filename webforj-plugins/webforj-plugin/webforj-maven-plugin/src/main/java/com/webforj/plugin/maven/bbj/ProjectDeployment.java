@@ -1,7 +1,7 @@
 package com.webforj.plugin.maven.bbj;
 
-import com.webforj.plugin.foundation.bbj.Deployment;
-import com.webforj.plugin.foundation.bbj.DeploymentArchive;
+import com.webforj.bbjship.foundation.Deployment;
+import com.webforj.bbjship.foundation.DeploymentArchive;
 import com.webforj.plugin.maven.resolve.MavenArtifacts;
 import java.io.File;
 import java.nio.file.Path;

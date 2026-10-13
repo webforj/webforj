@@ -1,9 +1,9 @@
 package com.webforj.plugin.foundation.hotswap;
 
+import com.webforj.bbjship.foundation.ApplicationClasspath;
 import com.webforj.plugin.foundation.hotswap.hotswapagent.HotswapAgentAttachment;
 import com.webforj.plugin.foundation.hotswap.hotswapagent.HotswapObserverJar;
 import com.webforj.plugin.foundation.hotswap.jrebel.JrebelAttachment;
-import com.webforj.plugin.foundation.resolve.ApplicationClasspath;
 import com.webforj.plugin.foundation.resolve.ArtifactResolver;
 import java.io.IOException;
 import java.nio.file.Path;

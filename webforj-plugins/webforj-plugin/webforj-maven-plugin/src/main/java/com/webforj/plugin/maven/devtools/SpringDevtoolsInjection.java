@@ -1,7 +1,7 @@
 package com.webforj.plugin.maven.devtools;
 
+import com.webforj.bbjship.foundation.ApplicationClasspath.ResolvedJar;
 import com.webforj.plugin.foundation.devtools.DevtoolsDelivery;
-import com.webforj.plugin.foundation.resolve.ApplicationClasspath.ResolvedJar;
 import com.webforj.plugin.foundation.resolve.ArtifactResolver;
 import com.webforj.plugin.maven.RunnerProperties;
 import com.webforj.plugin.maven.resolve.MavenArtifacts;

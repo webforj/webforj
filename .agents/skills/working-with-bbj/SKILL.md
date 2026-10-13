@@ -66,5 +66,5 @@ A failure after a class swap and a page reload is reproduced on the same build t
 
 ## Tests and proofs
 
-- BBjShip tests mock the BBj admin API and servlet types, following the fixtures in `webforj-bbjship/src/test`. Test names spell Bbj.
+- BBjShip tests mock the BBj admin API and servlet types, following the fixtures in `webforj-plugins/webforj-bbjship/webforj-bbjship-plugin/src/test`. Test names spell Bbj.
 - A live proof runs only after the install steps, with an app the maintainer named or a generated archetype project, on a port the maintainer is not using.

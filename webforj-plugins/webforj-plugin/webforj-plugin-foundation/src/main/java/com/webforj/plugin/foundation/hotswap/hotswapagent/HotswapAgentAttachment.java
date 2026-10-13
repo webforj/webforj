@@ -1,7 +1,7 @@
 package com.webforj.plugin.foundation.hotswap.hotswapagent;
 
 import com.sun.management.HotSpotDiagnosticMXBean;
-import com.webforj.plugin.foundation.hotswap.ContainerOptionsFile;
+import com.webforj.bbjship.foundation.ContainerOptionsFile;
 import com.webforj.plugin.foundation.hotswap.HotswapAttachment;
 import java.io.IOException;
 import java.io.InputStream;

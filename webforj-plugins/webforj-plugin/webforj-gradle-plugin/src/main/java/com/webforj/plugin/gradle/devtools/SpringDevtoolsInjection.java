@@ -1,7 +1,7 @@
 package com.webforj.plugin.gradle.devtools;
 
+import com.webforj.bbjship.foundation.ApplicationClasspath.ResolvedJar;
 import com.webforj.plugin.foundation.devtools.DevtoolsDelivery;
-import com.webforj.plugin.foundation.resolve.ApplicationClasspath.ResolvedJar;
 import com.webforj.plugin.gradle.resolve.GradleArtifacts;
 import java.io.IOException;
 import java.util.concurrent.Callable;

@@ -14,11 +14,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.webforj.App;
-import com.webforj.plugin.foundation.bbj.model.BBjCredentials;
-import com.webforj.plugin.foundation.bbj.model.JavaSettings;
+import com.webforj.bbjship.foundation.ApplicationClasspath;
+import com.webforj.bbjship.foundation.ApplicationClasspath.ResolvedJar;
+import com.webforj.bbjship.foundation.BBjShipClient;
+import com.webforj.bbjship.foundation.HelloApp;
+import com.webforj.bbjship.foundation.Setup;
+import com.webforj.bbjship.foundation.model.BBjCredentials;
+import com.webforj.bbjship.foundation.model.JavaSettings;
 import com.webforj.plugin.foundation.devtools.DevtoolsDelivery;
-import com.webforj.plugin.foundation.resolve.ApplicationClasspath;
-import com.webforj.plugin.foundation.resolve.ApplicationClasspath.ResolvedJar;
 import com.webforj.plugin.foundation.resolve.ArtifactResolver;
 import java.io.File;
 import java.io.IOException;
@@ -75,7 +78,7 @@ class DevelopmentTest {
     devtools = temporary.resolve("webforj-devtools.jar");
     new JarOutputStream(Files.newOutputStream(devtools)).close();
     archive = app.resolve("target/bbj/hello-app.zip");
-    bundle = temporary.resolve("webforj-bbjship-26.03-SNAPSHOT-bbj-plugin.zip");
+    bundle = temporary.resolve("webforj-bbjship-plugin-26.03-SNAPSHOT-bbj-plugin.zip");
     lines = new ArrayList<>();
     warnings = new ArrayList<>();
     credentials = BBjCredentials.createUser("administrator", "secret");

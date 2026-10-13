@@ -7,7 +7,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.webforj.plugin.foundation.resolve.ApplicationClasspath.ResolvedJar;
+import com.webforj.bbjship.foundation.ApplicationClasspath.ResolvedJar;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
@@ -53,10 +53,10 @@ class MavenArtifactsTest {
     List<RemoteRepository> repositories = List.of(
         new RemoteRepository.Builder("releases", "default", "https://repo.example.test/releases")
             .build());
-    Path bundle = Path.of("webforj-bbjship-26.03-SNAPSHOT-bbj-plugin.zip");
+    Path bundle = Path.of("webforj-bbjship-plugin-26.03-SNAPSHOT-bbj-plugin.zip");
     when(system.resolveArtifact(eq(session), any()))
         .thenReturn(new ArtifactResult(new ArtifactRequest()).setArtifact(
-            new DefaultArtifact("com.webforj:webforj-bbjship:zip:bbj-plugin:26.03-SNAPSHOT")
+            new DefaultArtifact("com.webforj:webforj-bbjship-plugin:zip:bbj-plugin:26.03-SNAPSHOT")
                 .setFile(bundle.toFile())));
 
     final Path resolved =
@@ -64,7 +64,7 @@ class MavenArtifactsTest {
 
     ArgumentCaptor<ArtifactRequest> request = ArgumentCaptor.forClass(ArtifactRequest.class);
     verify(system).resolveArtifact(eq(session), request.capture());
-    assertEquals("com.webforj:webforj-bbjship:zip:bbj-plugin:26.03-SNAPSHOT",
+    assertEquals("com.webforj:webforj-bbjship-plugin:zip:bbj-plugin:26.03-SNAPSHOT",
         request.getValue().getArtifact().toString());
     assertEquals(repositories, request.getValue().getRepositories());
     assertEquals(bundle, resolved);
