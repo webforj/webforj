@@ -51,7 +51,8 @@ class SetupInstallationTest {
   Path temporary;
 
   @Test
-  void shouldInstallBbjShipAndRunRemoteEnableWithPasswordOnStandardInput() throws IOException {
+  void shouldInstallBbjShipAndRunRemoteEnableWithTheCredentialsInTheEnvironment()
+      throws IOException {
     Path home = Home.createCopy(temporary.resolve("bbx")).toRealPath();
     Path plugin = BBjShipPackage.createCopy(temporary.resolve(PLUGIN_NAME));
     Path zip = BBjShipPackage.writeZip(plugin, temporary.resolve(PLUGIN_ZIP));
@@ -75,16 +76,14 @@ class SetupInstallationTest {
     assertEquals("""
         remote
         enable
-        --username
-        administrator
         --port
         8888
-        --password-stdin
         END
         """, Files.readString(home.resolve(INVOCATIONS_FILE)));
     assertEquals("""
+        administrator
         secret-password
-        """, Files.readString(home.resolve("stdin")));
+        """, Files.readString(home.resolve("credentials")));
     assertEquals("", Files.readString(home.resolve("workspace-properties")));
     assertTrue(Files.exists(home.resolve("remote-enabled")));
     assertEquals(List.of("Using BBj home " + home, "Installing BBjShip 26.03",
@@ -122,11 +121,8 @@ class SetupInstallationTest {
     assertEquals("""
         remote
         enable
-        --username
-        administrator
         --ssl-port
         8443
-        --password-stdin
         END
         """, Files.readString(home.resolve(INVOCATIONS_FILE)));
   }
@@ -149,16 +145,14 @@ class SetupInstallationTest {
     assertEquals("""
         remote
         enable
-        --username
-        administrator
         --port
         8888
-        --password-stdin
         END
         """, Files.readString(home.resolve(INVOCATIONS_FILE)));
     assertEquals("""
+        administrator
         secret-password
-        """, Files.readString(home.resolve("stdin")));
+        """, Files.readString(home.resolve("credentials")));
     assertFalse(Files.exists(home.resolve("remote-enabled")));
     assertFalse(Files.exists(home.resolve(PLUGIN_PATH)));
   }

@@ -42,7 +42,6 @@ class public BBjShipTerminal implements InvocationHandler
         print str(Array.get(arguments!, 0))
         methodret null()
       case "readLine"
-      case "readPassword"
         input (0, err=ended) "", line$
         methodret line$
       case "getVariable"

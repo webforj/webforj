@@ -11,7 +11,14 @@ import java.util.Optional;
  */
 public final class BBjShipInput {
 
+  /**
+   * The refusal that tells standard input is not available, without a closing period. The caller
+   * appends its way out.
+   */
+  public static final String STANDARD_INPUT_REFUSAL = "Standard input is not available on Windows";
+
   private final BBjShipTerminal terminal;
+  private String operatingSystem = System.getProperty("os.name", "");
 
   /**
    * Creates the input of a terminal.
@@ -32,16 +39,13 @@ public final class BBjShipInput {
   }
 
   /**
-   * Prints a prompt and reads the password the terminal types.
+   * Tells whether the command can read from standard input. BBj on Windows runs the command line
+   * without standard input.
    *
-   * @param prompt the prompt line
-   *
-   * @return the password, empty when the input has ended
+   * @return true when the operating system is not Windows
    */
-  public Optional<String> readPassword(String prompt) {
-    terminal.print(prompt);
-
-    return Optional.ofNullable(terminal.readPassword());
+  public boolean isStandardInputAvailable() {
+    return !operatingSystem.startsWith("Windows");
   }
 
   /**
@@ -53,5 +57,15 @@ public final class BBjShipInput {
    */
   public Optional<String> findVariable(String name) {
     return Optional.ofNullable(terminal.getVariable(name));
+  }
+
+  /**
+   * Sets the name of the operating system the command runs on. By default the name the Java runtime
+   * reports.
+   *
+   * @param operatingSystem the name of the operating system
+   */
+  public void setOperatingSystem(String operatingSystem) {
+    this.operatingSystem = operatingSystem;
   }
 }

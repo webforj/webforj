@@ -19,7 +19,7 @@ BBj is the engine of webforJ.
 
 | Path | Holds |
 |------|-------|
-| `<BBj home>/plugins/webforj-bbjship` | Shipped files only: `bbjship`, `bbjship.cmd`, `lib`, `servlets`, `version.properties`, `bbj-plugin.json` |
+| `<BBj home>/plugins/webforj-bbjship` | Shipped files only: `bbjship`, `bbjship.cmd`, `bbjship.ps1`, `lib`, `servlets`, `version.properties`, `bbj-plugin.json` |
 | `<BBj home>/plugins/.webforj-bbjship-deployments` | Everything BBjShip writes: deployments, static files, assets, the development switch, the properties backup, install transactions |
 | `<BBj home>/cfg/BBj.properties` | The Java arguments of BBjServices |
 

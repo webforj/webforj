@@ -104,7 +104,7 @@ public final class BBjShipCommandLine {
   public static final String USERNAME_OPTION = "--username";
 
   /**
-   * The option that asks for the password on the terminal.
+   * The option holding the password of the BBj administrator.
    */
   public static final String PASSWORD_OPTION = "--password";
 
@@ -122,6 +122,16 @@ public final class BBjShipCommandLine {
    * The option naming the SSL port of the BBjServices web server.
    */
   public static final String SSL_PORT_OPTION = "--ssl-port";
+
+  /**
+   * The environment variable naming the BBj administrator.
+   */
+  public static final String USERNAME_VARIABLE = "WEBFORJ_BBJ_USERNAME";
+
+  /**
+   * The environment variable holding the password of the BBj administrator.
+   */
+  public static final String PASSWORD_VARIABLE = "WEBFORJ_BBJ_PASSWORD";
 
   private BBjShipCommandLine() {}
 }

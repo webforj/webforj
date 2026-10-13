@@ -20,9 +20,9 @@ import picocli.CommandLine.Spec;
  *
  * <p>
  * The user name comes from {@code --username}, then {@code WEBFORJ_BBJ_USERNAME}. The password
- * comes from {@code --password-stdin} or the {@code --password} prompt, then
- * {@code WEBFORJ_BBJ_PASSWORD}. Without a user name and without a password, the credentials are the
- * factory administrator account of BBj.
+ * comes from {@code --password} or {@code --password-stdin}, then {@code WEBFORJ_BBJ_PASSWORD}.
+ * Without a user name and without a password, the credentials are the factory administrator account
+ * of BBj.
  * </p>
  *
  * @author Hyyan Abo Fakher
@@ -30,13 +30,10 @@ import picocli.CommandLine.Spec;
  */
 public final class CredentialOptions {
 
-  private static final String USERNAME_VARIABLE = "WEBFORJ_BBJ_USERNAME";
-  private static final String PASSWORD_VARIABLE = "WEBFORJ_BBJ_PASSWORD";
-  private static final String SUPPLY = "Specify " + BBjShipCommandLine.USERNAME_OPTION + " and "
-      + BBjShipCommandLine.PASSWORD_STDIN_OPTION + ", or set " + USERNAME_VARIABLE + " and "
-      + PASSWORD_VARIABLE;
-  private static final String PASSWORD_PROMPT =
-      "Enter the password. The terminal shows it as it is typed";
+  private static final String SUPPLY =
+      "Specify " + BBjShipCommandLine.USERNAME_OPTION + " and " + BBjShipCommandLine.PASSWORD_OPTION
+          + " <value> or " + BBjShipCommandLine.PASSWORD_STDIN_OPTION + ", or set "
+          + BBjShipCommandLine.USERNAME_VARIABLE + " and " + BBjShipCommandLine.PASSWORD_VARIABLE;
 
   @Spec(Spec.Target.MIXEE)
   private CommandSpec spec;
@@ -47,15 +44,20 @@ public final class CredentialOptions {
       description = "Read the password from the first line of standard input.")
   private boolean passwordStdin;
 
-  @Option(names = BBjShipCommandLine.PASSWORD_OPTION,
-      description = "Prompt for the password. The terminal shows the password as it is typed.")
-  private boolean passwordPrompt;
+  private String password;
 
   @Option(names = BBjShipCommandLine.USERNAME_OPTION, paramLabel = "USER",
       description = "BBj administrator user name.")
   void setUsername(String username) {
     BBjShipFailureHandler.applyValueValidation(spec, BBjShipCommandLine.USERNAME_OPTION, username);
     this.username = username;
+  }
+
+  @Option(names = BBjShipCommandLine.PASSWORD_OPTION, paramLabel = "PASSWORD",
+      description = "BBj administrator password.")
+  void setPassword(String password) {
+    BBjShipFailureHandler.applyValueValidation(spec, BBjShipCommandLine.PASSWORD_OPTION, password);
+    this.password = password;
   }
 
   /**
@@ -65,12 +67,13 @@ public final class CredentialOptions {
    * @param input the input of the terminal that runs the command
    *
    * @return the credentials
-   * @throws ParameterException if a user name or password is blank or only one of them is given
+   * @throws ParameterException if a user name or password is blank, only one of them is given, both
+   *         password options are given or standard input is not available
    */
   public BBjCredentials resolveCredentials(BBjShipInput input) {
     CommandLine line = spec.commandLine();
-    String resolvedUsername =
-        username != null ? username : input.findVariable(USERNAME_VARIABLE).orElse(null);
+    String resolvedUsername = username != null ? username
+        : input.findVariable(BBjShipCommandLine.USERNAME_VARIABLE).orElse(null);
     String resolvedPassword = findPassword(input).orElse(null);
     try {
       return DeploymentPolicy.resolveCredentials(resolvedUsername, resolvedPassword, null,
@@ -82,16 +85,28 @@ public final class CredentialOptions {
   }
 
   private Optional<String> findPassword(BBjShipInput input) {
+    CommandLine line = spec.commandLine();
+    if (password != null && passwordStdin) {
+      throw new ParameterException(line, "Specify only one of " + BBjShipCommandLine.PASSWORD_OPTION
+          + " and " + BBjShipCommandLine.PASSWORD_STDIN_OPTION);
+    }
+
+    if (password != null) {
+      return Optional.of(password);
+    }
+
     if (passwordStdin) {
-      spec.commandLine().getOut().println("Reading the password from standard input");
+      if (!input.isStandardInputAvailable()) {
+        throw new ParameterException(line,
+            BBjShipInput.STANDARD_INPUT_REFUSAL + ". Use " + BBjShipCommandLine.PASSWORD_OPTION
+                + " <value> or " + BBjShipCommandLine.PASSWORD_VARIABLE);
+      }
+
+      line.getOut().println("Reading the password from standard input");
 
       return Optional.of(input.readLine().orElse(""));
     }
 
-    if (passwordPrompt) {
-      return Optional.of(input.readPassword(PASSWORD_PROMPT).orElse(""));
-    }
-
-    return input.findVariable(PASSWORD_VARIABLE);
+    return input.findVariable(BBjShipCommandLine.PASSWORD_VARIABLE);
   }
 }

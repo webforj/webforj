@@ -124,6 +124,7 @@ class BBjShipFailureHandlerTest {
             "--password-stdin"), "Specify a user name after --username"),
         Arguments.of(List.of(REMOTE_COMMAND, ENABLE_COMMAND, PORT_OPTION, "8888", "--username", ""),
             "Specify a user name after --username"),
+        Arguments.of(List.of("apps", "list", "--password"), "Specify a password after --password"),
         Arguments.of(
             List.of(REMOTE_COMMAND, ENABLE_COMMAND, PORT_OPTION, "8888", PORT_OPTION, "8889"),
             "Specify --port only once"),

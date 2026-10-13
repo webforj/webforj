@@ -4,6 +4,7 @@
 # The development enable command writes the switch file into the runtime folder of the plugins.
 # The services stop command writes the restarted file into the home.
 # Records the NO_COLOR variable of each call, unset when the caller did not set it.
+# Records the user name and the password variables of each call, unset when the caller did not set them.
 # A sleep file in the home names a command and the seconds it waits before answering.
 home=$(dirname "$(dirname "$(dirname "$0")")")
 printf '%s\n' "$@" END >> "$home/invocations"
@@ -17,8 +18,7 @@ do
   esac
 done
 
-IFS= read -r password
-printf '%s\n' "$password" >> "$home/stdin"
+printf '%s\n%s\n' "${WEBFORJ_BBJ_USERNAME-unset}" "${WEBFORJ_BBJ_PASSWORD-unset}" >> "$home/credentials"
 touch "$home/workspace-properties"
 find "$home"/plugins/.webforj-bbjship-deployments/.webforj-bbj-setup-* -maxdepth 1 -name '*.properties' \
   2>/dev/null >> "$home/workspace-properties"

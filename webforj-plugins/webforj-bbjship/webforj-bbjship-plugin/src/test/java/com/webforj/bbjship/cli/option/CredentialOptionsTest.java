@@ -38,7 +38,7 @@ class CredentialOptionsTest {
   private static final String OPERATOR_USERNAME = "operator";
   private static final String ENVIRONMENT_PASSWORD = "environment-secret";
   private static final String ADMINISTRATOR_USERNAME = "administrator";
-  private static final String PROMPT_PASSWORD = "prompt-secret";
+  private static final String OPTION_PASSWORD = "option-secret";
 
   @TempDir
   Path temporary;
@@ -175,25 +175,99 @@ class CredentialOptionsTest {
   }
 
   @Test
-  void shouldReadThePasswordTheTerminalPromptsFor() {
+  void shouldPreferThePasswordValueOverTheEnvironment() {
     Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
-    TerminalLines terminal = new TerminalLines(stream).setTyped(PROMPT_PASSWORD);
-    BBjShipCli configured =
-        BBjShipCli.create(new BBjShipPlugin(home)).setTerminal(terminal).setSessions(login -> {
+    BBjShipCli configured = BBjShipCli.create(new BBjShipPlugin(home))
+        .setTerminal(new TerminalLines(stream).setVariables(
+            Map.of(USERNAME_VARIABLE, OPERATOR_USERNAME, PASSWORD_VARIABLE, ENVIRONMENT_PASSWORD)))
+        .setAnsi(Ansi.OFF).setSessions(login -> {
           credentials.add(login.getUsername());
           credentials.add(login.getPassword());
           return admin;
         }).build();
 
-    int status = configured.run("apps", "list", "--username", ADMINISTRATOR_USERNAME, "--password");
+    int status = configured.run("apps", "list", "--username", ADMINISTRATOR_USERNAME, "--password",
+        OPTION_PASSWORD);
 
     assertEquals(0, status);
-    assertEquals(List.of(ADMINISTRATOR_USERNAME, PROMPT_PASSWORD), credentials);
-    assertEquals(List.of(PROMPT_PASSWORD), terminal.getPasswordReads());
+    assertEquals(List.of(ADMINISTRATOR_USERNAME, OPTION_PASSWORD), credentials);
     assertEquals("""
-        Enter the password. The terminal shows it as it is typed
         No applications deployed
         """, output.toString(StandardCharsets.UTF_8));
+  }
+
+  @Test
+  void shouldRefuseThePasswordValueTogetherWithStandardInput() {
+    Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+    TerminalLines terminal = new TerminalLines(stream).setTyped("stdin-secret");
+    BBjShipCli configured = BBjShipCli.create(new BBjShipPlugin(home)).setTerminal(terminal)
+        .setAnsi(Ansi.OFF).setSessions(login -> {
+          credentials.add(login.getUsername());
+          credentials.add(login.getPassword());
+          return admin;
+        }).build();
+
+    int status = configured.run("apps", "list", "--username", ADMINISTRATOR_USERNAME, "--password",
+        OPTION_PASSWORD, "--password-stdin");
+
+    assertEquals(2, status);
+    assertEquals("""
+        Specify only one of --password and --password-stdin
+        """, output.toString(StandardCharsets.UTF_8));
+    assertEquals(List.of(), credentials);
+    assertEquals("stdin-secret", terminal.readLine());
+  }
+
+  @ParameterizedTest
+  @MethodSource("getMissingPasswordArguments")
+  void shouldRefuseMissingPasswordValueWhileParsing(List<String> arguments) {
+    int status = cli.run(arguments.toArray(String[]::new));
+
+    assertEquals(2, status);
+    assertEquals("""
+        Specify a password after --password
+        """, output.toString(StandardCharsets.UTF_8));
+    assertEquals(List.of(), credentials);
+  }
+
+  @Test
+  void shouldRefuseStandardInputOnWindows() {
+    Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+    TerminalLines terminal = new TerminalLines(stream).setTyped("stdin-secret");
+    BBjShipCli configured = BBjShipCli.create(new BBjShipPlugin(home)).setTerminal(terminal)
+        .setOperatingSystem("Windows 11").setAnsi(Ansi.OFF).setSessions(login -> {
+          credentials.add(login.getUsername());
+          credentials.add(login.getPassword());
+          return admin;
+        }).build();
+
+    int status =
+        configured.run("apps", "list", "--username", ADMINISTRATOR_USERNAME, "--password-stdin");
+
+    assertEquals(2, status);
+    assertEquals("""
+        Standard input is not available on Windows. Use --password <value> or WEBFORJ_BBJ_PASSWORD
+        """, output.toString(StandardCharsets.UTF_8));
+    assertEquals(List.of(), credentials);
+    assertEquals("stdin-secret", terminal.readLine());
+  }
+
+  @Test
+  void shouldUseThePasswordValueOnWindows() {
+    Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+    BBjShipCli configured =
+        BBjShipCli.create(new BBjShipPlugin(home)).setTerminal(new TerminalLines(stream))
+            .setOperatingSystem("Windows 11").setAnsi(Ansi.OFF).setSessions(login -> {
+              credentials.add(login.getUsername());
+              credentials.add(login.getPassword());
+              return admin;
+            }).build();
+
+    int status = configured.run("apps", "list", "--username", ADMINISTRATOR_USERNAME, "--password",
+        OPTION_PASSWORD);
+
+    assertEquals(0, status);
+    assertEquals(List.of(ADMINISTRATOR_USERNAME, OPTION_PASSWORD), credentials);
   }
 
   @ParameterizedTest
@@ -210,7 +284,8 @@ class CredentialOptionsTest {
     assertEquals("""
         Reading the password from standard input
         The BBj administration user name and password are missing. Specify --username and \
-        --password-stdin, or set WEBFORJ_BBJ_USERNAME and WEBFORJ_BBJ_PASSWORD
+        --password <value> or --password-stdin, or set WEBFORJ_BBJ_USERNAME and \
+        WEBFORJ_BBJ_PASSWORD
         """, output.toString(StandardCharsets.UTF_8));
   }
 
@@ -230,10 +305,9 @@ class CredentialOptionsTest {
 
     assertEquals(2, status);
     assertEquals(List.of(), credentials);
-    assertEquals(
-        "The BBj administration user name and password are missing. Specify --username "
-            + "and --password-stdin, or set WEBFORJ_BBJ_USERNAME and WEBFORJ_BBJ_PASSWORD\n",
-        output.toString(StandardCharsets.UTF_8));
+    assertEquals("The BBj administration user name and password are missing. Specify --username "
+        + "and --password <value> or --password-stdin, or set WEBFORJ_BBJ_USERNAME and "
+        + "WEBFORJ_BBJ_PASSWORD\n", output.toString(StandardCharsets.UTF_8));
   }
 
   private static Stream<Arguments> getAccounts() {
@@ -248,9 +322,14 @@ class CredentialOptionsTest {
         """));
   }
 
+  private static Stream<Arguments> getMissingPasswordArguments() {
+    return Stream.of(Arguments.of(List.of("apps", "list", "--password", "")),
+        Arguments.of(List.of("apps", "list", "--password", "--port")));
+  }
+
   private static Stream<Arguments> getIncompleteEnvironments() {
-    String supply = ". Specify --username and --password-stdin, or set WEBFORJ_BBJ_USERNAME and "
-        + PASSWORD_VARIABLE;
+    String supply = ". Specify --username and --password <value> or --password-stdin, or set "
+        + "WEBFORJ_BBJ_USERNAME and " + PASSWORD_VARIABLE;
     return Stream.of(
         Arguments.of(Map.of(USERNAME_VARIABLE, OPERATOR_USERNAME),
             "The BBj administration password is missing" + supply),

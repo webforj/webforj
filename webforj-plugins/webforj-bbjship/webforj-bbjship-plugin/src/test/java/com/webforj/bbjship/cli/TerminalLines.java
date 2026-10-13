@@ -5,7 +5,6 @@ import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +22,6 @@ public final class TerminalLines implements BBjShipTerminal {
   private final Writer printed;
   private final Deque<String> typed = new ArrayDeque<>();
   private final Map<String, String> variables = new HashMap<>();
-  private final List<String> passwordReads = new ArrayList<>();
   private Path workingDirectory = Path.of("").toAbsolutePath();
 
   /**
@@ -74,15 +72,6 @@ public final class TerminalLines implements BBjShipTerminal {
   }
 
   /**
-   * Returns the lines read as passwords.
-   *
-   * @return the lines read as passwords
-   */
-  public List<String> getPasswordReads() {
-    return List.copyOf(passwordReads);
-  }
-
-  /**
    * {@inheritDoc}
    */
   @Override
@@ -104,19 +93,6 @@ public final class TerminalLines implements BBjShipTerminal {
   @Override
   public String readLine() {
     return typed.poll();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public String readPassword() {
-    String line = typed.poll();
-    if (line != null) {
-      passwordReads.add(line);
-    }
-
-    return line;
   }
 
   /**

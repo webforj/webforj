@@ -55,8 +55,7 @@ class SetupDevelopmentTest {
   private static final String COMPLETED_MESSAGE = "BBj setup completed";
   private static final String ENABLED_MESSAGE = "BBjShip endpoint is enabled";
   private static final String INVOCATIONS_FILE = "invocations";
-  private static final String USERNAME_OPTION = "--username";
-  private static final String PASSWORD_STDIN_OPTION = "--password-stdin";
+  private static final String CREDENTIALS_FILE = "credentials";
   private static final String REDEFINITION_ARGUMENT = "-XX:+AllowEnhancedClassRedefinition";
   private static final String HOTSWAP_TOOL_ARGUMENT = "-Dwebforj.hotswap.tool=hotswapAgent";
   private static final String PROPERTIES_FILE = "cfg/BBj.properties";
@@ -107,8 +106,8 @@ class SetupDevelopmentTest {
 
     assertEquals(List.of(HOME_MESSAGE + home.toRealPath(), "Replacing BBjShip 26.03 with 26.03",
         "Enabling BBj remote deployment", COMPLETED_MESSAGE), messages);
-    assertEquals(List.of("remote", "enable", USERNAME_OPTION, ADMIN_USERNAME, "--port"),
-        Files.readAllLines(home.resolve(INVOCATIONS_FILE)).subList(0, 5));
+    assertEquals(List.of("remote", "enable", "--port"),
+        Files.readAllLines(home.resolve(INVOCATIONS_FILE)).subList(0, 3));
   }
 
   @Test
@@ -128,9 +127,10 @@ class SetupDevelopmentTest {
 
     assertEquals(List.of(HOME_MESSAGE + home.toRealPath(), INSTALLING_MESSAGE, ENABLED_MESSAGE,
         "Enabling BBj development runs", COMPLETED_MESSAGE), messages);
-    assertEquals(List.of("development", "enable", USERNAME_OPTION, ADMIN_USERNAME,
-        PASSWORD_STDIN_OPTION, "END"), Files.readAllLines(home.resolve(INVOCATIONS_FILE)));
-    assertEquals(List.of(ADMIN_PASSWORD), Files.readAllLines(home.resolve("stdin")));
+    assertEquals(List.of("development", "enable", "END"),
+        Files.readAllLines(home.resolve(INVOCATIONS_FILE)));
+    assertEquals(List.of(ADMIN_USERNAME, ADMIN_PASSWORD),
+        Files.readAllLines(home.resolve(CREDENTIALS_FILE)));
     assertTrue(
         Files.exists(home.resolve("plugins/.webforj-bbjship-deployments/development.enabled")));
   }
@@ -232,9 +232,10 @@ class SetupDevelopmentTest {
       order.verify(services.constructed().get(0)).applyRestart(any(BBjShipClient.class));
     }
 
-    assertEquals(List.of(SERVICES_COMMAND, "stop", USERNAME_OPTION, ADMIN_USERNAME,
-        PASSWORD_STDIN_OPTION, "END"), Files.readAllLines(home.resolve(INVOCATIONS_FILE)));
-    assertEquals(List.of(ADMIN_PASSWORD), Files.readAllLines(home.resolve("stdin")));
+    assertEquals(List.of(SERVICES_COMMAND, "stop", "END"),
+        Files.readAllLines(home.resolve(INVOCATIONS_FILE)));
+    assertEquals(List.of(ADMIN_USERNAME, ADMIN_PASSWORD),
+        Files.readAllLines(home.resolve(CREDENTIALS_FILE)));
     assertLinesMatch(List.of(HOME_MESSAGE + home.toRealPath(), INSTALLING_MESSAGE, ENABLED_MESSAGE,
         UPDATING_MESSAGE + home.toRealPath().resolve(PROPERTIES_FILE), RESTARTING_MESSAGE,
         COMPLETED_MESSAGE), messages);
@@ -393,8 +394,8 @@ class SetupDevelopmentTest {
           + home.toRealPath().resolve(PROPERTIES_FILE), failure.getMessage());
     }
 
-    assertEquals(List.of(SERVICES_COMMAND, "stop", USERNAME_OPTION, ADMIN_USERNAME,
-        PASSWORD_STDIN_OPTION, "END"), Files.readAllLines(home.resolve(INVOCATIONS_FILE)));
+    assertEquals(List.of(SERVICES_COMMAND, "stop", "END"),
+        Files.readAllLines(home.resolve(INVOCATIONS_FILE)));
   }
 
   @Test

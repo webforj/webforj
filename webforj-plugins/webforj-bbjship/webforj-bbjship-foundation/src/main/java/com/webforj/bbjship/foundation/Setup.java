@@ -4,12 +4,10 @@ import com.webforj.bbjship.foundation.model.BBjCredentials;
 import com.webforj.bbjship.foundation.model.JavaSettings;
 import com.webforj.bbjship.foundation.model.VersionResponse;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.URI;
 import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -272,19 +270,14 @@ public final class Setup {
           HTTPS.equalsIgnoreCase(deploymentUrl.getScheme()) ? BBjShipCommandLine.SSL_PORT_OPTION
               : BBjShipCommandLine.PORT_OPTION;
       log.accept("Enabling BBj remote deployment");
-      startCommand(installation, workspace,
-          List.of(launcher, BBjShipCommandLine.REMOTE, BBjShipCommandLine.ENABLE,
-              BBjShipCommandLine.USERNAME_OPTION, credentials.getUsername(), portOption,
-              Integer.toString(port), BBjShipCommandLine.PASSWORD_STDIN_OPTION),
-          commandTimeout);
+      startCommand(installation, workspace, List.of(launcher, BBjShipCommandLine.REMOTE,
+          BBjShipCommandLine.ENABLE, portOption, Integer.toString(port)), commandTimeout);
     }
 
     if (developmentEnabled && !Files.exists(plugin.getDevelopmentSwitch())) {
       log.accept("Enabling BBj development runs");
       startCommand(installation, workspace,
-          List.of(launcher, BBjShipCommandLine.DEVELOPMENT, BBjShipCommandLine.ENABLE,
-              BBjShipCommandLine.USERNAME_OPTION, credentials.getUsername(),
-              BBjShipCommandLine.PASSWORD_STDIN_OPTION),
+          List.of(launcher, BBjShipCommandLine.DEVELOPMENT, BBjShipCommandLine.ENABLE),
           commandTimeout);
     }
   }
@@ -317,8 +310,7 @@ public final class Setup {
         .setProgressInterval(progressInterval).build();
     startCommand(installation, workspace,
         List.of(plugin.getDirectory().resolve(LAUNCHER).toString(), BBjShipCommandLine.SERVICES,
-            BBjShipCommandLine.STOP, BBjShipCommandLine.USERNAME_OPTION, credentials.getUsername(),
-            BBjShipCommandLine.PASSWORD_STDIN_OPTION),
+            BBjShipCommandLine.STOP),
         process -> restartWait.apply(() -> !process.isAlive()).isPresent());
     services.applyRestart(bbjShip);
     if (!isHotswapRuntime(bbjShip.getVersion(), lines)) {
@@ -348,10 +340,10 @@ public final class Setup {
       ProcessBuilder builder = new ProcessBuilder(command).directory(installation.toFile())
           .redirectErrorStream(true).redirectOutput(output.toFile());
       builder.environment().put("NO_COLOR", "1");
+      builder.environment().put(BBjShipCommandLine.USERNAME_VARIABLE, credentials.getUsername());
+      builder.environment().put(BBjShipCommandLine.PASSWORD_VARIABLE, credentials.getPassword());
       process = builder.start();
-      try (OutputStream input = process.getOutputStream()) {
-        input.write((credentials.getPassword() + "\n").getBytes(StandardCharsets.UTF_8));
-      }
+      process.getOutputStream().close();
 
       if (!wait.isFinished(process)) {
         throw new IOException("BBj setup command timed out. Check local BBjServices");

@@ -47,8 +47,12 @@ public final class BBjShipCli {
   private final Ansi ansi;
 
   private BBjShipCli(Builder builder) {
-    this.session =
-        new BBjShipSession(builder.plugin, new BBjShipInput(builder.terminal), builder.sessions);
+    BBjShipInput input = new BBjShipInput(builder.terminal);
+    if (builder.operatingSystem != null) {
+      input.setOperatingSystem(builder.operatingSystem);
+    }
+
+    this.session = new BBjShipSession(builder.plugin, input, builder.sessions);
     if (builder.answerDeadline != null) {
       this.session.setAnswerDeadline(builder.answerDeadline);
     }
@@ -103,7 +107,8 @@ public final class BBjShipCli {
     root.getCommandSpec().name(BBjShipCommandLine.BBJSHIP).usageMessage()
         .description("Configure webforJ BBjShip and manage the applications it deployed.")
         .footer("",
-            "WEBFORJ_BBJ_USERNAME and WEBFORJ_BBJ_PASSWORD are used when the options are "
+            BBjShipCommandLine.USERNAME_VARIABLE + " and " + BBjShipCommandLine.PASSWORD_VARIABLE
+                + " are used when the options are "
                 + "absent. Without options and variables, the BBj factory administrator account is "
                 + "used.");
     CommandLine remote = new CommandLine(new BBjShipCommandGroup());
@@ -169,6 +174,7 @@ public final class BBjShipCli {
     private Ansi ansi;
     private AdminSessionFactory sessions = new BBjServicesAdminSessionFactory();
     private Duration answerDeadline;
+    private String operatingSystem;
 
     private Builder(BBjShipPlugin plugin) {
       this.plugin = Objects.requireNonNull(plugin);
@@ -220,6 +226,19 @@ public final class BBjShipCli {
      */
     public Builder setAnswerDeadline(Duration answerDeadline) {
       this.answerDeadline = Objects.requireNonNull(answerDeadline);
+      return this;
+    }
+
+    /**
+     * Sets the name of the operating system the command runs on. By default the name the Java
+     * runtime reports.
+     *
+     * @param operatingSystem the name of the operating system
+     *
+     * @return this builder
+     */
+    public Builder setOperatingSystem(String operatingSystem) {
+      this.operatingSystem = Objects.requireNonNull(operatingSystem);
       return this;
     }
 

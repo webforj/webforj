@@ -236,7 +236,6 @@ class SetupConfigurationTest {
     Path plugin = BBjShipPackage.createCopy(temporary.resolve(PLUGIN_NAME));
     Files.writeString(plugin.resolve("bbjship"), """
         #!/bin/sh
-        IFS= read -r password
         echo 'Access denied for administrator'
         exit 2
         """);

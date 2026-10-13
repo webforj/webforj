@@ -31,13 +31,6 @@ public interface BBjShipTerminal {
   String readLine();
 
   /**
-   * Reads the next line of the standard input as a password.
-   *
-   * @return the line without its line terminator, or null when the input has ended
-   */
-  String readPassword();
-
-  /**
    * Returns the value of an environment variable of the terminal.
    *
    * @param name the name of the variable

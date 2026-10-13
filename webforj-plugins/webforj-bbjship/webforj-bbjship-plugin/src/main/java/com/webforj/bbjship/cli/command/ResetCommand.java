@@ -7,6 +7,7 @@ import com.webforj.bbjship.Deployer;
 import com.webforj.bbjship.DeploymentFolder;
 import com.webforj.bbjship.cli.admin.BBjShipClasspaths;
 import com.webforj.bbjship.cli.admin.BBjShipContexts;
+import com.webforj.bbjship.cli.admin.BBjShipInput;
 import com.webforj.bbjship.cli.admin.BBjShipSession;
 import com.webforj.bbjship.cli.option.CredentialOptions;
 import com.webforj.bbjship.foundation.BBjShipCommandLine;
@@ -31,6 +32,7 @@ import picocli.CommandLine.Help.Ansi.Style;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
+import picocli.CommandLine.ParameterException;
 import picocli.CommandLine.Spec;
 
 /**
@@ -80,6 +82,7 @@ public final class ResetCommand implements Callable<Integer> {
     Path developmentSwitch = plugin.getDevelopmentSwitch();
     Path properties = propertiesFile != null ? propertiesFile
         : ServicesProperties.resolveDefaultFile(plugin.getHome());
+    applyConfirmationValidation();
     PrintWriter out = spec.commandLine().getOut();
     BBjAdminBase admin = session.openAdmin(credentials, OptionalInt.empty(), OptionalInt.empty());
     BBjShipContexts contexts = session.createContexts(admin);
@@ -152,6 +155,14 @@ public final class ResetCommand implements Callable<Integer> {
     }
 
     return 0;
+  }
+
+  private void applyConfirmationValidation() {
+    if (!yes && !session.getInput().isStandardInputAvailable()) {
+      throw new ParameterException(spec.commandLine(),
+          BBjShipInput.STANDARD_INPUT_REFUSAL + ". Run " + BBjShipCommandLine.RESET + " "
+              + BBjShipCommandLine.YES_OPTION + " to confirm");
+    }
   }
 
   private boolean isConfirmed(PrintWriter out) {

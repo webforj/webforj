@@ -39,6 +39,8 @@ public final class BBjShipFailureHandler
   private static final Map<String, String> MISSING_VALUES =
       Map.of(BBjShipCommandLine.USERNAME_OPTION,
           "Specify a user name after " + BBjShipCommandLine.USERNAME_OPTION,
+          BBjShipCommandLine.PASSWORD_OPTION,
+          "Specify a password after " + BBjShipCommandLine.PASSWORD_OPTION,
           BBjShipCommandLine.PORT_OPTION, "Specify a port after " + BBjShipCommandLine.PORT_OPTION,
           BBjShipCommandLine.SSL_PORT_OPTION,
           "Specify a port after " + BBjShipCommandLine.SSL_PORT_OPTION, "ARCHIVE",

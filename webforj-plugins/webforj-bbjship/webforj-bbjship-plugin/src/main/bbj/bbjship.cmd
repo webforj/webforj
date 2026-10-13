@@ -1,6 +1,5 @@
 @echo off
 setlocal
 set "plugin_dir=%~dp0"
-for %%H in ("%plugin_dir%..\..") do set "home=%%~fH"
-"%home%\bin\bbj.exe" -tIO -q "%plugin_dir%bbjship.bbj" - %*
+powershell -NoProfile -ExecutionPolicy Bypass -File "%plugin_dir%bbjship.ps1" %*
 exit /b %ERRORLEVEL%

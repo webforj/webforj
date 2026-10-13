@@ -35,6 +35,7 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -155,6 +156,37 @@ class ResetCommandTest {
     assertTrue(Files.exists(backup));
     verify(admin).release();
     verify(admin, never()).shutdownBBjServices(false);
+  }
+
+  @Test
+  void shouldRefuseToAskForConfirmationOnWindowsBeforeTheLogin() throws Exception {
+    Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+    TerminalLines terminal = new TerminalLines(stream).setTyped("y");
+    List<String> opened = new ArrayList<>();
+    BBjShipCli cli = BBjShipCli.create(new BBjShipPlugin(home)).setTerminal(terminal)
+        .setOperatingSystem("Windows 11").setAnsi(Ansi.OFF).setSessions(login -> {
+          opened.add(login.getUsername());
+          return admin;
+        }).build();
+
+    int status = cli.run(RESET_COMMAND);
+
+    assertEquals(2, status);
+    assertEquals(List.of(), opened);
+    assertEquals("""
+        Standard input is not available on Windows. Run reset --yes to confirm
+        """, output.toString(StandardCharsets.UTF_8));
+    assertEquals("y", terminal.readLine());
+    assertEquals(settings, Files.readString(properties));
+    verify(configuration, never()).removeApplication(anyString());
+    assertTrue(Files.isDirectory(deployments.resolve(INVENTORY_APP_NAME)));
+    assertTrue(Files.isDirectory(deployments.resolve(PROOF_APP_NAME)));
+    assertTrue(Files.exists(developmentSwitch));
+    assertNotNull(bbjServices.getContext(BBJSHIP_CONTEXT));
+    assertNotNull(bbjServices.getContext(ASSETS_CONTEXT));
+    assertEquals(List.of(CLI_CLASSPATH, "_webforj_bbjship", "webforj_bbjship_inventory",
+        "webforj_bbjship_proof-app"), admin.getClasspathNames());
+    verify(admin, never()).release();
   }
 
   @Test

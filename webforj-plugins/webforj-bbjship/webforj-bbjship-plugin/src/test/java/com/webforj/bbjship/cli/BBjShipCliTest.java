@@ -78,21 +78,20 @@ class BBjShipCliTest {
 
     assertEquals(0, status);
     assertEquals("""
-        Usage: bbjship remote enable [-hV] [--password] [--password-stdin]
+        Usage: bbjship remote enable [-hV] [--password-stdin] [--password=PASSWORD]
                                      [--port=PORT] [--ssl-port=PORT] [--username=USER]
         Enable the BBjShip HTTP endpoint.
-          -h, --help             Show this help message and exit.
-              --password         Prompt for the password. The terminal shows the
-                                   password as it is typed.
-              --password-stdin   Read the password from the first line of standard
-                                   input.
-              --port=PORT        HTTP port of the BBjServices web server the BBjShip
-                                   contexts listen on, from 1 to 65535, 8888 when
-                                   absent.
-              --ssl-port=PORT    SSL port of the BBjServices web server the BBjShip
-                                   contexts also listen on, from 1 to 65535.
-              --username=USER    BBj administrator user name.
-          -V, --version          Print version information and exit.
+          -h, --help                Show this help message and exit.
+              --password=PASSWORD   BBj administrator password.
+              --password-stdin      Read the password from the first line of standard
+                                      input.
+              --port=PORT           HTTP port of the BBjServices web server the BBjShip
+                                      contexts listen on, from 1 to 65535, 8888 when
+                                      absent.
+              --ssl-port=PORT       SSL port of the BBjServices web server the BBjShip
+                                      contexts also listen on, from 1 to 65535.
+              --username=USER       BBj administrator user name.
+          -V, --version             Print version information and exit.
         """, output.toString(StandardCharsets.UTF_8));
   }
 
