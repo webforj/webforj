@@ -38,26 +38,8 @@ jobs:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           PASSPHRASE: ""
 
-      - name: Write maven settings
-        uses: whelk-io/maven-settings-xml-action@v20
-        with:
-          servers: >
-            [
-              {
-                "id": "central",
-                "username": "${{secrets.CENTRAL_USERNAME}}",
-                "password": "${{secrets.CENTRAL_TOKEN}}"
-              }
-            ]
-          profiles: >
-            [
-              {
-                "id": "central",
-                "activation": {
-                  "activeByDefault": true
-                }
-              }
-            ]
-
       - name: Publish to Central
-        run: mvn clean deploy -DskipTests -P perform-release
+        run: mvn clean deploy -DskipTests -P perform-release --settings .github/maven-settings.xml
+        env:
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          CENTRAL_TOKEN: ${{ secrets.CENTRAL_TOKEN }}
