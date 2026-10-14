@@ -17,7 +17,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * software development kit classes are visible to the application classloader, so this receiver
  * probes for them with reflection and registers a listener without a compile time dependency on the
  * software development kit and without any new configuration. When the agent is absent the probe
- * fails and the receiver stays inert.
+ * fails and the receiver stays inert. The receiver reacts to the classes of its own application
+ * only.
  * </p>
  *
  * @author Hyyan Abo Fakher
@@ -188,11 +189,22 @@ public class JrebelReceiver implements LiveReloadReceiver {
 
   private void recordChangedClass(Object[] args) {
     if (args != null && args.length > 1 && args[1] instanceof Class<?> changedClass) {
-      delivery.classChanged(changedClass.getName());
+      if (isOwnClass(changedClass)) {
+        delivery.classChanged(changedClass.getName());
+      }
     } else {
       // Without the class name the change cannot be accounted for, so this batch falls back to
       // the full page reload.
       delivery.unnamedChange();
+    }
+  }
+
+  private static boolean isOwnClass(Class<?> changedClass) {
+    try {
+      return Class.forName(JrebelReceiver.class.getName(), false,
+          changedClass.getClassLoader()) == JrebelReceiver.class;
+    } catch (ClassNotFoundException | LinkageError e) {
+      return false;
     }
   }
 

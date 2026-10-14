@@ -7,7 +7,7 @@ import java.io.File;
  *
  * <p>
  * An empty element is a complete configuration. The plugin then downloads the default agent version
- * and caches it under {@code ~/.webforj/hotswap-agent}.
+ * and caches it in the hotswap directory.
  * </p>
  *
  * @author Hyyan Abo Fakher

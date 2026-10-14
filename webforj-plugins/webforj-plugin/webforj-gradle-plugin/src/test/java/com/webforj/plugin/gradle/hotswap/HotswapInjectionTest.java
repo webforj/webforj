@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.webforj.plugin.foundation.resolve.ApplicationClasspath;
-import com.webforj.plugin.foundation.resolve.ApplicationClasspath.ResolvedJar;
+import com.webforj.bbjship.foundation.ApplicationClasspath;
+import com.webforj.bbjship.foundation.ApplicationClasspath.ResolvedJar;
 import com.webforj.plugin.foundation.resolve.ArtifactResolver;
 import com.webforj.plugin.gradle.WebforjExtension;
 import com.webforj.plugin.gradle.WebforjPlugin;
@@ -24,10 +24,16 @@ import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class HotswapInjectionTest {
 
   private static final String VERSION = "26.02-SNAPSHOT";
+  private static final String JREBEL_LIBRARY = "libjrebel64.dylib";
+  private static final String JREBEL_TOOL_PROPERTY = "-Dwebforj.hotswap.tool=jrebel";
+  private static final String AGENT_PATH_OPTION = "-agentpath:";
+  private static final String FULL_LEVEL_PROPERTY = "-Dwebforj.hotswap.level=full";
 
   private Project project;
   private WebforjExtension extension;
@@ -49,28 +55,28 @@ class HotswapInjectionTest {
 
   @Test
   void shouldComposeTheJrebelArguments(@TempDir Path tmp) throws Exception {
-    Path library = Files.createFile(tmp.resolve("libjrebel64.dylib"));
+    Path library = Files.createFile(tmp.resolve(JREBEL_LIBRARY));
     extension
         .hotswap(hotswap -> hotswap.jrebel(jrebel -> jrebel.getPath().set(project.file(library))));
 
     List<String> arguments = injection().build().getArguments();
 
-    assertEquals(List.of("-agentpath:" + library.toAbsolutePath(), "-Dwebforj.hotswap.tool=jrebel",
-        "-Dwebforj.hotswap.level=full"), arguments);
+    assertEquals(List.of(AGENT_PATH_OPTION + library.toAbsolutePath(), JREBEL_TOOL_PROPERTY,
+        FULL_LEVEL_PROPERTY), arguments);
   }
 
   @Test
   void shouldComposeTheArgumentsWhenThePathIsSetWithoutTheBlock(@TempDir Path tmp)
       throws Exception {
-    Path library = Files.createFile(tmp.resolve("libjrebel64.dylib"));
+    Path library = Files.createFile(tmp.resolve(JREBEL_LIBRARY));
     // The path lands on the nested configuration directly, the form the property accessors of the
     // Kotlin build language produce, without the configuration block ever running.
     extension.getHotswap().getJrebel().getPath().set(project.file(library));
 
     List<String> arguments = injection().build().getArguments();
 
-    assertEquals(List.of("-agentpath:" + library.toAbsolutePath(), "-Dwebforj.hotswap.tool=jrebel",
-        "-Dwebforj.hotswap.level=full"), arguments);
+    assertEquals(List.of(AGENT_PATH_OPTION + library.toAbsolutePath(), JREBEL_TOOL_PROPERTY,
+        FULL_LEVEL_PROPERTY), arguments);
   }
 
   @Test
@@ -83,7 +89,7 @@ class HotswapInjectionTest {
         .hotswap(hotswap -> hotswap.hotswapAgent(agent -> agent.getPath().set(project.file(jar))));
 
     List<String> arguments =
-        injection().setJavaExecutable(java).setAgentCacheRoot(tmp.resolve("cache"))
+        injection().setJavaExecutable(java).setDirectory(tmp.resolve("hotswap"))
             .setApplicationClasspath(HotswapInjectionTest::classpathWithFramework)
             .setResolver((groupId, artifactId, version) -> {
               versions.add(version);
@@ -102,7 +108,7 @@ class HotswapInjectionTest {
 
   @Test
   void shouldSwitchTheSpringDevelopmentRestartOff(@TempDir Path tmp) throws Exception {
-    Path library = Files.createFile(tmp.resolve("libjrebel64.dylib"));
+    Path library = Files.createFile(tmp.resolve(JREBEL_LIBRARY));
     extension
         .hotswap(hotswap -> hotswap.jrebel(jrebel -> jrebel.getPath().set(project.file(library))));
 
@@ -114,7 +120,7 @@ class HotswapInjectionTest {
 
   @Test
   void shouldStayOffWhenTheCommandLineSaysOff(@TempDir Path tmp) throws Exception {
-    Path library = Files.createFile(tmp.resolve("libjrebel64.dylib"));
+    Path library = Files.createFile(tmp.resolve(JREBEL_LIBRARY));
     extension
         .hotswap(hotswap -> hotswap.jrebel(jrebel -> jrebel.getPath().set(project.file(library))));
 
@@ -143,7 +149,7 @@ class HotswapInjectionTest {
 
   @Test
   void shouldFailWhenBothToolsAreConfigured(@TempDir Path tmp) throws Exception {
-    Path library = Files.createFile(tmp.resolve("libjrebel64.dylib"));
+    Path library = Files.createFile(tmp.resolve(JREBEL_LIBRARY));
     extension.hotswap(hotswap -> {
       hotswap.jrebel(jrebel -> jrebel.getPath().set(project.file(library)));
       hotswap.hotswapAgent(agent -> {
@@ -155,6 +161,41 @@ class HotswapInjectionTest {
 
     assertTrue(failure.getMessage().contains("hotswapAgent"));
     assertTrue(failure.getMessage().contains("jrebel"));
+  }
+
+  @ParameterizedTest
+  @CsvSource(value = {"configured directory,,configured directory",
+      "configured,property directory,property directory"})
+  void shouldEndTheTaskWhenTheHotswapDirectoryHasSpace(String configured, String property,
+      String refused, @TempDir Path tmp) throws Exception {
+    Path jar = Files.createFile(tmp.resolve("hotswap-agent.jar"));
+    extension.hotswap(hotswap -> {
+      hotswap.getDirectory().set(tmp.resolve(configured).toFile());
+      hotswap.hotswapAgent(agent -> agent.getPath().set(project.file(jar)));
+    });
+    HotswapInjection refusing =
+        injection().setDirectory(property == null ? null : tmp.resolve(property)).build();
+
+    GradleException failure = assertThrows(GradleException.class, refusing::getArguments);
+
+    assertEquals("The hotswap directory " + tmp.resolve(refused) + " contains a space, which the "
+        + "container cannot pass to Java. Configure webforj.hotswap.directory with a path without "
+        + "spaces", failure.getMessage());
+  }
+
+  @Test
+  void shouldPreferTheCommandLineDirectoryOverTheConfiguredOne(@TempDir Path tmp) throws Exception {
+    Path library = Files.createFile(tmp.resolve(JREBEL_LIBRARY));
+    extension.hotswap(hotswap -> {
+      hotswap.getDirectory().set(tmp.resolve("configured directory").toFile());
+      hotswap.jrebel(jrebel -> jrebel.getPath().set(project.file(library)));
+    });
+
+    List<String> arguments =
+        injection().setDirectory(tmp.resolve("hotswap")).build().getArguments();
+
+    assertEquals(List.of(AGENT_PATH_OPTION + library.toAbsolutePath(), JREBEL_TOOL_PROPERTY,
+        FULL_LEVEL_PROPERTY), arguments);
   }
 
   private HotswapInjection.Builder injection() {
@@ -190,7 +231,7 @@ class HotswapInjectionTest {
 
     Path script = dir.resolve("java");
     Files.writeString(script, "#!/bin/sh\nexit " + exitCode + "\n");
-    Files.setPosixFilePermissions(script, PosixFilePermissions.fromString("rwxr-xr-x"));
+    Files.setPosixFilePermissions(script, PosixFilePermissions.fromString("rwx------"));
 
     return script;
   }

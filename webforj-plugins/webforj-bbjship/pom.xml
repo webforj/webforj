@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.webforj</groupId>
+    <artifactId>webforj-plugins</artifactId>
+    <version>26.03-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <packaging>pom</packaging>
+  <artifactId>webforj-bbjship</artifactId>
+  <name>${project.artifactId}</name>
+  <description>BBjShip: the contract shared with the build plugins and the plugin that runs inside BBjServices. Internal implementation.</description>
+
+  <modules>
+    <module>webforj-bbjship-foundation</module>
+    <module>webforj-bbjship-plugin</module>
+  </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.webforj</groupId>
+        <artifactId>webforj-bbjship-foundation</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+</project>

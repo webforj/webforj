@@ -5,14 +5,20 @@ import com.webforj.plugin.foundation.WatchPortFile;
 import com.webforj.plugin.foundation.WatchProtocol;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -27,13 +33,16 @@ import org.slf4j.LoggerFactory;
  * line carries one line of bundler output, which this receiver re-logs so it appears in the
  * application log. A rebuild line carries the changed served paths, which this receiver classifies
  * into a stylesheet hot swap or a full page reload and pushes through the reload server it was
- * given.
+ * given. Without hot swap by url, a stylesheet only rebuild is pushed with the stylesheet content
+ * read from the classpath.
  * </p>
  *
  * <p>
  * The owning lifecycle creates one receiver, starts it, and stops it on a context teardown. The
  * receiver reads the discovery file to learn the socket port, connects, and reconnects whenever the
- * connection drops, so it survives a watch restart and a stale discovery file alike.
+ * connection drops, so it survives a watch restart and a stale discovery file alike. A receiver
+ * created with a watch end listener instead stops and tells the listener when the watch closes a
+ * connection the receiver had.
  * </p>
  *
  * @author Hyyan Abo Fakher
@@ -46,6 +55,8 @@ public class WatchReceiver implements LiveReloadReceiver {
   // route to JUL and could not carry that name.
   private static final Logger logger = LoggerFactory.getLogger("com.webforj.bundle.bun");
   private static final String CSS_EXTENSION = ".css";
+  private static final String SERVED_DIRECTORY = "static/frontend/";
+  private static final Path SERVED_ROOT = Path.of(SERVED_DIRECTORY);
   private static final Set<String> IMAGE_EXTENSIONS =
       Set.of(".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".ico");
   private static final int CONNECT_TIMEOUT_MILLIS = 1000;
@@ -53,6 +64,8 @@ public class WatchReceiver implements LiveReloadReceiver {
 
   private final LiveReloadServer server;
   private final boolean staticResourcesEnabled;
+  private final String projectRoot;
+  private final Runnable watchEndListener;
   private final AtomicBoolean running = new AtomicBoolean(false);
   private final AtomicReference<Socket> socket = new AtomicReference<>();
   private final AtomicReference<Thread> connector = new AtomicReference<>();
@@ -65,8 +78,43 @@ public class WatchReceiver implements LiveReloadReceiver {
    *        reloads
    */
   public WatchReceiver(LiveReloadServer server, boolean staticResourcesEnabled) {
+    this(server, staticResourcesEnabled, System.getProperty("user.dir"), null);
+  }
+
+  /**
+   * Creates a receiver for the development watch of the given project that reconnects whenever the
+   * watch ends.
+   *
+   * @param server the reload server the changes are pushed through
+   * @param staticResourcesEnabled whether a stylesheet or image change hot swaps by url rather than
+   *        being pushed as content or reloaded
+   * @param projectRoot the absolute root directory of the project the watch runs in
+   *
+   * @since 26.03
+   */
+  public WatchReceiver(LiveReloadServer server, boolean staticResourcesEnabled,
+      String projectRoot) {
+    this(server, staticResourcesEnabled, projectRoot, null);
+  }
+
+  /**
+   * Creates a receiver for the development watch of the given project that tells the listener when
+   * the watch it connected to ends.
+   *
+   * @param server the reload server the changes are pushed through
+   * @param staticResourcesEnabled whether a stylesheet or image change hot swaps by url rather than
+   *        being pushed as content or reloaded
+   * @param projectRoot the absolute root directory of the project the watch runs in
+   * @param watchEndListener told once the watch ended
+   *
+   * @since 26.03
+   */
+  public WatchReceiver(LiveReloadServer server, boolean staticResourcesEnabled, String projectRoot,
+      Runnable watchEndListener) {
     this.server = server;
     this.staticResourcesEnabled = staticResourcesEnabled;
+    this.projectRoot = projectRoot;
+    this.watchEndListener = watchEndListener;
   }
 
   /**
@@ -115,19 +163,24 @@ public class WatchReceiver implements LiveReloadReceiver {
 
   private void connectLoop() {
     while (running.get()) {
-      Path portFile = WatchPortFile.resolve(System.getProperty("user.dir"));
+      Path portFile = WatchPortFile.resolve(projectRoot);
       Integer port = readPort(portFile);
-      if (port != null) {
-        consume(port);
+      if (port != null && consume(port) && watchEndListener != null
+          && running.compareAndSet(true, false)) {
+        logger.info("the webforj watch ended, the development run ends with it");
+        watchEndListener.run();
+        return;
       }
 
       sleep();
     }
   }
 
-  private void consume(int port) {
+  private boolean consume(int port) {
+    boolean connected = false;
     try (Socket connection = new Socket()) {
       connection.connect(new InetSocketAddress("127.0.0.1", port), CONNECT_TIMEOUT_MILLIS);
+      connected = true;
       socket.set(connection);
       logger.debug("connected to the webforj watch on port {}", port);
       readLines(connection);
@@ -136,6 +189,8 @@ public class WatchReceiver implements LiveReloadReceiver {
     } finally {
       socket.set(null);
     }
+
+    return connected;
   }
 
   private void readLines(Socket connection) throws IOException {
@@ -171,8 +226,13 @@ public class WatchReceiver implements LiveReloadReceiver {
     }
 
     boolean anyUnswappable = changedPaths.stream().anyMatch(path -> !isSwappable(path));
-    if (!staticResourcesEnabled || anyUnswappable) {
+    if (anyUnswappable) {
       server.sendReloadMessage();
+      return;
+    }
+
+    if (!staticResourcesEnabled) {
+      sendStylesheetContents(changedPaths);
       return;
     }
 
@@ -183,11 +243,30 @@ public class WatchReceiver implements LiveReloadReceiver {
 
   private static boolean isSwappable(String path) {
     String lower = path.toLowerCase(Locale.ROOT);
-    return lower.endsWith(CSS_EXTENSION) || IMAGE_EXTENSIONS.stream().anyMatch(lower::endsWith);
+    return resolveServed(path).isPresent()
+        && (lower.endsWith(CSS_EXTENSION) || IMAGE_EXTENSIONS.stream().anyMatch(lower::endsWith));
   }
 
+  private static Optional<Path> resolveServed(String path) {
+    if (path.startsWith("/") || path.indexOf('\\') >= 0) {
+      return Optional.empty();
+    }
+
+    try {
+      Path resolved = SERVED_ROOT.resolve(path).normalize();
+      if (resolved.equals(SERVED_ROOT) || !resolved.startsWith(SERVED_ROOT)) {
+        return Optional.empty();
+      }
+
+      return Optional.of(SERVED_ROOT.relativize(resolved));
+    } catch (InvalidPathException e) {
+      return Optional.empty();
+    }
+  }
+
+
   private static String getResourceType(String path) {
-    return path.toLowerCase(Locale.ROOT).endsWith(CSS_EXTENSION) ? "css" : "image";
+    return isStylesheet(path) ? "css" : "image";
   }
 
   static Integer readPort(Path portFile) {
@@ -200,6 +279,45 @@ public class WatchReceiver implements LiveReloadReceiver {
     } catch (IOException | NumberFormatException e) {
       return null;
     }
+  }
+
+  private void sendStylesheetContents(List<String> changedPaths) {
+    Map<String, String> contents = new LinkedHashMap<>();
+    for (String path : changedPaths) {
+      String content = isStylesheet(path) ? readStylesheet(path) : null;
+      if (content == null) {
+        server.sendReloadMessage();
+        return;
+      }
+
+      contents.put(path, content);
+    }
+
+    contents.forEach((path, content) -> server.sendResourceUpdateMessage("css", path, content));
+  }
+
+  private static String readStylesheet(String path) {
+    Optional<Path> served = resolveServed(path);
+    if (served.isEmpty()) {
+      return null;
+    }
+
+    String name = SERVED_DIRECTORY + String.join("/", toSegments(served.get()));
+    try (InputStream stream = WatchReceiver.class.getClassLoader().getResourceAsStream(name)) {
+      return stream == null ? null : new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+    } catch (IOException e) {
+      return null;
+    }
+  }
+
+  private static List<String> toSegments(Path path) {
+    List<String> segments = new ArrayList<>();
+    path.forEach(segment -> segments.add(segment.toString()));
+    return segments;
+  }
+
+  private static boolean isStylesheet(String path) {
+    return path.toLowerCase(Locale.ROOT).endsWith(CSS_EXTENSION);
   }
 
   private void sleep() {

@@ -1,6 +1,6 @@
 package com.webforj.plugin.foundation.resolve;
 
-import com.webforj.plugin.foundation.resolve.ApplicationClasspath.ResolvedJar;
+import com.webforj.bbjship.foundation.ApplicationClasspath.ResolvedJar;
 import java.io.IOException;
 import java.util.List;
 

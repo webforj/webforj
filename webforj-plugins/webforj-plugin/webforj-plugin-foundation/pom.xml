@@ -15,11 +15,38 @@
   <description>Pure Java watch logic shared by every webforJ build plugin and the runtime live reload. Internal implementation.</description>
   <dependencies>
     <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-bbjship-foundation</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents.core5</groupId>
+      <artifactId>httpcore5</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents.client5</groupId>
+      <artifactId>httpclient5</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
       <groupId>com.interaso</groupId>
       <artifactId>webpush</artifactId>
       <optional>true</optional>
     </dependency>
 
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-bbjship-foundation</artifactId>
+      <version>${project.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-foundation</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>com.typesafe</groupId>
       <artifactId>config</artifactId>
@@ -41,4 +68,20 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

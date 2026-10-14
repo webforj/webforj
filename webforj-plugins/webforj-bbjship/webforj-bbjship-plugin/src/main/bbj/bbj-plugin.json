@@ -1,0 +1,9 @@
+{
+  "name": "webforJ BBjShip",
+  "description": "Hosts packaged webforJ applications on BBj.",
+  "version": "${bbj.plugin.version}",
+  "author": "webforJ",
+  "licence": "MIT",
+  "bbj_dependency": "${bbj.plugin.version}",
+  "plugin_dependencies": []
+}

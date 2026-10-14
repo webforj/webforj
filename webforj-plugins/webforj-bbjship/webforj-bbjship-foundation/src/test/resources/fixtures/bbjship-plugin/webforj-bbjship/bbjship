@@ -1,0 +1,62 @@
+#!/bin/sh
+# Stands in for the BBjShip command line launcher.
+# Records each call and answers with the status line of the remote enable command.
+# The development enable command writes the switch file into the runtime folder of the plugins.
+# The services stop command writes the restarted file into the home.
+# Records the NO_COLOR variable of each call, unset when the caller did not set it.
+# Records the user name and the password variables of each call, unset when the caller did not set them.
+# A sleep file in the home names a command and the seconds it waits before answering.
+home=$(dirname "$(dirname "$(dirname "$0")")")
+printf '%s\n' "$@" END >> "$home/invocations"
+printf '%s\n' "${NO_COLOR-unset}" >> "$home/no-color"
+
+command=''
+for argument in "$@"
+do
+  case $argument in
+    remote|development|services) command=$argument ;;
+  esac
+done
+
+printf '%s\n%s\n' "${WEBFORJ_BBJ_USERNAME-unset}" "${WEBFORJ_BBJ_PASSWORD-unset}" >> "$home/credentials"
+touch "$home/workspace-properties"
+find "$home"/plugins/.webforj-bbjship-deployments/.webforj-bbj-setup-* -maxdepth 1 -name '*.properties' \
+  2>/dev/null >> "$home/workspace-properties"
+
+if [ -f "$home/sleep" ]
+then
+  { IFS= read -r sleeping; IFS= read -r seconds; } < "$home/sleep"
+  if [ "$sleeping" = "$command" ]
+  then
+    sleep "$seconds"
+  fi
+fi
+
+failure=''
+if [ -f "$home/failure" ]
+then
+  failure=$(cat "$home/failure")
+fi
+
+if [ "$failure" = "$command" ]
+then
+  exit 2
+fi
+
+case $command in
+  remote)
+    printf '%s\n' enabled > "$home/remote-enabled"
+    printf '%s\n' 'Enabled http://localhost:8888/webforj-bbjship'
+    ;;
+  development)
+    printf '%s\n' enabled > "$(dirname "$(dirname "$0")")/.webforj-bbjship-deployments/development.enabled"
+    printf '%s\n' 'Enabled development runs'
+    ;;
+  services)
+    printf '%s\n' restarted > "$home/services-restarted"
+    printf '%s\n' 'Stopping BBjServices'
+    ;;
+  *)
+    exit 2
+    ;;
+esac

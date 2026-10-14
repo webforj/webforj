@@ -12,58 +12,69 @@ import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.TempDir;
 
 class WatchConfigGuardTest {
 
+  private static final String CONFIG_FILE = "webforj.conf";
+  private static final String DEBUG_LINE = "webforj.debug = true";
+
   @TempDir
   Path directory;
 
   @Test
   @Timeout(10)
+  @SuppressWarnings("try")
   void shouldRestoreTheFileAfterDeletion() throws Exception {
-    Path file = directory.resolve("webforj.conf");
+    Path file = directory.resolve(CONFIG_FILE);
     Files.writeString(file, "webforj.devtools.livereload.enabled = true");
     List<String> notices = new CopyOnWriteArrayList<>();
+    CountDownLatch restored = new CountDownLatch(1);
 
-    try (WatchConfigGuard guard = WatchConfigGuard.start(file, notices::add)) {
+    try (WatchConfigGuard guard = WatchConfigGuard.start(file, line -> {
+      notices.add(line);
+      restored.countDown();
+    })) {
       Files.delete(file);
-      awaitFile(file);
 
-      assertEquals("webforj.devtools.livereload.enabled = true", Files.readString(file));
+      assertEquals("webforj.devtools.livereload.enabled = true", readRestoredFile(restored, file));
       assertEquals(1, notices.size());
     }
   }
 
   @Test
   @Timeout(10)
+  @SuppressWarnings("try")
   void shouldRestoreTheLastRewriteRatherThanTheStartContent() throws Exception {
-    Path file = directory.resolve("webforj.conf");
+    Path file = directory.resolve(CONFIG_FILE);
     Files.writeString(file, "webforj.debug = false");
+    CountDownLatch restored = new CountDownLatch(1);
 
-    try (WatchConfigGuard guard = WatchConfigGuard.start(file, line -> {
-    })) {
-      Files.writeString(file, "webforj.debug = true");
+    try (WatchConfigGuard guard = WatchConfigGuard.start(file, line -> restored.countDown())) {
+      Files.writeString(file, DEBUG_LINE);
       Files.setLastModifiedTime(file, FileTime.from(Instant.now().plusSeconds(2)));
-      awaitAdoption(file);
+      assertFalse(restored.await(WatchConfigGuard.CHECK_INTERVAL_MS * 2, TimeUnit.MILLISECONDS));
+      assertEquals(DEBUG_LINE, Files.readString(file, StandardCharsets.UTF_8));
 
       Files.delete(file);
-      awaitFile(file);
 
-      assertEquals("webforj.debug = true", Files.readString(file));
+      assertEquals(DEBUG_LINE, readRestoredFile(restored, file));
     }
   }
 
   @Test
   @Timeout(10)
+  @SuppressWarnings("try")
   void shouldDoNothingWhenTheFileNeverExisted() throws Exception {
-    Path file = directory.resolve("webforj.conf");
+    Path file = directory.resolve(CONFIG_FILE);
+    CountDownLatch restored = new CountDownLatch(1);
 
-    try (WatchConfigGuard guard = WatchConfigGuard.start(file, line -> {
-    })) {
-      Thread.sleep(WatchConfigGuard.CHECK_INTERVAL_MS * 2);
+    try (WatchConfigGuard guard = WatchConfigGuard.start(file, line -> restored.countDown())) {
+      assertFalse(restored.await(WatchConfigGuard.CHECK_INTERVAL_MS * 2, TimeUnit.MILLISECONDS));
 
       assertFalse(Files.exists(file));
     }
@@ -72,32 +83,24 @@ class WatchConfigGuardTest {
   @Test
   @Timeout(10)
   void shouldStopRestoringAfterClose() throws Exception {
-    Path file = directory.resolve("webforj.conf");
-    Files.writeString(file, "webforj.debug = true");
+    Path file = directory.resolve(CONFIG_FILE);
+    Files.writeString(file, DEBUG_LINE);
+    CountDownLatch restored = new CountDownLatch(1);
 
-    WatchConfigGuard guard = WatchConfigGuard.start(file, line -> {
-    });
+    WatchConfigGuard guard = WatchConfigGuard.start(file, line -> restored.countDown());
     guard.close();
 
     Files.delete(file);
-    Thread.sleep(WatchConfigGuard.CHECK_INTERVAL_MS * 3);
+    assertFalse(restored.await(WatchConfigGuard.CHECK_INTERVAL_MS * 3, TimeUnit.MILLISECONDS));
 
     assertFalse(Files.exists(file));
   }
 
-  private static void awaitFile(Path file) throws InterruptedException {
-    long deadline = System.currentTimeMillis() + 5000;
-    while (!Files.exists(file) && System.currentTimeMillis() < deadline) {
-      Thread.sleep(50);
-    }
-
+  private static String readRestoredFile(CountDownLatch restored, Path file)
+      throws InterruptedException, IOException {
+    assertTrue(restored.await(5, TimeUnit.SECONDS), "the guard did not restore " + file);
     assertTrue(Files.exists(file), "the guard did not restore " + file);
-  }
 
-  private static void awaitAdoption(Path file) throws InterruptedException, IOException {
-    // The guard adopts a rewrite on its next check. Two intervals give it one guaranteed pass over
-    // the new modification time.
-    Thread.sleep(WatchConfigGuard.CHECK_INTERVAL_MS * 2);
-    assertEquals("webforj.debug = true", Files.readString(file, StandardCharsets.UTF_8));
+    return Files.readString(file);
   }
 }

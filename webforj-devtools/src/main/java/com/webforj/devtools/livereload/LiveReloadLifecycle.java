@@ -14,7 +14,8 @@ import java.util.List;
  * Each runtime contributes a thin adapter that calls {@link #start(LiveReloadOptions)} when its
  * context comes up and {@link #stop()} when the context is torn down. The lifecycle creates the
  * reload server, hands it to every receiver, and tears everything down together, so the next
- * context binds the reload port cleanly and runs a single set of receivers.
+ * context binds the reload port cleanly and runs a single set of receivers. When the options ask
+ * for it, the lifecycle also stops when the watch it is connected to ends.
  * </p>
  *
  * @author Hyyan Abo Fakher
@@ -25,6 +26,7 @@ public final class LiveReloadLifecycle {
   private static final System.Logger logger = System.getLogger(LiveReloadLifecycle.class.getName());
 
   private final List<LiveReloadReceiver> receivers = new ArrayList<>();
+  private final List<ClassLoader> openClassLoaders = new ArrayList<>();
   private LiveReloadServer server;
   private boolean notifiedRestarting;
 
@@ -32,6 +34,8 @@ public final class LiveReloadLifecycle {
    * Brings the reload server and the receiver up, unless live reload is off or already running.
    *
    * @param options the live reload configuration
+   *
+   * @throws RuntimeException when a receiver fails to start, after everything started is stopped
    */
   public synchronized void start(LiveReloadOptions options) {
     if (!options.isEnabled()) {
@@ -45,23 +49,57 @@ public final class LiveReloadLifecycle {
 
     LiveReloadServer reloadServer = new LiveReloadServer(options.getWebsocketPort());
     reloadServer.start();
-
-    receivers.add(new WatchReceiver(reloadServer, options.isStaticResourcesEnabled()));
-    receivers.add(new JrebelReceiver(reloadServer));
-    receivers.add(new HotswapAgentReceiver(reloadServer));
-    receivers.forEach(LiveReloadReceiver::start);
-
     this.server = reloadServer;
     this.notifiedRestarting = false;
+
+    try {
+      List<LiveReloadReceiver> created = List.of(createWatchReceiver(reloadServer, options),
+          new JrebelReceiver(reloadServer), new HotswapAgentReceiver(reloadServer));
+      for (LiveReloadReceiver receiver : created) {
+        receiver.start();
+        receivers.add(receiver);
+      }
+    } catch (RuntimeException e) {
+      try {
+        stop();
+      } catch (RuntimeException stopFailure) {
+        e.addSuppressed(stopFailure);
+      }
+
+      throw e;
+    }
+
     logger.log(System.Logger.Level.INFO,
         "webforJ live reload ready on port " + options.getWebsocketPort());
   }
 
   /**
-   * Stops the receivers and the reload server, releasing the reload port.
+   * Stops the receivers and the reload server, releasing the reload port and every class loader
+   * opened since the start.
+   *
+   * @throws RuntimeException the first receiver stop failure, after every receiver and the server
+   *         were stopped
    */
   public synchronized void stop() {
-    receivers.forEach(LiveReloadReceiver::stop);
+    for (ClassLoader loader : openClassLoaders) {
+      receivers.forEach(receiver -> receiver.closeClassLoader(loader));
+    }
+
+    openClassLoaders.clear();
+
+    RuntimeException failure = null;
+    for (LiveReloadReceiver receiver : receivers) {
+      try {
+        receiver.stop();
+      } catch (RuntimeException e) {
+        logger.log(System.Logger.Level.WARNING,
+            "Could not stop the live reload receiver " + receiver.getClass().getName(), e);
+        if (failure == null) {
+          failure = e;
+        }
+      }
+    }
+
     receivers.clear();
 
     if (server != null) {
@@ -72,6 +110,41 @@ public final class LiveReloadLifecycle {
       } finally {
         server = null;
       }
+    }
+
+    if (failure != null) {
+      throw failure;
+    }
+  }
+
+  /**
+   * Prepares every receiver for an application class loader that starts serving sessions, while the
+   * lifecycle is running.
+   *
+   * @param loader the application class loader
+   *
+   * @since 26.03
+   */
+  public synchronized void openClassLoader(ClassLoader loader) {
+    if (server == null || openClassLoaders.contains(loader)) {
+      return;
+    }
+
+    openClassLoaders.add(loader);
+    receivers.forEach(receiver -> receiver.openClassLoader(loader));
+  }
+
+  /**
+   * Releases an application class loader from every receiver after its last session ended, while
+   * the lifecycle is running.
+   *
+   * @param loader the application class loader
+   *
+   * @since 26.03
+   */
+  public synchronized void closeClassLoader(ClassLoader loader) {
+    if (openClassLoaders.remove(loader)) {
+      receivers.forEach(receiver -> receiver.closeClassLoader(loader));
     }
   }
 
@@ -136,6 +209,25 @@ public final class LiveReloadLifecycle {
    */
   HotswapAgentReceiver getHotswapAgentReceiver() {
     return findReceiver(HotswapAgentReceiver.class);
+  }
+
+  private WatchReceiver createWatchReceiver(LiveReloadServer reloadServer,
+      LiveReloadOptions options) {
+    if (options.isStopOnWatchEnd()) {
+      return new WatchReceiver(reloadServer, options.isStaticResourcesEnabled(),
+          options.getProjectRoot(), () -> handleWatchEnd(reloadServer));
+    }
+
+    return new WatchReceiver(reloadServer, options.isStaticResourcesEnabled(),
+        options.getProjectRoot());
+  }
+
+  private synchronized void handleWatchEnd(LiveReloadServer endedServer) {
+    if (server == endedServer) {
+      logger.log(System.Logger.Level.INFO,
+          "webforJ live reload stops, the watch of the development run ended");
+      stop();
+    }
   }
 
   private <T extends LiveReloadReceiver> T findReceiver(Class<T> type) {

@@ -71,6 +71,7 @@ Generic industry words are fine even when another framework uses them (`first`, 
 
 - Public only when another package calls it. A method, class or listener used by one class in one package is package private or private.
 - No speculative API. Nothing is public "for later" or "for tests".
+- No dead code of any kind: no value that is written once and checked for itself, no option, setter, parameter or branch that no production path varies or reaches, no fallback for input the production path cannot produce, no slot for a later feature. When a later need appears, it is added then.
 - A class that is not meant to be extended is `final`.
 - Constructors used only inside the package are package private.
 
@@ -105,6 +106,7 @@ Never interleaved. A private method between two public ones is rejected. Static 
 - Two space indent, 100 columns, Google Java style as the formatter writes it. The formatter is right where it disagrees with checkstyle. Never hand edit around it.
 - No wildcard imports. No fully qualified type names in code or JavaDoc, import the type. Exceptions: a class name string for reflection, and two types with the same simple name in one file.
 - A blank line before `return` only when the return closes a block of three or more statements. A body of one or two statements has the return directly under the line above.
+- A method body reads as paragraphs. A blank line follows the closing brace of an `if`, `for`, `while` or `try` block whenever more statements come after it, in every body, nested ones included. Two consecutive `if` blocks inside a loop are separated by a blank line too. A declaration that feeds the next block stays attached to that block, the blank line goes before the declaration. Consecutive one line statements of one step stay together.
 - Multiline or structured strings (embedded JavaScript, JSON, source fixtures) are text blocks with `.formatted(...)`, never `+` chains.
 - JavaDoc and comments follow the `writing-prose` skill.
 

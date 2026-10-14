@@ -1,7 +1,7 @@
 package com.webforj.plugin.gradle.resolve;
 
-import com.webforj.plugin.foundation.resolve.ApplicationClasspath;
-import com.webforj.plugin.foundation.resolve.ApplicationClasspath.ResolvedJar;
+import com.webforj.bbjship.foundation.ApplicationClasspath;
+import com.webforj.bbjship.foundation.ApplicationClasspath.ResolvedJar;
 import com.webforj.plugin.foundation.resolve.ArtifactResolver;
 import java.io.IOException;
 import java.util.ArrayList;

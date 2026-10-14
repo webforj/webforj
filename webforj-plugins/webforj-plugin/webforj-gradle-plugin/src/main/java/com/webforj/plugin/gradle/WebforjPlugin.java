@@ -143,9 +143,11 @@ public class WebforjPlugin implements Plugin<Project> {
   private List<String> hotswapArguments(Project project, WebforjExtension extension,
       boolean springBootRunner, Path javaExecutable) {
     Object selection = project.findProperty(HotswapLaunch.SELECTION_PROPERTY);
+    Object directory = project.findProperty(HotswapLaunch.DIRECTORY_PROPERTY);
 
     return HotswapInjection.create().setProject(project).setOptions(extension.getHotswap())
         .setCommandLineValue(selection == null ? null : selection.toString())
+        .setDirectory(directory == null ? null : project.file(directory).toPath())
         .setSpringBootRunner(springBootRunner)
         .setBuildDirectory(project.getLayout().getBuildDirectory().get().getAsFile().toPath())
         .setJavaExecutable(javaExecutable).setLog(project.getLogger()).build().getArguments();

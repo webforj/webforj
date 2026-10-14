@@ -3,6 +3,7 @@ package com.webforj.bundle;
 import com.webforj.Environment;
 import com.webforj.Page;
 import com.webforj.environment.ObjectTable;
+import com.webforj.utilities.Assets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -20,6 +21,7 @@ class BundleAssetLoader {
   private static final String CONTEXT_PREFIX = "context://static/frontend/";
   private static final String LOADED_KEY_PREFIX = "com.webforj.bundle.BundleAssetLoader::loaded::";
   private static final Map<String, String> MODULE_SCRIPT = Map.of("type", "module");
+  private static final String BUNDLE_ATTRIBUTE = "data-webforj-bundle";
 
   private final BundleIndex fixedIndex;
 
@@ -71,9 +73,9 @@ class BundleAssetLoader {
    * Loads the single eager bundle into the page once per session, when the build produced one.
    *
    * <p>
-   * When the runtime serves no static folder of its own, the bundle is read from the classpath and
-   * inlined, since there is no web server to serve it. Otherwise it is served from the static
-   * folder the same as the per component outputs.
+   * When the runtime serves no static folder for the application, the bundle is read from the
+   * classpath and inlined, since there is no web server to serve it. Otherwise it is served from
+   * the static folder the same as the per component outputs.
    * </p>
    */
   void loadEager() {
@@ -85,9 +87,9 @@ class BundleAssetLoader {
    *
    * <p>
    * These are the assets a plugin contributes for the whole application, such as a compiled utility
-   * stylesheet. When the runtime serves no static folder of its own, they are read from the
-   * classpath and inlined, since there is no web server to serve them. Otherwise they are served
-   * from the static folder.
+   * stylesheet. When the runtime serves no static folder for the application, they are read from
+   * the classpath and inlined, since there is no web server to serve them. Otherwise they are
+   * served from the static folder.
    * </p>
    */
   void loadGlobal() {
@@ -120,10 +122,10 @@ class BundleAssetLoader {
 
   private void inject(Page page, String file) {
     boolean stylesheet = isStylesheet(file);
-    if (Environment.isRunningWithBBjServices()) {
+    if (Environment.isRunningWithBBjServices() && !Assets.isPackagedOnBBj()) {
       String url = CONTEXT_PREFIX + file;
       if (stylesheet) {
-        page.addInlineStyleSheet(url, false, Map.of());
+        page.addInlineStyleSheet(url, false, Map.of(BUNDLE_ATTRIBUTE, file));
       } else {
         page.addInlineJavaScript(url, false, MODULE_SCRIPT);
       }

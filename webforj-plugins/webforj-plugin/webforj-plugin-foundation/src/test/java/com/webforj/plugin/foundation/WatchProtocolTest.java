@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 class WatchProtocolTest {
 
   @Test
-  void shouldFormatALogLineWithThePrefix() {
+  void shouldFormatLogLineWithThePrefix() {
     String line = WatchProtocol.log("bundling main.js");
 
     assertTrue(line.startsWith(WatchProtocol.LOG_PREFIX));
@@ -17,7 +17,7 @@ class WatchProtocolTest {
   }
 
   @Test
-  void shouldFormatAWarnLineWithThePrefix() {
+  void shouldFormatWarnLineWithThePrefix() {
     String line = WatchProtocol.warn("duplicate package");
 
     assertTrue(line.startsWith(WatchProtocol.WARN_PREFIX));
@@ -25,7 +25,7 @@ class WatchProtocolTest {
   }
 
   @Test
-  void shouldFormatARebuildLineWithSpaceSeparatedPaths() {
+  void shouldFormatRebuildLineWithSpaceSeparatedPaths() {
     String line = WatchProtocol.rebuild(List.of("app.css", "main.js"));
 
     assertTrue(line.startsWith(WatchProtocol.REBUILD_PREFIX));

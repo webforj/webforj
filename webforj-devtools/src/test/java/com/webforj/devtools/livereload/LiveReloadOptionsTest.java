@@ -46,4 +46,28 @@ class LiveReloadOptionsTest {
     assertEquals(30000, options.getHeartbeatInterval());
     assertTrue(options.isStaticResourcesEnabled());
   }
+
+  @Test
+  void shouldDefaultTheProjectRootToTheWorkingDirectory() {
+    assertEquals(System.getProperty("user.dir"), new LiveReloadOptions().getProjectRoot());
+  }
+
+  @Test
+  void shouldCarryTheProjectRoot() {
+    LiveReloadOptions options = new LiveReloadOptions().setProjectRoot("/projects/app");
+
+    assertEquals("/projects/app", options.getProjectRoot());
+  }
+
+  @Test
+  void shouldNotStopOnWatchEndByDefault() {
+    assertFalse(new LiveReloadOptions().isStopOnWatchEnd());
+  }
+
+  @Test
+  void shouldCarryTheStopOnWatchEnd() {
+    LiveReloadOptions options = new LiveReloadOptions().setStopOnWatchEnd(true);
+
+    assertTrue(options.isStopOnWatchEnd());
+  }
 }

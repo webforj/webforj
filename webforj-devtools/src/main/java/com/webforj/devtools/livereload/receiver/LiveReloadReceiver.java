@@ -31,4 +31,23 @@ public interface LiveReloadReceiver {
    * @return {@code true} between a start and a stop
    */
   boolean isRunning();
+
+  /**
+   * Prepares the hotswap tool for an application class loader that starts serving sessions.
+   * Receivers of tools that track class loaders override it.
+   *
+   * @param loader the application class loader
+   *
+   * @since 26.03
+   */
+  default void openClassLoader(ClassLoader loader) {}
+
+  /**
+   * Releases an application class loader from the hotswap tool after its last session ended.
+   *
+   * @param loader the application class loader
+   *
+   * @since 26.03
+   */
+  default void closeClassLoader(ClassLoader loader) {}
 }

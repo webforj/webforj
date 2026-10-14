@@ -34,6 +34,8 @@ public class Assets {
     BASE64
   }
 
+  private static final String PACKAGED_ASSETS = "/webforj/";
+
   private Assets() {}
 
   /**
@@ -85,6 +87,12 @@ public class Assets {
    * Get the URL of the Web Server's files directory.
    *
    * <p>
+   * Under BBj the files are served from <code>/files/&lt;application name&gt;/</code> on the BBj
+   * web server. Setting <code>webforj.assetsSource</code> to <code>packaged</code> serves the files
+   * of the packaged application below <code>/webforj/&lt;application name&gt;/</code> instead.
+   * </p>
+   *
+   * <p>
    * When the deployment names its public origin through the {@code webforj.origin} configuration
    * and the page renders inside an embedding host, the returned URL is absolute against that
    * origin.
@@ -93,19 +101,10 @@ public class Assets {
    * @return The URL of the Web Server's files directory.
    */
   public static String getWebServerFilesUrl() {
-    String url = "/files/" + App.getApplicationName() + "/";
-    boolean withBBjService = Environment.isRunningWithBBjServices();
-
-    if (!withBBjService) {
-      url = "static/";
-      Config config = Environment.getCurrent().getConfig();
-      String assetsDirProp = "webforj.assetsDir";
-      String assetsDir = config.hasPath(assetsDirProp) && !config.getIsNull(assetsDirProp)
-          ? config.getString(assetsDirProp)
-          : null;
-      if (assetsDir != null && !assetsDir.isEmpty()) {
-        url = RouterUtils.normalizePath(assetsDir);
-      }
+    String url = getConfiguredPath("webforj.assetsDir", "static/");
+    if (Environment.isRunningWithBBjServices()) {
+      String name = App.getApplicationName();
+      url = isPackagedOnBBj() ? PACKAGED_ASSETS + name + "/" + url : "/files/" + name + "/";
     }
 
     String context = getFullContextPath();
@@ -208,28 +207,29 @@ public class Assets {
    * </p>
    *
    * <p>
+   * Under BBj the endpoint is below <code>/webforj/&lt;application name&gt;/</code> and requires
+   * <code>webforj.assetsSource</code> set to <code>packaged</code>.
+   * </p>
+   *
+   * <p>
    * When the deployment names its public origin through the {@code webforj.origin} configuration
    * and the page renders inside an embedding host, the returned URL is absolute against that
    * origin.
    * </p>
    *
    * @return The URL of the icons endpoint.
+   * @throws WebforjRuntimeException if running with BBj Services without packaged assets
    * @since 24.22
    */
   public static String getIconsEndpoint() {
-    boolean withBbjService = Environment.isRunningWithBBjServices();
-    if (withBbjService) {
-      return "";
-    }
+    String url = getConfiguredPath("webforj.iconsDir", "icons/");
+    if (Environment.isRunningWithBBjServices()) {
+      if (!isPackagedOnBBj()) {
+        throw new WebforjRuntimeException("Icons protocol requires webforj.assetsSource = packaged "
+            + "when running with BBj Services");
+      }
 
-    String url = "icons/";
-    Config config = Environment.getCurrent().getConfig();
-    String assetsDirProp = "webforj.iconsDir";
-    String assetsDir = config.hasPath(assetsDirProp) && !config.getIsNull(assetsDirProp)
-        ? config.getString(assetsDirProp)
-        : null;
-    if (assetsDir != null && !assetsDir.isEmpty()) {
-      url = RouterUtils.normalizePath(assetsDir);
+      url = PACKAGED_ASSETS + App.getApplicationName() + "/" + url;
     }
 
     String context = getFullContextPath();
@@ -257,6 +257,7 @@ public class Assets {
    *
    * @return The url
    * @throws IllegalArgumentException if the url is not an icons url
+   * @throws WebforjRuntimeException if running with BBj Services without packaged assets
    *
    * @see #getIconsEndpoint()
    * @since 24.22
@@ -264,12 +265,6 @@ public class Assets {
   public static String resolveIconsUrl(String url) {
     if (!isIconsUrl(url)) {
       throw new IllegalArgumentException("URL does not being the \"icons://\" protocol: " + url);
-    }
-
-    boolean withBbjService = Environment.isRunningWithBBjServices();
-    if (withBbjService) {
-      throw new WebforjRuntimeException(
-          "Icons protocol is not supported when running with BBj Services");
     }
 
     return getIconsEndpoint() + url.replaceAll("(?i)icons://", "").trim();
@@ -355,6 +350,27 @@ public class Assets {
 
     int lastDotIndex = fileName.lastIndexOf('.');
     return lastDotIndex == -1 ? "" : fileName.substring(lastDotIndex);
+  }
+
+  /**
+   * Tells whether the application serves its packaged assets through BBjShip, set by
+   * <code>webforj.assetsSource = packaged</code>.
+   *
+   * @return true if the application serves its packaged assets through BBjShip
+   * @since 26.03
+   */
+  public static boolean isPackagedOnBBj() {
+    return "packaged".equals(getConfiguredValue("webforj.assetsSource"));
+  }
+
+  private static String getConfiguredPath(String key, String fallback) {
+    String value = getConfiguredValue(key);
+    return value == null || value.isEmpty() ? fallback : RouterUtils.normalizePath(value);
+  }
+
+  private static String getConfiguredValue(String key) {
+    Config config = Environment.getCurrent().getConfig();
+    return config.hasPath(key) && !config.getIsNull(key) ? config.getString(key) : null;
   }
 
   private static String prefixOrigin(String path) {
