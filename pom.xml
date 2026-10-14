@@ -279,9 +279,7 @@
                 <include>**/src/test/java/**/*.java</include>
               </includes>
               <eclipse>
-                <file>
-                  https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml
-                </file>
+                <file>${maven.multiModuleProjectDirectory}/.config/eclipse-java-google-style.xml</file>
               </eclipse>
             </java>
             <kotlin>
