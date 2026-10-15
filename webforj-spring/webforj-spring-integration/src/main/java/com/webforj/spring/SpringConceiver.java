@@ -4,9 +4,13 @@ import com.webforj.App;
 import com.webforj.annotation.Routify;
 import com.webforj.conceiver.DefaultConceiver;
 import com.webforj.conceiver.exception.ConceiverException;
+import com.webforj.router.annotation.Route;
 import java.lang.System.Logger;
 import org.springframework.beans.BeanInstantiationException;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.Environment;
 
 /**
  * A spring conceiver that uses Spring to provide beans.
@@ -16,6 +20,8 @@ import org.springframework.context.ApplicationContext;
  */
 public class SpringConceiver extends DefaultConceiver {
   private static final Logger logger = System.getLogger(SpringConceiver.class.getName());
+
+  private volatile Boolean liveReloadEnabled;
 
   /**
    * {@inheritDoc}
@@ -34,6 +40,10 @@ public class SpringConceiver extends DefaultConceiver {
             "Class {0} is a webforj App, creating fresh instance with DI (ignoring Spring beans)",
             classOfT.getName());
         return context.getAutowireCapableBeanFactory().createBean(classOfT);
+      }
+
+      if (isLiveReloadEnabled(context) && classOfT.isAnnotationPresent(Route.class)) {
+        updateRouteDefinition(context, classOfT);
       }
 
       String[] beanNames = context.getBeanNamesForType(classOfT);
@@ -81,5 +91,31 @@ public class SpringConceiver extends DefaultConceiver {
     }
 
     return context;
+  }
+
+  private boolean isLiveReloadEnabled(ApplicationContext context) {
+    Boolean enabled = liveReloadEnabled;
+    if (enabled == null) {
+      Environment environment = context.getEnvironment();
+      enabled = Boolean.parseBoolean(
+          environment.getProperty(ComponentRegistrar.LIVE_RELOAD_ENABLED_KEY, "false"));
+      liveReloadEnabled = enabled;
+    }
+
+    return enabled;
+  }
+
+  @SuppressWarnings("resource")
+  private void updateRouteDefinition(ApplicationContext context, Class<?> routeClass) {
+    if (!(context instanceof ConfigurableApplicationContext configurableContext)) {
+      return;
+    }
+
+    ComponentRegistrar registrar =
+        configurableContext.getBeanProvider(ComponentRegistrar.class).getIfAvailable();
+    if (registrar != null) {
+      registrar.updateRouteDefinition((BeanDefinitionRegistry) configurableContext.getBeanFactory(),
+          routeClass);
+    }
   }
 }
