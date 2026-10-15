@@ -4,30 +4,51 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 import com.webforj.annotation.Routify;
 import com.webforj.conceiver.exception.ConceiverException;
+import com.webforj.router.annotation.Route;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.BeanInstantiationException;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.mock.env.MockEnvironment;
 
 @ExtendWith(MockitoExtension.class)
 class SpringConceiverTest {
+
+  private static final String LIVE_RELOAD_KEY = "webforj.devtools.livereload.enabled";
+  private static final String ROUTE_BEAN_NAME = "routeTestView";
 
   @Mock
   private ConfigurableApplicationContext applicationContext;
 
   @Mock
   private AutowireCapableBeanFactory beanFactory;
+
+  @Mock
+  private ObjectProvider<ComponentRegistrar> registrarProvider;
+
+  @Mock
+  private ComponentRegistrar registrar;
 
   private SpringConceiver conceiver;
 
@@ -38,10 +59,15 @@ class SpringConceiverTest {
   public static class RoutifyTestApp {
   }
 
+  @Route("/test")
+  public static class RouteTestView {
+  }
+
   @BeforeEach
   void setUp() {
     conceiver = new SpringConceiver();
     ContextHolder.setContext(applicationContext);
+    lenient().when(applicationContext.getEnvironment()).thenReturn(new MockEnvironment());
   }
 
   @Nested
@@ -105,6 +131,92 @@ class SpringConceiverTest {
 
       verify(applicationContext, never()).getBeanNamesForType(RoutifyTestApp.class);
       verify(applicationContext, never()).getBean(RoutifyTestApp.class);
+    }
+
+    @Test
+    void shouldRefreshTheRouteDefinitionBeforeResolvingTheBean() {
+      ConfigurableListableBeanFactory listableBeanFactory =
+          mock(ConfigurableListableBeanFactory.class,
+              withSettings().extraInterfaces(BeanDefinitionRegistry.class));
+      RouteTestView expectedView = new RouteTestView();
+
+      when(applicationContext.getEnvironment())
+          .thenReturn(new MockEnvironment().withProperty(LIVE_RELOAD_KEY, "true"));
+      when(applicationContext.getBeanFactory()).thenReturn(listableBeanFactory);
+      when(applicationContext.getBeanProvider(ComponentRegistrar.class))
+          .thenReturn(registrarProvider);
+      when(registrarProvider.getIfAvailable()).thenReturn(registrar);
+      when(applicationContext.getBeanNamesForType(RouteTestView.class))
+          .thenReturn(new String[] {ROUTE_BEAN_NAME});
+      when(applicationContext.getBean(RouteTestView.class)).thenReturn(expectedView);
+
+      RouteTestView result = conceiver.get(RouteTestView.class);
+
+      assertEquals(expectedView, result);
+      InOrder order = inOrder(registrar, applicationContext);
+      order.verify(registrar).updateRouteDefinition((BeanDefinitionRegistry) listableBeanFactory,
+          RouteTestView.class);
+      order.verify(applicationContext).getBean(RouteTestView.class);
+    }
+
+    @Test
+    void shouldResolveTheRouteBeanWhenNoRegistrarIsAvailable() {
+      RouteTestView expectedView = new RouteTestView();
+
+      when(applicationContext.getEnvironment())
+          .thenReturn(new MockEnvironment().withProperty(LIVE_RELOAD_KEY, "true"));
+      when(applicationContext.getBeanProvider(ComponentRegistrar.class))
+          .thenReturn(registrarProvider);
+      when(applicationContext.getBeanNamesForType(RouteTestView.class))
+          .thenReturn(new String[] {ROUTE_BEAN_NAME});
+      when(applicationContext.getBean(RouteTestView.class)).thenReturn(expectedView);
+
+      RouteTestView result = conceiver.get(RouteTestView.class);
+
+      assertEquals(expectedView, result);
+    }
+
+    @Test
+    void shouldNotTouchTheRegistrarWhenLiveReloadIsDisabled() {
+      RouteTestView expectedView = new RouteTestView();
+
+      when(applicationContext.getEnvironment()).thenReturn(new MockEnvironment());
+      when(applicationContext.getBeanNamesForType(RouteTestView.class))
+          .thenReturn(new String[] {ROUTE_BEAN_NAME});
+      when(applicationContext.getBean(RouteTestView.class)).thenReturn(expectedView);
+
+      conceiver.get(RouteTestView.class);
+
+      verify(applicationContext, never()).getBeanProvider(ComponentRegistrar.class);
+      verifyNoInteractions(registrar);
+    }
+
+    @Test
+    void shouldReadTheLiveReloadSettingOnce() {
+      RouteTestView expectedView = new RouteTestView();
+
+      when(applicationContext.getEnvironment()).thenReturn(new MockEnvironment());
+      when(applicationContext.getBeanNamesForType(RouteTestView.class))
+          .thenReturn(new String[] {ROUTE_BEAN_NAME});
+      when(applicationContext.getBean(RouteTestView.class)).thenReturn(expectedView);
+
+      conceiver.get(RouteTestView.class);
+      conceiver.get(RouteTestView.class);
+
+      verify(applicationContext, times(1)).getEnvironment();
+    }
+
+    @Test
+    void shouldNotRefreshDefinitionsOfClassesWithoutRoute() {
+      TestService expectedService = new TestService();
+
+      when(applicationContext.getBeanNamesForType(TestService.class))
+          .thenReturn(new String[] {"testService"});
+      when(applicationContext.getBean(TestService.class)).thenReturn(expectedService);
+
+      conceiver.get(TestService.class);
+
+      verify(applicationContext, never()).getBeanProvider(ComponentRegistrar.class);
     }
   }
 

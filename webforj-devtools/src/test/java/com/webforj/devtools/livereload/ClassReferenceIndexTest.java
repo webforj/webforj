@@ -5,7 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
+import com.webforj.devtools.livereload.fixture.DashboardView;
+import com.webforj.devtools.livereload.fixture.InboxView;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.lang.ref.Reference;
@@ -18,14 +22,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.util.Set;
+import java.util.stream.Stream;
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class ClassReferenceIndexTest {
+
+  private static final String VIEW_WITH_CARD = "class View { Card card = new Card(); }";
 
   @TempDir
   Path classes;
@@ -52,7 +62,7 @@ class ClassReferenceIndexTest {
     compile(classes, "Unused", "class Unused {}");
 
     ClassReferenceIndex.Walk walk =
-        index.newWalk(loader, Set.of("Card", "Panel", "Unused"), Set.of());
+        index.newUpdate(loader, Set.of("Card", "Panel", "Unused")).newWalk(Set.of());
 
     assertEquals(Set.of("Card", "Panel"), walk.reach("View"));
     assertEquals(Set.of("Unused"), walk.getUnreached());
@@ -68,7 +78,7 @@ class ClassReferenceIndexTest {
         "class View { Card card; View(Panel panel) {} Badge[][] badges() { return null; } }");
 
     ClassReferenceIndex.Walk walk =
-        index.newWalk(loader, Set.of("Card", "Panel", "Badge"), Set.of());
+        index.newUpdate(loader, Set.of("Card", "Panel", "Badge")).newWalk(Set.of());
 
     assertEquals(Set.of("Card", "Panel", "Badge"), walk.reach("View"));
     assertTrue(walk.isComplete());
@@ -83,18 +93,71 @@ class ClassReferenceIndexTest {
         + " Holder<String>.Inner inner; List<Badge> badges() { return null; } }");
 
     ClassReferenceIndex.Walk walk =
-        index.newWalk(loader, Set.of("Card", "Badge", "Holder$Inner"), Set.of());
+        index.newUpdate(loader, Set.of("Card", "Badge", "Holder$Inner")).newWalk(Set.of());
 
     assertEquals(Set.of("Card", "Badge", "Holder$Inner"), walk.reach("View"));
   }
 
   @Test
+  void shouldReadTheReferencesOfOneClass() throws IOException {
+    compile(classes, "Card", "class Card {}");
+    compile(classes, "Panel", "class Panel { Card card = new Card(); }");
+    compile(classes, "View", "class View { Panel panel = new Panel(); }");
+
+    Set<String> references = index.newUpdate(loader, Set.of()).getReferences("View");
+
+    assertTrue(references.contains("Panel"));
+    assertFalse(references.contains("Card"));
+    assertFalse(references.contains("View"));
+  }
+
+  @Test
+  void shouldFindTheClassFileOfCompiledClass() throws IOException {
+    compile(classes, "Card", "class Card {}");
+
+    assertTrue(ClassReferenceIndex.findClassFile(loader, "Card").isPresent());
+  }
+
+  @Test
+  void shouldFindNoClassFileForMissingClass() {
+    assertTrue(ClassReferenceIndex.findClassFile(loader, "Missing").isEmpty());
+  }
+
+  @Test
+  void shouldReadNoReferencesForTheClassWithoutClassFile() {
+    assertEquals(Set.of(), index.newUpdate(loader, Set.of()).getReferences("Missing"));
+  }
+
+  @Test
+  void shouldReadEachChangedClassFileOnce() throws IOException {
+    compile(classes, "Card", "class Card {}");
+    compile(classes, "View", VIEW_WITH_CARD);
+    ClassReferenceIndex reading = spy(index);
+
+    ClassReferenceIndex.Update update = reading.newUpdate(loader, Set.of("View", "Card"));
+    update.getReferences("View");
+    update.isRoute("View");
+    update.newWalk(Set.of()).reach("View");
+
+    verify(reading).readClassFile(classes.resolve("View.class"));
+  }
+
+  @ParameterizedTest
+  @MethodSource("getRouteAnnotations")
+  void shouldTellWhetherTheClassFileCarriesTheRouteAnnotation(Class<?> type, boolean route) {
+    ClassLoader fixtures = ClassReferenceIndexTest.class.getClassLoader();
+
+    assertEquals(route, index.newUpdate(fixtures, Set.of()).isRoute(type.getName()));
+  }
+
+  @Test
   void shouldStopAtTheBoundaryClasses() throws IOException {
     compile(classes, "Card", "class Card {}");
-    compile(classes, "View", "class View { Card card = new Card(); }");
+    compile(classes, "View", VIEW_WITH_CARD);
     compile(classes, "Layout", "class Layout { Class<?> target = View.class; }");
 
-    ClassReferenceIndex.Walk walk = index.newWalk(loader, Set.of("View", "Card"), Set.of("View"));
+    ClassReferenceIndex.Walk walk =
+        index.newUpdate(loader, Set.of("View", "Card")).newWalk(Set.of("View"));
 
     assertTrue(walk.reach("Layout").isEmpty());
     assertEquals(Set.of("Card"), walk.getUnreached());
@@ -104,7 +167,7 @@ class ClassReferenceIndexTest {
   void shouldBeCompleteFromTheStartWhenOnlyBoundariesChanged() throws IOException {
     compile(classes, "View", "class View {}");
 
-    ClassReferenceIndex.Walk walk = index.newWalk(loader, Set.of("View"), Set.of("View"));
+    ClassReferenceIndex.Walk walk = index.newUpdate(loader, Set.of("View")).newWalk(Set.of("View"));
 
     assertTrue(walk.isComplete());
     assertTrue(walk.reach("View").isEmpty());
@@ -114,7 +177,8 @@ class ClassReferenceIndexTest {
   void shouldCountTheOriginAsReached() throws IOException {
     compile(classes, "View", "class View {}");
 
-    assertEquals(Set.of("View"), index.newWalk(loader, Set.of("View"), Set.of()).reach("View"));
+    assertEquals(Set.of("View"),
+        index.newUpdate(loader, Set.of("View")).newWalk(Set.of()).reach("View"));
   }
 
   @Test
@@ -124,7 +188,7 @@ class ClassReferenceIndexTest {
     compile(classes, "Layout", "class Layout { Shared shared = new Shared(); }");
     compile(classes, "View", "class View { Shared shared = new Shared(); }");
 
-    ClassReferenceIndex.Walk walk = index.newWalk(loader, Set.of("Card"), Set.of());
+    ClassReferenceIndex.Walk walk = index.newUpdate(loader, Set.of("Card")).newWalk(Set.of());
 
     assertEquals(Set.of("Card"), walk.reach("Layout"));
     assertTrue(walk.reach("View").isEmpty());
@@ -137,7 +201,8 @@ class ClassReferenceIndexTest {
     String builder = StringBuilder.class.getName();
     String parent = StringBuilder.class.getSuperclass().getName();
 
-    ClassReferenceIndex.Walk walk = index.newWalk(loader, Set.of(builder, parent), Set.of());
+    ClassReferenceIndex.Walk walk =
+        index.newUpdate(loader, Set.of(builder, parent)).newWalk(Set.of());
 
     assertEquals(Set.of(builder), walk.reach("View"));
   }
@@ -146,13 +211,14 @@ class ClassReferenceIndexTest {
   void shouldRereadTheClassFileThatChangedOnDisk() throws IOException {
     compile(classes, "Card", "class Card {}");
     compile(classes, "View", "class View {}");
-    assertTrue(index.newWalk(loader, Set.of("Card"), Set.of()).reach("View").isEmpty());
+    assertTrue(index.newUpdate(loader, Set.of("Card")).newWalk(Set.of()).reach("View").isEmpty());
 
-    Path viewFile = compile(classes, "View", "class View { Card card = new Card(); }");
+    Path viewFile = compile(classes, "View", VIEW_WITH_CARD);
     Files.setLastModifiedTime(viewFile,
         FileTime.fromMillis(Files.getLastModifiedTime(viewFile).toMillis() + 1000));
 
-    assertEquals(Set.of("Card"), index.newWalk(loader, Set.of("Card"), Set.of()).reach("View"));
+    assertEquals(Set.of("Card"),
+        index.newUpdate(loader, Set.of("Card")).newWalk(Set.of()).reach("View"));
   }
 
   @Test
@@ -160,44 +226,47 @@ class ClassReferenceIndexTest {
     compile(classes, "Card", "class Card {}");
     Path viewFile = compile(classes, "View", "class View {}");
     FileTime firstTime = Files.getLastModifiedTime(viewFile);
-    assertTrue(index.newWalk(loader, Set.of("Card"), Set.of()).reach("View").isEmpty());
+    assertTrue(index.newUpdate(loader, Set.of("Card")).newWalk(Set.of()).reach("View").isEmpty());
 
-    compile(classes, "View", "class View { Card card = new Card(); }");
+    compile(classes, "View", VIEW_WITH_CARD);
     Files.setLastModifiedTime(viewFile, firstTime);
 
     assertEquals(Set.of("View", "Card"),
-        index.newWalk(loader, Set.of("View", "Card"), Set.of()).reach("View"));
+        index.newUpdate(loader, Set.of("View", "Card")).newWalk(Set.of()).reach("View"));
   }
 
   @Test
   void shouldForgetTheClassFileThatDisappeared() throws IOException {
     compile(classes, "Card", "class Card {}");
-    Path viewFile = compile(classes, "View", "class View { Card card = new Card(); }");
-    assertEquals(Set.of("Card"), index.newWalk(loader, Set.of("Card"), Set.of()).reach("View"));
+    Path viewFile = compile(classes, "View", VIEW_WITH_CARD);
+    assertEquals(Set.of("Card"),
+        index.newUpdate(loader, Set.of("Card")).newWalk(Set.of()).reach("View"));
 
     Files.delete(viewFile);
 
-    assertTrue(index.newWalk(loader, Set.of("Card"), Set.of()).reach("View").isEmpty());
+    assertTrue(index.newUpdate(loader, Set.of("Card")).newWalk(Set.of()).reach("View").isEmpty());
   }
 
   @Test
   void shouldKeepTheEntriesOfEachClassLoaderApart() throws IOException {
     compile(classes, "Card", "class Card {}");
-    compile(classes, "View", "class View { Card card = new Card(); }");
-    assertEquals(Set.of("Card"), index.newWalk(loader, Set.of("Card"), Set.of()).reach("View"));
+    compile(classes, "View", VIEW_WITH_CARD);
+    assertEquals(Set.of("Card"),
+        index.newUpdate(loader, Set.of("Card")).newWalk(Set.of()).reach("View"));
 
     Path otherClasses = classes.resolve("other");
     compile(otherClasses, "View", "class View {}");
 
     try (URLClassLoader otherLoader = newLoader(otherClasses.toUri().toURL())) {
-      assertTrue(index.newWalk(otherLoader, Set.of("Card"), Set.of()).reach("View").isEmpty());
+      assertTrue(
+          index.newUpdate(otherLoader, Set.of("Card")).newWalk(Set.of()).reach("View").isEmpty());
     }
   }
 
   @Test
   void shouldNotKeepTheClassLoaderAlive() throws IOException, InterruptedException {
     compile(classes, "Card", "class Card {}");
-    compile(classes, "View", "class View { Card card = new Card(); }");
+    compile(classes, "View", VIEW_WITH_CARD);
 
     ReferenceQueue<ClassLoader> queue = new ReferenceQueue<>();
     WeakReference<ClassLoader> collected = populateWithDiscardedLoader(queue);
@@ -215,7 +284,7 @@ class ClassReferenceIndexTest {
   void shouldFailForTheUnreadableClassFile() throws IOException {
     Files.write(classes.resolve("View.class"), new byte[] {1, 2, 3, 4});
 
-    ClassReferenceIndex.Walk walk = index.newWalk(loader, Set.of("Card"), Set.of());
+    ClassReferenceIndex.Walk walk = index.newUpdate(loader, Set.of("Card")).newWalk(Set.of());
 
     assertThrows(UncheckedIOException.class, () -> walk.reach("View"));
   }
@@ -226,16 +295,23 @@ class ClassReferenceIndexTest {
     URL located = URI.create("file://localhost" + classes.toUri().getRawPath()).toURL();
 
     try (URLClassLoader remoteLoader = newLoader(located)) {
-      ClassReferenceIndex.Walk walk = index.newWalk(remoteLoader, Set.of("Card"), Set.of());
+      ClassReferenceIndex.Walk walk =
+          index.newUpdate(remoteLoader, Set.of("Card")).newWalk(Set.of());
 
       assertThrows(UncheckedIOException.class, () -> walk.reach("View"));
     }
   }
 
+  private static Stream<Arguments> getRouteAnnotations() {
+    return Stream.of(Arguments.of(InboxView.class, true), Arguments.of(DashboardView.class, false),
+        Arguments.of(String.class, false));
+  }
+
   private WeakReference<ClassLoader> populateWithDiscardedLoader(ReferenceQueue<ClassLoader> queue)
       throws IOException {
     URLClassLoader discarded = newLoader(classes.toUri().toURL());
-    assertEquals(Set.of("Card"), index.newWalk(discarded, Set.of("Card"), Set.of()).reach("View"));
+    assertEquals(Set.of("Card"),
+        index.newUpdate(discarded, Set.of("Card")).newWalk(Set.of()).reach("View"));
     discarded.close();
 
     return new WeakReference<>(discarded, queue);
