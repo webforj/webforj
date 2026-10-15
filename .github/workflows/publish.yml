@@ -43,3 +43,95 @@ jobs:
         env:
           CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
           CENTRAL_TOKEN: ${{ secrets.CENTRAL_TOKEN }}
+
+  publish-bbj-plugin:
+    name: Publish the BBjShip plugin
+    needs: publish
+    runs-on: ubuntu-latest
+    env:
+      BBJ_PLUGINS_REPO: 'BBj-Plugins/webforj-bbjship'
+      BBJ_PLUGINS_REPO_PATH: '.bbj-plugins-repo'
+      BBJ_PLUGINS_VERIFY_PATH: '.bbj-plugins-verify'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-m2-
+
+      - name: Build the plugin
+        run: mvn -B -pl webforj-plugins/webforj-bbjship/webforj-bbjship-plugin -am package -DskipTests
+
+      - name: Locate the plugin zip
+        id: plugin
+        run: |
+          zip=$(ls webforj-plugins/webforj-bbjship/webforj-bbjship-plugin/target/webforj-bbjship-plugin-*-bbj-plugin.zip)
+          test "$(echo "$zip" | wc -l)" -eq 1
+          version=$(basename "$zip" -bbj-plugin.zip)
+          version=${version#webforj-bbjship-plugin-}
+          case "$version" in
+            *-SNAPSHOT) release=false ;;
+            *) release=true ;;
+          esac
+          echo "zip=$zip" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "release=$release" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ env.BBJ_PLUGINS_REPO }}
+          ref: 'master'
+          path: ${{ env.BBJ_PLUGINS_REPO_PATH }}
+          token: ${{ secrets.ACTOR_TOKEN }}
+
+      - name: Copy the plugin
+        run: |
+          find ${{ env.BBJ_PLUGINS_REPO_PATH }} -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          unzip -q "${{ steps.plugin.outputs.zip }}" -d ${{ env.BBJ_PLUGINS_REPO_PATH }}
+
+      - name: Commit and push
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.ACTOR_TOKEN }}
+          author_email: ${{ secrets.ACTOR_EMAIL }}
+          author_name: ${{ secrets.ACTOR_NAME }}
+          directory: ${{ env.BBJ_PLUGINS_REPO_PATH }}
+          repository: ${{ env.BBJ_PLUGINS_REPO }}
+          message: 'build: publish BBjShip ${{ steps.plugin.outputs.version }} from webforJ ${{ github.sha }}'
+          branch: 'master'
+
+      - name: Tag the release
+        if: steps.plugin.outputs.release == 'true'
+        run: |
+          cd ${{ env.BBJ_PLUGINS_REPO_PATH }}
+          git config --local user.email "${{ secrets.ACTOR_EMAIL }}"
+          git config --local user.name "${{ secrets.ACTOR_NAME }}"
+          git remote set-url origin https://x-access-token:${{ secrets.ACTOR_TOKEN }}@github.com/${{ env.BBJ_PLUGINS_REPO }}.git
+          git tag -a ${{ steps.plugin.outputs.version }} -m "build: release ${{ steps.plugin.outputs.version }}"
+          git push origin --tags
+
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ env.BBJ_PLUGINS_REPO }}
+          ref: ${{ steps.plugin.outputs.release == 'true' && format('refs/tags/{0}', steps.plugin.outputs.version) || 'master' }}
+          path: ${{ env.BBJ_PLUGINS_VERIFY_PATH }}
+          token: ${{ secrets.ACTOR_TOKEN }}
+
+      - name: Compare the mirror with the plugin zip
+        run: |
+          unzip -q "${{ steps.plugin.outputs.zip }}" -d "$RUNNER_TEMP/plugin"
+          sums() { (cd "$1" && find . -path ./.git -prune -o -type f -exec sha256sum {} + | sort -k2); }
+          modes() { (cd "$1" && find . -path ./.git -prune -o -type f -printf '%m %p\n' | sort -k2); }
+          diff <(sums "$RUNNER_TEMP/plugin") <(sums ${{ env.BBJ_PLUGINS_VERIFY_PATH }})
+          diff <(modes "$RUNNER_TEMP/plugin") <(modes ${{ env.BBJ_PLUGINS_VERIFY_PATH }})
+          echo "The mirror equals the plugin zip"
