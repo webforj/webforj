@@ -22,7 +22,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
@@ -33,6 +32,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Rebuilds the part of the interface a class update names, or reloads the page when the change
@@ -423,12 +423,9 @@ public class ClassUpdateListener implements AppLifecycleListener {
 
   private static void removeRoute(RouteRegistry registry, Class<? extends Component> component) {
     Set<String> paths = getRoutePaths(registry, component);
-    List<RouteEntry> sharing = new ArrayList<>();
-    for (RouteEntry entry : registry.getAvailableRouteEntires()) {
-      if (!entry.getComponent().equals(component) && paths.contains(entry.getPath())) {
-        sharing.add(entry);
-      }
-    }
+    List<RouteEntry> sharing = registry.getAvailableRouteEntires().stream()
+        .filter(entry -> !entry.getComponent().equals(component) && paths.contains(entry.getPath()))
+        .toList();
 
     for (String path : paths) {
       registry.unregister(path);
@@ -441,14 +438,9 @@ public class ClassUpdateListener implements AppLifecycleListener {
 
   private static Set<String> getRoutePaths(RouteRegistry registry,
       Class<? extends Component> component) {
-    Set<String> paths = new HashSet<>();
-    for (RouteEntry entry : registry.getAvailableRouteEntires()) {
-      if (entry.getComponent().equals(component)) {
-        paths.add(entry.getPath());
-      }
-    }
-
-    return paths;
+    return registry.getAvailableRouteEntires().stream()
+        .filter(entry -> entry.getComponent().equals(component)).map(RouteEntry::getPath)
+        .collect(Collectors.toSet());
   }
 
   private static String[] readRoutePackages(App app) {
@@ -462,12 +454,8 @@ public class ClassUpdateListener implements AppLifecycleListener {
   }
 
   private static Set<String> getRegisteredRoutes(RouteRegistry registry) {
-    Set<String> routes = new HashSet<>();
-    for (RouteEntry entry : registry.getAvailableRouteEntires()) {
-      routes.add(entry.getComponent().getName());
-    }
-
-    return routes;
+    return registry.getAvailableRouteEntires().stream().map(entry -> entry.getComponent().getName())
+        .collect(Collectors.toSet());
   }
 
   private static void reloadPage(Page page, String reason) {
