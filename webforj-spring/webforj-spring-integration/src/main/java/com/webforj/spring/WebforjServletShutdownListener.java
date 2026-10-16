@@ -43,7 +43,13 @@ public class WebforjServletShutdownListener
   @Override
   public void onApplicationEvent(ContextClosedEvent event) {
     logger.log(System.Logger.Level.DEBUG, "Destroying WebforjServlet on context close");
-    registration.getServlet().destroy();
+
+    try {
+      registration.getServlet().destroy();
+    } catch (IllegalStateException e) {
+      logger.log(System.Logger.Level.DEBUG, "WebforjServlet destroy ended early on context close",
+          e);
+    }
   }
 
   /**
