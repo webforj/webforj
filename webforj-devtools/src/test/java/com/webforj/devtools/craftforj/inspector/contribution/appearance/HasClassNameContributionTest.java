@@ -4,10 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.webforj.component.Component;
 import com.webforj.concern.HasClassName;
 import com.webforj.devtools.craftforj.inspector.model.PropertyType;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
@@ -24,6 +26,26 @@ class HasClassNameContributionTest {
     assertTrue(result.isPresent());
     assertEquals("ClassNames", result.get().getName());
     assertEquals(PropertyType.LIST, result.get().getEditorType());
+  }
+
+  @Test
+  void shouldGetClassNames() {
+    TestComponent component = mock(TestComponent.class);
+    when(component.getClassNameList()).thenReturn(List.of("first", "second"));
+
+    var result = contribution.get(component);
+
+    assertEquals(List.of("first", "second"), result.get().getValue());
+  }
+
+  @Test
+  void shouldGetNothingWhenClassNamesCannotBeRead() {
+    TestComponent component = mock(TestComponent.class);
+    when(component.getClassNameList()).thenThrow(UnsupportedOperationException.class);
+
+    var result = contribution.get(component);
+
+    assertTrue(result.isEmpty());
   }
 
   @Test

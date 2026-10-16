@@ -21,7 +21,7 @@ A name says what it is. Reading a symbol anywhere, in a file, a diff or a messag
 
 ### Methods
 
-Every method name starts with a verb from this closed list, then the noun it acts on. Public or private, the list is the same. Test methods follow the `shouldX` naming of the module, test helpers follow the list.
+Every method name starts with a verb from this closed list, then the noun it acts on. Public or private, the list is the same. Every test method name starts with `should`, whatever the surrounding tests use. Test helpers follow the list.
 
 | Group | Verbs |
 |-------|-------|

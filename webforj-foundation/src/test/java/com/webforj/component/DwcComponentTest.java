@@ -81,6 +81,36 @@ class DwcComponentTest {
     }
 
     @Test
+    @DisplayName("Getting classes")
+    void shouldGetClassNames() {
+      component.addClassName("class1", "class2", "class3");
+      component.removeClassName("class2");
+
+      assertEquals(List.of("class1", "class3"), component.getClassNameList());
+    }
+
+    @Test
+    @DisplayName("Getting classes returns an unmodifiable list")
+    void shouldReturnUnmodifiableClassNames() {
+      component.addClassName("class1");
+      List<String> classNames = component.getClassNameList();
+
+      assertThrows(UnsupportedOperationException.class, () -> classNames.add("class2"));
+    }
+
+    @Test
+    @DisplayName("onAttach will re-apply classes without repeating them")
+    void shouldNotRepeatClassNamesOnAttach() throws IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+      component.addClassName("class1", "class2");
+      ReflectionUtils.unNullifyControl(component, control);
+      component.onAttach();
+      component.removeClassName("class1");
+
+      assertEquals(List.of("class2"), component.getClassNameList());
+    }
+
+    @Test
     @DisplayName("Catch BBjException and throw DwcjRuntimeException")
     void catchBbjExceptionAndThrowDwcjRuntimeException() throws BBjException {
       doThrow(BBjException.class).when(control).addClass(anyString());
