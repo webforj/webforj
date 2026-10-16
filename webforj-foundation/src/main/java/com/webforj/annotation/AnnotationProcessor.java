@@ -1,6 +1,7 @@
 package com.webforj.annotation;
 
 import com.webforj.App;
+import com.webforj.Environment;
 import com.webforj.Page;
 import com.webforj.ProfileDescriptor;
 import com.webforj.ProfileDescriptor.ProfileDescriptorBuilder;
@@ -353,8 +354,14 @@ public final class AnnotationProcessor {
   }
 
   private String getBaseUrl() {
+    String root = Environment.isRunningWithBBjServices() ? "/webapp/" + App.getApplicationName()
+        : Environment.getContextPath();
+    if (!root.endsWith("/")) {
+      root = root + "/";
+    }
+
     try {
-      return new URI(Request.getCurrent().getUrl()).resolve(".").toString();
+      return new URI(Request.getCurrent().getUrl()).resolve(root).toString();
     } catch (URISyntaxException e) {
       throw new WebforjRuntimeException(
           "Failed to process the AppProfile annotation. The base URL is invalid.", e);

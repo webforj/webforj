@@ -1,5 +1,6 @@
 package com.webforj.plugin.foundation.hotswap.jrebel;
 
+import com.webforj.bbjship.foundation.ContainerOptionsFile;
 import com.webforj.plugin.foundation.hotswap.HotswapAttachment;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -47,17 +48,34 @@ public final class JrebelAttachment implements HotswapAttachment {
    */
   @Override
   public List<String> getArguments() throws IOException {
+    String agent = getAgentArgument();
+    log.accept("webforJ hotswap: JRebel attached to the application virtual machine from " + path);
+
+    // The properties tell the application which tool this attachment installed. JRebel carries
+    // its own redefinition support on every virtual machine.
+    return List.of(agent, TOOL_ARGUMENT, LEVEL_ARGUMENT);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<String> getSharedContainerArguments(Path directory) throws IOException {
+    ContainerOptionsFile.write(directory,
+        List.of(getAgentArgument(), TOOL_ARGUMENT, LEVEL_ARGUMENT));
+
+    return List.of(ContainerOptionsFile.getArgument(directory));
+  }
+
+  private String getAgentArgument() throws IOException {
     if (!Files.isRegularFile(path)) {
       throw new IOException("the JRebel agent does not exist: " + path);
     }
 
     String name = path.getFileName().toString().toLowerCase(Locale.ROOT);
     String flag = name.endsWith(".jar") ? "-javaagent:" : "-agentpath:";
-    log.accept("webforJ hotswap: JRebel attached to the application virtual machine from " + path);
 
-    // The properties tell the application which tool this attachment installed. JRebel carries
-    // its own redefinition support on every virtual machine.
-    return List.of(flag + path.toAbsolutePath(), TOOL_ARGUMENT, LEVEL_ARGUMENT);
+    return flag + path.toAbsolutePath();
   }
 
   /**

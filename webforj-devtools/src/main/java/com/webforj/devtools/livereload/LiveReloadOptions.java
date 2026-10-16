@@ -64,6 +64,8 @@ public class LiveReloadOptions {
   private String websocketPath = DEFAULT_WEBSOCKET_PATH;
   private int heartbeatInterval = DEFAULT_HEARTBEAT_INTERVAL;
   private boolean staticResourcesEnabled = true;
+  private String projectRoot = System.getProperty("user.dir");
+  private boolean stopOnWatchEnd = false;
 
   /**
    * Reads the options from the given webforJ configuration.
@@ -177,6 +179,55 @@ public class LiveReloadOptions {
    */
   public boolean isStaticResourcesEnabled() {
     return staticResourcesEnabled;
+  }
+
+  /**
+   * Sets the root directory of the project the development watch runs in.
+   *
+   * @param projectRoot the absolute project root directory
+   * @return this options instance
+   *
+   * @since 26.03
+   */
+  public LiveReloadOptions setProjectRoot(String projectRoot) {
+    this.projectRoot = projectRoot;
+    return this;
+  }
+
+  /**
+   * Gets the root directory of the project the development watch runs in.
+   *
+   * @return the absolute project root directory, the working directory by default
+   *
+   * @since 26.03
+   */
+  public String getProjectRoot() {
+    return projectRoot;
+  }
+
+  /**
+   * Sets whether live reload stops when the development watch it is connected to ends.
+   *
+   * @param stopOnWatchEnd {@code true} to stop live reload when the watch ends, {@code false} to
+   *        wait for the next watch
+   * @return this options instance
+   *
+   * @since 26.03
+   */
+  public LiveReloadOptions setStopOnWatchEnd(boolean stopOnWatchEnd) {
+    this.stopOnWatchEnd = stopOnWatchEnd;
+    return this;
+  }
+
+  /**
+   * Indicates whether live reload stops when the development watch it is connected to ends.
+   *
+   * @return {@code true} when live reload stops with the watch, {@code false} by default
+   *
+   * @since 26.03
+   */
+  public boolean isStopOnWatchEnd() {
+    return stopOnWatchEnd;
   }
 
   private static boolean getBoolean(Config config, String key, boolean defaultValue) {

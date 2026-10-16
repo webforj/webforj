@@ -44,8 +44,10 @@ class HotswapToolTest {
 
   @Test
   void shouldFailWhenTheBuildNamesBothTools() {
-    IllegalArgumentException failure = assertThrows(IllegalArgumentException.class,
-        () -> HotswapTool.select(EnumSet.of(HotswapTool.HOTSWAP_AGENT, HotswapTool.JREBEL), null));
+    Set<HotswapTool> configured = EnumSet.of(HotswapTool.HOTSWAP_AGENT, HotswapTool.JREBEL);
+
+    IllegalArgumentException failure =
+        assertThrows(IllegalArgumentException.class, () -> HotswapTool.select(configured, null));
 
     assertTrue(failure.getMessage().contains("hotswapAgent and jrebel"));
   }

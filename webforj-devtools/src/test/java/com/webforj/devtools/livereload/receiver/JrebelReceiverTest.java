@@ -13,16 +13,21 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.webforj.devtools.livereload.LiveReloadServer;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 
 class JrebelReceiverTest {
@@ -148,6 +153,45 @@ class JrebelReceiverTest {
     receiver.stop();
   }
 
+  @ParameterizedTest
+  @MethodSource("foreignClasses")
+  @Timeout(10)
+  void shouldIgnoreTheSwapOfForeignClass(Class<?> foreignClass) {
+    LiveReloadServer server = runningServer();
+    CountDownLatch update = classUpdateLatch(server, 1, null);
+
+    JrebelReceiver receiver = receiver(server);
+    receiver.start();
+    registeredListener().onClassEvent(CLASS_SWAPPED, foreignClass);
+
+    assertFalse(await(update, 400));
+    verify(server, never()).sendReloadMessage();
+
+    receiver.stop();
+  }
+
+  @Test
+  @Timeout(10)
+  void shouldUpdateOnlyForOwnClassesOfMixedBurst() throws IOException, ClassNotFoundException {
+    LiveReloadServer server = runningServer();
+    AtomicReference<Set<String>> classes = new AtomicReference<>();
+    final CountDownLatch update = classUpdateLatch(server, 1, classes);
+    Class<?> foreignClass = loadForeignCopy(ReloaderHolder.class);
+
+    JrebelReceiver receiver = receiver(server);
+    receiver.start();
+    ReloadListener listener = registeredListener();
+
+    listener.onClassEvent(CLASS_SWAPPED, foreignClass);
+    listener.onClassEvent(CLASS_SWAPPED, JrebelReceiverTest.class);
+
+    assertTrue(await(update, 2000));
+    assertEquals(Set.of(JrebelReceiverTest.class.getName()), classes.get());
+    verify(server, never()).sendReloadMessage();
+
+    receiver.stop();
+  }
+
   @Test
   @Timeout(10)
   void shouldSendNothingForTheFireWhoseBatchWasAlreadyDrained() {
@@ -231,7 +275,7 @@ class JrebelReceiverTest {
   @Test
   @Timeout(10)
   void shouldLeaveNoThreadBehindWhenTheRegistrationIsRefused() {
-    long before = receiverThreadCount();
+    final long before = receiverThreadCount();
     doThrow(new IllegalStateException("registration is refused")).when(reloader)
         .addClassReloadListener(any());
 
@@ -294,6 +338,22 @@ class JrebelReceiverTest {
       Thread.currentThread().interrupt();
 
       return false;
+    }
+  }
+
+  private static Stream<Named<Class<?>>> foreignClasses()
+      throws IOException, ClassNotFoundException {
+    return Stream.of(Named.of("a class of the bootstrap loader", String.class),
+        Named.of("a class of a loader without the receiver", loadForeignCopy(ReloaderHolder.class)),
+        Named.of("a class of a loader with its own receiver",
+            loadForeignCopy(JrebelReceiver.class)));
+  }
+
+  private static Class<?> loadForeignCopy(Class<?> type)
+      throws IOException, ClassNotFoundException {
+    URL location = type.getProtectionDomain().getCodeSource().getLocation();
+    try (URLClassLoader loader = new URLClassLoader(new URL[] {location}, null)) {
+      return Class.forName(type.getName(), false, loader);
     }
   }
 

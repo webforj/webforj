@@ -30,6 +30,11 @@
         <artifactId>webforj-plugin-foundation</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.webforj</groupId>
+        <artifactId>webforj-bbjship-foundation</artifactId>
+        <version>${project.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 </project>

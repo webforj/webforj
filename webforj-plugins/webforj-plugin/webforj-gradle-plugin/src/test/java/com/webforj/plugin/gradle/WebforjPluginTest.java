@@ -15,6 +15,9 @@ import org.junit.jupiter.api.Test;
 
 class WebforjPluginTest {
 
+  private static final String BUNDLE_TASK = "webforjBundle";
+  private static final String TAILWIND_PLUGIN = "webforj-tailwind";
+
   private Project project;
 
   @BeforeEach
@@ -26,7 +29,7 @@ class WebforjPluginTest {
 
   @Test
   void shouldRegisterTheBundlerTasks() {
-    assertNotNull(project.getTasks().findByName("webforjBundle"));
+    assertNotNull(project.getTasks().findByName(BUNDLE_TASK));
     assertNotNull(project.getTasks().findByName("webforjTest"));
     assertNotNull(project.getTasks().findByName("webforjWatch"));
     assertNotNull(project.getTasks().findByName("webforjCleanFrontend"));
@@ -34,7 +37,7 @@ class WebforjPluginTest {
 
   @Test
   void shouldGroupTheTasksUnderWebforj() {
-    assertEquals("webforj", project.getTasks().getByName("webforjBundle").getGroup());
+    assertEquals("webforj", project.getTasks().getByName(BUNDLE_TASK).getGroup());
     assertEquals("webforj", project.getTasks().getByName("webforjWatch").getGroup());
   }
 
@@ -51,7 +54,7 @@ class WebforjPluginTest {
 
   @Test
   void shouldBindTheBundleBeforeTheJar() {
-    assertTrue(dependsOn("jar", "webforjBundle"), "the jar depends on the bundle");
+    assertTrue(dependsOn("jar", BUNDLE_TASK), "the jar depends on the bundle");
   }
 
   @Test
@@ -68,27 +71,23 @@ class WebforjPluginTest {
   @Test
   void shouldReadTheExtensionOverridesThroughTheTask() {
     WebforjExtension extension = project.getExtensions().getByType(WebforjExtension.class);
-    extension.getPlugins().put("webforj-tailwind", "true");
+    extension.getPlugins().put(TAILWIND_PLUGIN, "true");
 
-    AbstractBundlerTask bundle =
-        (AbstractBundlerTask) project.getTasks().getByName("webforjBundle");
+    AbstractBundlerTask bundle = (AbstractBundlerTask) project.getTasks().getByName(BUNDLE_TASK);
 
-    assertEquals(Boolean.TRUE,
-        bundle.createRequest().getExtensionOverrides().get("webforj-tailwind"));
+    assertEquals(Boolean.TRUE, bundle.createRequest().getExtensionOverrides().get(TAILWIND_PLUGIN));
   }
 
   @Test
   void shouldCarryTheProjectNameOntoTheBundleTask() {
-    AbstractBundlerTask bundle =
-        (AbstractBundlerTask) project.getTasks().getByName("webforjBundle");
+    AbstractBundlerTask bundle = (AbstractBundlerTask) project.getTasks().getByName(BUNDLE_TASK);
 
     assertEquals(project.getName(), bundle.getProjectName().get());
   }
 
   @Test
   void shouldBuildTheRuntimeAndExecution() {
-    AbstractBundlerTask bundle =
-        (AbstractBundlerTask) project.getTasks().getByName("webforjBundle");
+    AbstractBundlerTask bundle = (AbstractBundlerTask) project.getTasks().getByName(BUNDLE_TASK);
 
     assertNotNull(bundle.createRuntime(), "the runtime is built from the resolved properties");
     assertNotNull(bundle.createExecution(), "the execution is built from its collaborators");
@@ -99,8 +98,7 @@ class WebforjPluginTest {
     WebforjExtension extension = project.getExtensions().getByType(WebforjExtension.class);
     extension.getBunPath().set(project.getLayout().getProjectDirectory().file("bun"));
 
-    AbstractBundlerTask bundle =
-        (AbstractBundlerTask) project.getTasks().getByName("webforjBundle");
+    AbstractBundlerTask bundle = (AbstractBundlerTask) project.getTasks().getByName(BUNDLE_TASK);
 
     assertNotNull(bundle.createRuntime(), "an explicit Bun binary is honored");
   }
@@ -108,16 +106,15 @@ class WebforjPluginTest {
   @Test
   void shouldBuildTheRequestFromTheResolvedProperties() {
     WebforjExtension extension = project.getExtensions().getByType(WebforjExtension.class);
-    extension.getPlugins().put("webforj-tailwind", "true");
+    extension.getPlugins().put(TAILWIND_PLUGIN, "true");
     extension.getExcludePackages().add("com.acme.internal");
     extension.getEager().set(true);
 
-    AbstractBundlerTask bundle =
-        (AbstractBundlerTask) project.getTasks().getByName("webforjBundle");
+    AbstractBundlerTask bundle = (AbstractBundlerTask) project.getTasks().getByName(BUNDLE_TASK);
     BundlerExecution.Request request = bundle.createRequest();
 
     assertEquals(project.getName(), request.getProjectName());
-    assertEquals(Boolean.TRUE, request.getExtensionOverrides().get("webforj-tailwind"));
+    assertEquals(Boolean.TRUE, request.getExtensionOverrides().get(TAILWIND_PLUGIN));
     assertTrue(request.getExcludedPackages().contains("com.acme.internal"));
     assertTrue(request.isEager(), "the eager flag carries onto the request");
   }
@@ -125,8 +122,7 @@ class WebforjPluginTest {
   @Test
   void shouldBuildTheRequestWithoutAnyConfiguration() {
     // The webforj { } block is optional.
-    AbstractBundlerTask bundle =
-        (AbstractBundlerTask) project.getTasks().getByName("webforjBundle");
+    AbstractBundlerTask bundle = (AbstractBundlerTask) project.getTasks().getByName(BUNDLE_TASK);
 
     BundlerExecution.Request request = bundle.createRequest();
 

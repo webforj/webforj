@@ -1,16 +1,26 @@
 package com.webforj.spring;
 
 import com.webforj.annotation.Routify;
+import com.webforj.router.RouteRegistry;
 import com.webforj.router.annotation.Route;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.System.Logger;
 import java.lang.annotation.Annotation;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
@@ -24,6 +34,8 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.ResourceUtils;
 
 /**
  * Automatically registers webforj components as Spring beans with appropriate scoping and lazy
@@ -59,13 +71,17 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ComponentRegistrar implements BeanDefinitionRegistryPostProcessor, EnvironmentAware {
-  private static final String LIVE_RELOAD_ENABLED_KEY = "webforj.devtools.livereload.enabled";
+  static final String LIVE_RELOAD_ENABLED_KEY = "webforj.devtools.livereload.enabled";
 
   private final Logger logger = System.getLogger(ComponentRegistrar.class.getName());
   private static final BeanNameGenerator beanNameGenerator = AnnotationBeanNameGenerator.INSTANCE;
   private final Set<String> registeredPackages = ConcurrentHashMap.newKeySet();
+  private final Map<String, Path> routeClassFiles = new HashMap<>();
+  private final Map<String, FileTime> routeClassFileTimes = new HashMap<>();
+  private final Set<String> untrackedBeanNames = new HashSet<>();
 
   private Environment environment;
+  private ClassLoader beanClassLoader;
 
   /**
    * {@inheritDoc}
@@ -94,6 +110,12 @@ public class ComponentRegistrar implements BeanDefinitionRegistryPostProcessor, 
    * initialization.
    * </p>
    *
+   * <p>
+   * When live reload is enabled, the definition of a route found in a class folder is replaced only
+   * when the modification time of its class file changed since the previous scan, and removed when
+   * its class file is gone. A scan with no changed class file leaves every definition in place.
+   * </p>
+   *
    * @param registry the bean definition registry to register components in
    * @param packages the packages to scan for route components; null or empty array is a no-op
    */
@@ -112,8 +134,13 @@ public class ComponentRegistrar implements BeanDefinitionRegistryPostProcessor, 
     }
 
     if (!packagesToScan.isEmpty()) {
+      if (rescanEveryPackage) {
+        removeGoneRouteDefinitions(registry, packagesToScan);
+      }
+
       ClassPathScanningCandidateComponentProvider scanner = createScanner();
-      registerWebforjComponents(scanner, registry, Route.class, true, packagesToScan);
+      registerWebforjComponents(scanner, registry, Route.class, true, packagesToScan,
+          rescanEveryPackage);
       registeredPackages.addAll(packagesToScan);
     }
   }
@@ -131,8 +158,8 @@ public class ComponentRegistrar implements BeanDefinitionRegistryPostProcessor, 
     // Only register components if @Routify is defined
     if (!packagesToScan.isEmpty()) {
       ClassPathScanningCandidateComponentProvider scanner = createScanner();
-      registerWebforjComponents(scanner, registry, Route.class, true, packagesToScan);
-      registerWebforjComponents(scanner, registry, Routify.class, false, packagesToScan);
+      registerWebforjComponents(scanner, registry, Route.class, true, packagesToScan, false);
+      registerWebforjComponents(scanner, registry, Routify.class, false, packagesToScan, false);
       registeredPackages.addAll(packagesToScan);
     }
   }
@@ -143,7 +170,7 @@ public class ComponentRegistrar implements BeanDefinitionRegistryPostProcessor, 
   @Override
   public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
       throws BeansException {
-    // No additional post-processing needed
+    beanClassLoader = beanFactory.getBeanClassLoader();
   }
 
   /**
@@ -256,10 +283,11 @@ public class ComponentRegistrar implements BeanDefinitionRegistryPostProcessor, 
    * @param annotationClass the annotation class to scan for
    * @param lazy whether the beans should be lazy-initialized
    * @param packagesToScan the packages to scan for components
+   * @param replace whether an existing definition is replaced when its class file changed
    */
   private void registerWebforjComponents(ClassPathScanningCandidateComponentProvider scanner,
       BeanDefinitionRegistry registry, Class<? extends Annotation> annotationClass, boolean lazy,
-      Set<String> packagesToScan) {
+      Set<String> packagesToScan, boolean replace) {
 
     try {
       Set<BeanDefinition> allCandidates = new HashSet<>();
@@ -286,7 +314,7 @@ public class ComponentRegistrar implements BeanDefinitionRegistryPostProcessor, 
 
         // Only register if it has the specific annotation we're looking for
         if (componentClass.isAnnotationPresent(annotationClass)) {
-          registerWebforjComponent(registry, componentClass, lazy);
+          registerWebforjComponent(registry, componentClass, lazy, replace);
         }
       }
     } catch (Exception e) {
@@ -302,16 +330,18 @@ public class ComponentRegistrar implements BeanDefinitionRegistryPostProcessor, 
    * Registers a single webforj component as a Spring bean.
    *
    * <p>
-   * Creates a bean definition with PROTOTYPE scope and the specified lazy initialization. Skips
-   * registration if a bean with the same name already exists.
+   * Creates a bean definition with PROTOTYPE scope and the specified lazy initialization. An
+   * existing definition with the same name is kept, unless {@code replace} is set and the class
+   * file of the component changed since the previous scan.
    * </p>
    *
    * @param registry the bean definition registry
    * @param componentClass the component class to register
    * @param lazy whether the bean should be lazy-initialized
+   * @param replace whether an existing definition is replaced when its class file changed
    */
   private void registerWebforjComponent(BeanDefinitionRegistry registry, Class<?> componentClass,
-      boolean lazy) {
+      boolean lazy, boolean replace) {
 
     BeanDefinition beanDefinition = BeanDefinitionBuilder.genericBeanDefinition(componentClass)
         .setScope(BeanDefinition.SCOPE_PROTOTYPE).setLazyInit(lazy).getBeanDefinition();
@@ -319,11 +349,17 @@ public class ComponentRegistrar implements BeanDefinitionRegistryPostProcessor, 
     String beanName = beanNameGenerator.generateBeanName(beanDefinition, registry);
 
     if (registry.containsBeanDefinition(beanName)) {
-      // Bean already registered, skip
-      return;
+      if (!replace || !updateClassFileTime(beanName, componentClass.getName())) {
+        return;
+      }
+
+      registry.removeBeanDefinition(beanName);
     }
 
     registry.registerBeanDefinition(beanName, beanDefinition);
+    if (replace && !routeClassFiles.containsKey(beanName)) {
+      addClassFile(beanName, resolveClassFileUrl(componentClass.getName()));
+    }
   }
 
   /**
@@ -348,6 +384,30 @@ public class ComponentRegistrar implements BeanDefinitionRegistryPostProcessor, 
     return AnnotationUtils.findAnnotation(clazz, Component.class) != null
         || AnnotationUtils.findAnnotation(clazz, Configuration.class) != null
         || AnnotationUtils.findAnnotation(clazz, SpringBootApplication.class) != null;
+  }
+
+  /**
+   * Replaces the definition of a route when its class file changed since it was last checked.
+   *
+   * <p>
+   * Applies only when live reload is enabled, the class carries {@code @Route}, is not managed by
+   * Spring and the registry holds a definition for it. Otherwise nothing happens.
+   * </p>
+   *
+   * @param registry the bean definition registry holding the route definition
+   * @param routeClass the route class whose definition is updated
+   */
+  synchronized void updateRouteDefinition(BeanDefinitionRegistry registry, Class<?> routeClass) {
+    if (!isLiveReloadEnabled() || !routeClass.isAnnotationPresent(Route.class)
+        || isSpringManagedComponent(routeClass)) {
+      return;
+    }
+
+    String beanName = beanNameGenerator.generateBeanName(
+        BeanDefinitionBuilder.genericBeanDefinition(routeClass).getBeanDefinition(), registry);
+    if (registry.containsBeanDefinition(beanName)) {
+      registerWebforjComponent(registry, routeClass, true, true);
+    }
   }
 
   /**
@@ -385,5 +445,133 @@ public class ComponentRegistrar implements BeanDefinitionRegistryPostProcessor, 
   private boolean isLiveReloadEnabled() {
     return environment != null
         && Boolean.parseBoolean(environment.getProperty(LIVE_RELOAD_ENABLED_KEY, "false"));
+  }
+
+  private void removeGoneRouteDefinitions(BeanDefinitionRegistry registry,
+      Set<String> packagesToScan) {
+    for (String beanName : registry.getBeanDefinitionNames()) {
+      BeanDefinition beanDefinition = registry.getBeanDefinition(beanName);
+      String className = beanDefinition.getBeanClassName();
+      if (className != null && isInPackages(className, packagesToScan)
+          && isGoneRoute(beanName, beanDefinition, className)) {
+        registry.removeBeanDefinition(beanName);
+        routeClassFiles.remove(beanName);
+        routeClassFileTimes.remove(beanName);
+        logger.log(System.Logger.Level.DEBUG,
+            "Removed the bean definition of the route " + className + ", its class file is gone");
+      }
+    }
+  }
+
+  private boolean isGoneRoute(String beanName, BeanDefinition beanDefinition, String className) {
+    Path classFile = routeClassFiles.get(beanName);
+    if (classFile != null) {
+      return !Files.exists(classFile);
+    }
+
+    if (untrackedBeanNames.contains(beanName)) {
+      return false;
+    }
+
+    Class<?> componentClass = resolveBeanClass(beanDefinition, className);
+    if (componentClass == null || !componentClass.isAnnotationPresent(Route.class)
+        || getClassLoader() == null) {
+      untrackedBeanNames.add(beanName);
+      return false;
+    }
+
+    URL classFileUrl = resolveClassFileUrl(className);
+    if (classFileUrl == null) {
+      return true;
+    }
+
+    addClassFile(beanName, classFileUrl);
+    return false;
+  }
+
+  /**
+   * Records the modification time of the class file of a route definition.
+   *
+   * @param beanName the name of the route definition
+   * @param className the name of the route class
+   *
+   * @return {@code true} when the time moved since the previous record
+   */
+  private boolean updateClassFileTime(String beanName, String className) {
+    if (untrackedBeanNames.contains(beanName)) {
+      return false;
+    }
+
+    Path classFile = routeClassFiles.get(beanName);
+    if (classFile == null) {
+      addClassFile(beanName, resolveClassFileUrl(className));
+      return false;
+    }
+
+    FileTime time = readLastModifiedTime(classFile);
+    if (time == null || time.equals(routeClassFileTimes.get(beanName))) {
+      return false;
+    }
+
+    routeClassFileTimes.put(beanName, time);
+    return true;
+  }
+
+  private void addClassFile(String beanName, URL classFileUrl) {
+    if (classFileUrl == null) {
+      return;
+    }
+
+    if (!ResourceUtils.URL_PROTOCOL_FILE.equals(classFileUrl.getProtocol())) {
+      untrackedBeanNames.add(beanName);
+      return;
+    }
+
+    try {
+      Path classFile = ResourceUtils.getFile(classFileUrl).toPath();
+      routeClassFiles.put(beanName, classFile);
+      routeClassFileTimes.put(beanName, readLastModifiedTime(classFile));
+    } catch (FileNotFoundException e) {
+      untrackedBeanNames.add(beanName);
+    }
+  }
+
+  private Class<?> resolveBeanClass(BeanDefinition beanDefinition, String className) {
+    if (beanDefinition instanceof AbstractBeanDefinition definition && definition.hasBeanClass()) {
+      return definition.getBeanClass();
+    }
+
+    try {
+      return ClassUtils.forName(className, beanClassLoader);
+    } catch (ClassNotFoundException | LinkageError e) {
+      return null;
+    }
+  }
+
+  private URL resolveClassFileUrl(String className) {
+    ClassLoader loader = getClassLoader();
+    return loader == null ? null : loader.getResource(className.replace('.', '/') + ".class");
+  }
+
+  private ClassLoader getClassLoader() {
+    return beanClassLoader != null ? beanClassLoader : ClassUtils.getDefaultClassLoader();
+  }
+
+  private static boolean isInPackages(String className, Set<String> packages) {
+    for (String pkg : packages) {
+      if (className.startsWith(pkg + ".")) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private static FileTime readLastModifiedTime(Path classFile) {
+    try {
+      return Files.getLastModifiedTime(classFile);
+    } catch (IOException e) {
+      return null;
+    }
   }
 }

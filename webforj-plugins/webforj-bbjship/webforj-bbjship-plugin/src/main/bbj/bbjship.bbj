@@ -1,0 +1,90 @@
+rem /**
+rem  * Runs one command of the BBjShip command line inside BBjServices.
+rem  *
+rem  * The arguments follow the - of the command line. The program loads the BBjShip library from the
+rem  * lib folder beside it, hands the arguments and the terminal to the command line and ends with
+rem  * its exit code.
+rem  *
+rem  * @author Hyyan Abo Fakher
+rem  * @since 26.03
+rem  */
+seterr failed
+
+use java.io.File
+use java.lang.Thread
+use java.lang.reflect.Array
+use java.lang.reflect.InvocationHandler
+use java.lang.reflect.Method
+use java.lang.reflect.Proxy
+use java.net.URLClassLoader
+
+rem /**
+rem  * Answers each method of the BBjShip terminal with one BBj verb.
+rem  *
+rem  * @author Hyyan Abo Fakher
+rem  * @since 26.03
+rem  */
+class public BBjShipTerminal implements InvocationHandler
+  rem /**
+  rem  * Runs the terminal method the command line calls.
+  rem  *
+  rem  * @param Object proxy! The terminal the command line holds.
+  rem  * @param Method method! The terminal method.
+  rem  * @param Object arguments! The arguments of the method.
+  rem  * @return Object The line read, null at the end of the input or for a method without result.
+  rem  */
+  method public Object invoke(Object proxy!, Method method!, Object arguments!)
+    switch method!.getName()
+      case "print"
+        print str(Array.get(arguments!, 0))
+        methodret null()
+      case "printError"
+        print str(Array.get(arguments!, 0))
+        methodret null()
+      case "readLine"
+        input (0, err=ended) "", line$
+        methodret line$
+      case "getVariable"
+        methodret clientenv(str(Array.get(arguments!, 0)), err=ended)
+      case "getWorkingDirectory"
+        methodret dir("")
+    swend
+    ended:
+    methodret null()
+  methodend
+
+classend
+
+loader! = null()
+folder! = new File(pgm(-1)).getParentFile()
+library! = new File(folder!, "lib/webforj-bbjship.jar").toURI().toURL()
+libraries! = Array.newInstance(Class.forName("java.net.URL"), 1)
+Array.set(libraries!, 0, library!)
+loader! = new URLClassLoader(libraries!, Thread.currentThread().getContextClassLoader())
+terminalType! = loader!.loadClass("com.webforj.bbjship.cli.BBjShipTerminal")
+terminalTypes! = Array.newInstance(Class.forName("java.lang.Class"), 1)
+Array.set(terminalTypes!, 0, terminalType!)
+terminal! = Proxy.newProxyInstance(loader!, terminalTypes!, new BBjShipTerminal())
+
+rem A BBj for loop runs its body once even when the end is below the start, so a command line
+rem without arguments must not enter it
+arguments! = Array.newInstance(Class.forName("java.lang.String"), argc - 1)
+if argc > 1 then
+  for index = 1 to argc - 1
+    Array.set(arguments!, index - 1, argv(index))
+  next index
+endif
+
+run! = loader!.loadClass("com.webforj.bbjship.cli.BBjShipCli").getMethod("run", arguments!.getClass(), terminalType!)
+code! = run!.invoke(null(), arguments!, terminal!)
+loader!.close()
+release num(str(code!))
+
+failed:
+cause! = BBjAPI().getLastJavaException()
+if cause! <> null() and cause!.getCause() <> null() then cause! = cause!.getCause()
+if cause! <> null() then message$ = cause!.toString() else message$ = errmes(-1)
+if loader! <> null() then loader!.close(err=closed)
+closed:
+print message$
+release 1

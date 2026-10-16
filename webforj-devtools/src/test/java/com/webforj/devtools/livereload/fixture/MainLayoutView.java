@@ -11,6 +11,15 @@ public class MainLayoutView extends Component implements RouteOutlet {
   private final LayoutBadge badge = new LayoutBadge();
   private final Class<?> navigationTarget = DashboardView.class;
 
+  /**
+   * Returns the route the layout links to.
+   *
+   * @return the linked route
+   */
+  public Class<? extends Component> getInboxTarget() {
+    return InboxView.class;
+  }
+
   @Override
   protected void onCreate(Window window) {
     // Do nothing

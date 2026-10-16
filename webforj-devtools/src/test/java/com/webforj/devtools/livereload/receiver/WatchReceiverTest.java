@@ -9,41 +9,41 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.webforj.devtools.livereload.LiveReloadServer;
+import com.webforj.plugin.foundation.WatchPortFile;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.CountDownLatch;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class WatchReceiverTest {
 
-  @Test
-  void shouldHotSwapAStylesheetChange() {
+  @ParameterizedTest
+  @CsvSource({"styles/app.css, css", "assets/logo.png, image"})
+  void shouldHotSwapSwappableChange(String path, String type) {
     LiveReloadServer server = runningServer();
 
-    new WatchReceiver(server, true).handleLine("REBUILD styles/app.css");
+    new WatchReceiver(server, true).handleLine("REBUILD " + path);
 
-    verify(server).sendResourceUpdateMessage(eq("css"), eq("styles/app.css"), isNull());
+    verify(server).sendResourceUpdateMessage(eq(type), eq(path), isNull());
     verify(server, never()).sendReloadMessage();
   }
 
   @Test
-  void shouldHotSwapAnImageChange() {
-    LiveReloadServer server = runningServer();
-
-    new WatchReceiver(server, true).handleLine("REBUILD assets/logo.png");
-
-    verify(server).sendResourceUpdateMessage(eq("image"), eq("assets/logo.png"), isNull());
-  }
-
-  @Test
-  void shouldReloadOnAScriptChange() {
+  void shouldReloadOnScriptChange() {
     LiveReloadServer server = runningServer();
 
     new WatchReceiver(server, true).handleLine("REBUILD main.js");
@@ -63,7 +63,7 @@ class WatchReceiverTest {
   }
 
   @Test
-  void shouldReloadAStylesheetChangeWhenHotSwapIsOff() {
+  void shouldReloadStylesheetChangeWhenHotSwapIsOff() {
     LiveReloadServer server = runningServer();
 
     new WatchReceiver(server, false).handleLine("REBUILD app.css");
@@ -120,12 +120,12 @@ class WatchReceiverTest {
   }
 
   @Test
-  void shouldReturnNullPortForAMissingFile(@TempDir Path tmp) {
+  void shouldReturnNullPortForMissingFile(@TempDir Path tmp) {
     assertNull(WatchReceiver.readPort(tmp.resolve("absent.port")));
   }
 
   @Test
-  void shouldReturnNullPortForAMalformedFile(@TempDir Path tmp) throws Exception {
+  void shouldReturnNullPortForMalformedFile(@TempDir Path tmp) throws Exception {
     Path portFile = tmp.resolve("watch.port");
     Files.writeString(portFile, "not-a-number", StandardCharsets.UTF_8);
 
@@ -144,6 +144,119 @@ class WatchReceiverTest {
     receiver.stop();
     receiver.stop();
     assertFalse(receiver.isRunning());
+  }
+
+  @Test
+  void shouldSendTheContentOfStylesheetWhenHotSwapIsOff() {
+    LiveReloadServer server = runningServer();
+
+    new WatchReceiver(server, false).handleLine("REBUILD watch-receiver/served.css");
+
+    verify(server).sendResourceUpdateMessage("css", "watch-receiver/served.css",
+        "body { color: red; }\n");
+    verify(server, never()).sendReloadMessage();
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void shouldReloadForStylesheetOutsideTheServedFolder(boolean hotSwap) {
+    LiveReloadServer server = runningServer();
+
+    new WatchReceiver(server, hotSwap).handleLine("REBUILD ../outside.css");
+
+    verify(server).sendReloadMessage();
+    verify(server, never()).sendResourceUpdateMessage(any(), any(), any());
+  }
+
+  @Test
+  void shouldReloadOnceForStylesheetAndAnImageWhenHotSwapIsOff() {
+    LiveReloadServer server = runningServer();
+
+    new WatchReceiver(server, false)
+        .handleLine("REBUILD watch-receiver/served.css assets/logo.png");
+
+    verify(server, times(1)).sendReloadMessage();
+    verify(server, never()).sendResourceUpdateMessage(any(), any(), any());
+  }
+
+  @Test
+  void shouldReloadOnceForAnUnreadableStylesheetWhenHotSwapIsOff() {
+    LiveReloadServer server = runningServer();
+
+    new WatchReceiver(server, false)
+        .handleLine("REBUILD watch-receiver/served.css watch-receiver/absent.css");
+
+    verify(server, times(1)).sendReloadMessage();
+    verify(server, never()).sendResourceUpdateMessage(any(), any(), any());
+  }
+
+  @Test
+  @Timeout(10)
+  void shouldConnectToTheWatchOfTheProjectRoot(@TempDir Path tmp) throws Exception {
+    String projectRoot = tmp.toAbsolutePath().toString();
+    Path portFile = WatchPortFile.resolve(projectRoot);
+    WatchReceiver receiver =
+        new WatchReceiver(mock(LiveReloadServer.class), true, projectRoot, () -> {
+        });
+
+    try (ServerSocket watch = new ServerSocket(0)) {
+      Files.writeString(portFile, Integer.toString(watch.getLocalPort()), StandardCharsets.UTF_8);
+      receiver.start();
+
+      try (Socket connection = watch.accept()) {
+        assertTrue(connection.isConnected());
+      }
+    } finally {
+      receiver.stop();
+      Files.deleteIfExists(portFile);
+    }
+  }
+
+  @Test
+  @Timeout(10)
+  void shouldReportTheEndOfTheWatchWhenItsConnectionCloses(@TempDir Path tmp) throws Exception {
+    String projectRoot = tmp.toAbsolutePath().toString();
+    Path portFile = WatchPortFile.resolve(projectRoot);
+    CountDownLatch ended = new CountDownLatch(1);
+    WatchReceiver receiver =
+        new WatchReceiver(mock(LiveReloadServer.class), true, projectRoot, ended::countDown);
+
+    try (ServerSocket watch = new ServerSocket(0)) {
+      Files.writeString(portFile, Integer.toString(watch.getLocalPort()), StandardCharsets.UTF_8);
+      receiver.start();
+      watch.accept().close();
+      ended.await();
+
+      assertFalse(receiver.isRunning(), "the receiver should stop once the watch ended");
+    } finally {
+      receiver.stop();
+      Files.deleteIfExists(portFile);
+    }
+  }
+
+  @Test
+  @Timeout(10)
+  void shouldNotReportTheEndOfTheWatchWhenStopped(@TempDir Path tmp) throws Exception {
+    String projectRoot = tmp.toAbsolutePath().toString();
+    Path portFile = WatchPortFile.resolve(projectRoot);
+    CountDownLatch ended = new CountDownLatch(1);
+    WatchReceiver receiver =
+        new WatchReceiver(mock(LiveReloadServer.class), true, projectRoot, ended::countDown);
+
+    try (ServerSocket watch = new ServerSocket(0)) {
+      Files.writeString(portFile, Integer.toString(watch.getLocalPort()), StandardCharsets.UTF_8);
+      receiver.start();
+      try (Socket connection = watch.accept()) {
+        receiver.stop();
+
+        assertEquals(-1, connection.getInputStream().read());
+      }
+
+      assertEquals(1, ended.getCount(), "a stop should not count as the watch ending");
+    } finally {
+      receiver.stop();
+      Files.deleteIfExists(portFile);
+    }
   }
 
   private static LiveReloadServer runningServer() {

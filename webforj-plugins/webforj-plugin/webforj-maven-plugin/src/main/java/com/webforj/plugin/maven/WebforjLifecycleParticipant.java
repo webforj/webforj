@@ -10,6 +10,7 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
 /**
  * Binds the bundle, frontend test, and clean goals to the build automatically, so an application
  * enables the whole bundler integration with a single plugin declaration and no execution blocks.
+ * When the plugin configuration has a bbj block, it also binds the BBj package and deploy goals.
  *
  * @author Hyyan Abo Fakher
  * @since 26.01
@@ -30,8 +31,16 @@ public class WebforjLifecycleParticipant extends AbstractMavenLifecycleParticipa
         ensureExecution(plugin, "default-webforj-bundle", "prepare-package", "bundle");
         ensureExecution(plugin, "default-webforj-test", "test", "test");
         ensureExecution(plugin, "default-webforj-clean", "clean", "clean");
+        if (hasBbjConfiguration(plugin)) {
+          ensureExecution(plugin, "default-webforj-bbj-package", "package", "bbj-package");
+          ensureExecution(plugin, "default-webforj-bbj-deploy", "install", "bbj-deploy");
+        }
       }
     }
+  }
+
+  private boolean hasBbjConfiguration(Plugin plugin) {
+    return plugin.getConfiguration() instanceof Xpp3Dom dom && dom.getChild("bbj") != null;
   }
 
   private Plugin findPlugin(MavenProject project) {

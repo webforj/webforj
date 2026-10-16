@@ -57,13 +57,12 @@ public final class HotswapObserver implements ClassFileTransformer {
   @SuppressWarnings("java:S1168")
   public byte[] transform(Module module, ClassLoader loader, String className,
       Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) {
-    if (classBeingRedefined == null || loader == null || className == null) {
-      // A first load carries no redefined class and nothing to report.
-      return null;
+    // A first load carries no redefined class and nothing to report.
+    if (classBeingRedefined != null && loader != null && className != null) {
+      byte[] observed = classfileBuffer.clone();
+      reporter.execute(() -> report(loader, className, observed));
     }
 
-    byte[] observed = classfileBuffer.clone();
-    reporter.execute(() -> report(loader, className, observed));
     return null;
   }
 

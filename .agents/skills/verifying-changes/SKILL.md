@@ -27,10 +27,12 @@ Verification:
 1. Run the formatter: `mvn -o -q -pl <module> spotless:apply`.
 2. Verify the module: `mvn -o -pl <module> verify > verify.log 2>&1`, then capture `$?` and read the summary lines of the log. Spotless check and checkstyle run there.
 3. On failure, fix and go back to step 1. Continue only when the log says `BUILD SUCCESS`.
+4. `-pl` names the changed modules and any new parent pom, never `-am`. Upstream modules are installed already, and `-am` rebuilds all of them with their tests on every run.
 
 Rules:
 - Never trust an exit code after a pipe. A background run is judged by its log (`BUILD SUCCESS` or `[ERROR]`), never by the notification's exit code.
 - Checkstyle warnings of `google_checks` are read and fixed in every touched file, except what the formatter itself recreates. The IDE panel shows warnings the Maven build does not fail on.
+- Test sources are always checked, in every module, the same as main sources. A checkstyle result is trusted only after its output names the test files it scanned.
 - After any edit, the verification counts only if it ran after that edit.
 - An installed devtools jar must contain `META-INF/services/...FeatureHandler` with its entries. An IDE build that shares `target/classes` can drop it. Rebuild clean when it is missing.
 - Before a new branch or a comparison, fetch and compare the local main with the remote main.

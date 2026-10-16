@@ -1,9 +1,10 @@
 package com.webforj.plugin.maven.resolve;
 
-import com.webforj.plugin.foundation.resolve.ApplicationClasspath;
-import com.webforj.plugin.foundation.resolve.ApplicationClasspath.ResolvedJar;
+import com.webforj.bbjship.foundation.ApplicationClasspath;
+import com.webforj.bbjship.foundation.ApplicationClasspath.ResolvedJar;
 import com.webforj.plugin.foundation.resolve.ArtifactResolver;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.maven.artifact.Artifact;
@@ -14,6 +15,8 @@ import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.collection.CollectRequest;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.resolution.ArtifactRequest;
+import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.ArtifactResult;
 import org.eclipse.aether.resolution.DependencyRequest;
 import org.eclipse.aether.resolution.DependencyResolutionException;
@@ -39,6 +42,29 @@ public final class MavenArtifacts {
   public static ApplicationClasspath getApplicationClasspath(MavenProject project) {
     List<ResolvedJar> jars = new ArrayList<>();
     for (Artifact artifact : project.getArtifacts()) {
+      jars.add(new ResolvedJar(artifact.getGroupId(), artifact.getArtifactId(),
+          artifact.getBaseVersion(),
+          artifact.getFile() != null ? artifact.getFile().toPath() : null));
+    }
+
+    return new ApplicationClasspath(jars);
+  }
+
+  /**
+   * The runtime classpath of the application, the artifacts of the compile and runtime scopes,
+   * without the provided and test scopes.
+   *
+   * @param project the current Maven project
+   * @return the runtime classpath
+   */
+  public static ApplicationClasspath getRuntimeClasspath(MavenProject project) {
+    List<ResolvedJar> jars = new ArrayList<>();
+    for (Artifact artifact : project.getArtifacts()) {
+      if (Artifact.SCOPE_PROVIDED.equals(artifact.getScope())
+          || Artifact.SCOPE_TEST.equals(artifact.getScope())) {
+        continue;
+      }
+
       jars.add(new ResolvedJar(artifact.getGroupId(), artifact.getArtifactId(),
           artifact.getBaseVersion(),
           artifact.getFile() != null ? artifact.getFile().toPath() : null));
@@ -82,5 +108,25 @@ public final class MavenArtifacts {
             + " for the application run", e);
       }
     };
+  }
+
+  /**
+   * Resolves the BBjShip package of a webforJ version through the repositories of the build.
+   *
+   * @param system the repository system of the session
+   * @param session the repository session of the build
+   * @param repositories the remote repositories of the project
+   * @param version the webforJ version
+   *
+   * @return the BBjShip package
+   * @throws ArtifactResolutionException if the BBjShip package cannot be resolved
+   */
+  public static Path resolveBBjShipPackage(RepositorySystem system, RepositorySystemSession session,
+      List<RemoteRepository> repositories, String version) throws ArtifactResolutionException {
+    DefaultArtifact artifact =
+        new DefaultArtifact("com.webforj", "webforj-bbjship-plugin", "bbj-plugin", "zip", version);
+    ArtifactRequest request = new ArtifactRequest(artifact, repositories, null);
+
+    return system.resolveArtifact(session, request).getArtifact().getFile().toPath();
   }
 }

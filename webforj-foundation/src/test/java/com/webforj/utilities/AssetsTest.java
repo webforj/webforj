@@ -13,10 +13,44 @@ import com.webforj.App;
 import com.webforj.Environment;
 import com.webforj.Page;
 import com.webforj.exceptions.WebforjRuntimeException;
+import java.util.Map;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockedStatic;
 
 class AssetsTest {
+
+  @Test
+  void shouldReturnPackagedFilesUrlWhenBbjServicesEnabledAndConfigured() {
+    try (MockedStatic<Environment> environmentMock = mockStatic(Environment.class);
+        MockedStatic<App> appMock = mockStatic(App.class)) {
+      environmentMock.when(Environment::isRunningWithBBjServices).thenReturn(true);
+      environmentMock.when(Environment::getContextPath).thenReturn("/");
+      createConfig(environmentMock, Map.of("webforj.assetsSource", "packaged"));
+      appMock.when(App::getApplicationName).thenReturn("myApp");
+
+      String result = Assets.getWebServerFilesUrl();
+      assertEquals("/webforj/myApp/static/", result);
+    }
+  }
+
+  @Test
+  void shouldReturnConfiguredPackagedFilesUrlWhenBbjServicesEnabled() {
+    try (MockedStatic<Environment> environmentMock = mockStatic(Environment.class);
+        MockedStatic<App> appMock = mockStatic(App.class)) {
+      environmentMock.when(Environment::isRunningWithBBjServices).thenReturn(true);
+      environmentMock.when(Environment::getContextPath).thenReturn("/");
+      createConfig(environmentMock,
+          Map.of("webforj.assetsSource", "packaged", "webforj.assetsDir", "assets/"));
+      appMock.when(App::getApplicationName).thenReturn("myApp");
+
+      String result = Assets.getWebServerFilesUrl();
+      assertEquals("/webforj/myApp/assets/", result);
+    }
+  }
 
   @Test
   void shouldReturnFilesUrlWhenBBjServicesEnabled() {
@@ -24,10 +58,26 @@ class AssetsTest {
         MockedStatic<App> appMock = mockStatic(App.class)) {
       environmentMock.when(Environment::isRunningWithBBjServices).thenReturn(true);
       environmentMock.when(Environment::getContextPath).thenReturn("/");
+      createConfig(environmentMock, Map.of());
       appMock.when(App::getApplicationName).thenReturn("myApp");
 
       String result = Assets.getWebServerFilesUrl();
       assertEquals("/files/myApp/", result);
+    }
+  }
+
+  @Test
+  void shouldReturnPackagedIconsEndpointWhenBbjServicesEnabled() {
+    try (MockedStatic<Environment> environmentMock = mockStatic(Environment.class);
+        MockedStatic<App> appMock = mockStatic(App.class)) {
+      environmentMock.when(Environment::isRunningWithBBjServices).thenReturn(true);
+      environmentMock.when(Environment::getContextPath).thenReturn("/");
+      createConfig(environmentMock,
+          Map.of("webforj.assetsSource", "packaged", "webforj.iconsDir", "brand/"));
+      appMock.when(App::getApplicationName).thenReturn("myApp");
+
+      String result = Assets.resolveIconsUrl("icons://icon-144x144.png");
+      assertEquals("/webforj/myApp/brand/icon-144x144.png", result);
     }
   }
 
@@ -37,6 +87,7 @@ class AssetsTest {
         MockedStatic<App> appMock = mockStatic(App.class)) {
       environmentMock.when(Environment::isRunningWithBBjServices).thenReturn(true);
       environmentMock.when(Environment::getContextPath).thenReturn("/customContext");
+      createConfig(environmentMock, Map.of());
       appMock.when(App::getApplicationName).thenReturn("myApp");
 
       String result = Assets.getWebServerFilesUrl();
@@ -52,6 +103,7 @@ class AssetsTest {
       environmentMock.when(Environment::isRunningWithBBjServices).thenReturn(true);
       environmentMock.when(Environment::getContextPath).thenReturn("/");
       environmentMock.when(Environment::getOrigin).thenReturn("https://demo.example");
+      createConfig(environmentMock, Map.of());
       appMock.when(App::getApplicationName).thenReturn("myApp");
       Page embeddedPage = mock(Page.class);
       when(embeddedPage.isEmbedded()).thenReturn(true);
@@ -71,6 +123,7 @@ class AssetsTest {
       environmentMock.when(Environment::isRunningWithBBjServices).thenReturn(true);
       environmentMock.when(Environment::getContextPath).thenReturn("/");
       environmentMock.when(Environment::getOrigin).thenReturn("https://demo.example");
+      createConfig(environmentMock, Map.of());
       appMock.when(App::getApplicationName).thenReturn("myApp");
       pageMock.when(Page::isPresent).thenReturn(false);
 
@@ -183,12 +236,57 @@ class AssetsTest {
   }
 
   @Test
-  void shouldThrowExceptionForIconsUrlWhenBBjServicesEnabled() {
+  void shouldResolveIconsUrlWhenBbjServicesEnabledAndConfigured() {
+    try (MockedStatic<Environment> environmentMock = mockStatic(Environment.class);
+        MockedStatic<App> appMock = mockStatic(App.class)) {
+      environmentMock.when(Environment::isRunningWithBBjServices).thenReturn(true);
+      environmentMock.when(Environment::getContextPath).thenReturn("/");
+      createConfig(environmentMock, Map.of("webforj.assetsSource", "packaged"));
+      appMock.when(App::getApplicationName).thenReturn("myApp");
+
+      String result = Assets.resolveIconsUrl("icons://icon/path");
+      assertEquals("/webforj/myApp/icons/icon/path", result);
+    }
+  }
+
+  @Test
+  void shouldThrowExceptionForIconsUrlWhenBbjServicesEnabledWithoutPackagedAssets() {
     try (MockedStatic<Environment> environmentMock = mockStatic(Environment.class)) {
       environmentMock.when(Environment::isRunningWithBBjServices).thenReturn(true);
+      createConfig(environmentMock, Map.of());
 
       assertThrows(WebforjRuntimeException.class,
           () -> Assets.resolveIconsUrl("icons://icon/path"));
     }
+  }
+
+  @ParameterizedTest
+  @MethodSource("getAssetsSourceCases")
+  void shouldTellWhetherAssetsArePackagedOnBbj(Map<String, String> values, boolean expected) {
+    try (MockedStatic<Environment> environmentMock = mockStatic(Environment.class)) {
+      createConfig(environmentMock, values);
+
+      assertEquals(expected, Assets.isPackagedOnBBj());
+    }
+  }
+
+  private static Stream<Arguments> getAssetsSourceCases() {
+    return Stream.of(Arguments.of(Map.of("webforj.assetsSource", "packaged"), true),
+        Arguments.of(Map.of("webforj.assetsSource", "files"), false),
+        Arguments.of(Map.of(), false));
+  }
+
+  private static Config createConfig(MockedStatic<Environment> environmentMock,
+      Map<String, String> values) {
+    Environment environment = mock(Environment.class);
+    Config config = mock(Config.class);
+    environmentMock.when(Environment::getCurrent).thenReturn(environment);
+    when(environment.getConfig()).thenReturn(config);
+    values.forEach((key, value) -> {
+      when(config.hasPath(key)).thenReturn(true);
+      when(config.getString(key)).thenReturn(value);
+    });
+
+    return config;
   }
 }

@@ -17,7 +17,7 @@ description: Hands approved execution work to subagents with a complete brief, a
 No subagent ever works without the rules. Every brief contains:
 
 1. The instruction to read `AGENTS.md` and to load every skill it names for the task (`writing-java`, `testing-java`, `writing-prose`, `changing-devtools` as they apply) before touching anything, and to follow them to the character.
-2. The reference classes to copy the style from, named by path inside the repository.
+2. The reference classes to copy the style from, named by path inside the repository, and the sibling classes of the same module that solve the same shape, named by path. A brief never hands an agent a fixed API shape to build blind. It names the siblings, the agent copies their shape, and reports where its result differs from them.
 3. The exact scope: files to touch, files not to touch, the expected result.
 4. The checks to run for what it touched only, and that it never builds the whole project.
 5. That it never commits, stages, stashes or pushes.
