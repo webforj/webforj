@@ -728,12 +728,41 @@ class RouteRendererTest {
     void shouldConstructGrantedRouteOnce() {
       routeRegistry.register("/guarded", GuardedView.class);
 
+      NavigationContext context = new NavigationContext();
       AtomicReference<Optional<GuardedView>> rendered = new AtomicReference<>();
-      routeRenderer.render(GuardedView.class, new NavigationContext(), rendered::set);
+      routeRenderer.render(GuardedView.class, context, rendered::set);
 
       assertEquals(1, GuardedView.constructorCalls.get());
       assertTrue(rendered.get().isPresent());
+      verify(securityManager).evaluate(GuardedView.class, context);
       verify(securityManager, never()).onAccessDenied(any(), any());
+    }
+
+    @Test
+    void shouldNotConstructRouteVetoedInstantiation() {
+      routeRegistry.register("/guarded", GuardedView.class);
+      List<RouteRendererObserver.LifecycleEvent> events = new ArrayList<>();
+      routeRenderer.addObserver(new RouteRendererObserver() {
+        @Override
+        public void onRouteRendererLifecycleEvent(Component component, LifecycleEvent event,
+            NavigationContext context, Consumer<Boolean> continueCallback) {
+          events.add(event);
+          continueCallback.accept(true);
+        }
+
+        @Override
+        public void onInstantiate(Class<? extends Component> componentClass,
+            NavigationContext context, Consumer<Boolean> continueCallback) {
+          continueCallback.accept(false);
+        }
+      });
+
+      AtomicReference<Optional<GuardedView>> rendered = new AtomicReference<>();
+      routeRenderer.render(GuardedView.class, new NavigationContext(), rendered::set);
+
+      assertEquals(0, GuardedView.constructorCalls.get());
+      assertTrue(events.isEmpty());
+      assertFalse(rendered.get().isPresent());
     }
 
     @Test

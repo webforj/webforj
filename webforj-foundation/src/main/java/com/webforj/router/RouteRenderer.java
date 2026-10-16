@@ -460,7 +460,7 @@ public class RouteRenderer {
 
     if (componentInstance == null || componentInstance.isDestroyed()) {
       emitToObservers(
-          (observer, callback) -> observer.onBeforeCreate(componentClass, context, callback),
+          (observer, callback) -> observer.onInstantiate(componentClass, context, callback),
           creationAllowed -> {
             if (Boolean.FALSE.equals(creationAllowed)) {
               onComplete.accept(false);
@@ -545,6 +545,7 @@ public class RouteRenderer {
       componentsCache.put(componentClass, newComponentInstance);
       context.addComponent(newComponentInstance);
 
+      // Add lifecycle observer to remove from cache when destroyed
       newComponentInstance.addLifecycleObserver((component, event) -> {
         if (event == ComponentLifecycleObserver.LifecycleEvent.DESTROY) {
           componentsCache.remove(componentClass);
@@ -566,14 +567,14 @@ public class RouteRenderer {
     for (RouteRendererObserver observer : observers) {
       executor.addTask((ctx, cb) -> {
         if (vetoed.get()) {
-          cb.accept(false);
+          cb.accept(false); // Skip further notification if vetoed
           return;
         }
         call.accept(observer, result -> {
           if (Boolean.FALSE.equals(result)) {
             vetoed.set(true);
             cb.accept(false);
-            onComplete.accept(false);
+            onComplete.accept(false); // Stop workflow if vetoed
             return;
           }
           cb.accept(true);

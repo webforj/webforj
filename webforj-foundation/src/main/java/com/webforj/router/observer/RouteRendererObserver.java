@@ -65,18 +65,19 @@ public interface RouteRendererObserver {
       NavigationContext context, Consumer<Boolean> continueCallback);
 
   /**
-   * Called before an instance of a component is created.
+   * Called before the renderer instantiates a route component.
    *
    * <p>
-   * The default implementation allows the creation.
+   * The default implementation allows the instantiation.
    * </p>
    *
-   * @param componentClass The class of the component about to be created
+   * @param componentClass The class of the component about to be instantiated
    * @param context The navigation context
-   * @param continueCallback The callback to indicate whether the creation should proceed. The
+   * @param continueCallback The callback to indicate whether the instantiation should proceed. The
    *        consumer should accept {@code true} to continue or {@code false} to halt.
+   * @since 26.03
    */
-  default void onBeforeCreate(Class<? extends Component> componentClass, NavigationContext context,
+  default void onInstantiate(Class<? extends Component> componentClass, NavigationContext context,
       Consumer<Boolean> continueCallback) {
     continueCallback.accept(true);
   }

@@ -52,7 +52,7 @@ class RouteSecurityObserverTest {
   }
 
   @Test
-  void shouldAllowAccessWhenGranted() {
+  void shouldContinueBeforeCreateWithoutEvaluatingWhenGranted() {
     TestComponent component = new TestComponent();
     when(securityManager.evaluate(TestComponent.class, navigationContext))
         .thenReturn(RouteAccessDecision.grant());
@@ -61,11 +61,11 @@ class RouteSecurityObserverTest {
         navigationContext, continueCallback);
 
     verify(continueCallback).accept(true);
-    verify(securityManager, never()).onAccessDenied(any(), any());
+    verify(securityManager, never()).evaluate(any(), any());
   }
 
   @Test
-  void shouldDenyAccessWhenDenied() {
+  void shouldContinueBeforeCreateWithoutEvaluatingWhenDenied() {
     TestComponent component = new TestComponent();
     RouteAccessDecision denial = RouteAccessDecision.denyAuthentication("Test reason");
     when(securityManager.evaluate(TestComponent.class, navigationContext)).thenReturn(denial);
@@ -73,28 +73,28 @@ class RouteSecurityObserverTest {
     observer.onRouteRendererLifecycleEvent(component, LifecycleEvent.BEFORE_CREATE,
         navigationContext, continueCallback);
 
-    verify(continueCallback).accept(false);
-    verify(securityManager).onAccessDenied(denial, navigationContext);
+    verify(continueCallback).accept(true);
+    verify(securityManager, never()).evaluate(any(), any());
   }
 
   @Test
-  void shouldDenyAccessOnEvaluationError() {
+  void shouldContinueBeforeCreateWithoutEvaluatingOnEvaluationError() {
     TestComponent component = new TestComponent();
     doThrow(new RuntimeException("Test error")).when(securityManager).evaluate(any(), any());
 
     observer.onRouteRendererLifecycleEvent(component, LifecycleEvent.BEFORE_CREATE,
         navigationContext, continueCallback);
 
-    verify(continueCallback).accept(false);
-    verify(securityManager, never()).onAccessDenied(any(), any());
+    verify(continueCallback).accept(true);
+    verify(securityManager, never()).evaluate(any(), any());
   }
 
   @Test
-  void shouldAllowAccessOnBeforeCreateWhenGranted() {
+  void shouldAllowInstantiationWhenGranted() {
     when(securityManager.evaluate(TestComponent.class, navigationContext))
         .thenReturn(RouteAccessDecision.grant());
 
-    observer.onBeforeCreate(TestComponent.class, navigationContext, continueCallback);
+    observer.onInstantiate(TestComponent.class, navigationContext, continueCallback);
 
     verify(continueCallback).accept(true);
     verify(securityManager).evaluate(TestComponent.class, navigationContext);
@@ -102,21 +102,21 @@ class RouteSecurityObserverTest {
   }
 
   @Test
-  void shouldDenyAccessOnBeforeCreateWhenDenied() {
+  void shouldDenyInstantiationWhenDenied() {
     RouteAccessDecision denial = RouteAccessDecision.denyAuthentication("Test reason");
     when(securityManager.evaluate(TestComponent.class, navigationContext)).thenReturn(denial);
 
-    observer.onBeforeCreate(TestComponent.class, navigationContext, continueCallback);
+    observer.onInstantiate(TestComponent.class, navigationContext, continueCallback);
 
     verify(continueCallback).accept(false);
     verify(securityManager).onAccessDenied(denial, navigationContext);
   }
 
   @Test
-  void shouldDenyAccessOnBeforeCreateEvaluationError() {
+  void shouldDenyInstantiationOnEvaluationError() {
     doThrow(new RuntimeException("Test error")).when(securityManager).evaluate(any(), any());
 
-    observer.onBeforeCreate(TestComponent.class, navigationContext, continueCallback);
+    observer.onInstantiate(TestComponent.class, navigationContext, continueCallback);
 
     verify(continueCallback).accept(false);
     verify(securityManager, never()).onAccessDenied(any(), any());

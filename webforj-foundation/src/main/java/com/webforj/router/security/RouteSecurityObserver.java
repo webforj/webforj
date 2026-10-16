@@ -37,21 +37,14 @@ public class RouteSecurityObserver implements RouteRendererObserver {
   @Override
   public void onRouteRendererLifecycleEvent(Component component, LifecycleEvent event,
       NavigationContext context, Consumer<Boolean> continueCallback) {
-
-    // Only evaluate access before creating the route
-    if (event != LifecycleEvent.BEFORE_CREATE) {
-      continueCallback.accept(true);
-      return;
-    }
-
-    handleRouteAccess(component.getClass(), context, continueCallback);
+    continueCallback.accept(true);
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public void onBeforeCreate(Class<? extends Component> componentClass, NavigationContext context,
+  public void onInstantiate(Class<? extends Component> componentClass, NavigationContext context,
       Consumer<Boolean> continueCallback) {
     handleRouteAccess(componentClass, context, continueCallback);
   }
@@ -92,6 +85,7 @@ public class RouteSecurityObserver implements RouteRendererObserver {
     } catch (Exception e) {
       logger.log(Level.ERROR, "Error during security evaluation for route: {0}",
           routeClass.getName(), e);
+      // On error, deny access for safety
       continueCallback.accept(false);
     }
   }
