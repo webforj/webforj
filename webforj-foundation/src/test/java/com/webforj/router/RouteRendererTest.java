@@ -30,8 +30,10 @@ import com.webforj.router.exception.NotFoundException;
 import com.webforj.router.observer.RouteRendererObserver;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.AfterEach;
@@ -359,6 +361,33 @@ class RouteRendererTest {
       routeRenderer.render(TestComponent.class, result -> {
         assertFalse(result.isPresent());
       });
+    }
+
+    @Test
+    void shouldNotConstructRouteVetoedInstantiation() {
+      routeRegistry.register("/guarded", GuardedView.class);
+      List<RouteRendererObserver.LifecycleEvent> events = new ArrayList<>();
+      routeRenderer.addObserver(new RouteRendererObserver() {
+        @Override
+        public void onRouteRendererLifecycleEvent(Component component, LifecycleEvent event,
+            NavigationContext context, Consumer<Boolean> continueCallback) {
+          events.add(event);
+          continueCallback.accept(true);
+        }
+
+        @Override
+        public void onInstantiate(Class<? extends Component> componentClass,
+            NavigationContext context, Consumer<Boolean> continueCallback) {
+          continueCallback.accept(false);
+        }
+      });
+
+      AtomicReference<Optional<GuardedView>> rendered = new AtomicReference<>();
+      routeRenderer.render(GuardedView.class, new NavigationContext(), rendered::set);
+
+      assertEquals(0, GuardedView.constructorCalls.get());
+      assertTrue(events.isEmpty());
+      assertFalse(rendered.get().isPresent());
     }
 
     @Test
@@ -878,6 +907,24 @@ class RouteRendererTest {
     @Override
     public List<Component> getComponents() {
       return this.components;
+    }
+  }
+
+  public static class GuardedView extends Component {
+    static final AtomicInteger constructorCalls = new AtomicInteger();
+
+    public GuardedView() {
+      constructorCalls.incrementAndGet();
+    }
+
+    @Override
+    protected void onCreate(Window window) {
+      // Do nothing
+    }
+
+    @Override
+    protected void onDestroy() {
+      // Do nothing
     }
   }
 }

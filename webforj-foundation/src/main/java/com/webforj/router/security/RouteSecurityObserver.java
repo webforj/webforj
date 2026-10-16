@@ -37,14 +37,37 @@ public class RouteSecurityObserver implements RouteRendererObserver {
   @Override
   public void onRouteRendererLifecycleEvent(Component component, LifecycleEvent event,
       NavigationContext context, Consumer<Boolean> continueCallback) {
+    continueCallback.accept(true);
+  }
 
-    // Only evaluate access before creating the route
-    if (event != LifecycleEvent.BEFORE_CREATE) {
-      continueCallback.accept(true);
-      return;
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void onInstantiate(Class<? extends Component> componentClass, NavigationContext context,
+      Consumer<Boolean> continueCallback) {
+    handleRouteAccess(componentClass, context, continueCallback);
+  }
 
-    Class<?> routeClass = component.getClass();
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public int getPriority() {
+    return 1;
+  }
+
+  /**
+   * Gets the security manager used by this observer.
+   *
+   * @return the security manager
+   */
+  public RouteSecurityManager getSecurityManager() {
+    return securityManager;
+  }
+
+  private void handleRouteAccess(Class<?> routeClass, NavigationContext context,
+      Consumer<Boolean> continueCallback) {
     logger.log(Level.DEBUG, "Security check for route: {0}", routeClass.getName());
 
     try {
@@ -65,22 +88,5 @@ public class RouteSecurityObserver implements RouteRendererObserver {
       // On error, deny access for safety
       continueCallback.accept(false);
     }
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public int getPriority() {
-    return 1;
-  }
-
-  /**
-   * Gets the security manager used by this observer.
-   *
-   * @return the security manager
-   */
-  public RouteSecurityManager getSecurityManager() {
-    return securityManager;
   }
 }
