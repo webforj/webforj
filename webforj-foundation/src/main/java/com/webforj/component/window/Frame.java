@@ -8,6 +8,11 @@ import com.webforj.Environment;
 import com.webforj.component.Component;
 import com.webforj.exceptions.WebforjAppInitializeException;
 import com.webforj.exceptions.WebforjRuntimeException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Represents a Frame window in the application.
@@ -58,6 +63,8 @@ public final class Frame extends Window {
       return value;
     }
   }
+
+  private final Set<String> contentClassNames = new LinkedHashSet<>();
 
   /**
    * Constructs a new Frame window.
@@ -285,6 +292,7 @@ public final class Frame extends Window {
             break;
           case CONTENT:
             topLevelWindow.addPanelClass(className);
+            contentClassNames.add(className);
             break;
           default:
             break;
@@ -327,6 +335,7 @@ public final class Frame extends Window {
             break;
           case CONTENT:
             topLevelWindow.removePanelClass(className);
+            contentClassNames.remove(className);
             break;
           default:
             break;
@@ -345,6 +354,25 @@ public final class Frame extends Window {
   @Override
   public Window removeClassName(String... classNames) {
     return removeClassName(Area.CONTENT, classNames);
+  }
+
+  /**
+   * Gets the list of CSS classes for the content area of the Frame.
+   *
+   * @return the names of the CSS classes of the content area
+   */
+  @Override
+  public List<String> getClassNameList() {
+    return Collections.unmodifiableList(new ArrayList<>(contentClassNames));
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    contentClassNames.clear();
   }
 
   private void init(BBjWindow bbjWindow) {

@@ -37,10 +37,13 @@ import java.lang.System.Logger.Level;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EventObject;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -72,8 +75,8 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   private static final String PREFIX_SLOT = "prefix";
   private static final String SUFFIX_SLOT = "suffix";
   private final SlotAssigner slotAssigner = new SlotAssigner(this);
-  private final List<String> classNames = new ArrayList<>();
-  private final List<String> removedClassNames = new ArrayList<>();
+  private final Set<String> classNames = new LinkedHashSet<>();
+  private final Set<String> removedClassNames = new LinkedHashSet<>();
   private final List<String> removedStyles = new ArrayList<>();
   private final Map<String, String> attributes = new HashMap<>();
   private final Map<String, String> styles = new HashMap<>();
@@ -543,6 +546,14 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
     }
 
     return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<String> getClassNameList() {
+    return Collections.unmodifiableList(new ArrayList<>(classNames));
   }
 
   /**

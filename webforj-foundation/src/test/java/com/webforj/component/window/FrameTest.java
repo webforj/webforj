@@ -1,5 +1,6 @@
 package com.webforj.component.window;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -12,6 +13,7 @@ import com.basis.bbj.proxies.sysgui.BBjTopLevelWindow;
 import com.basis.startup.type.BBjException;
 import com.webforj.component.window.Frame.Area;
 import com.webforj.exceptions.WebforjRuntimeException;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -206,6 +208,33 @@ class FrameTest {
       assertThrows(WebforjRuntimeException.class, () -> {
         frame.removeClassName("my-class");
       });
+    }
+
+    @Test
+    void shouldGetContentClassNames() {
+      frame.addClassName("first-class", "second-class");
+      frame.addClassName(Area.WINDOW, "window-class");
+      frame.addClassName(Area.CENTER, "center-class");
+      frame.removeClassName(Area.CONTENT, "first-class");
+
+      assertEquals(List.of("second-class"), frame.getClassNameList());
+    }
+
+    @Test
+    void shouldRemoveContentClassNameAddedTwice() {
+      frame.addClassName("my-class");
+      frame.addClassName("my-class");
+      frame.removeClassName("my-class");
+
+      assertEquals(List.of(), frame.getClassNameList());
+    }
+
+    @Test
+    void shouldClearContentClassNamesOnDestroy() {
+      frame.addClassName("my-class");
+      frame.destroy();
+
+      assertEquals(List.of(), frame.getClassNameList());
     }
   }
 }

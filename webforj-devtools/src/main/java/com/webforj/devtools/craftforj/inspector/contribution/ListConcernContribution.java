@@ -87,9 +87,14 @@ public abstract class ListConcernContribution<T> implements FeatureHandler {
       return Optional.empty();
     }
 
-    Object value = getter != null ? getter.apply((T) target) : null;
-    return Optional
-        .of(FeatureProperty.builder(propertyName, getFeatureType()).list().value(value).build());
+    try {
+      Object value = getter != null ? getter.apply((T) target) : null;
+      return Optional
+          .of(FeatureProperty.builder(propertyName, getFeatureType()).list().value(value).build());
+    } catch (Exception e) {
+      LOGGER.log(Level.FINE, "Failed to get list property from component", e);
+      return Optional.empty();
+    }
   }
 
   @Override

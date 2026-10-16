@@ -109,6 +109,11 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
   }
 
   @Override
+  public List<String> getClassNameList() {
+    return className == null ? List.of() : List.of(className);
+  }
+
+  @Override
   public ConcernComponentMock removeClassName(String... classNames) {
     this.className = null;
     return this;
