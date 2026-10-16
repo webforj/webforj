@@ -142,16 +142,24 @@ class RouteRendererSecurityTest {
 
   public static final class HomeView extends Component implements RouteOutlet {
     @Override
-    protected void onCreate(Window window) {}
+    protected void onCreate(Window window) {
+      // no-op
+    }
 
     @Override
-    protected void onDestroy() {}
+    protected void onDestroy() {
+      // no-op
+    }
 
     @Override
-    public void showRouteContent(Component component) {}
+    public void showRouteContent(Component component) {
+      // no-op
+    }
 
     @Override
-    public void removeRouteContent(Component component) {}
+    public void removeRouteContent(Component component) {
+      // no-op
+    }
   }
 
   public static final class GuardedView extends Component {
@@ -162,10 +170,14 @@ class RouteRendererSecurityTest {
     }
 
     @Override
-    protected void onCreate(Window window) {}
+    protected void onCreate(Window window) {
+      // no-op
+    }
 
     @Override
-    protected void onDestroy() {}
+    protected void onDestroy() {
+      // no-op
+    }
   }
 
   public static final class ThrowingGuardedView extends Component {
@@ -177,9 +189,13 @@ class RouteRendererSecurityTest {
     }
 
     @Override
-    protected void onCreate(Window window) {}
+    protected void onCreate(Window window) {
+      // no-op
+    }
 
     @Override
-    protected void onDestroy() {}
+    protected void onDestroy() {
+      // no-op
+    }
   }
 }
