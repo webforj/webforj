@@ -1,6 +1,8 @@
 package com.webforj.spring;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -22,6 +24,21 @@ class WebforjServletShutdownListenerTest {
 
     new WebforjServletShutdownListener(registration)
         .onApplicationEvent(mock(ContextClosedEvent.class));
+
+    verify(servlet).destroy();
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void shouldNotPropagateAnIllegalStateExceptionFromTheServletDestroy() {
+    ServletRegistrationBean<WebforjServlet> registration = mock(ServletRegistrationBean.class);
+    WebforjServlet servlet = mock(WebforjServlet.class);
+    when(registration.getServlet()).thenReturn(servlet);
+    doThrow(new IllegalStateException("Shutdown in progress")).when(servlet).destroy();
+    WebforjServletShutdownListener listener = new WebforjServletShutdownListener(registration);
+    ContextClosedEvent event = mock(ContextClosedEvent.class);
+
+    assertDoesNotThrow(() -> listener.onApplicationEvent(event));
 
     verify(servlet).destroy();
   }
