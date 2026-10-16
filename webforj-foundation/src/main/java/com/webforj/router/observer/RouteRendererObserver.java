@@ -28,6 +28,11 @@ public interface RouteRendererObserver {
   enum LifecycleEvent {
     /**
      * Before the component is created.
+     *
+     * <p>
+     * The component instance is already constructed when this event fires, and
+     * {@link RouteRendererObserver#onInstantiate} is the call that runs before construction.
+     * </p>
      */
     BEFORE_CREATE,
 
@@ -68,7 +73,8 @@ public interface RouteRendererObserver {
    * Called before the renderer instantiates a route component.
    *
    * <p>
-   * The default implementation allows the instantiation.
+   * This is the only observer call made before the route constructor runs, and halting here means
+   * the route is never constructed. The default implementation allows the instantiation.
    * </p>
    *
    * @param componentClass The class of the component about to be instantiated
