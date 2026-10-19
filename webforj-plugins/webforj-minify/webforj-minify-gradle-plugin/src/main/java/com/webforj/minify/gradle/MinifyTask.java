@@ -27,13 +27,17 @@ import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.Optional;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.work.DisableCachingByDefault;
 
 /**
  * Gradle task that minifies webforJ assets during the build process.
  *
  * @author Kevin Hagel
  */
+@DisableCachingByDefault(because = "not worth caching")
 public abstract class MinifyTask extends DefaultTask {
 
   /**
@@ -42,6 +46,7 @@ public abstract class MinifyTask extends DefaultTask {
    * @return the output directory property
    */
   @InputDirectory
+  @PathSensitive(PathSensitivity.RELATIVE)
   public abstract DirectoryProperty getOutputDirectory();
 
   /**
@@ -50,6 +55,7 @@ public abstract class MinifyTask extends DefaultTask {
    * @return the resources directory property
    */
   @InputDirectory
+  @PathSensitive(PathSensitivity.RELATIVE)
   public abstract DirectoryProperty getResourcesDirectory();
 
   /**
