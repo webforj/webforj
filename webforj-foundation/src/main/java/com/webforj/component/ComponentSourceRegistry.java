@@ -43,7 +43,8 @@ public final class ComponentSourceRegistry {
    * @param component the component being created
    */
   public static void register(Object component) {
-    List<SourceFrame> chain = StackWalker.getInstance().walk(ComponentSourceRegistry::createChain);
+    List<SourceFrame> chain = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
+        .walk(ComponentSourceRegistry::createChain);
     Storage storage = getStorage();
     synchronized (storage) {
       storage.put(component, chain);
