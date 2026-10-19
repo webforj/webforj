@@ -49,15 +49,19 @@ jobs:
           fail-on-severity: moderate
 
   tests:
-    name: Run Unit Tests
+    name: Run Unit Tests (Java ${{ matrix.java }})
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ['21', '25']
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with:
-          java-version: '21'
+          java-version: ${{ matrix.java }}
           distribution: 'temurin'
 
       - name: Cache Maven packages
@@ -80,7 +84,7 @@ jobs:
         run: mvn -B install
 
       - name: Jacoco Report
-        # if: github.event_name == 'pull_request'
+        if: matrix.java == '21'
         id: jacoco
         uses: madrapps/jacoco-report@v1.7.2
         with:
@@ -93,6 +97,7 @@ jobs:
           update-comment: true
 
       - name: Get the Coverage info
+        if: matrix.java == '21'
         run: |
           echo "Total coverage ${{ steps.jacoco.outputs.coverage-overall }}"
           echo "Changed Files coverage ${{ steps.jacoco.outputs.coverage-changed-files }}"
