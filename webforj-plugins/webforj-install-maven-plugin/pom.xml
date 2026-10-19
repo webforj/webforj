@@ -15,7 +15,7 @@
   <packaging>maven-plugin</packaging>
 
   <properties>
-    <httpcore5.version>5.4.3</httpcore5.version>
+    <httpcore5.version>5.4.4</httpcore5.version>
     <httpclient5.version>5.6.4</httpclient5.version>
     <arguments />
   </properties>
