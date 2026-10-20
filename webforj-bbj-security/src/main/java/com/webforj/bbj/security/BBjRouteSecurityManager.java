@@ -2,7 +2,6 @@ package com.webforj.bbj.security;
 
 import com.webforj.router.security.AbstractRouteSecurityManager;
 import com.webforj.router.security.RouteSecurityConfiguration;
-import com.webforj.router.security.RouteSecurityContext;
 import com.webforj.router.security.evaluator.AnonymousAccessEvaluator;
 import com.webforj.router.security.evaluator.AuthenticationRequiredEvaluator;
 import com.webforj.router.security.evaluator.DenyAllEvaluator;
@@ -23,7 +22,7 @@ import java.time.Clock;
  */
 final class BBjRouteSecurityManager extends AbstractRouteSecurityManager {
   private final BBjRouteSecurityConfiguration configuration;
-  private final RouteSecurityContext securityContext;
+  private final BBjRouteSecurityContext securityContext;
 
   BBjRouteSecurityManager(BBjRouteSecurityConfiguration configuration,
       BBjAuthenticationState authenticationState, Clock clock) {
@@ -41,7 +40,7 @@ final class BBjRouteSecurityManager extends AbstractRouteSecurityManager {
    * {@inheritDoc}
    */
   @Override
-  public RouteSecurityContext getSecurityContext() {
+  public BBjRouteSecurityContext getSecurityContext() {
     return securityContext;
   }
 

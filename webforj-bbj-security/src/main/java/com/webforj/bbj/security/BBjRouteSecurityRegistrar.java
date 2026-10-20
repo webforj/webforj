@@ -4,6 +4,7 @@ import com.webforj.App;
 import com.webforj.AppLifecycleListener;
 import com.webforj.Environment;
 import com.webforj.annotation.AppListenerPriority;
+import com.webforj.environment.ObjectTable;
 import com.webforj.router.Router;
 import com.webforj.router.security.RouteSecurityObserver;
 import java.lang.System.Logger;
@@ -46,6 +47,7 @@ public final class BBjRouteSecurityRegistrar implements AppLifecycleListener {
 
     BBjRouteSecurityManager manager =
         new BBjRouteSecurityManager(configuration, new BBjAuthenticationState(), Clock.systemUTC());
+    ObjectTable.put(BBjRouteSecurityContext.class.getName(), manager.getSecurityContext());
     router.getRenderer().addObserver(new RouteSecurityObserver(manager));
     logger.log(Level.INFO, "BBj route security enabled with {0} evaluators",
         manager.getEvaluators().size());
