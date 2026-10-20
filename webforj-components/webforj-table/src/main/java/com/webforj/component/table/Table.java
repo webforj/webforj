@@ -225,6 +225,8 @@ public class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T
     set(getRowIdProp, GET_ROW_ID_EXP);
     set(getRowPart, GET_ROW_PART_EXP);
     set(getCellPart, GET_CELL_PART_EXP);
+    // the sort of the client changes server state only, so it is handled whenever it arrives
+    addSortChangeListener(this::handleSortChanged);
     el().whenDefined().thenAccept(this::onInit).exceptionally(this::onInitFailed);
   }
 
@@ -1736,7 +1738,6 @@ public class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T
 
   void onInit(Element el) {
     set(selectedProp, selectedKeys);
-    addSortChangeListener(this::handleSortChanged);
     refresh();
   }
 

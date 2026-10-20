@@ -560,6 +560,35 @@ class TableTest {
     }
 
     @Test
+    void shouldHandleTheSortEventBeforeTheElementIsDefined() {
+      component.addColumn("col1", Function.identity());
+      component.addColumn("col2", Function.identity());
+      Map<String, Object> payload = new HashMap<>();
+      payload.put("criteria", """
+          [
+            {
+              "id": "col2",
+              "sort": "desc",
+              "sortIndex": 1
+            }
+          ]
+          """);
+
+      TableSortChangeEvent<String> event = new TableSortChangeEvent<>(component, payload);
+      @SuppressWarnings("unchecked")
+      Class<TableSortChangeEvent<String>> type =
+          (Class<TableSortChangeEvent<String>>) (Class<?>) TableSortChangeEvent.class;
+      for (EventListener<TableSortChangeEvent<String>> listener : component
+          .getEventListeners(type)) {
+        listener.onEvent(event);
+      }
+
+      assertEquals(Column.SortDirection.NONE, component.getColumnById("col1").getSortDirection());
+      assertEquals(Column.SortDirection.DESC, component.getColumnById("col2").getSortDirection());
+      assertEquals(1, component.getColumnById("col2").getSortIndex());
+    }
+
+    @Test
     void shouldSortDataOnServer() {
       Table<Person> table = spy(new Table<>());
       Element elMock = mock(Element.class);
