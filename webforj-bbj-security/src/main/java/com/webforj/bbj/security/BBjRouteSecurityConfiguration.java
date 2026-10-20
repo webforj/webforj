@@ -15,8 +15,8 @@ final class BBjRouteSecurityConfiguration implements RouteSecurityConfiguration 
 
   private final boolean enabled;
 
-  private BBjRouteSecurityConfiguration(boolean enabled) {
-    this.enabled = enabled;
+  private BBjRouteSecurityConfiguration(Builder builder) {
+    this.enabled = builder.enabled;
   }
 
   /**
@@ -26,9 +26,10 @@ final class BBjRouteSecurityConfiguration implements RouteSecurityConfiguration 
    * @return the configuration, not enabled when the key is not set
    */
   static BBjRouteSecurityConfiguration create(Config config) {
-    boolean enabled = config.hasPath(ENABLED) && config.getBoolean(ENABLED);
+    final Builder builder = new Builder();
+    builder.enabled = config.hasPath(ENABLED) && config.getBoolean(ENABLED);
 
-    return new BBjRouteSecurityConfiguration(enabled);
+    return new BBjRouteSecurityConfiguration(builder);
   }
 
   /**
@@ -37,5 +38,9 @@ final class BBjRouteSecurityConfiguration implements RouteSecurityConfiguration 
   @Override
   public boolean isEnabled() {
     return enabled;
+  }
+
+  private final static class Builder {
+    boolean enabled = false;
   }
 }
