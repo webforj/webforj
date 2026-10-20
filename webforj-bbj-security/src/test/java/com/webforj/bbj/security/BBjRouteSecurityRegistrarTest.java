@@ -46,7 +46,8 @@ class BBjRouteSecurityRegistrarTest {
 
   @Test
   void shouldRegisterTheSecurityObserverWhenEnabled() {
-    when(environment.getConfig()).thenReturn(ConfigFactory.parseString("webforj.security.enabled = true"));
+    when(environment.getConfig())
+        .thenReturn(ConfigFactory.parseString("webforj.security.enabled = true"));
     registrar.onWillRun(app);
 
     verify(renderer).addObserver(any(RouteSecurityObserver.class));
@@ -60,6 +61,25 @@ class BBjRouteSecurityRegistrarTest {
     registrar.onWillRun(app);
 
     verify(renderer, never()).addObserver(any());
+  }
+
+  @Test
+  void shouldNotRegisterOrThrowWhenTheEnabledKeyIsMissing() {
+    when(environment.getConfig()).thenReturn(ConfigFactory.parseString("webforj.other = 1"));
+
+    assertDoesNotThrow(() -> registrar.onWillRun(app));
+
+    verify(renderer, never()).addObserver(any());
+  }
+
+  @Test
+  void shouldRegisterWhenTheEnabledValueIsInvalid() {
+    when(environment.getConfig())
+        .thenReturn(ConfigFactory.parseString("webforj.security.enabled = maybe"));
+
+    assertDoesNotThrow(() -> registrar.onWillRun(app));
+
+    verify(renderer).addObserver(any(RouteSecurityObserver.class));
   }
 
   @Test
