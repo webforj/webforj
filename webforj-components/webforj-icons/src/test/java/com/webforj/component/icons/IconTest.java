@@ -1,7 +1,9 @@
 package com.webforj.component.icons;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
+import com.webforj.concern.HasTheme;
 import com.webforj.component.element.PropertyDescriptorTester;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +17,11 @@ class IconTest {
   @BeforeEach
   void setUp() {
     component = new Icon("name", "pool");
+  }
+
+  @Test
+  void shouldDeclareTheThemeConcern() {
+    assertInstanceOf(HasTheme.class, component);
   }
 
   @Nested

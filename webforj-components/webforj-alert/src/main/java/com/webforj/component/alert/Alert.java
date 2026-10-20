@@ -10,6 +10,8 @@ import com.webforj.component.element.PropertyDescriptor;
 import com.webforj.component.element.annotation.NodeName;
 import com.webforj.component.element.annotation.PropertyExclude;
 import com.webforj.component.element.annotation.PropertyMethods;
+import com.webforj.concern.HasExpanse;
+import com.webforj.concern.HasTheme;
 import com.webforj.concern.HasAttribute;
 import com.webforj.concern.HasClassName;
 import com.webforj.concern.HasHtml;
@@ -28,9 +30,9 @@ import com.webforj.utilities.HtmlText;
  * @since 25.00
  */
 @NodeName("dwc-alert")
-public class Alert extends ElementCompositeContainer
-    implements HasText<Alert>, HasHtml<Alert>, HasClassName<Alert>, HasStyle<Alert>,
-    HasVisibility<Alert>, HasSize<Alert>, HasAttribute<Alert> {
+public class Alert extends ElementCompositeContainer implements HasText<Alert>, HasHtml<Alert>,
+    HasClassName<Alert>, HasStyle<Alert>, HasVisibility<Alert>, HasSize<Alert>, HasAttribute<Alert>,
+    HasTheme<Alert, Theme>, HasExpanse<Alert, Expanse> {
 
   // Property descriptors
   private final PropertyDescriptor<Boolean> closableProp =
@@ -123,21 +125,18 @@ public class Alert extends ElementCompositeContainer
   }
 
   /**
-   * Sets the alert expanse.
-   *
-   * @param expanse the expanse
-   * @return the component itself
+   * {@inheritDoc}
    */
+  @Override
   public Alert setExpanse(Expanse expanse) {
     set(expanseProp, expanse);
     return this;
   }
 
   /**
-   * Gets the alert expanse.
-   *
-   * @return the expanse
+   * {@inheritDoc}
    */
+  @Override
   public Expanse getExpanse() {
     return get(expanseProp);
   }
@@ -177,21 +176,18 @@ public class Alert extends ElementCompositeContainer
   }
 
   /**
-   * Sets the alert theme.
-   *
-   * @param theme the theme
-   * @return the component itself
+   * {@inheritDoc}
    */
+  @Override
   public Alert setTheme(Theme theme) {
     set(themeProp, theme);
     return this;
   }
 
   /**
-   * Gets the alert theme.
-   *
-   * @return the theme
+   * {@inheritDoc}
    */
+  @Override
   public Theme getTheme() {
     return get(themeProp);
   }

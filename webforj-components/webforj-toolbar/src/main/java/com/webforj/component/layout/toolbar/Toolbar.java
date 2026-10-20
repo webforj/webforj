@@ -6,6 +6,7 @@ import com.webforj.component.element.Element;
 import com.webforj.component.element.ElementCompositeContainer;
 import com.webforj.component.element.PropertyDescriptor;
 import com.webforj.component.element.annotation.NodeName;
+import com.webforj.concern.HasTheme;
 import com.webforj.concern.HasAttribute;
 import com.webforj.concern.HasClassName;
 import com.webforj.concern.HasSize;
@@ -20,8 +21,9 @@ import com.webforj.concern.HasVisibility;
  * @since 24.12
  */
 @NodeName("dwc-toolbar")
-public class Toolbar extends ElementCompositeContainer implements HasClassName<Toolbar>,
-    HasStyle<Toolbar>, HasVisibility<Toolbar>, HasSize<Toolbar>, HasAttribute<Toolbar> {
+public class Toolbar extends ElementCompositeContainer
+    implements HasClassName<Toolbar>, HasStyle<Toolbar>, HasVisibility<Toolbar>, HasSize<Toolbar>,
+    HasAttribute<Toolbar>, HasTheme<Toolbar, Theme> {
 
   // Slots
   static final String START_SLOT = "start";
@@ -86,21 +88,18 @@ public class Toolbar extends ElementCompositeContainer implements HasClassName<T
   }
 
   /**
-   * Sets the toolbar theme.
-   *
-   * @param theme the theme
-   * @return the component itself
+   * {@inheritDoc}
    */
+  @Override
   public Toolbar setTheme(Theme theme) {
     set(themeProp, theme);
     return this;
   }
 
   /**
-   * Gets the toolbar theme.
-   *
-   * @return the theme
+   * {@inheritDoc}
    */
+  @Override
   public Theme getTheme() {
     return get(themeProp);
   }
