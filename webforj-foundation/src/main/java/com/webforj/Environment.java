@@ -56,6 +56,7 @@ public final class Environment {
   private final ConcurrentHashMap<String, EnvironmentAccessRequest> pendingRequests =
       new ConcurrentHashMap<>();
   private boolean debug = false;
+  private Config unresolvedConfig = null;
   private Config config = null;
 
   /**
@@ -431,7 +432,8 @@ public final class Environment {
    *
    * <p>
    * This method merges additional configuration sources with the existing configuration. The
-   * additional config takes precedence over existing values.
+   * additional config takes precedence over existing values. The merged configuration is resolved,
+   * so substitutions such as {@code ${?VAR}} read environment variables.
    * </p>
    *
    * @param additionalConfig the additional configuration to merge
@@ -439,11 +441,13 @@ public final class Environment {
    * @since 25.03
    */
   public Config setConfig(Config additionalConfig) {
-    if (this.config == null) {
-      this.config = additionalConfig;
+    if (this.unresolvedConfig == null) {
+      this.unresolvedConfig = additionalConfig;
     } else {
-      this.config = additionalConfig.withFallback(this.config);
+      this.unresolvedConfig = additionalConfig.withFallback(this.unresolvedConfig);
     }
+
+    this.config = this.unresolvedConfig.resolve();
 
     // Apply the configuration settings
     applyConfig(this.config);
