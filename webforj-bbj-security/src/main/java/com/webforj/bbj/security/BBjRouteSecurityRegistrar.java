@@ -8,6 +8,7 @@ import com.webforj.router.Router;
 import com.webforj.router.security.RouteSecurityObserver;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
+import java.time.Clock;
 
 /**
  * Registers route security with the router when an app runs in BBjServices.
@@ -43,7 +44,8 @@ public final class BBjRouteSecurityRegistrar implements AppLifecycleListener {
       return;
     }
 
-    BBjRouteSecurityManager manager = new BBjRouteSecurityManager(configuration);
+    BBjRouteSecurityManager manager =
+        new BBjRouteSecurityManager(configuration, new BBjAuthenticationState(), Clock.systemUTC());
     router.getRenderer().addObserver(new RouteSecurityObserver(manager));
     logger.log(Level.INFO, "BBj route security enabled with {0} evaluators",
         manager.getEvaluators().size());

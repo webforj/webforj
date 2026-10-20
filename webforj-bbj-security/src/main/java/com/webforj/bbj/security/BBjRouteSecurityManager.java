@@ -8,13 +8,14 @@ import com.webforj.router.security.evaluator.AuthenticationRequiredEvaluator;
 import com.webforj.router.security.evaluator.DenyAllEvaluator;
 import com.webforj.router.security.evaluator.PermitAllEvaluator;
 import com.webforj.router.security.evaluator.RolesAllowedEvaluator;
-import java.util.Optional;
+import java.time.Clock;
 
 /**
  * Route security manager of an app running in BBjServices.
  *
  * <p>
- * Registers the built-in evaluators. The security context is anonymous.
+ * Registers the built-in evaluators. The security context reads the authentication state of the
+ * app.
  * </p>
  *
  * @author Christian Liebhardt
@@ -22,10 +23,12 @@ import java.util.Optional;
  */
 final class BBjRouteSecurityManager extends AbstractRouteSecurityManager {
   private final BBjRouteSecurityConfiguration configuration;
-  private final RouteSecurityContext securityContext = new AnonymousSecurityContext();
+  private final RouteSecurityContext securityContext;
 
-  BBjRouteSecurityManager(BBjRouteSecurityConfiguration configuration) {
+  BBjRouteSecurityManager(BBjRouteSecurityConfiguration configuration,
+      BBjAuthenticationState authenticationState, Clock clock) {
     this.configuration = configuration;
+    this.securityContext = new BBjRouteSecurityContext(authenticationState, clock);
 
     registerEvaluator(new DenyAllEvaluator(), 1);
     registerEvaluator(new AnonymousAccessEvaluator(), 2);
@@ -48,39 +51,5 @@ final class BBjRouteSecurityManager extends AbstractRouteSecurityManager {
   @Override
   public RouteSecurityConfiguration getConfiguration() {
     return configuration;
-  }
-
-  private static final class AnonymousSecurityContext implements RouteSecurityContext {
-
-    @Override
-    public boolean isAuthenticated() {
-      return false;
-    }
-
-    @Override
-    public Optional<Object> getPrincipal() {
-      return Optional.empty();
-    }
-
-    @Override
-    public boolean hasRole(String role) {
-      return false;
-    }
-
-    @Override
-    public boolean hasAuthority(String authority) {
-      return false;
-    }
-
-    @Override
-    public Optional<Object> getAttribute(String name) {
-      return Optional.empty();
-    }
-
-    @Override
-    public void setAttribute(String name, Object value) {
-      throw new UnsupportedOperationException(
-          "Setting attributes is not supported in the anonymous security context");
-    }
   }
 }

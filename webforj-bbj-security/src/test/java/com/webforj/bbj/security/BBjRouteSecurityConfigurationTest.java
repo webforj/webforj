@@ -28,7 +28,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class BBjRouteSecurityConfigurationTest {
-  private final Logger logger = Logger.getLogger(BBjRouteSecurityConfigurationTest.class.getName());
+  @SuppressWarnings("LoggerInitializedWithForeignClass")
+  private final Logger logger = Logger.getLogger(BBjRouteSecurityConfiguration.class.getName());
   private final List<String> warnings = new ArrayList<>();
   private final List<String> debugs = new ArrayList<>();
   private Level previousLevel;

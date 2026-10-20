@@ -14,13 +14,19 @@ import com.webforj.router.security.evaluator.AuthenticationRequiredEvaluator;
 import com.webforj.router.security.evaluator.DenyAllEvaluator;
 import com.webforj.router.security.evaluator.PermitAllEvaluator;
 import com.webforj.router.security.evaluator.RolesAllowedEvaluator;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class BBjRouteSecurityManagerTest {
   private final BBjRouteSecurityConfiguration configuration =
       BBjRouteSecurityConfiguration.create(ConfigFactory.empty());
-  private final BBjRouteSecurityManager manager = new BBjRouteSecurityManager(configuration);
+  private final BBjAuthenticationState state = new BBjAuthenticationState();
+  private final Instant now = Instant.parse("2026-01-01T00:00:00Z");
+  private final BBjRouteSecurityManager manager =
+      new BBjRouteSecurityManager(configuration, state, Clock.fixed(now, ZoneOffset.UTC));
 
   @Test
   void shouldRegisterTheBuiltInEvaluatorsInPriorityOrder() {
@@ -53,5 +59,24 @@ class BBjRouteSecurityManagerTest {
     RouteSecurityContext context = manager.getSecurityContext();
 
     assertThrows(UnsupportedOperationException.class, () -> context.setAttribute("name", "value"));
+  }
+
+  @Test
+  void shouldProvideAnAuthenticatedSecurityContextFromTheState() {
+    state.setAuthentication(new BBjAuthentication("alice", List.of("Admins"), now.plusSeconds(60)));
+    RouteSecurityContext context = manager.getSecurityContext();
+
+    assertTrue(context.isAuthenticated());
+    assertEquals("alice", context.getPrincipal().orElseThrow());
+    assertTrue(context.hasRole("Admins"));
+  }
+
+  @Test
+  void shouldProvideAnAnonymousSecurityContextOnceTheAuthenticationExpired() {
+    state.setAuthentication(new BBjAuthentication("alice", List.of("Admins"), now));
+    RouteSecurityContext context = manager.getSecurityContext();
+
+    assertFalse(context.isAuthenticated());
+    assertFalse(context.hasRole("Admins"));
   }
 }
