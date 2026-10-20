@@ -62,13 +62,18 @@ public class McpAppOptions {
    * application to run.
    * </p>
    *
+   * <p>
+   * The merged configuration is resolved, so substitutions such as {@code ${?VAR}} read environment
+   * variables and the system properties set earlier in the merge.
+   * </p>
+   *
    * @return the options filled from the deployment configuration
    */
   public static McpAppOptions load() {
     // The properties are parsed on every call rather than taken from the cached snapshot the
     // factory keeps, so a property set after the first read is still honored.
-    return from(
-        ConfigFactory.parseProperties(System.getProperties()).withFallback(deploymentConfig()));
+    return from(ConfigFactory.parseProperties(System.getProperties())
+        .withFallback(deploymentConfig()).resolve());
   }
 
   /**
