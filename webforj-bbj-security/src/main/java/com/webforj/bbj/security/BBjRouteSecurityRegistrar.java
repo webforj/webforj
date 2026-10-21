@@ -7,6 +7,7 @@ import com.webforj.annotation.AppListenerPriority;
 import com.webforj.environment.ObjectTable;
 import com.webforj.router.Router;
 import com.webforj.router.security.RouteSecurityObserver;
+import com.webforj.webstorage.SessionStorage;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.time.Clock;
@@ -46,7 +47,8 @@ public final class BBjRouteSecurityRegistrar implements AppLifecycleListener {
     }
 
     BBjRouteSecurityManager manager =
-        new BBjRouteSecurityManager(configuration, new BBjAuthenticationState(), Clock.systemUTC());
+        new BBjRouteSecurityManager(configuration, new BBjAuthenticationState(), Clock.systemUTC(),
+            new BBjBrowserRequestedLocationStore(BBjRouteSecurityRegistrar::findSessionStorage));
     BBjRouteSecurityEvaluatorLoader.loadEvaluators(Thread.currentThread().getContextClassLoader())
         .forEach(evaluator -> manager.registerEvaluator(evaluator, evaluator.getPriority()));
 
@@ -54,5 +56,9 @@ public final class BBjRouteSecurityRegistrar implements AppLifecycleListener {
     router.getRenderer().addObserver(new RouteSecurityObserver(manager));
     logger.log(Level.INFO, "BBj route security enabled with {0} evaluators",
         manager.getEvaluators().size());
+  }
+
+  private static SessionStorage findSessionStorage() {
+    return Environment.getCurrent() == null ? null : SessionStorage.getCurrent();
   }
 }

@@ -17,8 +17,12 @@ import com.webforj.Environment;
 import com.webforj.bbj.security.fixture.FirstOwnerEvaluator;
 import com.webforj.bbj.security.fixture.LateOwnerEvaluator;
 import com.webforj.environment.ObjectTable;
+import com.webforj.router.NavigationContext;
 import com.webforj.router.RouteRenderer;
 import com.webforj.router.Router;
+import com.webforj.router.history.Location;
+import com.webforj.router.security.AbstractRouteSecurityManager;
+import com.webforj.router.security.RouteAccessDecision;
 import com.webforj.router.security.RouteSecurityEvaluator;
 import com.webforj.router.security.RouteSecurityObserver;
 import com.webforj.router.security.evaluator.AnonymousAccessEvaluator;
@@ -26,6 +30,7 @@ import com.webforj.router.security.evaluator.AuthenticationRequiredEvaluator;
 import com.webforj.router.security.evaluator.DenyAllEvaluator;
 import com.webforj.router.security.evaluator.PermitAllEvaluator;
 import com.webforj.router.security.evaluator.RolesAllowedEvaluator;
+import com.webforj.webstorage.SessionStorage;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -74,6 +79,49 @@ class BBjRouteSecurityRegistrarTest {
     registrar.onWillRun(app);
 
     verify(renderer).addObserver(any(RouteSecurityObserver.class));
+  }
+
+  @Test
+  void shouldKeepTheRequestedLocationInTheBrowserSessionStorage() {
+    SessionStorage storage = mock(SessionStorage.class);
+    when(environment.getConfig())
+        .thenReturn(ConfigFactory.parseString("webforj.security.enabled = true"));
+    NavigationContext context = mock(NavigationContext.class);
+    when(context.getLocation()).thenReturn(new Location("/protected"));
+
+    try (MockedStatic<SessionStorage> mockedStorage = mockStatic(SessionStorage.class)) {
+      mockedStorage.when(SessionStorage::getCurrent).thenReturn(storage);
+      registrar.onWillRun(app);
+      ArgumentCaptor<RouteSecurityObserver> observer =
+          ArgumentCaptor.forClass(RouteSecurityObserver.class);
+      verify(renderer).addObserver(observer.capture());
+      mockedStorage.verifyNoInteractions();
+
+      observer.getValue().getSecurityManager()
+          .onAccessDenied(RouteAccessDecision.denyAuthentication(), context);
+    }
+
+    verify(storage).setItem(AbstractRouteSecurityManager.PRE_AUTH_LOCATION_KEY, "/protected");
+  }
+
+  @Test
+  void shouldNotTouchTheSessionStorageWithoutAnEnvironmentWhenSavingTheLocation() {
+    when(environment.getConfig())
+        .thenReturn(ConfigFactory.parseString("webforj.security.enabled = true"));
+    NavigationContext context = mock(NavigationContext.class);
+    when(context.getLocation()).thenReturn(new Location("/protected"));
+
+    try (MockedStatic<SessionStorage> mockedStorage = mockStatic(SessionStorage.class)) {
+      registrar.onWillRun(app);
+      ArgumentCaptor<RouteSecurityObserver> observer =
+          ArgumentCaptor.forClass(RouteSecurityObserver.class);
+      verify(renderer).addObserver(observer.capture());
+      mockedEnvironment.when(Environment::getCurrent).thenReturn(null);
+
+      assertDoesNotThrow(() -> observer.getValue().getSecurityManager()
+          .onAccessDenied(RouteAccessDecision.denyAuthentication(), context));
+      mockedStorage.verifyNoInteractions();
+    }
   }
 
   @Test
