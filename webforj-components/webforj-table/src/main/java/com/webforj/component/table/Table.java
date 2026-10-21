@@ -7,12 +7,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.webforj.PendingResult;
-import com.webforj.component.ComponentUtil;
 import com.webforj.component.element.Element;
 import com.webforj.component.element.PropertyDescriptor;
 import com.webforj.component.element.annotation.NodeName;
 import com.webforj.component.element.annotation.PropertyExclude;
-import com.webforj.component.element.event.ElementEvent;
 import com.webforj.component.element.event.ElementEventOptions;
 import com.webforj.component.html.HtmlComponent;
 import com.webforj.component.table.Column.PinDirection;
@@ -23,7 +21,6 @@ import com.webforj.component.table.event.column.TableColumnMoveEvent;
 import com.webforj.component.table.event.column.TableColumnResizeEvent;
 import com.webforj.component.table.event.item.TableItemClickEvent;
 import com.webforj.component.table.event.item.TableItemDoubleClickEvent;
-import com.webforj.component.table.event.renderer.RendererClickEvent;
 import com.webforj.component.table.event.selection.TableItemDeselectEvent;
 import com.webforj.component.table.event.selection.TableItemSelectEvent;
 import com.webforj.component.table.event.selection.TableItemSelectionChange;
@@ -47,7 +44,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
-import java.util.EventObject;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -1740,29 +1736,6 @@ public class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T
     columns.clear();
     selectedKeys.clear();
     repository = null;
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * <p>
-   * A {@link RendererClickEvent} is delivered to the click listeners of the renderer of its column.
-   * </p>
-   */
-  @Override
-  protected void fireComponentEvent(EventObject event) {
-    if (event instanceof RendererClickEvent<?> click) {
-      Column<T, ?> column = getColumnById(click.getColumnKey());
-      Renderer<T> renderer = column == null ? null : column.getRenderer();
-
-      if (renderer != null) {
-        Element element = getElement();
-        ComponentUtil.fireComponentEvent(element,
-            new ElementEvent(element, click.getData(), renderer.getKey() + "-click", 0, null));
-      }
-    } else {
-      super.fireComponentEvent(event);
-    }
   }
 
   void onInit(Element el) {
