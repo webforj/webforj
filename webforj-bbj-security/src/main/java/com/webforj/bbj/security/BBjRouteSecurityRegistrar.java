@@ -34,26 +34,26 @@ public final class BBjRouteSecurityRegistrar implements AppLifecycleListener {
    */
   @Override
   public void onWillRun(App app) {
-    Environment environment = Environment.getCurrent();
-    if (environment == null) {
-      logger.log(Level.WARNING, "Environment not available, route security disabled");
-      return;
-    }
-
-    BBjRouteSecurityConfiguration configuration =
-        BBjRouteSecurityConfiguration.create(environment.getConfig());
-    if (!configuration.isEnabled()) {
-      logger.log(Level.INFO, "Route security disabled by configuration");
-      return;
-    }
-
-    Router router = Router.getCurrent();
-    if (router == null) {
-      logger.log(Level.WARNING, "Router not available, route security disabled");
-      return;
-    }
-
     try {
+      Environment environment = Environment.getCurrent();
+      if (environment == null) {
+        logger.log(Level.WARNING, "Environment not available, route security disabled");
+        return;
+      }
+
+      BBjRouteSecurityConfiguration configuration =
+          BBjRouteSecurityConfiguration.create(environment.getConfig());
+      if (!configuration.isEnabled()) {
+        logger.log(Level.INFO, "Route security disabled by configuration");
+        return;
+      }
+
+      Router router = Router.getCurrent();
+      if (router == null) {
+        logger.log(Level.WARNING, "Router not available, route security disabled");
+        return;
+      }
+
       BBjRouteSecurityManager manager = new BBjRouteSecurityManager(configuration,
           new BBjAuthenticationState(), Clock.systemUTC(),
           new BBjBrowserRequestedLocationStore(BBjRouteSecurityRegistrar::findSessionStorage));
