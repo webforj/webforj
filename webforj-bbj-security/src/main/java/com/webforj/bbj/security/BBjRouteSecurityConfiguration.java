@@ -120,6 +120,30 @@ final class BBjRouteSecurityConfiguration implements RouteSecurityConfiguration 
     return new BBjRouteSecurityConfiguration(builder);
   }
 
+  /**
+   * Checks that a path stays inside the app.
+   *
+   * <p>
+   * A path is inside the app when it starts with a single slash, holds no backslash and parses as a
+   * {@link Location}.
+   * </p>
+   *
+   * @param path the path to check
+   * @return {@code true} when the path stays inside the app
+   */
+  static boolean isRelativePath(String path) {
+    if (!path.startsWith("/") || path.startsWith("//") || path.indexOf('\\') >= 0) {
+      return false;
+    }
+
+    try {
+      new Location(path);
+      return true;
+    } catch (IllegalArgumentException e) {
+      return false;
+    }
+  }
+
   private static boolean readBoolean(Config config, String key, boolean missingValue,
       boolean invalidValue) {
     try {
@@ -158,19 +182,6 @@ final class BBjRouteSecurityConfiguration implements RouteSecurityConfiguration 
     }
 
     return path;
-  }
-
-  private static boolean isRelativePath(String path) {
-    if (!path.startsWith("/") || path.startsWith("//") || path.indexOf('\\') >= 0) {
-      return false;
-    }
-
-    try {
-      new Location(path);
-      return true;
-    } catch (IllegalArgumentException e) {
-      return false;
-    }
   }
 
   private static final class Builder {
