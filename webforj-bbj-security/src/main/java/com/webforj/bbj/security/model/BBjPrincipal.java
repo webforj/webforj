@@ -27,7 +27,11 @@ public final class BBjPrincipal {
    * @throws NullPointerException if an argument or a role is {@code null}
    */
   public BBjPrincipal(String userName, Collection<String> roles) {
-    this.userName = Objects.requireNonNull(userName, "userName");
+    Objects.requireNonNull(userName, "userName");
+    if (userName.isBlank()) {
+      throw new IllegalArgumentException("The user name must not be blank");
+    }
+    this.userName = userName;
     this.roles = Set.copyOf(Objects.requireNonNull(roles, "roles"));
   }
 
