@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 import com.typesafe.config.ConfigFactory;
 import com.webforj.App;
 import com.webforj.Environment;
+import com.webforj.bbj.security.fixture.CapturedLog;
 import com.webforj.bbj.security.fixture.FirstOwnerEvaluator;
 import com.webforj.bbj.security.fixture.LateOwnerEvaluator;
 import com.webforj.environment.ObjectTable;
@@ -345,6 +346,88 @@ class BBjRouteSecurityRegistrarTest {
       assertEquals(1, handler.getErrors().size());
       assertEquals(ServiceConfigurationError.class, error.getClass());
     }
+  }
+
+  @Test
+  void shouldLogTheAdminConnectionWithoutSecretsWhenEnabled() {
+    when(environment.getConfig()).thenReturn(ConfigFactory.parseString("""
+        webforj.security.enabled = true
+        webforj.security.bbj.admin.host = localhost
+        webforj.security.bbj.admin.port = 2003
+        webforj.security.bbj.admin.truststore-password = registrarSecretValue
+        """));
+
+    try (CapturedLog log = new CapturedLog(BBjRouteSecurityRegistrar.class.getPackageName())) {
+      registrar.onWillRun(app);
+
+      assertEquals(
+          List.of("BBj admin connection localhost:2003 ssl=false truststore=none timeout=10s"
+              + " token=30min"),
+          log.getMessages(Level.INFO).stream()
+              .filter(message -> message.startsWith("BBj admin connection")).toList());
+      assertTrue(log.getAllMessages().stream()
+          .noneMatch(message -> message.contains("registrarSecretValue")));
+    }
+
+    verify(renderer).addObserver(any(RouteSecurityObserver.class));
+  }
+
+  @Test
+  void shouldStopTheStartWhenConnectionKeyOfTheAdminConfigurationIsInvalid() {
+    when(environment.getConfig()).thenReturn(ConfigFactory.parseString("""
+        webforj.security.enabled = true
+        webforj.security.bbj.admin.port = notAPortValue
+        """));
+
+    try (
+        MockedConstruction<BBjRouteSecurityManager> constructed =
+            mockConstruction(BBjRouteSecurityManager.class);
+        CapturedLog log = new CapturedLog(BBjRouteSecurityRegistrar.class.getPackageName())) {
+      Error error = assertThrows(Error.class, () -> registrar.onWillRun(app));
+
+      assertInstanceOf(IllegalArgumentException.class, error.getCause());
+      assertTrue(error.getCause().getMessage().contains("webforj.security.bbj.admin.port"));
+      assertEquals(1, log.getMessages(Level.SEVERE).size());
+      assertTrue(constructed.constructed().isEmpty());
+    }
+
+    verify(renderer, never()).addObserver(any());
+    mockedObjectTable.verifyNoInteractions();
+  }
+
+  @Test
+  void shouldStartWithWarningWhenTuningKeyOfTheAdminConfigurationIsInvalid() {
+    when(environment.getConfig()).thenReturn(ConfigFactory.parseString("""
+        webforj.security.enabled = true
+        webforj.security.bbj.admin.timeout-seconds = notANumberValue
+        """));
+
+    try (CapturedLog log = new CapturedLog(BBjRouteSecurityRegistrar.class.getPackageName())) {
+      assertDoesNotThrow(() -> registrar.onWillRun(app));
+
+      assertEquals(1, log.getMessages(Level.WARNING).size());
+      assertTrue(log.getMessages(Level.WARNING).get(0)
+          .contains("webforj.security.bbj.admin.timeout-seconds"));
+    }
+
+    verify(renderer).addObserver(any(RouteSecurityObserver.class));
+  }
+
+  @Test
+  void shouldNotReadTheAdminConfigurationWhenDisabledByConfiguration() {
+    when(environment.getConfig()).thenReturn(ConfigFactory.parseString("""
+        webforj.security.enabled = false
+        webforj.security.bbj.admin.port = notAPortValue
+        webforj.security.bbj.admin.timeout-seconds = notANumberValue
+        """));
+
+    try (CapturedLog log = new CapturedLog(BBjRouteSecurityRegistrar.class.getPackageName())) {
+      assertDoesNotThrow(() -> registrar.onWillRun(app));
+
+      assertTrue(log.getAllMessages().stream().noneMatch(message -> message.contains("admin")));
+    }
+
+    verify(renderer, never()).addObserver(any());
   }
 
   private void enableSecurity() {
