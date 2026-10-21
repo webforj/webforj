@@ -372,6 +372,7 @@ public class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T
     if (this.repository == null || !this.repository.equals(repository)) {
       this.repository = repository;
       this.repository.onCommit(this::handleRepositoryCommit);
+      applyOrderCriteria();
 
       // Sync EntityKeysRegistry with Repository's key provider
       keyRegistry.setKeyProvider(entity -> {
@@ -513,6 +514,7 @@ public class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T
    * @return the component itself
    */
   public Table<T> refreshItems() {
+    applyOrderCriteria();
     if (el().isDefined()) {
       List<ClientItem> clientData = buildData();
       JsonArray data = new JsonArray();
@@ -1780,10 +1782,6 @@ public class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T
   }
 
   List<ClientItem> buildData() {
-    if (!isClientSorting()) {
-      repository.getOrderCriteriaList().set(getOrderCriteriaList());
-    }
-
     Stream<T> data = repository.findAll();
     List<ClientItem> items = new ArrayList<>();
     data.forEach(row -> items.add(buildItem(row)));
@@ -1949,6 +1947,14 @@ public class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T
     }
 
     return appKeys;
+  }
+
+  // the order of the rows is server state, the repository holds it whether or not a client exists.
+  // A destroyed table has no repository and a commit that still reaches it changes nothing.
+  private void applyOrderCriteria() {
+    if (repository != null && !isClientSorting()) {
+      repository.getOrderCriteriaList().set(getOrderCriteriaList());
+    }
   }
 
   private static final String capitalizeFirstLetter(String input) {
