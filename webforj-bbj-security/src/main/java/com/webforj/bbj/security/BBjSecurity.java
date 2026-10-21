@@ -91,10 +91,6 @@ public final class BBjSecurity {
 
   private static Optional<BBjRouteSecurityContext> getContext() {
     String key = BBjRouteSecurityContext.class.getName();
-    if (ObjectTable.contains(key)) {
-      return Optional.of((BBjRouteSecurityContext) ObjectTable.get(key));
-    }
-
-    return Optional.empty();
+    return Optional.ofNullable((BBjRouteSecurityContext) ObjectTable.get(key));
   }
 }
