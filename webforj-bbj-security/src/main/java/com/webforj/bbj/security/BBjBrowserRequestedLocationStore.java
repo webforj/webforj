@@ -48,16 +48,21 @@ final class BBjBrowserRequestedLocationStore implements BBjRequestedLocationStor
    */
   @Override
   public Optional<Location> readLocation() {
-    Optional<SessionStorage> storage = findStorage();
-    return storage.map(it -> it.getItem(KEY)).filter(it -> {
-      if (!BBjRouteSecurityConfiguration.isRelativePath(it)) {
-        clearLocation();
-        logger.log(Level.WARNING,
-            "Discarded a requested location that is not a path inside the app");
-        return false;
-      }
-      return true;
-    }).map(Location::new);
+    try {
+      Optional<SessionStorage> storage = findStorage();
+      return storage.map(it -> it.getItem(KEY)).filter(it -> {
+        if (!BBjRouteSecurityConfiguration.isRelativePath(it)) {
+          clearLocation();
+          logger.log(Level.WARNING,
+              "Discarded a requested location that is not a path inside the app");
+          return false;
+        }
+        return true;
+      }).map(Location::new);
+    } catch (RuntimeException e) {
+      logger.log(Level.WARNING, e);
+      return Optional.empty();
+    }
   }
 
   /**
@@ -65,7 +70,11 @@ final class BBjBrowserRequestedLocationStore implements BBjRequestedLocationStor
    */
   @Override
   public void clearLocation() {
-    findStorage().ifPresent(storage -> storage.removeItem(KEY));
+    try {
+      findStorage().ifPresent(storage -> storage.removeItem(KEY));
+    } catch (RuntimeException e) {
+      logger.log(Level.WARNING, e);
+    }
   }
 
   private Optional<SessionStorage> findStorage() {
