@@ -593,7 +593,7 @@ class TableTest {
     }
 
     @Test
-    void shouldOrderTheRowsOfTheRepositoryOnASortEventBeforeTheElementIsDefined() {
+    void shouldOrderTheRowsOfTheRepositoryOnSortEventBeforeTheElementIsDefined() {
       Table<Person> table = new Table<>();
       table.addColumn("name", Person::getName);
       table.setItems(Arrays.asList(new Person("John"), new Person("Ada"), new Person("Jane")));
@@ -650,7 +650,7 @@ class TableTest {
     }
 
     @Test
-    void shouldChangeNothingWhenARepositoryCommitsAfterTheTableIsDestroyed() {
+    void shouldChangeNothingWhenRepositoryCommitsAfterTheTableIsDestroyed() {
       Table<Person> table = new Table<>();
       table.addColumn("name", Person::getName).setSortDirection(Column.SortDirection.ASC);
       CollectionRepository<Person> repository =
