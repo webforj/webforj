@@ -1,11 +1,9 @@
 package com.webforj.bbj.security;
 
 import com.typesafe.config.Config;
-import com.typesafe.config.ConfigException;
 import com.webforj.router.history.Location;
 import com.webforj.router.security.RouteSecurityConfiguration;
 import java.lang.System.Logger;
-import java.lang.System.Logger.Level;
 import java.util.Optional;
 
 /**
@@ -40,7 +38,6 @@ final class BBjRouteSecurityConfiguration implements RouteSecurityConfiguration 
   private static final String DEFAULT_AUTHENTICATION_PATH = "/login";
   private static final String DEFAULT_DENY_PATH_TEXT =
       "the authentication location with an error query parameter";
-  private static final String MISSING_MESSAGE = "{0} is not set, using {1}";
   private static final Logger logger =
       System.getLogger(BBjRouteSecurityConfiguration.class.getName());
 
@@ -111,11 +108,12 @@ final class BBjRouteSecurityConfiguration implements RouteSecurityConfiguration 
    */
   static BBjRouteSecurityConfiguration create(Config config) {
     final Builder builder = new Builder();
-    builder.enabled = readBoolean(config, ENABLED, false, true);
-    builder.secureByDefault = readBoolean(config, SECURE_BY_DEFAULT, true, true);
-    builder.authenticationPath = readPath(config, AUTHENTICATION_PATH, DEFAULT_AUTHENTICATION_PATH)
+    final BBjConfigReader reader = new BBjConfigReader(config, logger);
+    builder.enabled = reader.readBoolean(ENABLED, false, true);
+    builder.secureByDefault = reader.readBoolean(SECURE_BY_DEFAULT, true, true);
+    builder.authenticationPath = readPath(reader, AUTHENTICATION_PATH, DEFAULT_AUTHENTICATION_PATH)
         .orElse(DEFAULT_AUTHENTICATION_PATH);
-    builder.denyPath = readPath(config, DENY_PATH, DEFAULT_DENY_PATH_TEXT).orElse(null);
+    builder.denyPath = readPath(reader, DENY_PATH, DEFAULT_DENY_PATH_TEXT).orElse(null);
 
     return new BBjRouteSecurityConfiguration(builder);
   }
@@ -144,44 +142,9 @@ final class BBjRouteSecurityConfiguration implements RouteSecurityConfiguration 
     }
   }
 
-  private static boolean readBoolean(Config config, String key, boolean missingValue,
-      boolean invalidValue) {
-    try {
-      if (!config.hasPath(key)) {
-        logger.log(Level.DEBUG, MISSING_MESSAGE, key, missingValue);
-        return missingValue;
-      }
-
-      return config.getBoolean(key);
-    } catch (ConfigException e) {
-      logger.log(Level.WARNING, "Invalid value for {0}, expected true or false, using {1}", key,
-          invalidValue);
-      return invalidValue;
-    }
-  }
-
-  private static Optional<String> readPath(Config config, String key, String defaultText) {
-    Optional<String> path;
-    try {
-      if (!config.hasPath(key)) {
-        logger.log(Level.DEBUG, MISSING_MESSAGE, key, defaultText);
-        return Optional.empty();
-      }
-
-      path =
-          Optional.of(config.getString(key)).filter(BBjRouteSecurityConfiguration::isRelativePath);
-    } catch (ConfigException e) {
-      path = Optional.empty();
-    }
-
-    if (path.isEmpty()) {
-      logger.log(Level.WARNING,
-          "Invalid value for {0}, expected a path inside the app starting with a single slash,"
-              + " using {1}",
-          key, defaultText);
-    }
-
-    return path;
+  private static Optional<String> readPath(BBjConfigReader reader, String key, String defaultText) {
+    return reader.readString(key, defaultText, BBjRouteSecurityConfiguration::isRelativePath,
+        "a path inside the app starting with a single slash");
   }
 
   private static final class Builder {
