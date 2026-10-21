@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.webforj.PendingResult;
+import com.webforj.component.ComponentUtil;
 import com.webforj.component.element.Element;
 import com.webforj.component.element.PropertyDescriptorTester;
 import com.webforj.component.table.event.TableSortChangeEvent;
@@ -23,12 +24,15 @@ import com.webforj.component.table.event.column.TableColumnMoveEvent;
 import com.webforj.component.table.event.column.TableColumnResizeEvent;
 import com.webforj.component.table.event.item.TableItemClickEvent;
 import com.webforj.component.table.event.item.TableItemDoubleClickEvent;
+import com.webforj.component.table.event.renderer.RendererClickEvent;
 import com.webforj.component.table.event.selection.TableItemDeselectEvent;
 import com.webforj.component.table.event.selection.TableItemSelectEvent;
 import com.webforj.component.table.event.selection.TableItemSelectionChange;
+import com.webforj.component.table.renderer.ButtonRenderer;
 import com.webforj.component.table.renderer.Renderer;
 import com.webforj.data.HasEntityKey;
 import com.webforj.data.repository.CollectionRepository;
+import com.webforj.data.repository.OrderCriteriaList;
 import com.webforj.data.repository.Repository;
 import com.webforj.dispatcher.EventListener;
 import java.util.ArrayList;
@@ -589,6 +593,78 @@ class TableTest {
     }
 
     @Test
+    void shouldOrderTheRowsOfTheRepositoryOnASortEventBeforeTheElementIsDefined() {
+      Table<Person> table = new Table<>();
+      table.addColumn("name", Person::getName);
+      table.setItems(Arrays.asList(new Person("John"), new Person("Ada"), new Person("Jane")));
+
+      table.handleSortChanged(new TableSortChangeEvent<>(table, createSortPayload("asc")));
+      assertEquals(List.of("Ada", "Jane", "John"),
+          table.getRepository().findAll().map(Person::getName).toList());
+
+      table.handleSortChanged(new TableSortChangeEvent<>(table, createSortPayload("desc")));
+      assertEquals(List.of("John", "Jane", "Ada"),
+          table.getRepository().findAll().map(Person::getName).toList());
+
+      table.handleSortChanged(new TableSortChangeEvent<>(table, createSortPayload(null)));
+      assertEquals(List.of("John", "Ada", "Jane"),
+          table.getRepository().findAll().map(Person::getName).toList());
+    }
+
+    @Test
+    void shouldOrderTheRowsOfTheRepositoryWhenTheApplicationSortsBeforeTheElementIsDefined() {
+      Table<Person> table = new Table<>();
+      table.addColumn("name", Person::getName);
+      table.setItems(Arrays.asList(new Person("John"), new Person("Ada"), new Person("Jane")));
+
+      table.getColumnById("name").setSortDirection(Column.SortDirection.ASC);
+      table.refresh();
+
+      assertEquals(List.of("Ada", "Jane", "John"),
+          table.getRepository().findAll().map(Person::getName).toList());
+    }
+
+    @Test
+    void shouldOrderTheRowsOfNewItemsBySortedColumnsBeforeTheElementIsDefined() {
+      Table<Person> table = new Table<>();
+      table.addColumn("name", Person::getName).setSortDirection(Column.SortDirection.DESC);
+
+      table.setItems(Arrays.asList(new Person("Ada"), new Person("John"), new Person("Jane")));
+
+      assertEquals(List.of("John", "Jane", "Ada"),
+          table.getRepository().findAll().map(Person::getName).toList());
+    }
+
+    @Test
+    void shouldLeaveTheRowsOfTheRepositoryAloneWhenTheClientSorts() {
+      Table<Person> table = new Table<>();
+      table.setClientSorting(true);
+      table.addColumn("name", Person::getName);
+      table.setItems(Arrays.asList(new Person("John"), new Person("Ada"), new Person("Jane")));
+
+      table.handleSortChanged(new TableSortChangeEvent<>(table, createSortPayload("asc")));
+
+      assertEquals(Column.SortDirection.ASC, table.getColumnById("name").getSortDirection());
+      assertEquals(List.of("John", "Ada", "Jane"),
+          table.getRepository().findAll().map(Person::getName).toList());
+    }
+
+    @Test
+    void shouldChangeNothingWhenARepositoryCommitsAfterTheTableIsDestroyed() {
+      Table<Person> table = new Table<>();
+      table.addColumn("name", Person::getName).setSortDirection(Column.SortDirection.ASC);
+      CollectionRepository<Person> repository =
+          new CollectionRepository<>(Arrays.asList(new Person("John"), new Person("Ada")));
+      table.setRepository(repository);
+      assertEquals(List.of("Ada", "John"), repository.findAll().map(Person::getName).toList());
+      table.onDidDestroy();
+
+      repository.commit();
+
+      assertEquals(List.of("Ada", "John"), repository.findAll().map(Person::getName).toList());
+    }
+
+    @Test
     void shouldSortDataOnServer() {
       Table<Person> table = spy(new Table<>());
       Element elMock = mock(Element.class);
@@ -606,6 +682,15 @@ class TableTest {
       assertEquals("Jane", sortedData.get(0).getName());
       assertEquals("John", sortedData.get(1).getName());
     }
+
+    private static Map<String, Object> createSortPayload(String direction) {
+      Map<String, Object> payload = new HashMap<>();
+      payload.put("criteria", direction == null ? "[]"
+          : "[{\"id\": \"name\", \"sort\": \"" + direction + "\", \"sortIndex\": 1}]");
+
+      return payload;
+    }
+
   }
 
   @Nested
@@ -886,6 +971,7 @@ class TableTest {
 
       // Set up a mock repository
       Repository<EntityWithLongId> repository = mock(Repository.class);
+      when(repository.getOrderCriteriaList()).thenReturn(new OrderCriteriaList<>());
       when(repository.getKey(entity1)).thenReturn(123L);
       when(repository.getKey(entity2)).thenReturn(456L);
       when(repository.find(123L)).thenReturn(java.util.Optional.of(entity1));
@@ -935,6 +1021,38 @@ class TableTest {
       assertEquals(2, selectedItems.size());
       assertTrue(selectedItems.contains(entity1));
       assertTrue(selectedItems.contains(entity2));
+    }
+  }
+
+  @Nested
+  class FireComponentEventMethod {
+
+    @Test
+    void shouldDeliverRendererClickToRendererListeners() {
+      List<RendererClickEvent<String>> received = new ArrayList<>();
+      Column<String, ?> column =
+          component.addColumn("action", new ButtonRenderer<String>("Go", received::add));
+      Map<String, Object> data = Map.of("itemKey", "1", "columnKey", column.getId());
+      RendererClickEvent<String> event = new RendererClickEvent<>(component, data);
+
+      ComponentUtil.fireComponentEvent(component, event);
+
+      assertEquals(1, received.size());
+      assertEquals("1", received.get(0).getItemKey());
+      assertEquals(column.getId(), received.get(0).getColumnKey());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"unknown", "name"})
+    void shouldIgnoreRendererClickOfColumnWithoutRenderer(String columnKey) {
+      List<RendererClickEvent<String>> received = new ArrayList<>();
+      component.addColumn("action", new ButtonRenderer<String>("Go", received::add));
+      component.addColumn("name", String::valueOf);
+      Map<String, Object> data = Map.of("itemKey", "1", "columnKey", columnKey);
+      RendererClickEvent<String> event = new RendererClickEvent<>(component, data);
+
+      assertDoesNotThrow(() -> ComponentUtil.fireComponentEvent(component, event));
+      assertTrue(received.isEmpty());
     }
   }
 
