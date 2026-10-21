@@ -15,6 +15,11 @@ import java.time.Clock;
 /**
  * Registers route security with the router when an app runs in BBjServices.
  *
+ * <p>
+ * Once route security is enabled, a failure while registering it stops the app start with an
+ * {@link Error}, so the app never runs without route security.
+ * </p>
+ *
  * @author Christian Liebhardt
  * @since 26.03
  */
@@ -24,6 +29,8 @@ public final class BBjRouteSecurityRegistrar implements AppLifecycleListener {
 
   /**
    * {@inheritDoc}
+   *
+   * @throws Error when route security is enabled and cannot be registered
    */
   @Override
   public void onWillRun(App app) {
@@ -46,16 +53,21 @@ public final class BBjRouteSecurityRegistrar implements AppLifecycleListener {
       return;
     }
 
-    BBjRouteSecurityManager manager =
-        new BBjRouteSecurityManager(configuration, new BBjAuthenticationState(), Clock.systemUTC(),
-            new BBjBrowserRequestedLocationStore(BBjRouteSecurityRegistrar::findSessionStorage));
-    BBjRouteSecurityEvaluatorLoader.loadEvaluators(Thread.currentThread().getContextClassLoader())
-        .forEach(evaluator -> manager.registerEvaluator(evaluator, evaluator.getPriority()));
+    try {
+      BBjRouteSecurityManager manager = new BBjRouteSecurityManager(configuration,
+          new BBjAuthenticationState(), Clock.systemUTC(),
+          new BBjBrowserRequestedLocationStore(BBjRouteSecurityRegistrar::findSessionStorage));
+      BBjRouteSecurityEvaluatorLoader.loadEvaluators(Thread.currentThread().getContextClassLoader())
+          .forEach(evaluator -> manager.registerEvaluator(evaluator, evaluator.getPriority()));
 
-    ObjectTable.put(BBjRouteSecurityContext.class.getName(), manager.getSecurityContext());
-    router.getRenderer().addObserver(new RouteSecurityObserver(manager));
-    logger.log(Level.INFO, "BBj route security enabled with {0} evaluators",
-        manager.getEvaluators().size());
+      ObjectTable.put(BBjRouteSecurityContext.class.getName(), manager.getSecurityContext());
+      router.getRenderer().addObserver(new RouteSecurityObserver(manager));
+      logger.log(Level.INFO, "BBj route security enabled with {0} evaluators",
+          manager.getEvaluators().size());
+    } catch (RuntimeException e) {
+      logger.log(Level.ERROR, "Route security could not be registered, the app does not start", e);
+      throw new Error("Route security could not be registered", e);
+    }
   }
 
   private static SessionStorage findSessionStorage() {

@@ -2,10 +2,15 @@ package com.webforj.bbj.security;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -34,12 +39,18 @@ import com.webforj.webstorage.SessionStorage;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import java.util.ServiceConfigurationError;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
 class BBjRouteSecurityRegistrarTest {
@@ -52,6 +63,7 @@ class BBjRouteSecurityRegistrarTest {
   private MockedStatic<Router> mockedRouter;
   private final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
   private MockedStatic<ObjectTable> mockedObjectTable;
+  private final List<Handler> handlers = new ArrayList<>();
 
   @BeforeEach
   void setUp() {
@@ -67,6 +79,8 @@ class BBjRouteSecurityRegistrarTest {
   @AfterEach
   void tearDown() {
     Thread.currentThread().setContextClassLoader(contextClassLoader);
+    handlers.forEach(handler -> Logger.getLogger(BBjRouteSecurityRegistrar.class.getPackageName())
+        .removeHandler(handler));
     mockedObjectTable.close();
     mockedRouter.close();
     mockedEnvironment.close();
@@ -235,6 +249,137 @@ class BBjRouteSecurityRegistrarTest {
     }
 
     verify(renderer, never()).addObserver(any());
+  }
+
+  @Test
+  void shouldStopTheStartWhenTheRendererIsNotAvailable() {
+    enableSecurity();
+    RuntimeException failure = new IllegalStateException("no renderer");
+    when(router.getRenderer()).thenThrow(failure);
+
+    CapturingHandler handler = captureLog();
+    Error error = assertThrows(Error.class, () -> registrar.onWillRun(app));
+
+    assertSame(failure, error.getCause());
+    assertEquals(1, handler.getErrors().size());
+    assertTrue(handler.getErrors().get(0).getMessage().contains("could not be registered"));
+    assertSame(failure, handler.getErrors().get(0).getThrown());
+  }
+
+  @Test
+  void shouldStopTheStartWhenTheObserverCannotBeAdded() {
+    enableSecurity();
+    RuntimeException failure = new IllegalStateException("no observer");
+    doThrow(failure).when(renderer).addObserver(any());
+
+    CapturingHandler handler = captureLog();
+    Error error = assertThrows(Error.class, () -> registrar.onWillRun(app));
+
+    assertSame(failure, error.getCause());
+    assertEquals(1, handler.getErrors().size());
+  }
+
+  @Test
+  void shouldStopTheStartWhenTheSecurityContextCannotBeStored() {
+    enableSecurity();
+    RuntimeException failure = new IllegalStateException("no table");
+    mockedObjectTable.when(() -> ObjectTable.put(any(), any())).thenThrow(failure);
+
+    CapturingHandler handler = captureLog();
+    Error error = assertThrows(Error.class, () -> registrar.onWillRun(app));
+
+    assertSame(failure, error.getCause());
+    assertEquals(1, handler.getErrors().size());
+    verify(renderer, never()).addObserver(any());
+  }
+
+  @Test
+  void shouldStopTheStartWhenTheManagerCannotBeCreated() {
+    enableSecurity();
+
+    try (MockedConstruction<BBjRouteSecurityManager> ignored =
+        mockConstruction(BBjRouteSecurityManager.class, (manager, context) -> {
+          throw new IllegalStateException("no manager");
+        })) {
+      CapturingHandler handler = captureLog();
+      Error error = assertThrows(Error.class, () -> registrar.onWillRun(app));
+
+      assertInstanceOf(RuntimeException.class, error.getCause());
+      assertEquals(1, handler.getErrors().size());
+    }
+
+    verify(renderer, never()).addObserver(any());
+  }
+
+  @Test
+  void shouldStopTheStartWhenAnEvaluatorCannotBeRegistered() {
+    enableSecurity();
+    RuntimeException failure = new IllegalStateException("no priority");
+    BBjRouteSecurityEvaluator evaluator = mock(BBjRouteSecurityEvaluator.class);
+    when(evaluator.getPriority()).thenThrow(failure);
+
+    try (MockedStatic<BBjRouteSecurityEvaluatorLoader> loader =
+        mockStatic(BBjRouteSecurityEvaluatorLoader.class)) {
+      loader.when(() -> BBjRouteSecurityEvaluatorLoader.loadEvaluators(any()))
+          .thenReturn(List.of(evaluator));
+      CapturingHandler handler = captureLog();
+      Error error = assertThrows(Error.class, () -> registrar.onWillRun(app));
+
+      assertSame(failure, error.getCause());
+      assertEquals(1, handler.getErrors().size());
+    }
+
+    verify(renderer, never()).addObserver(any());
+  }
+
+  @Test
+  void shouldLetAnErrorOfTheEvaluatorLoaderPassWithoutLoggingItAgain() throws IOException {
+    enableSecurity();
+
+    try (URLClassLoader loader = createFixtureLoader("broken")) {
+      Thread.currentThread().setContextClassLoader(loader);
+      CapturingHandler handler = captureLog();
+      ServiceConfigurationError error =
+          assertThrows(ServiceConfigurationError.class, () -> registrar.onWillRun(app));
+
+      assertEquals(1, handler.getErrors().size());
+      assertEquals(ServiceConfigurationError.class, error.getClass());
+    }
+  }
+
+  private void enableSecurity() {
+    when(environment.getConfig())
+        .thenReturn(ConfigFactory.parseString("webforj.security.enabled = true"));
+  }
+
+  private CapturingHandler captureLog() {
+    CapturingHandler handler = new CapturingHandler();
+    Logger target = Logger.getLogger(BBjRouteSecurityRegistrar.class.getPackageName());
+    target.addHandler(handler);
+    handlers.add(handler);
+
+    return handler;
+  }
+
+  private static final class CapturingHandler extends Handler {
+    private final List<LogRecord> errors = new ArrayList<>();
+
+    List<LogRecord> getErrors() {
+      return errors;
+    }
+
+    @Override
+    public void publish(LogRecord record) {
+      if (record.getLevel().intValue() >= Level.SEVERE.intValue()) {
+        errors.add(record);
+      }
+    }
+
+    @Override
+    public void flush() {}
+
+    @Override
+    public void close() {}
   }
 
   private URLClassLoader createFixtureLoader(String fixture) {
