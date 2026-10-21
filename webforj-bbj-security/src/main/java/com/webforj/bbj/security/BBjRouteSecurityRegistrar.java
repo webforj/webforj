@@ -47,6 +47,9 @@ public final class BBjRouteSecurityRegistrar implements AppLifecycleListener {
 
     BBjRouteSecurityManager manager =
         new BBjRouteSecurityManager(configuration, new BBjAuthenticationState(), Clock.systemUTC());
+    BBjRouteSecurityEvaluatorLoader.loadEvaluators(Thread.currentThread().getContextClassLoader())
+        .forEach(evaluator -> manager.registerEvaluator(evaluator, evaluator.getPriority()));
+
     ObjectTable.put(BBjRouteSecurityContext.class.getName(), manager.getSecurityContext());
     router.getRenderer().addObserver(new RouteSecurityObserver(manager));
     logger.log(Level.INFO, "BBj route security enabled with {0} evaluators",
