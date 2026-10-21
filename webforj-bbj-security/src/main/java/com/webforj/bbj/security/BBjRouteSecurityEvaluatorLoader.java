@@ -27,10 +27,10 @@ final class BBjRouteSecurityEvaluatorLoader {
   private BBjRouteSecurityEvaluatorLoader() {}
 
   /**
-   * Loads the listed evaluators, sorted by priority.
+   * Loads the listed evaluators.
    *
    * <p>
-   * Evaluators with a lower priority come first. Evaluators of equal priority keep the order of the
+   * Evaluators of equal priority keep the order of the
    * service file.
    * </p>
    *
