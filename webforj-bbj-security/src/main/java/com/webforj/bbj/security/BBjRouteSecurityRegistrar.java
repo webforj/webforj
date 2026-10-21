@@ -16,8 +16,9 @@ import java.time.Clock;
  * Registers route security with the router when an app runs in BBjServices.
  *
  * <p>
- * Once route security is enabled, a failure while registering it stops the app start with an
- * {@link Error}, so the app never runs without route security.
+ * Once route security is enabled, a failure while registering it or an invalid connection setting
+ * of the Admin API stops the app start with an {@link Error}, so the app never runs without route
+ * security.
  * </p>
  *
  * @author Christian Liebhardt
@@ -47,6 +48,10 @@ public final class BBjRouteSecurityRegistrar implements AppLifecycleListener {
         logger.log(Level.INFO, "Route security disabled by configuration");
         return;
       }
+
+      BBjAdminConfiguration adminConfiguration =
+          BBjAdminConfiguration.create(environment.getConfig());
+      logger.log(Level.INFO, "BBj admin connection {0}", adminConfiguration);
 
       Router router = Router.getCurrent();
       if (router == null) {
