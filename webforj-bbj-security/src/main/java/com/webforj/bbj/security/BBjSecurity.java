@@ -41,7 +41,7 @@ public final class BBjSecurity {
    * @throws NullPointerException if the role is {@code null}
    */
   public static boolean hasRole(String role) {
-    return getContext().map(context -> context.hasRole(role)).orElse(false);
+    return role != null && getContext().map(context -> context.hasRole(role)).orElse(false);
   }
 
   /**

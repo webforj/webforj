@@ -105,7 +105,7 @@ class BBjSecurityTest {
 
     @Test
     void shouldRejectNullRole() {
-      assertThrows(NullPointerException.class, () -> BBjSecurity.hasRole(null));
+      assertFalse(BBjSecurity.hasRole(null));
     }
 
     @Test
