@@ -76,6 +76,12 @@ final class BBjAdminFailureClassifier {
   private static Kind findKind(List<Throwable> causes) {
     List<String> messages = causes.stream().map(Throwable::getMessage).filter(Objects::nonNull)
         .map(message -> message.toLowerCase(Locale.ROOT)).toList();
+    boolean refusedLogin = messages.stream()
+        .anyMatch(message -> message.stripLeading().startsWith(REFUSED_LOGIN_PREFIX));
+    if (refusedLogin) {
+      return Kind.TOKEN_REJECTED;
+    }
+
     String text = String.join("\n", messages);
     for (KnownMessage known : KnownMessage.values()) {
       if (text.contains(known.text)) {
@@ -83,10 +89,7 @@ final class BBjAdminFailureClassifier {
       }
     }
 
-    boolean refusedLogin = messages.stream()
-        .anyMatch(message -> message.stripLeading().startsWith(REFUSED_LOGIN_PREFIX));
-
-    return refusedLogin ? Kind.TOKEN_REJECTED : Kind.UNAVAILABLE;
+    return Kind.UNAVAILABLE;
   }
 
   private static String getPrefix(Kind kind) {

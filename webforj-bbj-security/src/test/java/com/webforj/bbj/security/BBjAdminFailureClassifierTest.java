@@ -84,12 +84,11 @@ class BBjAdminFailureClassifierTest {
   }
 
   @Test
-  void shouldPreferAKnownTextToTheRefusedLoginPrefix() {
-    BBjAdminException exception =
-        new BBjAdminException("Server failed login: Invalid username/password");
+  void shouldPreferTheRefusedLoginPrefixToAKnownText() {
+    BBjAdminException exception = new BBjAdminException(
+        "Server failed login: Authentication failed for user '***'. Invalid username/password.");
 
-    assertEquals(Kind.INVALID_CREDENTIALS,
-        BBjAdminFailureClassifier.toFailure(exception).getKind());
+    assertEquals(Kind.TOKEN_REJECTED, BBjAdminFailureClassifier.toFailure(exception).getKind());
   }
 
   @Test
