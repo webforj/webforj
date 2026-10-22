@@ -6,17 +6,17 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.webforj.environment.namespace.PrivateNamespace;
+import com.webforj.environment.namespace.GlobalNamespace;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
 /**
- * Holds a private namespace whose values live in a map of the test.
+ * Holds a global namespace whose values live in a map of the test.
  */
 public final class InMemoryNamespace {
   private final Map<String, Object> values = new LinkedHashMap<>();
-  private final PrivateNamespace namespace = mock(PrivateNamespace.class);
+  private final GlobalNamespace namespace = mock(GlobalNamespace.class);
 
   /**
    * Creates an empty namespace.
@@ -45,7 +45,7 @@ public final class InMemoryNamespace {
    *
    * @return the namespace
    */
-  public PrivateNamespace getNamespace() {
+  public GlobalNamespace getNamespace() {
     return namespace;
   }
 

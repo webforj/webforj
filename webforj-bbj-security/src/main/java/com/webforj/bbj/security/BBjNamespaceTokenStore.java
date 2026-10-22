@@ -1,6 +1,6 @@
 package com.webforj.bbj.security;
 
-import com.webforj.environment.namespace.PrivateNamespace;
+import com.webforj.environment.namespace.GlobalNamespace;
 import com.webforj.environment.namespace.exception.NamespaceLockedException;
 import com.webforj.webstorage.SessionStorage;
 import java.lang.System.Logger;
@@ -21,19 +21,21 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Keeps the login session encrypted in a private namespace of BBjServices.
+ * Keeps the login session encrypted in the global namespace of BBjServices.
  *
  * <p>
- * The namespace holds one entry per signed in tab, named by the format version, the expiry and a
- * random handle. The tab's session storage holds the entry name and the key that opens the entry,
- * so the namespace never sees the key and the browser never sees the token. A new key and a new
- * handle are made on every save.
+ * The namespace holds one entry per signed in tab. The key of an entry is the prefix of the
+ * application, the format version, the expiry and a random handle. The tab's session storage holds
+ * the key of the entry and the key that opens the entry, so the namespace never sees the opening
+ * key and the browser never sees the token. A new key and a new handle are made on every save.
  * </p>
  *
  * <p>
- * Every save removes expired entries and, at the limit of 10000 entries, the entries that expire
- * first. Names that do not have the format of this class are never read or removed. Nothing secret
- * is logged. An exception of the storage or the namespace is logged by its class name only.
+ * Every save removes expired entries of the application and, at the limit of 10000 entries of the
+ * application, the entries that expire first. Keys of other applications or programs and keys that
+ * do not have the format of this class are never read, counted or removed. The namespace is never
+ * cleared. Nothing secret is logged. An exception of the storage or the namespace is logged by its
+ * class name only.
  * </p>
  *
  * @author Christian Liebhardt
@@ -43,7 +45,7 @@ final class BBjNamespaceTokenStore implements BBjTokenStore {
   private static final Logger logger = System.getLogger(BBjNamespaceTokenStore.class.getName());
   private static final String HANDLE_KEY = "webforj-bbj-handle";
   private static final String KEY_KEY = "webforj-bbj-key";
-  private static final String NAME_PREFIX = "bbj-security-tokens-";
+  private static final String KEY_PREFIX = "webforj.bbj-security-tokens.";
   private static final String VERSION = "v1.";
   private static final String NOT_KEPT = "The sign-in could not be kept";
   private static final String FAILURE = "{0} ({1})";
@@ -52,15 +54,19 @@ final class BBjNamespaceTokenStore implements BBjTokenStore {
   private static final int MAX_APPLICATION_NAME_LENGTH = 64;
   private static final int MAX_ENTRIES = 10000;
 
-  private final Supplier<PrivateNamespace> namespaceSupplier;
+  private final Supplier<GlobalNamespace> namespaceSupplier;
+  private final Supplier<String> applicationNameSupplier;
   private final Supplier<SessionStorage> storageSupplier;
   private final Clock clock;
   private final BBjTokenEntryCipher cipher = new BBjTokenEntryCipher();
-  private PrivateNamespace namespace;
+  private GlobalNamespace namespace;
+  private String applicationPrefix;
 
-  BBjNamespaceTokenStore(Supplier<PrivateNamespace> namespaceSupplier,
-      Supplier<SessionStorage> storageSupplier, Clock clock) {
+  BBjNamespaceTokenStore(Supplier<GlobalNamespace> namespaceSupplier,
+      Supplier<String> applicationNameSupplier, Supplier<SessionStorage> storageSupplier,
+      Clock clock) {
     this.namespaceSupplier = namespaceSupplier;
+    this.applicationNameSupplier = applicationNameSupplier;
     this.storageSupplier = storageSupplier;
     this.clock = clock;
   }
@@ -75,9 +81,11 @@ final class BBjNamespaceTokenStore implements BBjTokenStore {
       throw new IllegalStateException(NOT_KEPT);
     }
 
-    PrivateNamespace target;
+    GlobalNamespace target;
+    String prefix;
     try {
       target = openNamespace();
+      prefix = resolveApplicationPrefix();
     } catch (RuntimeException e) {
       logger.log(Level.WARNING, FAILURE, "The namespace could not be opened",
           e.getClass().getName());
@@ -86,9 +94,10 @@ final class BBjNamespaceTokenStore implements BBjTokenStore {
 
     Map<String, String> previous = storage.get(List.of(HANDLE_KEY, KEY_KEY));
     String key = cipher.createKey();
-    String name = VERSION + session.getExpiresAt().toEpochMilli() + "." + cipher.createHandle();
+    String name =
+        prefix + VERSION + session.getExpiresAt().toEpochMilli() + "." + cipher.createHandle();
     String entry = cipher.formatEntry(name, key, session);
-    removeStaleEntries(target);
+    removeStaleEntries(target, prefix);
 
     try {
       target.put(name, entry);
@@ -109,7 +118,7 @@ final class BBjNamespaceTokenStore implements BBjTokenStore {
     }
 
     String previousName = previous.get(HANDLE_KEY);
-    if (previousName != null && !previousName.equals(name)
+    if (!name.equals(previousName) && findExpiry(prefix, previousName).isPresent()
         && removeEntries(target, List.of(previousName)) == 0) {
       logger.log(Level.WARNING, "The previous sign-in entry could not be removed");
     }
@@ -133,7 +142,7 @@ final class BBjNamespaceTokenStore implements BBjTokenStore {
 
       String name = pair.get(HANDLE_KEY);
       String key = pair.get(KEY_KEY);
-      Optional<Instant> expiresAt = findExpiry(name);
+      Optional<Instant> expiresAt = findExpiry(resolveApplicationPrefix(), name);
       if (key == null || expiresAt.isEmpty() || !expiresAt.get().isAfter(clock.instant())) {
         logger.log(Level.DEBUG, "A stored sign-in is not usable and was removed");
         clearSession();
@@ -180,7 +189,8 @@ final class BBjNamespaceTokenStore implements BBjTokenStore {
 
     try {
       String name = storage.get(List.of(HANDLE_KEY, KEY_KEY)).get(HANDLE_KEY);
-      if (name != null && removeEntries(openNamespace(), List.of(name)) == 0) {
+      if (findExpiry(resolveApplicationPrefix(), name).isPresent()
+          && removeEntries(openNamespace(), List.of(name)) == 0) {
         logger.log(Level.WARNING, "The sign-in entry could not be removed");
       }
     } catch (RuntimeException e) {
@@ -197,31 +207,31 @@ final class BBjNamespaceTokenStore implements BBjTokenStore {
   }
 
   /**
-   * Creates the name of the namespace of one app.
+   * Creates the part of an entry key that names one app.
    *
    * <p>
    * A name that holds a character other than a letter, a digit, an underscore or a hyphen, or that
    * is empty or longer than 64 characters, is replaced by a safe form followed by a short hash of
-   * the original name, so that two apps never share a namespace.
+   * the original name, so that two apps never share entry keys. The result never holds a dot.
    * </p>
    *
    * @param applicationName the registered application name
-   * @return the name below the prefix of the namespace
+   * @return the part of the entry key that names the app
    */
-  static String createNamespaceName(String applicationName) {
+  static String createApplicationKey(String applicationName) {
     String safe = UNSAFE_CHARACTERS.matcher(applicationName).replaceAll("_");
     if (safe.equals(applicationName) && !safe.isEmpty()
         && safe.length() <= MAX_APPLICATION_NAME_LENGTH) {
-      return NAME_PREFIX + safe;
+      return safe;
     }
 
     String base = safe.isEmpty() ? "app"
         : safe.substring(0, Math.min(safe.length(), MAX_APPLICATION_NAME_LENGTH));
 
-    return NAME_PREFIX + base + "-" + createHash(applicationName);
+    return base + "-" + createHash(applicationName);
   }
 
-  private PrivateNamespace openNamespace() {
+  private GlobalNamespace openNamespace() {
     if (namespace == null) {
       namespace = namespaceSupplier.get();
     }
@@ -229,12 +239,20 @@ final class BBjNamespaceTokenStore implements BBjTokenStore {
     return namespace;
   }
 
-  private Optional<Instant> findExpiry(String name) {
-    if (name == null) {
+  private String resolveApplicationPrefix() {
+    if (applicationPrefix == null) {
+      applicationPrefix = KEY_PREFIX + createApplicationKey(applicationNameSupplier.get()) + ".";
+    }
+
+    return applicationPrefix;
+  }
+
+  private Optional<Instant> findExpiry(String prefix, String name) {
+    if (name == null || !name.startsWith(prefix)) {
       return Optional.empty();
     }
 
-    Matcher matcher = ENTRY_NAME.matcher(name);
+    Matcher matcher = ENTRY_NAME.matcher(name.substring(prefix.length()));
     if (!matcher.matches()) {
       return Optional.empty();
     }
@@ -242,11 +260,11 @@ final class BBjNamespaceTokenStore implements BBjTokenStore {
     return Optional.of(Instant.ofEpochMilli(Long.parseLong(matcher.group(1))));
   }
 
-  private void removeStaleEntries(PrivateNamespace target) {
+  private void removeStaleEntries(GlobalNamespace target, String prefix) {
     try {
       Map<String, Instant> entries = new HashMap<>();
       for (String name : target.keySet()) {
-        findExpiry(name).ifPresent(expiresAt -> entries.put(name, expiresAt));
+        findExpiry(prefix, name).ifPresent(expiresAt -> entries.put(name, expiresAt));
       }
 
       Instant now = clock.instant();
@@ -269,7 +287,7 @@ final class BBjNamespaceTokenStore implements BBjTokenStore {
     }
   }
 
-  private int removeEntries(PrivateNamespace target, List<String> names) {
+  private int removeEntries(GlobalNamespace target, List<String> names) {
     int removed = 0;
     for (String name : names) {
       try {

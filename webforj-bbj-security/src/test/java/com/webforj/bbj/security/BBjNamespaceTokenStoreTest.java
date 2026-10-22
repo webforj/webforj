@@ -10,11 +10,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import com.webforj.bbj.security.fixture.CapturedLog;
 import com.webforj.bbj.security.fixture.InMemoryNamespace;
 import com.webforj.bbj.security.fixture.InMemorySessionStorage;
-import com.webforj.environment.namespace.PrivateNamespace;
+import com.webforj.environment.namespace.GlobalNamespace;
 import com.webforj.environment.namespace.exception.NamespaceLockedException;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.webstorage.SessionStorage;
@@ -46,7 +48,10 @@ class BBjNamespaceTokenStoreTest {
   private static final String TOKEN = "eyJhbGciOiJIUzI1NiJ9.secretPayload.secretSignature";
   private static final Instant NOW = Instant.parse("2026-10-22T10:00:00Z");
   private static final Clock CLOCK = Clock.fixed(NOW, ZoneOffset.UTC);
-  private static final Pattern ENTRY_NAME = Pattern.compile("v1\\.\\d+\\.[A-Za-z0-9_-]{43}");
+  private static final String APPLICATION = "test-app";
+  private static final String PREFIX = "webforj.bbj-security-tokens.test-app.";
+  private static final Pattern ENTRY_NAME =
+      Pattern.compile("webforj\\.bbj-security-tokens\\.test-app\\.v1\\.\\d+\\.[A-Za-z0-9_-]{43}");
   private static final String UNREADABLE = "A stored sign-in could not be read and was removed";
   private final InMemoryNamespace namespace = new InMemoryNamespace();
   private final InMemorySessionStorage storage = new InMemorySessionStorage();
@@ -58,7 +63,8 @@ class BBjNamespaceTokenStoreTest {
   @BeforeEach
   void setUp() {
     log = new CapturedLog(BBjNamespaceTokenStore.class.getName());
-    store = new BBjNamespaceTokenStore(namespace::getNamespace, storage::getStorage, CLOCK);
+    store = new BBjNamespaceTokenStore(namespace::getNamespace, () -> APPLICATION,
+        storage::getStorage, CLOCK);
   }
 
   @AfterEach
@@ -67,11 +73,20 @@ class BBjNamespaceTokenStoreTest {
   }
 
   private static String createName(Instant expiresAt, char fill) {
-    return "v1." + expiresAt.toEpochMilli() + "." + String.valueOf(fill).repeat(43);
+    return PREFIX + "v1." + expiresAt.toEpochMilli() + "." + String.valueOf(fill).repeat(43);
   }
 
   private static String createName(Instant expiresAt, int index) {
-    return "v1." + expiresAt.toEpochMilli() + "." + "%043d".formatted(index);
+    return createName(PREFIX, expiresAt, index);
+  }
+
+  private static String createName(String prefix, Instant expiresAt, int index) {
+    return prefix + "v1." + expiresAt.toEpochMilli() + "." + "%043d".formatted(index);
+  }
+
+  private BBjNamespaceTokenStore createStore(String application, InMemorySessionStorage tab) {
+    return new BBjNamespaceTokenStore(namespace::getNamespace, () -> application, tab::getStorage,
+        CLOCK);
   }
 
   private String getStoredName() {
@@ -96,7 +111,8 @@ class BBjNamespaceTokenStoreTest {
       String name = namespace.getValues().keySet().iterator().next();
       assertEquals(name, getStoredName());
       assertTrue(ENTRY_NAME.matcher(name).matches());
-      assertEquals(String.valueOf(session.getExpiresAt().toEpochMilli()), name.split("\\.")[1]);
+      assertEquals(String.valueOf(session.getExpiresAt().toEpochMilli()),
+          name.substring(PREFIX.length()).split("\\.")[1]);
       assertTrue(namespace.getValues().get(name) instanceof String);
       String everything = namespace.getValues() + " " + storage.getValues();
       assertFalse(everything.contains(TOKEN) || everything.contains("alice"));
@@ -217,11 +233,11 @@ class BBjNamespaceTokenStoreTest {
 
     @Test
     void shouldThrowWithoutCauseWhenTheNamespaceCannotBeOpened() {
-      Supplier<PrivateNamespace> failing = () -> {
+      Supplier<GlobalNamespace> failing = () -> {
         throw new WebforjRuntimeException("secret detail " + TOKEN);
       };
       BBjNamespaceTokenStore unavailable =
-          new BBjNamespaceTokenStore(failing, storage::getStorage, CLOCK);
+          new BBjNamespaceTokenStore(failing, () -> APPLICATION, storage::getStorage, CLOCK);
 
       IllegalStateException thrown =
           assertThrows(IllegalStateException.class, () -> unavailable.saveSession(session));
@@ -235,7 +251,7 @@ class BBjNamespaceTokenStoreTest {
     void shouldThrowWhenThereIsNoSessionStorage() {
       Supplier<SessionStorage> none = () -> null;
       BBjNamespaceTokenStore withoutStorage =
-          new BBjNamespaceTokenStore(namespace::getNamespace, none, CLOCK);
+          new BBjNamespaceTokenStore(namespace::getNamespace, () -> APPLICATION, none, CLOCK);
 
       assertThrows(IllegalStateException.class, () -> withoutStorage.saveSession(session));
 
@@ -363,11 +379,11 @@ class BBjNamespaceTokenStoreTest {
     void shouldAnswerEmptyAndKeepEverythingWhenTheNamespaceFails() {
       store.saveSession(session);
       final Map<String, String> pair = Map.copyOf(storage.getValues());
-      Supplier<PrivateNamespace> failing = () -> {
+      Supplier<GlobalNamespace> failing = () -> {
         throw new WebforjRuntimeException("secret detail " + TOKEN);
       };
       BBjNamespaceTokenStore unavailable =
-          new BBjNamespaceTokenStore(failing, storage::getStorage, CLOCK);
+          new BBjNamespaceTokenStore(failing, () -> APPLICATION, storage::getStorage, CLOCK);
 
       assertEquals(Optional.empty(), unavailable.readSession());
 
@@ -381,7 +397,7 @@ class BBjNamespaceTokenStoreTest {
     void shouldAnswerEmptyWhenThereIsNoSessionStorage() {
       Supplier<SessionStorage> none = () -> null;
       BBjNamespaceTokenStore withoutStorage =
-          new BBjNamespaceTokenStore(namespace::getNamespace, none, CLOCK);
+          new BBjNamespaceTokenStore(namespace::getNamespace, () -> APPLICATION, none, CLOCK);
 
       assertEquals(Optional.empty(), withoutStorage.readSession());
     }
@@ -436,7 +452,7 @@ class BBjNamespaceTokenStoreTest {
     void shouldNotThrowWhenThereIsNoSessionStorage() {
       Supplier<SessionStorage> none = () -> null;
       BBjNamespaceTokenStore withoutStorage =
-          new BBjNamespaceTokenStore(namespace::getNamespace, none, CLOCK);
+          new BBjNamespaceTokenStore(namespace::getNamespace, () -> APPLICATION, none, CLOCK);
 
       assertDoesNotThrow(withoutStorage::clearSession);
     }
@@ -449,8 +465,9 @@ class BBjNamespaceTokenStoreTest {
       String expired = createName(NOW.minusSeconds(1), 'a');
       String atExpiry = createName(NOW, 'b');
       String live = createName(NOW.plusSeconds(60), 'c');
-      String shortHandle = "v1." + NOW.minusSeconds(5).toEpochMilli() + ".short";
-      String otherVersion = "v2." + NOW.minusSeconds(5).toEpochMilli() + "." + "d".repeat(43);
+      String shortHandle = PREFIX + "v1." + NOW.minusSeconds(5).toEpochMilli() + ".short";
+      String otherVersion =
+          PREFIX + "v2." + NOW.minusSeconds(5).toEpochMilli() + "." + "d".repeat(43);
       for (String name : List.of(expired, atExpiry, live, shortHandle, otherVersion, "foreign")) {
         namespace.getValues().put(name, "value");
       }
@@ -507,34 +524,172 @@ class BBjNamespaceTokenStoreTest {
   }
 
   @Nested
-  class CreateNamespaceName {
+  class CreateApplicationKey {
     @Test
-    void shouldAppendAnApplicationNameThatIsSafe() {
-      assertEquals("bbj-security-tokens-security-integration",
-          BBjNamespaceTokenStore.createNamespaceName("security-integration"));
+    void shouldKeepAnApplicationNameThatIsSafe() {
+      assertEquals("security-integration",
+          BBjNamespaceTokenStore.createApplicationKey("security-integration"));
     }
 
     @Test
     void shouldReplaceUnsafeCharactersAndAddTheHashOfTheOriginalName() {
-      String first = BBjNamespaceTokenStore.createNamespaceName("my app");
-      String second = BBjNamespaceTokenStore.createNamespaceName("my_app");
+      String first = BBjNamespaceTokenStore.createApplicationKey("my app");
+      String second = BBjNamespaceTokenStore.createApplicationKey("my_app");
 
-      assertTrue(first.matches("bbj-security-tokens-my_app-[0-9a-f]{8}"), first);
-      assertEquals("bbj-security-tokens-my_app", second);
-      assertEquals(first, BBjNamespaceTokenStore.createNamespaceName("my app"));
+      assertTrue(first.matches("my_app-[0-9a-f]{8}"), first);
+      assertEquals("my_app", second);
+      assertEquals(first, BBjNamespaceTokenStore.createApplicationKey("my app"));
+    }
+
+    @Test
+    void shouldNeverHoldADotSoThatNoKeyPrefixOfOneApplicationFitsAnother() {
+      assertFalse(BBjNamespaceTokenStore.createApplicationKey("my.app.v1").contains("."));
     }
 
     @Test
     void shouldShortenLongNamesAndKeepTheirHash() {
-      String name = BBjNamespaceTokenStore.createNamespaceName("n".repeat(200));
+      String name = BBjNamespaceTokenStore.createApplicationKey("n".repeat(200));
 
-      assertTrue(name.matches("bbj-security-tokens-n{64}-[0-9a-f]{8}"), name);
+      assertTrue(name.matches("n{64}-[0-9a-f]{8}"), name);
     }
 
     @Test
     void shouldUsePlaceholderForEmptyName() {
-      assertTrue(BBjNamespaceTokenStore.createNamespaceName("")
-          .matches("bbj-security-tokens-app-[0-9a-f]{8}"));
+      assertTrue(BBjNamespaceTokenStore.createApplicationKey("").matches("app-[0-9a-f]{8}"));
+    }
+  }
+
+  @Nested
+  class Applications {
+    private static final String OTHER_PREFIX = "webforj.bbj-security-tokens.other-app.";
+    private final InMemorySessionStorage otherTab = new InMemorySessionStorage();
+    private BBjNamespaceTokenStore other;
+
+    @BeforeEach
+    void setUp() {
+      other = createStore("other-app", otherTab);
+    }
+
+    @Test
+    void shouldKeepTheSignInsOfTwoApplicationsApart() {
+      store.saveSession(session);
+      other.saveSession(new BBjLoginSession("bob", TOKEN, session.getExpiresAt()));
+
+      assertEquals(2, namespace.getValues().size());
+      assertTrue(getStoredName().startsWith(PREFIX + "v1."));
+      assertTrue(otherTab.getValues().get(HANDLE_KEY).startsWith(OTHER_PREFIX + "v1."));
+      assertEquals("alice", store.readSession().orElseThrow().getUserName());
+      assertEquals("bob", other.readSession().orElseThrow().getUserName());
+    }
+
+    @Test
+    void shouldNotTouchEntriesOfAnotherApplicationWhenSweeping() {
+      String expired = createName(OTHER_PREFIX, NOW.minusSeconds(60), 'x');
+      String expiredOfLongerName =
+          createName("webforj.bbj-security-tokens.test-app-two.", NOW.minusSeconds(60), 'y');
+      namespace.getValues().put(expired, "value");
+      namespace.getValues().put(expiredOfLongerName, "value");
+
+      store.saveSession(session);
+
+      assertTrue(namespace.getValues().containsKey(expired));
+      assertTrue(namespace.getValues().containsKey(expiredOfLongerName));
+      assertEquals(3, namespace.getValues().size());
+    }
+
+    @Test
+    void shouldEvictOnlyEntriesOfItsOwnApplication() {
+      List<String> names = IntStream.range(0, 10002)
+          .mapToObj(index -> createName(NOW.plusSeconds(60 + index), index)).toList();
+      List<String> others = IntStream.range(0, 5000)
+          .mapToObj(index -> createName(OTHER_PREFIX, NOW.plusSeconds(60 + index), index)).toList();
+      List<String> othersExpired = IntStream.range(5000, 10000)
+          .mapToObj(index -> createName(OTHER_PREFIX, NOW.minusSeconds(60 + index), index))
+          .toList();
+      names.forEach(name -> namespace.getValues().put(name, "value"));
+      others.forEach(name -> namespace.getValues().put(name, "value"));
+      othersExpired.forEach(name -> namespace.getValues().put(name, "value"));
+
+      store.saveSession(session);
+
+      Set<String> expected = new HashSet<>(names.subList(3, 10002));
+      expected.add(getStoredName());
+      expected.addAll(others);
+      expected.addAll(othersExpired);
+      assertEquals(expected, namespace.getValues().keySet());
+      assertEquals(
+          List.of("The token store removed 3 sign-ins because its limit of 10000 was reached"),
+          log.getMessages(Level.WARNING));
+    }
+
+    @Test
+    void shouldAnswerEmptyAndKeepTheEntryWhenTheHandleBelongsToAnotherApplication() {
+      other.saveSession(session);
+      storage.getValues().putAll(otherTab.getValues());
+
+      assertEquals(Optional.empty(), store.readSession());
+
+      assertTrue(storage.getValues().isEmpty());
+      assertEquals(1, namespace.getValues().size());
+      assertTrue(other.readSession().isPresent());
+    }
+
+    @Test
+    void shouldNotRemoveThePreviousEntryOfAnotherApplicationOnSave() {
+      other.saveSession(session);
+      storage.getValues().putAll(otherTab.getValues());
+      String otherName = storage.getValues().get(HANDLE_KEY);
+
+      store.saveSession(session);
+
+      assertTrue(namespace.getValues().containsKey(otherName));
+      assertTrue(getStoredName().startsWith(PREFIX));
+      assertTrue(log.getMessages(Level.WARNING).isEmpty());
+    }
+
+    @Test
+    void shouldNotRemoveTheEntryOfAnotherApplicationOnClear() {
+      other.saveSession(session);
+      storage.getValues().putAll(otherTab.getValues());
+
+      store.clearSession();
+
+      assertTrue(storage.getValues().isEmpty());
+      assertEquals(1, namespace.getValues().size());
+      assertTrue(log.getAllMessages().isEmpty());
+    }
+
+    @Test
+    void shouldNotOpenAnEntryMovedToAnotherApplication() {
+      store.saveSession(session);
+      String name = getStoredName();
+      String moved = OTHER_PREFIX + name.substring(PREFIX.length());
+      namespace.getValues().put(moved, namespace.getValues().get(name));
+      otherTab.getValues()
+          .putAll(Map.of(HANDLE_KEY, moved, KEY_KEY, storage.getValues().get(KEY_KEY)));
+
+      assertEquals(Optional.empty(), other.readSession());
+
+      assertTrue(otherTab.getValues().isEmpty());
+      assertFalse(namespace.getValues().containsKey(moved));
+      assertEquals(List.of(UNREADABLE), log.getMessages(Level.WARNING));
+      assertTrue(store.readSession().isPresent());
+    }
+
+    @Test
+    void shouldNeverClearTheNamespace() {
+      List<String> names = IntStream.range(0, 10002)
+          .mapToObj(index -> createName(NOW.plusSeconds(60 + index), index)).toList();
+      names.forEach(name -> namespace.getValues().put(name, "value"));
+
+      store.saveSession(session);
+      store.readSession();
+      store.saveSession(session);
+      namespace.getValues().put(getStoredName(), 42);
+      store.readSession();
+      store.clearSession();
+
+      verify(namespace.getNamespace(), never()).clear();
     }
   }
 
