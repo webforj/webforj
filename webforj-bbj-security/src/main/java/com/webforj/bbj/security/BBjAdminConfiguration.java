@@ -24,12 +24,12 @@ import java.util.regex.Pattern;
  *
  * <p>
  * Supported keys are {@code admin.host}, {@code admin.port}, {@code admin.ssl},
- * {@code admin.truststore}, {@code admin.truststore-password}, {@code admin.timeout-seconds} and
- * {@code token.minutes}. A key below {@code webforj.security.bbj} that is not supported is logged
- * once as a warning, naming the key and never the value, and is ignored. The defaults are
- * {@code 127.0.0.1}, {@code 2002}, {@code false}, no truststore, an empty password, 10 seconds and
- * 30 minutes. A key that is not set, or is set to {@code null}, uses its default and is logged at
- * debug level.
+ * {@code admin.truststore}, {@code admin.truststore-password}, {@code admin.timeout-seconds},
+ * {@code token.minutes} and {@code token.store-max-entries}. A key below
+ * {@code webforj.security.bbj} that is not supported is logged once as a warning, naming the key
+ * and never the value, and is ignored. The defaults are {@code 127.0.0.1}, {@code 2002},
+ * {@code false}, no truststore, an empty password, 10 seconds, 30 minutes and 10000 entries. A key
+ * that is not set, or is set to {@code null}, uses its default and is logged at debug level.
  * </p>
  *
  * <p>
@@ -42,9 +42,9 @@ import java.util.regex.Pattern;
  * </p>
  *
  * <p>
- * An invalid value of {@code admin.timeout-seconds} (1 to 300) or {@code token.minutes} (1 to 480)
- * is logged once as a warning and uses the default. A {@code token.minutes} above 480 is lowered to
- * 480, the longest token lifetime of the server.
+ * An invalid value of {@code admin.timeout-seconds} (1 to 300), {@code token.minutes} (1 to 480) or
+ * {@code token.store-max-entries} (1 to 100000) is logged once as a warning and uses the default. A
+ * {@code token.minutes} above 480 is lowered to 480, the longest token lifetime of the server.
  * </p>
  *
  * <p>
@@ -63,14 +63,17 @@ final class BBjAdminConfiguration {
   private static final String TRUSTSTORE_PASSWORD = PREFIX + "admin.truststore-password";
   private static final String TIMEOUT_SECONDS = PREFIX + "admin.timeout-seconds";
   private static final String TOKEN_MINUTES = PREFIX + "token.minutes";
-  private static final Set<String> KNOWN_KEYS =
-      Set.of(HOST, PORT, SSL, TRUSTSTORE, TRUSTSTORE_PASSWORD, TIMEOUT_SECONDS, TOKEN_MINUTES);
+  private static final String TOKEN_STORE_MAX_ENTRIES = PREFIX + "token.store-max-entries";
+  private static final Set<String> KNOWN_KEYS = Set.of(HOST, PORT, SSL, TRUSTSTORE,
+      TRUSTSTORE_PASSWORD, TIMEOUT_SECONDS, TOKEN_MINUTES, TOKEN_STORE_MAX_ENTRIES);
   private static final String DEFAULT_HOST = "127.0.0.1";
   private static final int DEFAULT_PORT = 2002;
   private static final int DEFAULT_TIMEOUT_SECONDS = 10;
   private static final int MAX_TIMEOUT_SECONDS = 300;
   private static final int DEFAULT_TOKEN_MINUTES = 30;
   private static final int MAX_TOKEN_MINUTES = 480;
+  private static final int DEFAULT_TOKEN_STORE_MAX_ENTRIES = 10000;
+  private static final int MAX_TOKEN_STORE_MAX_ENTRIES = 100000;
   private static final Pattern IPV4_LITERAL = Pattern
       .compile("(0|[1-9]\\d{0,2})\\.(0|[1-9]\\d{0,2})\\.(0|[1-9]\\d{0,2})\\.(0|[1-9]\\d{0,2})");
   private static final Pattern IPV6_CHARACTERS = Pattern.compile("[0-9A-Fa-f:.]+");
@@ -83,6 +86,7 @@ final class BBjAdminConfiguration {
   private final String truststorePassword;
   private final Duration timeout;
   private final Duration tokenLifetime;
+  private final int tokenStoreMaxEntries;
 
   private BBjAdminConfiguration(Builder builder) {
     this.host = builder.host;
@@ -92,6 +96,7 @@ final class BBjAdminConfiguration {
     this.truststorePassword = builder.truststorePassword;
     this.timeout = builder.timeout;
     this.tokenLifetime = builder.tokenLifetime;
+    this.tokenStoreMaxEntries = builder.tokenStoreMaxEntries;
   }
 
   /**
@@ -170,6 +175,15 @@ final class BBjAdminConfiguration {
   }
 
   /**
+   * Gets the most login sessions the token store keeps for the app.
+   *
+   * @return the limit
+   */
+  int getTokenStoreMaxEntries() {
+    return tokenStoreMaxEntries;
+  }
+
+  /**
    * Reads the configuration from the given config.
    *
    * <p>
@@ -199,6 +213,8 @@ final class BBjAdminConfiguration {
         reader.readInt(TIMEOUT_SECONDS, DEFAULT_TIMEOUT_SECONDS, 1, MAX_TIMEOUT_SECONDS));
     builder.tokenLifetime = Duration.ofMinutes(
         reader.readClampedInt(TOKEN_MINUTES, DEFAULT_TOKEN_MINUTES, 1, MAX_TOKEN_MINUTES));
+    builder.tokenStoreMaxEntries = reader.readInt(TOKEN_STORE_MAX_ENTRIES,
+        DEFAULT_TOKEN_STORE_MAX_ENTRIES, 1, MAX_TOKEN_STORE_MAX_ENTRIES);
 
     Optional<String> truststorePath =
         reader.requireString(TRUSTSTORE, "none", BBjAdminConfiguration::isPath, "a path");
@@ -312,5 +328,6 @@ final class BBjAdminConfiguration {
     String truststorePassword;
     Duration timeout;
     Duration tokenLifetime;
+    int tokenStoreMaxEntries;
   }
 }
