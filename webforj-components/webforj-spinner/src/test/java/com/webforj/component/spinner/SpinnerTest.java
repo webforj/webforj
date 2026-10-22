@@ -1,8 +1,11 @@
 package com.webforj.component.spinner;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.webforj.concern.HasExpanse;
+import com.webforj.concern.HasTheme;
 import com.webforj.component.Theme;
 import com.webforj.component.element.PropertyDescriptorTester;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +20,16 @@ class SpinnerTest {
   @BeforeEach
   void setUp() {
     component = new Spinner();
+  }
+
+  @Test
+  void shouldDeclareTheThemeConcern() {
+    assertInstanceOf(HasTheme.class, component);
+  }
+
+  @Test
+  void shouldDeclareTheExpanseConcern() {
+    assertInstanceOf(HasExpanse.class, component);
   }
 
   @Nested

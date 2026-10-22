@@ -1,10 +1,13 @@
 package com.webforj.component.alert;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
+import com.webforj.concern.HasExpanse;
+import com.webforj.concern.HasTheme;
 import com.webforj.component.Component;
 import com.webforj.component.Theme;
 import com.webforj.component.alert.event.AlertCloseEvent;
@@ -25,6 +28,16 @@ class AlertTest {
     component = new Alert();
   }
 
+
+  @Test
+  void shouldDeclareTheThemeConcern() {
+    assertInstanceOf(HasTheme.class, component);
+  }
+
+  @Test
+  void shouldDeclareTheExpanseConcern() {
+    assertInstanceOf(HasExpanse.class, component);
+  }
 
   @Nested
   @DisplayName("Constructors")

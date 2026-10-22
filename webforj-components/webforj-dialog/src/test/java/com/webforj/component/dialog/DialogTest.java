@@ -1,5 +1,6 @@
 package com.webforj.component.dialog;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -9,6 +10,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import com.webforj.concern.HasTheme;
 import com.webforj.component.Component;
 import com.webforj.component.dialog.event.DialogCloseEvent;
 import com.webforj.component.dialog.event.DialogOpenEvent;
@@ -30,6 +32,11 @@ class DialogTest {
   @BeforeEach
   void setUp() {
     component = new Dialog();
+  }
+
+  @Test
+  void shouldDeclareTheThemeConcern() {
+    assertInstanceOf(HasTheme.class, component);
   }
 
   @Nested

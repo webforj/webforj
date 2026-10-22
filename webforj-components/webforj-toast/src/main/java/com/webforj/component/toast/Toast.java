@@ -11,6 +11,7 @@ import com.webforj.component.element.annotation.NodeName;
 import com.webforj.component.element.annotation.PropertyExclude;
 import com.webforj.component.element.annotation.PropertyMethods;
 import com.webforj.component.window.Frame;
+import com.webforj.concern.HasTheme;
 import com.webforj.concern.HasClassName;
 import com.webforj.concern.HasHtml;
 import com.webforj.concern.HasStyle;
@@ -37,8 +38,8 @@ import java.util.List;
  * @since 24.10
  */
 @NodeName("dwc-toast")
-public class Toast extends ElementCompositeContainer
-    implements HasClassName<Toast>, HasStyle<Toast>, HasText<Toast>, HasHtml<Toast> {
+public class Toast extends ElementCompositeContainer implements HasClassName<Toast>,
+    HasStyle<Toast>, HasText<Toast>, HasHtml<Toast>, HasTheme<Toast, Theme> {
 
   static final Placement DEFAULT_PLACEMENT = Placement.BOTTOM;
   static final Theme DEFAULT_THEME = Theme.DEFAULT;
@@ -291,21 +292,18 @@ public class Toast extends ElementCompositeContainer
   }
 
   /**
-   * Sets the theme of the toast.
-   *
-   * @param theme the theme of the toast.
-   * @return the component itself.
+   * {@inheritDoc}
    */
+  @Override
   public Toast setTheme(Theme theme) {
     set(themeProp, theme);
     return this;
   }
 
   /**
-   * Returns the theme of the toast.
-   *
-   * @return the theme of the toast.
+   * {@inheritDoc}
    */
+  @Override
   public Theme getTheme() {
     return get(themeProp);
   }

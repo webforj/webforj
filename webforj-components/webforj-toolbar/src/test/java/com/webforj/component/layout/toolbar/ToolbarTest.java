@@ -1,10 +1,12 @@
 package com.webforj.component.layout.toolbar;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
+import com.webforj.concern.HasTheme;
 import com.webforj.component.Component;
 import com.webforj.component.element.PropertyDescriptorTester;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +21,11 @@ class ToolbarTest {
   @BeforeEach
   void setUp() {
     component = new Toolbar();
+  }
+
+  @Test
+  void shouldDeclareTheThemeConcern() {
+    assertInstanceOf(HasTheme.class, component);
   }
 
   @Nested

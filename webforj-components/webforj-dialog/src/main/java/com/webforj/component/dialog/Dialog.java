@@ -10,6 +10,7 @@ import com.webforj.component.element.ElementCompositeContainer;
 import com.webforj.component.element.PropertyDescriptor;
 import com.webforj.component.element.annotation.NodeName;
 import com.webforj.component.element.annotation.PropertyMethods;
+import com.webforj.concern.HasTheme;
 import com.webforj.concern.HasAutoFocus;
 import com.webforj.concern.HasClassName;
 import com.webforj.concern.HasStyle;
@@ -23,8 +24,8 @@ import com.webforj.dispatcher.ListenerRegistration;
  * @since 23.06
  */
 @NodeName("dwc-dialog")
-public class Dialog extends ElementCompositeContainer
-    implements HasClassName<Dialog>, HasStyle<Dialog>, HasAutoFocus<Dialog> {
+public class Dialog extends ElementCompositeContainer implements HasClassName<Dialog>,
+    HasStyle<Dialog>, HasAutoFocus<Dialog>, HasTheme<Dialog, Theme> {
 
   /**
    * The dialog alignments.
@@ -577,26 +578,18 @@ public class Dialog extends ElementCompositeContainer
   }
 
   /**
-   * Sets the dialog's theme.
-   *
-   * <p>
-   * The theme name to use for the dialog.
-   * </p>
-   *
-   * @param theme the theme
-   * @return the component itself
-   * @see Theme
+   * {@inheritDoc}
    */
+  @Override
   public Dialog setTheme(Theme theme) {
     set(this.theme, theme);
     return this;
   }
 
   /**
-   * Gets the dialog's theme.
-   *
-   * @return the theme
+   * {@inheritDoc}
    */
+  @Override
   public Theme getTheme() {
     return get(theme);
   }

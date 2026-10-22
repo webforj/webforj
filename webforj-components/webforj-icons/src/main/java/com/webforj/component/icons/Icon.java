@@ -5,6 +5,7 @@ import com.webforj.component.element.ElementComposite;
 import com.webforj.component.element.PropertyDescriptor;
 import com.webforj.component.element.annotation.NodeName;
 import com.webforj.component.element.concern.HasElementClickListener;
+import com.webforj.concern.HasTheme;
 import com.webforj.concern.HasAttribute;
 import com.webforj.concern.HasClassName;
 import com.webforj.concern.HasExpanse;
@@ -34,9 +35,10 @@ import com.webforj.concern.HasVisibility;
  * @see TablerIcon
  */
 @NodeName("dwc-icon")
-public class Icon extends ElementComposite implements IconDefinition<Icon>, HasStyle<Icon>,
-    HasClassName<Icon>, HasVisibility<Icon>, HasLabel<Icon>, HasElementClickListener<Icon>,
-    HasAttribute<Icon>, HasTooltip<Icon>, HasSize<Icon>, HasExpanse<Icon, IconExpanse> {
+public class Icon extends ElementComposite
+    implements IconDefinition<Icon>, HasStyle<Icon>, HasClassName<Icon>, HasVisibility<Icon>,
+    HasLabel<Icon>, HasElementClickListener<Icon>, HasAttribute<Icon>, HasTooltip<Icon>,
+    HasSize<Icon>, HasExpanse<Icon, IconExpanse>, HasTheme<Icon, Theme> {
 
   // Properties
   private final PropertyDescriptor<String> nameProp = PropertyDescriptor.property("name", "");
@@ -102,21 +104,18 @@ public class Icon extends ElementComposite implements IconDefinition<Icon>, HasS
   }
 
   /**
-   * Sets the icon theme.
-   *
-   * @param theme the icon theme
-   * @return the component itself
+   * {@inheritDoc}
    */
+  @Override
   public Icon setTheme(Theme theme) {
     set(themeProp, theme);
     return this;
   }
 
   /**
-   * Gets the icon theme.
-   *
-   * @return the icon theme
+   * {@inheritDoc}
    */
+  @Override
   public Theme getTheme() {
     return get(themeProp);
   }

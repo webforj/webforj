@@ -4,6 +4,8 @@ import com.webforj.component.Theme;
 import com.webforj.component.element.ElementComposite;
 import com.webforj.component.element.PropertyDescriptor;
 import com.webforj.component.element.annotation.NodeName;
+import com.webforj.concern.HasExpanse;
+import com.webforj.concern.HasTheme;
 import com.webforj.concern.HasClassName;
 import com.webforj.concern.HasHtml;
 import com.webforj.concern.HasStyle;
@@ -18,7 +20,8 @@ import com.webforj.concern.HasVisibility;
  */
 @NodeName("dwc-spinner")
 public class Spinner extends ElementComposite implements DwcSpinner<Spinner>, HasClassName<Spinner>,
-    HasStyle<Spinner>, HasText<Spinner>, HasHtml<Spinner>, HasVisibility<Spinner> {
+    HasStyle<Spinner>, HasText<Spinner>, HasHtml<Spinner>, HasVisibility<Spinner>,
+    HasTheme<Spinner, Theme>, HasExpanse<Spinner, SpinnerExpanse> {
 
   // Properties
   private final PropertyDescriptor<Boolean> spinnerClockwiseProp =
