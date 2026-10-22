@@ -2,9 +2,14 @@ package com.webforj.bbj.security;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
+import com.typesafe.config.ConfigObject;
+import com.typesafe.config.ConfigUtil;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
@@ -18,11 +23,17 @@ import java.util.function.Predicate;
  * {@link IllegalArgumentException} naming the key and never the value.
  * </p>
  *
+ * <p>
+ * Keys below a path that are not known are logged once each as a warning, naming the key and never
+ * the value.
+ * </p>
+ *
  * @author Christian Liebhardt
  * @since 26.03
  */
 final class BBjConfigReader {
   private static final String MISSING_MESSAGE = "{0} is not set, using {1}";
+  private static final String UNKNOWN_MESSAGE = "{0} is not a known key and is ignored";
   private static final String BOOLEAN_EXPECTED = "true or false";
   private final Config config;
   private final Logger logger;
@@ -165,6 +176,31 @@ final class BBjConfigReader {
     return find(key, Config::getString, defaultText, expected, validator);
   }
 
+  /**
+   * Logs a warning for every key below a path that is not known.
+   *
+   * <p>
+   * Only the names of the keys are read, so a value that cannot be resolved never throws. A path
+   * that is not set, or does not hold an object, logs nothing.
+   * </p>
+   *
+   * @param parentPath the path of the object to check
+   * @param knownKeys the full paths of the known keys
+   */
+  void warnUnknownKeys(String parentPath, Set<String> knownKeys) {
+    List<String> keys = new ArrayList<>();
+    try {
+      if (config.hasPath(parentPath)) {
+        findKeys(config.getObject(parentPath), ConfigUtil.splitPath(parentPath), keys);
+      }
+    } catch (ConfigException e) {
+      return;
+    }
+
+    keys.stream().filter(key -> !knownKeys.contains(key))
+        .forEach(key -> logger.log(Level.WARNING, UNKNOWN_MESSAGE, key));
+  }
+
   private <T> Optional<T> find(String key, BiFunction<Config, String, T> getter, String missingText,
       String expected, Predicate<T> validator) {
     T value;
@@ -184,6 +220,18 @@ final class BBjConfigReader {
     }
 
     return Optional.of(value);
+  }
+
+  private static void findKeys(ConfigObject object, List<String> path, List<String> keys) {
+    for (String name : object.keySet()) {
+      List<String> keyPath = new ArrayList<>(path);
+      keyPath.add(name);
+      if (object.get(name) instanceof ConfigObject child) {
+        findKeys(child, keyPath, keys);
+      } else {
+        keys.add(ConfigUtil.joinPath(keyPath));
+      }
+    }
   }
 
   private static IllegalArgumentException createInvalidException(String key, String expected) {
