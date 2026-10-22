@@ -4,9 +4,15 @@ import com.webforj.Environment;
 import com.webforj.PendingResult;
 import com.webforj.bbj.security.model.BBjLoginStatus;
 import com.webforj.bbj.security.model.BBjPrincipal;
+import com.webforj.component.Theme;
+import com.webforj.component.login.Login;
+import com.webforj.component.login.event.LoginSubmitEvent;
+import com.webforj.component.toast.Toast;
+import com.webforj.dispatcher.EventListener;
 import com.webforj.environment.ObjectTable;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Entry point to the security state of the current app running in BBjServices.
@@ -128,6 +134,53 @@ public final class BBjSecurity {
     }
 
     return ((BBjAuthenticationService) ObjectTable.get(key)).startLogin(userName, password);
+  }
+
+  /**
+   * Connects a login dialog to the sign-in of the app.
+   *
+   * <p>
+   * Registers a submit listener on the given component. On each submit the error state is reset and
+   * {@link #login(String, String)} runs with the entered user name and password. Like that method,
+   * the submit must be handled on the Environment thread of the app, and an
+   * {@link IllegalStateException} is thrown at submit time when route security is not enabled or
+   * the thread is not the Environment thread.
+   * </p>
+   *
+   * <p>
+   * On {@link BBjLoginStatus#AUTHENTICATED} the dialog is closed. On
+   * {@link BBjLoginStatus#INVALID_CREDENTIALS} the error state is set and the form is enabled
+   * again. On {@link BBjLoginStatus#UNAVAILABLE} a warning toast is shown and the form is enabled
+   * again. Any other status enables the form again.
+   * </p>
+   *
+   * <p>
+   * The method never navigates. After {@link BBjLoginStatus#AUTHENTICATED} the app navigates to the
+   * location the visitor asked for, or to the root.
+   * </p>
+   *
+   * @param login the login dialog to connect
+   *
+   * @throws NullPointerException if the login dialog is {@code null}
+   */
+  public static void login(Login login) {
+    login.onSubmit(e -> {
+      login.setError(false);
+      var pending = login(e.getUsername(), e.getPassword());
+      pending.thenAccept(status -> {
+        if (status == BBjLoginStatus.INVALID_CREDENTIALS) {
+          login.setError(true);
+        } else if (status == BBjLoginStatus.UNAVAILABLE) {
+          Toast.show("Cannot sign in right now.", Theme.WARNING);
+        }
+
+        if (status == BBjLoginStatus.AUTHENTICATED) {
+          login.close();
+        } else {
+          login.setEnabled(true);
+        }
+      });
+    });
   }
 
   private static Optional<BBjRouteSecurityContext> getContext() {

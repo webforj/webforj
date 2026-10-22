@@ -10,6 +10,10 @@ import com.webforj.Environment;
 import com.webforj.PendingResult;
 import com.webforj.bbj.security.model.BBjLoginStatus;
 import com.webforj.bbj.security.model.BBjPrincipal;
+import com.webforj.component.Theme;
+import com.webforj.component.login.event.LoginSubmitEvent;
+import com.webforj.component.toast.Toast;
+import com.webforj.dispatcher.EventListener;
 import com.webforj.environment.ObjectTable;
 import java.time.Clock;
 import java.time.Instant;
@@ -21,6 +25,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
@@ -253,6 +259,108 @@ class BBjSecurityTest {
 
       assertEquals("Sign-in must be called on the Environment thread of the app",
           exception.getMessage());
+    }
+  }
+
+  @Nested
+  class LoginDialog {
+    private final String serviceKey = BBjAuthenticationService.class.getName();
+    private MockedStatic<Environment> mockedEnvironment;
+    private MockedStatic<Toast> mockedToast;
+    private BBjAuthenticationService service;
+    private com.webforj.component.login.Login dialog;
+    private EventListener<LoginSubmitEvent> listener;
+
+    @BeforeEach
+    @SuppressWarnings("unchecked")
+    void setUp() {
+      mockedEnvironment = Mockito.mockStatic(Environment.class);
+      mockedToast = Mockito.mockStatic(Toast.class);
+      mockedEnvironment.when(Environment::getCurrent).thenReturn(Mockito.mock(Environment.class));
+      service = Mockito.mock(BBjAuthenticationService.class);
+      mockedObjectTable.when(() -> ObjectTable.contains(serviceKey)).thenReturn(true);
+      mockedObjectTable.when(() -> ObjectTable.get(serviceKey)).thenReturn(service);
+
+      dialog = Mockito.mock(com.webforj.component.login.Login.class);
+      ArgumentCaptor<EventListener<LoginSubmitEvent>> captor =
+          ArgumentCaptor.forClass(EventListener.class);
+      BBjSecurity.login(dialog);
+      Mockito.verify(dialog).onSubmit(captor.capture());
+      listener = captor.getValue();
+    }
+
+    @AfterEach
+    void tearDown() {
+      mockedToast.close();
+      mockedEnvironment.close();
+    }
+
+    private LoginSubmitEvent submitEvent() {
+      LoginSubmitEvent event = Mockito.mock(LoginSubmitEvent.class);
+      Mockito.when(event.getUsername()).thenReturn("alice");
+      Mockito.when(event.getPassword()).thenReturn("pw");
+      return event;
+    }
+
+    @Test
+    void shouldCloseTheDialogOnAuthenticated() {
+      Mockito.when(service.startLogin("alice", "pw"))
+          .thenReturn(PendingResult.completedWith(BBjLoginStatus.AUTHENTICATED));
+
+      listener.onEvent(submitEvent());
+
+      Mockito.verify(dialog).close();
+      Mockito.verify(dialog, Mockito.never()).setEnabled(true);
+      Mockito.verify(dialog, Mockito.never()).setError(true);
+    }
+
+    @Test
+    void shouldSetTheErrorOnInvalidCredentials() {
+      Mockito.when(service.startLogin("alice", "pw"))
+          .thenReturn(PendingResult.completedWith(BBjLoginStatus.INVALID_CREDENTIALS));
+
+      listener.onEvent(submitEvent());
+
+      Mockito.verify(dialog).setError(true);
+      Mockito.verify(dialog).setEnabled(true);
+      Mockito.verify(dialog, Mockito.never()).close();
+    }
+
+    @Test
+    void shouldShowAWarningOnUnavailable() {
+      Mockito.when(service.startLogin("alice", "pw"))
+          .thenReturn(PendingResult.completedWith(BBjLoginStatus.UNAVAILABLE));
+
+      listener.onEvent(submitEvent());
+
+      mockedToast.verify(() -> Toast.show("Cannot sign in right now.", Theme.WARNING));
+      Mockito.verify(dialog).setEnabled(true);
+      Mockito.verify(dialog, Mockito.never()).setError(true);
+      Mockito.verify(dialog, Mockito.never()).close();
+    }
+
+    @Test
+    void shouldResetTheErrorBeforeTheLogin() {
+      Mockito.when(service.startLogin("alice", "pw"))
+          .thenReturn(PendingResult.completedWith(BBjLoginStatus.AUTHENTICATED));
+
+      listener.onEvent(submitEvent());
+
+      InOrder order = Mockito.inOrder(dialog, service);
+      order.verify(dialog).setError(false);
+      order.verify(service).startLogin("alice", "pw");
+    }
+
+    @Test
+    void shouldStartALoginOnEverySubmit() {
+      Mockito.when(service.startLogin("alice", "pw"))
+          .thenReturn(PendingResult.completedWith(BBjLoginStatus.INVALID_CREDENTIALS));
+
+      listener.onEvent(submitEvent());
+      listener.onEvent(submitEvent());
+
+      Mockito.verify(service, Mockito.times(2)).startLogin("alice", "pw");
+      Mockito.verify(dialog, Mockito.times(2)).setError(false);
     }
   }
 }
