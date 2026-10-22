@@ -64,7 +64,10 @@ final class BBjAdminConfiguration {
   private static final String TIMEOUT_SECONDS = PREFIX + "admin.timeout-seconds";
   private static final String TOKEN_MINUTES = PREFIX + "token.minutes";
   private static final Set<String> KNOWN_KEYS =
-      Set.of(HOST, PORT, SSL, TRUSTSTORE, TRUSTSTORE_PASSWORD, TIMEOUT_SECONDS, TOKEN_MINUTES);
+      Set.of(HOST, PORT, SSL, TRUSTSTORE, TRUSTSTORE_PASSWORD, TIMEOUT_SECONDS, TOKEN_MINUTES,
+          BBjRouteSecurityConfiguration.DEFAULT_SUCCESS_PATH,
+          BBjRouteSecurityConfiguration.RETURN_AFTER_LOGIN,
+          BBjRouteSecurityConfiguration.LOGOUT_SUCCESS_PATH);
   private static final String DEFAULT_HOST = "127.0.0.1";
   private static final int DEFAULT_PORT = 2002;
   private static final int DEFAULT_TIMEOUT_SECONDS = 10;

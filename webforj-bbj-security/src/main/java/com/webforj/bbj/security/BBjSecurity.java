@@ -4,6 +4,7 @@ import com.webforj.Environment;
 import com.webforj.PendingResult;
 import com.webforj.bbj.security.model.BBjLoginStatus;
 import com.webforj.bbj.security.model.BBjPrincipal;
+import com.webforj.component.ComponentLifecycleObserver.LifecycleEvent;
 import com.webforj.component.Theme;
 import com.webforj.component.login.Login;
 import com.webforj.component.login.event.LoginSubmitEvent;
@@ -137,6 +138,43 @@ public final class BBjSecurity {
   }
 
   /**
+   * Signs the current user out.
+   *
+   * <p>
+   * The call must run on the Environment thread of the app, for example in an event handler. The
+   * visitor is signed out at once on this page, the kept sign-in is removed and the app navigates
+   * to the logout location. The token is ended on the server afterwards on a worker thread, within
+   * the time limit of the configuration. The visitor is signed out even when the server cannot be
+   * reached, and the token then expires on its own.
+   * </p>
+   *
+   * <p>
+   * The returned result completes on the Environment thread after the server call ended, or at once
+   * when there is no token to end. It never completes exceptionally. The navigation happens before
+   * it completes, so the view that called this method is usually destroyed by then and a callback
+   * must not use it. A visitor who is not signed in stays where they are. When route security is
+   * not enabled, the result is completed and nothing else happens.
+   * </p>
+   *
+   * @return the result of ending the token
+   *
+   * @throws IllegalStateException if the call is not on the Environment thread of the app
+   */
+  public static PendingResult<Void> logout() {
+    if (Environment.getCurrent() == null) {
+      throw new IllegalStateException(
+          "Sign-out must be called on the Environment thread of the app");
+    }
+
+    String key = BBjAuthenticationService.class.getName();
+    if (!ObjectTable.contains(key)) {
+      return PendingResult.completedWith(null);
+    }
+
+    return ((BBjAuthenticationService) ObjectTable.get(key)).startLogout();
+  }
+
+  /**
    * Connects a login dialog to the sign-in of the app.
    *
    * <p>
@@ -144,34 +182,55 @@ public final class BBjSecurity {
    * {@link #login(String, String)} runs with the entered user name and password. Like that method,
    * the submit must be handled on the Environment thread of the app, and an
    * {@link IllegalStateException} is thrown at submit time when route security is not enabled or
-   * the thread is not the Environment thread.
+   * the thread is not the Environment thread. The form is enabled again before the exception is
+   * thrown.
    * </p>
    *
    * <p>
    * On {@link BBjLoginStatus#AUTHENTICATED} the dialog is closed. On
    * {@link BBjLoginStatus#INVALID_CREDENTIALS} the error state is set and the form is enabled
-   * again. On {@link BBjLoginStatus#UNAVAILABLE} a warning toast is shown and the form is enabled
-   * again. Any other status enables the form again.
+   * again. On {@link BBjLoginStatus#UNAVAILABLE} the given text is shown in a warning toast and the
+   * form is enabled again. Any other status enables the form again.
    * </p>
    *
    * <p>
-   * The method never navigates. After {@link BBjLoginStatus#AUTHENTICATED} the app navigates to the
-   * location the visitor asked for, or to the root.
+   * A sign-in that is still running when the dialog is destroyed is cancelled, so no callback
+   * touches the destroyed component. The method never navigates. After
+   * {@link BBjLoginStatus#AUTHENTICATED} the app navigates to the location the visitor asked for,
+   * or to the default success location.
    * </p>
    *
    * @param login the login dialog to connect
+   * @param unavailableMessage the text of the toast shown on {@link BBjLoginStatus#UNAVAILABLE}
    *
-   * @throws NullPointerException if the login dialog is {@code null}
+   * @throws NullPointerException if an argument is {@code null}
    */
-  public static void login(Login login) {
+  public static void login(Login login, String unavailableMessage) {
+    Objects.requireNonNull(login, "login");
+    Objects.requireNonNull(unavailableMessage, "unavailableMessage");
+    AtomicReference<PendingResult<BBjLoginStatus>> running = new AtomicReference<>();
+    login.addLifecycleObserver((component, event) -> {
+      PendingResult<BBjLoginStatus> pending = running.get();
+      if (event == LifecycleEvent.DESTROY && pending != null) {
+        pending.cancel();
+      }
+    });
     login.onSubmit(e -> {
       login.setError(false);
-      var pending = login(e.getUsername(), e.getPassword());
+      PendingResult<BBjLoginStatus> pending;
+      try {
+        pending = login(e.getUsername(), e.getPassword());
+      } catch (RuntimeException ex) {
+        login.setEnabled(true);
+        throw ex;
+      }
+
+      running.set(pending);
       pending.thenAccept(status -> {
         if (status == BBjLoginStatus.INVALID_CREDENTIALS) {
           login.setError(true);
         } else if (status == BBjLoginStatus.UNAVAILABLE) {
-          Toast.show("Cannot sign in right now.", Theme.WARNING);
+          Toast.show(unavailableMessage, Theme.WARNING);
         }
 
         if (status == BBjLoginStatus.AUTHENTICATED) {
@@ -181,6 +240,22 @@ public final class BBjSecurity {
         }
       });
     });
+  }
+
+  /**
+   * Connects a login dialog to the sign-in of the app.
+   *
+   * <p>
+   * Behaves like {@link #login(Login, String)} with the English text "Cannot sign in right now."
+   * for {@link BBjLoginStatus#UNAVAILABLE}.
+   * </p>
+   *
+   * @param login the login dialog to connect
+   *
+   * @throws NullPointerException if the login dialog is {@code null}
+   */
+  public static void login(Login login) {
+    login(login, "Cannot sign in right now.");
   }
 
   private static Optional<BBjRouteSecurityContext> getContext() {

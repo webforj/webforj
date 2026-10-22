@@ -71,11 +71,13 @@ public final class BBjRouteSecurityRegistrar implements AppLifecycleListener {
 
       BBjAdminTaskRunner runner = new BBjAdminTaskRunner(adminConfiguration.getTimeout(),
           BBjRouteSecurityRegistrar::createDispatcher);
-      BBjAuthenticationService service = new BBjAuthenticationService(
-          new BBjFactoryAdminGateway(adminConfiguration, clock), runner,
-          new BBjNamespaceTokenStore(GlobalNamespace::new, App::getApplicationName,
-              SessionStorage::getCurrent, clock),
-          state, manager::consumePreAuthenticationLocation, location -> router.navigate(location));
+      BBjAuthenticationService service = BBjAuthenticationService.create()
+          .setGateway(new BBjFactoryAdminGateway(adminConfiguration, clock)).setRunner(runner)
+          .setStore(new BBjNamespaceTokenStore(GlobalNamespace::new, App::getApplicationName,
+              SessionStorage::getCurrent, clock))
+          .setState(state).setRequestedLocation(manager::consumePreAuthenticationLocation)
+          .setNavigator(location -> router.navigate(location)).setConfiguration(configuration)
+          .build();
 
       ObjectTable.put(BBjRouteSecurityContext.class.getName(), manager.getSecurityContext());
       ObjectTable.put(BBjAdminTaskRunner.class.getName(), runner);

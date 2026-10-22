@@ -480,6 +480,14 @@ class BBjAdminConfigurationTest {
     }
 
     @Test
+    void shouldAcceptTheNavigationKeysWithoutAWarning() {
+      createConfiguration(PREFIX + "default-success-path = \"/home\"",
+          PREFIX + "return-after-login = false", PREFIX + "logout-success-path = \"/bye\"");
+
+      assertTrue(log.getMessages(Level.WARNING).isEmpty());
+    }
+
+    @Test
     void shouldWarnAboutTheRemovedTokenStoreKeyAsUnknown() {
       createConfiguration(PREFIX + "token.store-max-entries = 500");
 

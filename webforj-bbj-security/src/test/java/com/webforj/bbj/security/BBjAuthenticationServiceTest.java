@@ -14,6 +14,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import com.webforj.PendingResult;
 import com.webforj.bbj.security.fixture.CapturedLog;
 import com.webforj.bbj.security.model.BBjLoginStatus;
@@ -22,6 +24,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -29,13 +32,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 import java.util.logging.Level;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.EnumSource.Mode;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
 
 class BBjAuthenticationServiceTest {
   private static final String PASSWORD = "s3cret-pw";
@@ -47,6 +57,7 @@ class BBjAuthenticationServiceTest {
   @SuppressWarnings("unchecked")
   private final Consumer<Location> navigator = mock(Consumer.class);
   private Supplier<Optional<Location>> requestedLocation = Optional::empty;
+  private Config config = ConfigFactory.empty();
   private BBjAdminTaskRunner runner;
 
   @BeforeEach
@@ -64,8 +75,9 @@ class BBjAuthenticationServiceTest {
   }
 
   private BBjAuthenticationService createService() {
-    return new BBjAuthenticationService(gateway, runner, store, state, requestedLocation,
-        navigator);
+    return BBjAuthenticationService.create().setGateway(gateway).setRunner(runner).setStore(store)
+        .setState(state).setRequestedLocation(requestedLocation).setNavigator(navigator)
+        .setConfiguration(BBjRouteSecurityConfiguration.create(config)).build();
   }
 
   private static BBjLoginStatus getStatus(PendingResult<BBjLoginStatus> result) throws Exception {
@@ -99,6 +111,45 @@ class BBjAuthenticationServiceTest {
     getStatus(createService().startLogin("alice", PASSWORD));
 
     verify(navigator, timeout(5000)).accept(new Location("/"));
+  }
+
+  @ParameterizedTest
+  @MethodSource("createNavigationCases")
+  void shouldChooseTheLocationAfterTheSignIn(String settings, String requested, String expected)
+      throws Exception {
+    config = ConfigFactory.parseString(settings);
+    requestedLocation = () -> Optional.ofNullable(requested).map(Location::new);
+    when(gateway.openSession("alice", PASSWORD)).thenReturn(session);
+
+    getStatus(createService().startLogin("alice", PASSWORD));
+
+    verify(navigator, timeout(5000)).accept(new Location(expected));
+  }
+
+  private static Stream<Arguments> createNavigationCases() {
+    String home = "webforj.security.bbj.default-success-path = \"/home\"\n";
+    String stay = "webforj.security.bbj.return-after-login = false\n";
+
+    return Stream.of(Arguments.of(home, "/protected", "/protected"),
+        Arguments.of(home, null, "/home"), Arguments.of(home + stay, "/protected", "/home"),
+        Arguments.of(home + stay, null, "/home"));
+  }
+
+  @Test
+  void shouldConsumeTheRequestedLocationWhenTheVisitorDoesNotReturn() throws Exception {
+    config = ConfigFactory.parseString("webforj.security.bbj.return-after-login = false");
+    AtomicBoolean consumed = new AtomicBoolean();
+    requestedLocation = () -> {
+      consumed.set(true);
+
+      return Optional.of(new Location("/protected"));
+    };
+    when(gateway.openSession("alice", PASSWORD)).thenReturn(session);
+
+    getStatus(createService().startLogin("alice", PASSWORD));
+
+    verify(navigator, timeout(5000)).accept(new Location("/"));
+    assertTrue(consumed.get());
   }
 
   @Test
@@ -326,6 +377,317 @@ class BBjAuthenticationServiceTest {
         assertFalse(message.contains(PASSWORD));
         assertFalse(message.contains("tok-abc-123"));
         assertFalse(message.contains(session.toString()));
+      }
+    }
+  }
+
+  @Nested
+  class Logout {
+    private final Location logoutLocation = new Location("/login?logout");
+
+    private void signIn() {
+      state.setAuthentication(new BBjAuthentication("alice", Set.of(), EXPIRY));
+      when(store.readSession()).thenReturn(Optional.of(session));
+    }
+
+    private void awaitResult(PendingResult<Void> result) throws Exception {
+      CompletableFuture<Void> future = new CompletableFuture<>();
+      result.thenAccept(future::complete);
+      future.get(5, TimeUnit.SECONDS);
+    }
+
+    private BBjAdminTaskRunner createPostingRunner(AtomicReference<Runnable> posted,
+        CountDownLatch postedLatch) {
+      runner.destroy();
+      runner = new BBjAdminTaskRunner(Duration.ofSeconds(10), () -> task -> {
+        posted.set(task);
+        postedLatch.countDown();
+
+        return PendingResult.completedWith(null);
+      });
+
+      return runner;
+    }
+
+    @Test
+    void shouldClearTheStateAndTheStoreBeforeNavigatingToTheLogoutLocation() throws Exception {
+      signIn();
+      AtomicBoolean signedInOnNavigation = new AtomicBoolean(true);
+      doAnswer(invocation -> {
+        signedInOnNavigation.set(state.getAuthentication().isPresent());
+
+        return null;
+      }).when(navigator).accept(any());
+
+      awaitResult(createService().startLogout());
+
+      InOrder order = Mockito.inOrder(store, navigator, gateway);
+      order.verify(store).readSession();
+      order.verify(store).clearSession();
+      order.verify(navigator).accept(logoutLocation);
+      order.verify(gateway).closeSession(session);
+      assertFalse(signedInOnNavigation.get());
+      assertTrue(state.getAuthentication().isEmpty());
+    }
+
+    @Test
+    void shouldEndTheStoredTokenOnAWorkerThread() throws Exception {
+      signIn();
+      AtomicReference<Thread> caller = new AtomicReference<>();
+      doAnswer(invocation -> {
+        caller.set(Thread.currentThread());
+
+        return null;
+      }).when(gateway).closeSession(any());
+
+      awaitResult(createService().startLogout());
+
+      verify(gateway).closeSession(session);
+      assertTrue(caller.get() != Thread.currentThread());
+    }
+
+    @Test
+    void shouldCompleteTheResultAfterTheServerCallEnded() throws Exception {
+      signIn();
+      CountDownLatch release = new CountDownLatch(1);
+      CountDownLatch started = new CountDownLatch(1);
+      doAnswer(invocation -> {
+        started.countDown();
+        release.await(5, TimeUnit.SECONDS);
+
+        return null;
+      }).when(gateway).closeSession(any());
+
+      PendingResult<Void> result = createService().startLogout();
+
+      assertTrue(started.await(5, TimeUnit.SECONDS));
+      assertFalse(result.isDone());
+      verify(navigator).accept(logoutLocation);
+      assertTrue(state.getAuthentication().isEmpty());
+      release.countDown();
+      awaitResult(result);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = BBjAdminFailure.Kind.class, names = "TOKEN_REJECTED", mode = Mode.EXCLUDE)
+    void shouldCompleteWithOneWarningWhenTheServerCallFails(BBjAdminFailure.Kind kind)
+        throws Exception {
+      signIn();
+      doThrow(new BBjAdminFailure(kind, "down")).when(gateway).closeSession(session);
+
+      try (CapturedLog log = new CapturedLog(BBjAuthenticationService.class.getPackageName())) {
+        awaitResult(createService().startLogout());
+
+        assertEquals(List.of("The BBj login token could not be ended and expires on its own"),
+            log.getMessages(Level.WARNING));
+        for (String message : log.getAllMessages()) {
+          assertFalse(message.contains("tok-abc-123"));
+        }
+      }
+
+      assertTrue(state.getAuthentication().isEmpty());
+    }
+
+    @Test
+    void shouldCompleteQuietlyWhenTheTokenWasRejected() throws Exception {
+      signIn();
+      doThrow(new BBjAdminFailure(BBjAdminFailure.Kind.TOKEN_REJECTED, "ended")).when(gateway)
+          .closeSession(session);
+
+      try (CapturedLog log = new CapturedLog(BBjAuthenticationService.class.getPackageName())) {
+        awaitResult(createService().startLogout());
+
+        assertTrue(log.getMessages(Level.WARNING).isEmpty());
+      }
+    }
+
+    @Test
+    void shouldSignOutWithoutAServerCallWhenNothingIsStored() throws Exception {
+      state.setAuthentication(new BBjAuthentication("alice", Set.of(), EXPIRY));
+      when(store.readSession()).thenReturn(Optional.empty());
+
+      awaitResult(createService().startLogout());
+
+      assertTrue(state.getAuthentication().isEmpty());
+      verify(store).clearSession();
+      verify(navigator).accept(logoutLocation);
+      verifyNoInteractions(gateway);
+    }
+
+    @Test
+    void shouldNavigateAndEndTheTokenWhenTheStoreCannotBeCleared() throws Exception {
+      signIn();
+      doThrow(new IllegalStateException("no storage")).when(store).clearSession();
+
+      try (CapturedLog log = new CapturedLog(BBjAuthenticationService.class.getPackageName())) {
+        awaitResult(createService().startLogout());
+
+        assertEquals(List.of("The sign-out step failed with java.lang.IllegalStateException"),
+            log.getMessages(Level.WARNING));
+      }
+
+      verify(navigator).accept(logoutLocation);
+      verify(gateway).closeSession(session);
+      assertTrue(state.getAuthentication().isEmpty());
+    }
+
+    @Test
+    void shouldEndTheTokenWhenTheNavigationFails() throws Exception {
+      signIn();
+      doThrow(new IllegalStateException("no router")).when(navigator).accept(any());
+
+      try (CapturedLog log = new CapturedLog(BBjAuthenticationService.class.getPackageName())) {
+        awaitResult(createService().startLogout());
+
+        assertEquals(
+            List.of("Navigation after sign-out failed with java.lang.IllegalStateException"),
+            log.getMessages(Level.WARNING));
+      }
+
+      verify(gateway).closeSession(session);
+      assertTrue(state.getAuthentication().isEmpty());
+    }
+
+    @Test
+    void shouldDoNothingWhenNobodyIsSignedIn() throws Exception {
+      when(store.readSession()).thenReturn(Optional.empty());
+      BBjAuthenticationService service = createService();
+
+      try (CapturedLog log = new CapturedLog(BBjAuthenticationService.class.getPackageName())) {
+        PendingResult<Void> result = service.startLogout();
+
+        assertTrue(result.isDone());
+        assertTrue(log.getAllMessages().isEmpty());
+      }
+
+      verify(store).clearSession();
+      verifyNoInteractions(gateway, navigator);
+    }
+
+    @Test
+    void shouldCleanUpAStaleEntryWithoutNavigating() throws Exception {
+      when(store.readSession()).thenReturn(Optional.of(session));
+
+      awaitResult(createService().startLogout());
+
+      verify(store).clearSession();
+      verify(gateway).closeSession(session);
+      verifyNoInteractions(navigator);
+    }
+
+    @Test
+    void shouldLogOutOnceWhenCalledTwice() throws Exception {
+      signIn();
+      when(store.readSession()).thenReturn(Optional.of(session), Optional.empty());
+      BBjAuthenticationService service = createService();
+
+      awaitResult(service.startLogout());
+      awaitResult(service.startLogout());
+
+      verify(navigator, Mockito.times(1)).accept(any());
+      verify(gateway, Mockito.times(1)).closeSession(any());
+    }
+
+    @Test
+    void shouldSignOutAVisitorWhoSignedInBefore() throws Exception {
+      when(gateway.openSession("alice", PASSWORD)).thenReturn(session);
+      when(store.readSession()).thenReturn(Optional.of(session));
+      BBjAuthenticationService service = createService();
+      getStatus(service.startLogin("alice", PASSWORD));
+      assertTrue(state.getAuthentication().isPresent());
+
+      awaitResult(service.startLogout());
+
+      assertTrue(state.getAuthentication().isEmpty());
+      verify(navigator).accept(logoutLocation);
+      verify(gateway).closeSession(session);
+    }
+
+    @Test
+    void shouldCancelASignInInFlightAndEndItsLateToken() throws Exception {
+      AtomicReference<Runnable> posted = new AtomicReference<>();
+      CountDownLatch postedLatch = new CountDownLatch(1);
+      createPostingRunner(posted, postedLatch);
+      when(gateway.openSession("alice", PASSWORD)).thenReturn(session);
+      when(store.readSession()).thenReturn(Optional.empty());
+      BBjAuthenticationService service = createService();
+      PendingResult<BBjLoginStatus> login = service.startLogin("alice", PASSWORD);
+      assertTrue(postedLatch.await(5, TimeUnit.SECONDS));
+
+      service.startLogout();
+      posted.get().run();
+
+      assertTrue(login.isCancelled());
+      verify(gateway, timeout(5000)).closeSession(session);
+      verify(store, never()).saveSession(any());
+      verifyNoInteractions(navigator);
+      assertTrue(state.getAuthentication().isEmpty());
+    }
+
+    @Test
+    void shouldKeepTheSignOutWhenTheResultIsCancelled() throws Exception {
+      signIn();
+      CountDownLatch release = new CountDownLatch(1);
+      CountDownLatch started = new CountDownLatch(1);
+      doAnswer(invocation -> {
+        started.countDown();
+        release.await(5, TimeUnit.SECONDS);
+
+        return null;
+      }).when(gateway).closeSession(any());
+      PendingResult<Void> result = createService().startLogout();
+      assertTrue(started.await(5, TimeUnit.SECONDS));
+
+      result.cancel();
+      release.countDown();
+
+      verify(gateway).closeSession(session);
+      verify(navigator).accept(logoutLocation);
+      assertTrue(state.getAuthentication().isEmpty());
+    }
+
+    @Test
+    void shouldConsumeTheRequestedLocation() throws Exception {
+      signIn();
+      AtomicBoolean consumed = new AtomicBoolean();
+      requestedLocation = () -> {
+        consumed.set(true);
+
+        return Optional.of(new Location("/protected"));
+      };
+
+      awaitResult(createService().startLogout());
+
+      assertTrue(consumed.get());
+    }
+
+    @Test
+    void shouldNavigateToTheConfiguredLogoutLocation() throws Exception {
+      config = ConfigFactory.parseString("webforj.security.bbj.logout-success-path = \"/bye\"");
+      signIn();
+
+      awaitResult(createService().startLogout());
+
+      verify(navigator).accept(new Location("/bye"));
+    }
+
+    @Test
+    void shouldNeverLogThePasswordOrTheTokenOverALoginAndALogout() throws Exception {
+      when(gateway.openSession("alice", PASSWORD)).thenReturn(session);
+      when(store.readSession()).thenReturn(Optional.of(session));
+      doThrow(new BBjAdminFailure(BBjAdminFailure.Kind.UNAVAILABLE, "down")).when(gateway)
+          .closeSession(session);
+
+      try (CapturedLog log = new CapturedLog(BBjAuthenticationService.class.getPackageName())) {
+        BBjAuthenticationService service = createService();
+        getStatus(service.startLogin("alice", PASSWORD));
+        awaitResult(service.startLogout());
+
+        for (String message : log.getAllMessages()) {
+          assertFalse(message.contains(PASSWORD));
+          assertFalse(message.contains("tok-abc-123"));
+          assertFalse(message.contains(session.toString()));
+        }
       }
     }
   }

@@ -22,12 +22,17 @@ import java.util.function.Supplier;
  * the text of an exception.
  * </p>
  *
+ * <p>
+ * A sign-out clears the authentication state and the kept session first, sends the visitor to the
+ * logout location and ends the token on the server last, on a worker thread. The visitor is signed
+ * out even when the server cannot be reached.
+ * </p>
+ *
  * @author Christian Liebhardt
  * @since 26.03
  */
 final class BBjAuthenticationService {
   private static final Logger logger = System.getLogger(BBjAuthenticationService.class.getName());
-  private static final Location DEFAULT_LOCATION = new Location("/");
 
   private final BBjAdminGateway gateway;
   private final BBjAdminTaskRunner runner;
@@ -35,28 +40,17 @@ final class BBjAuthenticationService {
   private final BBjAuthenticationState state;
   private final Supplier<Optional<Location>> requestedLocation;
   private final Consumer<Location> navigator;
+  private final BBjRouteSecurityConfiguration configuration;
+  private PendingResult<BBjLoginStatus> loginInFlight;
 
-  /**
-   * Creates a service.
-   *
-   * @param gateway the calls to the Admin API
-   * @param runner runs the blocking calls off the UI thread
-   * @param store keeps the session of the visitor
-   * @param state the authentication state to fill
-   * @param requestedLocation gives and clears the location the visitor asked for
-   * @param navigator sends the visitor to a location
-   *
-   * @throws NullPointerException if an argument is {@code null}
-   */
-  BBjAuthenticationService(BBjAdminGateway gateway, BBjAdminTaskRunner runner, BBjTokenStore store,
-      BBjAuthenticationState state, Supplier<Optional<Location>> requestedLocation,
-      Consumer<Location> navigator) {
-    this.gateway = Objects.requireNonNull(gateway, "gateway");
-    this.runner = Objects.requireNonNull(runner, "runner");
-    this.store = Objects.requireNonNull(store, "store");
-    this.state = Objects.requireNonNull(state, "state");
-    this.requestedLocation = Objects.requireNonNull(requestedLocation, "requestedLocation");
-    this.navigator = Objects.requireNonNull(navigator, "navigator");
+  private BBjAuthenticationService(Builder builder) {
+    this.gateway = Objects.requireNonNull(builder.gateway, "gateway");
+    this.runner = Objects.requireNonNull(builder.runner, "runner");
+    this.store = Objects.requireNonNull(builder.store, "store");
+    this.state = Objects.requireNonNull(builder.state, "state");
+    this.requestedLocation = Objects.requireNonNull(builder.requestedLocation, "requestedLocation");
+    this.navigator = Objects.requireNonNull(builder.navigator, "navigator");
+    this.configuration = Objects.requireNonNull(builder.configuration, "configuration");
   }
 
   /**
@@ -89,8 +83,62 @@ final class BBjAuthenticationService {
         openTargetLocation();
       }
     });
+    loginInFlight = result;
 
     return result;
+  }
+
+  /**
+   * Signs the visitor out on the Environment thread.
+   *
+   * <p>
+   * A sign-in in flight is cancelled, the authentication state and the kept session are cleared,
+   * the requested location is dropped and, when a sign-in was held, the visitor is sent to the
+   * logout location. The token is ended on the server last. The result completes after that call
+   * ended, or at once when there is no token to end. It never completes exceptionally.
+   * </p>
+   *
+   * <p>
+   * A visitor with no authentication and no kept session stays where they are and no server call is
+   * made.
+   * </p>
+   *
+   * @return the result, completed on the Environment thread
+   */
+  PendingResult<Void> startLogout() {
+    if (loginInFlight != null) {
+      loginInFlight.cancel();
+      loginInFlight = null;
+    }
+
+    boolean signedIn = state.getAuthentication().isPresent();
+    state.clearAuthentication();
+    Optional<BBjLoginSession> stored = readStoredSession();
+    applyStep(store::clearSession);
+    applyStep(requestedLocation::get);
+    if (!signedIn && stored.isEmpty()) {
+      return PendingResult.completedWith(null);
+    }
+
+    if (signedIn) {
+      openLogoutLocation();
+    }
+
+    if (stored.isEmpty()) {
+      return PendingResult.completedWith(null);
+    }
+
+    return closeSession(stored.get(),
+        "The BBj login token could not be ended and expires on its own");
+  }
+
+  /**
+   * Starts building a service.
+   *
+   * @return a builder with no collaborator set
+   */
+  static Builder create() {
+    return new Builder();
   }
 
   private BBjLoginStatus applySession(BBjLoginSession session) {
@@ -127,21 +175,59 @@ final class BBjAuthenticationService {
 
   private void openTargetLocation() {
     try {
-      navigator.accept(requestedLocation.get().orElse(DEFAULT_LOCATION));
+      Optional<Location> requested = requestedLocation.get();
+      navigator.accept(configuration.isReturnAfterLogin()
+          ? requested.orElseGet(configuration::getDefaultSuccessLocation)
+          : configuration.getDefaultSuccessLocation());
     } catch (RuntimeException e) {
       logger.log(Level.WARNING, "Navigation after sign-in failed with {0}", e.getClass().getName());
     }
   }
 
+  private void openLogoutLocation() {
+    try {
+      navigator.accept(configuration.getLogoutLocation());
+    } catch (RuntimeException e) {
+      logger.log(Level.WARNING, "Navigation after sign-out failed with {0}",
+          e.getClass().getName());
+    }
+  }
+
+  private Optional<BBjLoginSession> readStoredSession() {
+    try {
+      return store.readSession();
+    } catch (RuntimeException e) {
+      logger.log(Level.WARNING, "The sign-out step failed with {0}", e.getClass().getName());
+
+      return Optional.empty();
+    }
+  }
+
+  private void applyStep(Runnable step) {
+    try {
+      step.run();
+    } catch (RuntimeException e) {
+      logger.log(Level.WARNING, "The sign-out step failed with {0}", e.getClass().getName());
+    }
+  }
+
   private void closeUnkeptSession(BBjLoginSession session) {
-    runner.start(() -> {
+    closeSession(session, "A session that was not kept could not be closed on the server");
+  }
+
+  private PendingResult<Void> closeSession(BBjLoginSession session, String failureText) {
+    return runner.start(() -> {
       gateway.closeSession(session);
 
       return Boolean.TRUE;
-    }, closed -> closed, failure -> {
-      logger.log(Level.WARNING, "A session that was not kept could not be closed on the server");
+    }, closed -> null, failure -> {
+      if (failure.getKind() == BBjAdminFailure.Kind.TOKEN_REJECTED) {
+        logger.log(Level.DEBUG, "The BBj login token was already ended");
+      } else {
+        logger.log(Level.WARNING, failureText);
+      }
 
-      return Boolean.FALSE;
+      return null;
     }, closed -> {
     });
   }
@@ -151,6 +237,130 @@ final class BBjAuthenticationService {
       gateway.closeSession(session);
     } catch (RuntimeException e) {
       logger.log(Level.WARNING, "A session nobody took could not be closed on the server");
+    }
+  }
+
+  /**
+   * Collects the collaborators of a {@link BBjAuthenticationService}.
+   */
+  static final class Builder {
+    BBjAdminGateway gateway;
+    BBjAdminTaskRunner runner;
+    BBjTokenStore store;
+    BBjAuthenticationState state;
+    Supplier<Optional<Location>> requestedLocation;
+    Consumer<Location> navigator;
+    BBjRouteSecurityConfiguration configuration;
+
+    private Builder() {}
+
+    /**
+     * Sets the gateway.
+     *
+     * @param gateway the calls to the Admin API
+     * @return this builder
+     *
+     * @throws NullPointerException if the argument is {@code null}
+     */
+    Builder setGateway(BBjAdminGateway gateway) {
+      this.gateway = Objects.requireNonNull(gateway, "gateway");
+
+      return this;
+    }
+
+    /**
+     * Sets the runner.
+     *
+     * @param runner runs the blocking calls off the UI thread
+     * @return this builder
+     *
+     * @throws NullPointerException if the argument is {@code null}
+     */
+    Builder setRunner(BBjAdminTaskRunner runner) {
+      this.runner = Objects.requireNonNull(runner, "runner");
+
+      return this;
+    }
+
+    /**
+     * Sets the store.
+     *
+     * @param store keeps the session of the visitor
+     * @return this builder
+     *
+     * @throws NullPointerException if the argument is {@code null}
+     */
+    Builder setStore(BBjTokenStore store) {
+      this.store = Objects.requireNonNull(store, "store");
+
+      return this;
+    }
+
+    /**
+     * Sets the state.
+     *
+     * @param state the authentication state to fill
+     * @return this builder
+     *
+     * @throws NullPointerException if the argument is {@code null}
+     */
+    Builder setState(BBjAuthenticationState state) {
+      this.state = Objects.requireNonNull(state, "state");
+
+      return this;
+    }
+
+    /**
+     * Sets the requestedLocation.
+     *
+     * @param requestedLocation gives and clears the location the visitor asked for
+     * @return this builder
+     *
+     * @throws NullPointerException if the argument is {@code null}
+     */
+    Builder setRequestedLocation(Supplier<Optional<Location>> requestedLocation) {
+      this.requestedLocation = Objects.requireNonNull(requestedLocation, "requestedLocation");
+
+      return this;
+    }
+
+    /**
+     * Sets the navigator.
+     *
+     * @param navigator sends the visitor to a location
+     * @return this builder
+     *
+     * @throws NullPointerException if the argument is {@code null}
+     */
+    Builder setNavigator(Consumer<Location> navigator) {
+      this.navigator = Objects.requireNonNull(navigator, "navigator");
+
+      return this;
+    }
+
+    /**
+     * Sets the configuration.
+     *
+     * @param configuration the navigation settings
+     * @return this builder
+     *
+     * @throws NullPointerException if the argument is {@code null}
+     */
+    Builder setConfiguration(BBjRouteSecurityConfiguration configuration) {
+      this.configuration = Objects.requireNonNull(configuration, "configuration");
+
+      return this;
+    }
+
+    /**
+     * Builds the service.
+     *
+     * @return the service
+     *
+     * @throws NullPointerException if a collaborator was not set
+     */
+    BBjAuthenticationService build() {
+      return new BBjAuthenticationService(this);
     }
   }
 }

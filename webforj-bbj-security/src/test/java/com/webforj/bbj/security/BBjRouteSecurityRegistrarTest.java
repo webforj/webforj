@@ -164,6 +164,28 @@ class BBjRouteSecurityRegistrarTest {
   }
 
   @Test
+  void shouldGiveTheNavigationSettingsToTheSignInService() {
+    when(environment.getConfig()).thenReturn(ConfigFactory.parseString("""
+        webforj.security.enabled = true
+        webforj.security.bbj.default-success-path = "/home"
+        webforj.security.bbj.logout-success-path = "/bye"
+        """));
+    List<Object> arguments = new ArrayList<>();
+
+    try (MockedConstruction<BBjAuthenticationService> construction =
+        mockConstruction(BBjAuthenticationService.class,
+            (service, context) -> arguments.addAll(context.arguments()))) {
+      registrar.onWillRun(app);
+    }
+
+    BBjAuthenticationService.Builder builder =
+        assertInstanceOf(BBjAuthenticationService.Builder.class, arguments.getLast());
+    BBjRouteSecurityConfiguration configuration = builder.configuration;
+    assertEquals(new Location("/home"), configuration.getDefaultSuccessLocation());
+    assertEquals(new Location("/bye"), configuration.getLogoutLocation());
+  }
+
+  @Test
   void shouldDestroyTheTaskRunnerWhenTheAppTerminates() {
     BBjAdminTaskRunner runner = mock(BBjAdminTaskRunner.class);
     String key = BBjAdminTaskRunner.class.getName();

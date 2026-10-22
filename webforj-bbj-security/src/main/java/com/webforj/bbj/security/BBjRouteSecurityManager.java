@@ -1,6 +1,10 @@
 package com.webforj.bbj.security;
 
+import com.webforj.component.Component;
 import com.webforj.router.NavigationContext;
+import com.webforj.router.NavigationOptions;
+import com.webforj.router.RouteRelation;
+import com.webforj.router.Router;
 import com.webforj.router.history.Location;
 import com.webforj.router.security.AbstractRouteSecurityManager;
 import com.webforj.router.security.RouteAccessDecision;
@@ -27,6 +31,13 @@ import java.util.Optional;
  * The location a visitor asked for is kept in the {@link BBjRequestedLocationStore} and only when
  * an anonymous visitor is sent to authenticate. A denial for a signed in visitor leaves the kept
  * location as it is.
+ * </p>
+ *
+ * <p>
+ * A denial sends the visitor to the authentication or deny location and recreates the rendered
+ * routes. The router removes the rendered routes before it asks for the denied one, so after a
+ * denial on a history navigation its record of the rendered routes lists routes that are already
+ * destroyed, and a navigation that reuses them renders nothing.
  * </p>
  *
  * @author Christian Liebhardt
@@ -88,6 +99,27 @@ final class BBjRouteSecurityManager extends AbstractRouteSecurityManager {
    * {@inheritDoc}
    */
   @Override
+  protected void onPostAccessDenied(RouteAccessDecision decision, NavigationContext context) {
+    switch (decision.getDenialType()) {
+      case AUTHENTICATION_REQUIRED ->
+        getConfiguration().getAuthenticationLocation().ifPresent(this::navigateRecreating);
+      case ACCESS_DENIED -> getConfiguration().getDenyLocation().ifPresent(location -> {
+        if (decision.getReason() != null && !decision.getReason().isEmpty()) {
+          location.getQueryParameters().put("reason", decision.getReason());
+        }
+
+        navigateRecreating(location);
+      });
+      default -> {
+        // no location to open
+      }
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   public Optional<Location> getPreAuthenticationLocation() {
     return requestedLocationStore.readLocation();
   }
@@ -98,5 +130,25 @@ final class BBjRouteSecurityManager extends AbstractRouteSecurityManager {
   @Override
   public void clearPreAuthenticationLocation() {
     requestedLocationStore.clearLocation();
+  }
+
+  private void navigateRecreating(Location location) {
+    Router router = Router.getCurrent();
+    if (router == null) {
+      return;
+    }
+
+    NavigationOptions options = new NavigationOptions();
+    options.setNavigationType(NavigationOptions.NavigationType.REPLACE);
+    findRenderedRoot(router).ifPresent(options::setRecreateFrom);
+    router.navigate(location, options);
+  }
+
+  private Optional<Class<? extends Component>> findRenderedRoot(Router router) {
+    if (router.getRenderer() == null) {
+      return Optional.empty();
+    }
+
+    return router.getRenderer().getActiveRoutePath().map(RouteRelation::getData);
   }
 }

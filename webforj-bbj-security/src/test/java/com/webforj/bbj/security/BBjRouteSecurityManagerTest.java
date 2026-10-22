@@ -2,6 +2,7 @@ package com.webforj.bbj.security;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -12,8 +13,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.typesafe.config.ConfigFactory;
+import com.webforj.component.Component;
+import com.webforj.component.html.elements.Div;
+import com.webforj.component.html.elements.Paragraph;
 import com.webforj.router.NavigationContext;
 import com.webforj.router.NavigationOptions;
+import com.webforj.router.RouteRelation;
+import com.webforj.router.RouteRenderer;
 import com.webforj.router.Router;
 import com.webforj.router.history.Location;
 import com.webforj.router.security.RouteAccessDecision;
@@ -129,6 +135,75 @@ class BBjRouteSecurityManagerTest {
 
     assertEquals("/protected", store.getLocation().orElseThrow().getFullURI());
     verify(router).navigate(any(Location.class), any(NavigationOptions.class));
+  }
+
+  @Test
+  void shouldRecreateTheRenderedRoutesWhenAuthenticationIsRequired() {
+    Router router = routerRendering(Div.class);
+    NavigationContext context = mock(NavigationContext.class);
+    when(context.getLocation()).thenReturn(new Location("/protected"));
+
+    try (MockedStatic<Router> mockedRouter = mockStatic(Router.class)) {
+      mockedRouter.when(Router::getCurrent).thenReturn(router);
+
+      manager.onAccessDenied(RouteAccessDecision.denyAuthentication(), context);
+    }
+
+    ArgumentCaptor<NavigationOptions> options = ArgumentCaptor.forClass(NavigationOptions.class);
+    verify(router).navigate(any(Location.class), options.capture());
+    assertEquals(Div.class, options.getValue().getRecreateFrom());
+  }
+
+  @Test
+  void shouldRecreateFromTheRootOfTheRenderedRoutesWhenAccessIsDenied() {
+    RouteRelation<Class<? extends Component>> root = new RouteRelation<>(Div.class);
+    root.addChild(new RouteRelation<>(Paragraph.class));
+    Router router = routerRendering(root);
+    NavigationContext context = mock(NavigationContext.class);
+    when(context.getLocation()).thenReturn(new Location("/admin"));
+
+    try (MockedStatic<Router> mockedRouter = mockStatic(Router.class)) {
+      mockedRouter.when(Router::getCurrent).thenReturn(router);
+
+      manager.onAccessDenied(RouteAccessDecision.deny("no role"), context);
+    }
+
+    ArgumentCaptor<Location> target = ArgumentCaptor.forClass(Location.class);
+    ArgumentCaptor<NavigationOptions> options = ArgumentCaptor.forClass(NavigationOptions.class);
+    verify(router).navigate(target.capture(), options.capture());
+    assertEquals("/login?error&reason=no role", target.getValue().getFullURI());
+    assertEquals(Div.class, options.getValue().getRecreateFrom());
+  }
+
+  @Test
+  void shouldNotRecreateWhenNoRouteIsRendered() {
+    Router router = mock(Router.class);
+    when(router.getRenderer()).thenReturn(mock(RouteRenderer.class));
+    NavigationContext context = mock(NavigationContext.class);
+    when(context.getLocation()).thenReturn(new Location("/protected"));
+
+    try (MockedStatic<Router> mockedRouter = mockStatic(Router.class)) {
+      mockedRouter.when(Router::getCurrent).thenReturn(router);
+
+      manager.onAccessDenied(RouteAccessDecision.denyAuthentication(), context);
+    }
+
+    ArgumentCaptor<NavigationOptions> options = ArgumentCaptor.forClass(NavigationOptions.class);
+    verify(router).navigate(any(Location.class), options.capture());
+    assertNull(options.getValue().getRecreateFrom());
+  }
+
+  private static Router routerRendering(Class<? extends Component> route) {
+    return routerRendering(new RouteRelation<Class<? extends Component>>(route));
+  }
+
+  private static Router routerRendering(RouteRelation<Class<? extends Component>> path) {
+    RouteRenderer renderer = mock(RouteRenderer.class);
+    when(renderer.getActiveRoutePath()).thenReturn(Optional.of(path));
+    Router router = mock(Router.class);
+    when(router.getRenderer()).thenReturn(renderer);
+
+    return router;
   }
 
   @Test

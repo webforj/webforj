@@ -12,7 +12,8 @@ import java.util.Optional;
  *
  * <p>
  * Supported keys are {@code enabled}, {@code secure-by-default}, {@code authentication-path} and
- * {@code deny-path}.
+ * {@code deny-path}. The BBj keys are {@code bbj.default-success-path},
+ * {@code bbj.return-after-login} and {@code bbj.logout-success-path}.
  * </p>
  *
  * <p>
@@ -35,9 +36,16 @@ final class BBjRouteSecurityConfiguration implements RouteSecurityConfiguration 
   private static final String SECURE_BY_DEFAULT = "webforj.security.secure-by-default";
   private static final String AUTHENTICATION_PATH = "webforj.security.authentication-path";
   private static final String DENY_PATH = "webforj.security.deny-path";
+  static final String DEFAULT_SUCCESS_PATH = "webforj.security.bbj.default-success-path";
+  static final String RETURN_AFTER_LOGIN = "webforj.security.bbj.return-after-login";
+  static final String LOGOUT_SUCCESS_PATH = "webforj.security.bbj.logout-success-path";
+  private static final String DEFAULT_SUCCESS_PATH_VALUE = "/";
+  private static final String LOGOUT_QUERY = "?logout";
   private static final String DEFAULT_AUTHENTICATION_PATH = "/login";
   private static final String DEFAULT_DENY_PATH_TEXT =
       "the authentication location with an error query parameter";
+  private static final String DEFAULT_LOGOUT_PATH_TEXT =
+      "the authentication path with a logout query parameter";
   private static final Logger logger =
       System.getLogger(BBjRouteSecurityConfiguration.class.getName());
 
@@ -45,12 +53,18 @@ final class BBjRouteSecurityConfiguration implements RouteSecurityConfiguration 
   private final boolean secureByDefault;
   private final String authenticationPath;
   private final String denyPath;
+  private final String defaultSuccessPath;
+  private final boolean returnAfterLogin;
+  private final String logoutPath;
 
   private BBjRouteSecurityConfiguration(Builder builder) {
     this.enabled = builder.enabled;
     this.secureByDefault = builder.secureByDefault;
     this.authenticationPath = builder.authenticationPath;
     this.denyPath = builder.denyPath;
+    this.defaultSuccessPath = builder.defaultSuccessPath;
+    this.returnAfterLogin = builder.returnAfterLogin;
+    this.logoutPath = builder.logoutPath;
   }
 
   /**
@@ -87,6 +101,34 @@ final class BBjRouteSecurityConfiguration implements RouteSecurityConfiguration 
   }
 
   /**
+   * Gets the location the visitor is sent to after a sign-in when no location is requested or the
+   * visitor does not return to it.
+   *
+   * @return the location
+   */
+  Location getDefaultSuccessLocation() {
+    return new Location(defaultSuccessPath);
+  }
+
+  /**
+   * Gets the location the visitor is sent to after a sign-out.
+   *
+   * @return the location
+   */
+  Location getLogoutLocation() {
+    return new Location(logoutPath);
+  }
+
+  /**
+   * Checks whether a sign-in returns the visitor to the location asked for before.
+   *
+   * @return {@code true} when the visitor returns to the requested location
+   */
+  boolean isReturnAfterLogin() {
+    return returnAfterLogin;
+  }
+
+  /**
    * Reads the configuration from the given config.
    *
    * <p>
@@ -103,6 +145,13 @@ final class BBjRouteSecurityConfiguration implements RouteSecurityConfiguration 
    * once as a warning.
    * </p>
    *
+   * <p>
+   * The path of {@code webforj.security.bbj.default-success-path} defaults to {@code /}, and
+   * {@code webforj.security.bbj.return-after-login} defaults to and falls back to {@code true}. The
+   * path of {@code webforj.security.bbj.logout-success-path} defaults to the authentication path
+   * with a {@code logout} query parameter.
+   * </p>
+   *
    * @param config the config to read
    * @return the configuration
    */
@@ -114,6 +163,11 @@ final class BBjRouteSecurityConfiguration implements RouteSecurityConfiguration 
     builder.authenticationPath = readPath(reader, AUTHENTICATION_PATH, DEFAULT_AUTHENTICATION_PATH)
         .orElse(DEFAULT_AUTHENTICATION_PATH);
     builder.denyPath = readPath(reader, DENY_PATH, DEFAULT_DENY_PATH_TEXT).orElse(null);
+    builder.defaultSuccessPath = readPath(reader, DEFAULT_SUCCESS_PATH, DEFAULT_SUCCESS_PATH_VALUE)
+        .orElse(DEFAULT_SUCCESS_PATH_VALUE);
+    builder.returnAfterLogin = reader.readBoolean(RETURN_AFTER_LOGIN, true, true);
+    builder.logoutPath = readPath(reader, LOGOUT_SUCCESS_PATH, DEFAULT_LOGOUT_PATH_TEXT)
+        .orElse(builder.authenticationPath + LOGOUT_QUERY);
 
     return new BBjRouteSecurityConfiguration(builder);
   }
@@ -152,5 +206,8 @@ final class BBjRouteSecurityConfiguration implements RouteSecurityConfiguration 
     boolean secureByDefault;
     String authenticationPath;
     String denyPath;
+    String defaultSuccessPath;
+    boolean returnAfterLogin;
+    String logoutPath;
   }
 }

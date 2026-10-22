@@ -1,5 +1,6 @@
 package com.webforj.bbj.security;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -10,6 +11,8 @@ import com.webforj.Environment;
 import com.webforj.PendingResult;
 import com.webforj.bbj.security.model.BBjLoginStatus;
 import com.webforj.bbj.security.model.BBjPrincipal;
+import com.webforj.component.ComponentLifecycleObserver;
+import com.webforj.component.ComponentLifecycleObserver.LifecycleEvent;
 import com.webforj.component.Theme;
 import com.webforj.component.login.event.LoginSubmitEvent;
 import com.webforj.component.toast.Toast;
@@ -263,6 +266,56 @@ class BBjSecurityTest {
   }
 
   @Nested
+  class Logout {
+    private final String serviceKey = BBjAuthenticationService.class.getName();
+    private MockedStatic<Environment> mockedEnvironment;
+
+    @BeforeEach
+    void setUp() {
+      mockedEnvironment = Mockito.mockStatic(Environment.class);
+    }
+
+    @AfterEach
+    void tearDown() {
+      mockedEnvironment.close();
+    }
+
+    @Test
+    void shouldDelegateToTheRegisteredService() {
+      BBjAuthenticationService service = Mockito.mock(BBjAuthenticationService.class);
+      PendingResult<Void> expected = PendingResult.completedWith(null);
+      Mockito.when(service.startLogout()).thenReturn(expected);
+      mockedEnvironment.when(Environment::getCurrent).thenReturn(Mockito.mock(Environment.class));
+      mockedObjectTable.when(() -> ObjectTable.contains(serviceKey)).thenReturn(true);
+      mockedObjectTable.when(() -> ObjectTable.get(serviceKey)).thenReturn(service);
+
+      assertSame(expected, BBjSecurity.logout());
+    }
+
+    @Test
+    void shouldCompleteWithoutARegisteredService() {
+      mockedEnvironment.when(Environment::getCurrent).thenReturn(Mockito.mock(Environment.class));
+      mockedObjectTable.when(() -> ObjectTable.contains(serviceKey)).thenReturn(false);
+
+      PendingResult<Void> result = BBjSecurity.logout();
+
+      assertTrue(result.isDone());
+      assertFalse(result.isCompletedExceptionally());
+    }
+
+    @Test
+    void shouldFailOffTheEnvironmentThread() {
+      mockedEnvironment.when(Environment::getCurrent).thenReturn(null);
+
+      IllegalStateException exception =
+          assertThrows(IllegalStateException.class, BBjSecurity::logout);
+
+      assertEquals("Sign-out must be called on the Environment thread of the app",
+          exception.getMessage());
+    }
+  }
+
+  @Nested
   class LoginDialog {
     private final String serviceKey = BBjAuthenticationService.class.getName();
     private MockedStatic<Environment> mockedEnvironment;
@@ -270,6 +323,7 @@ class BBjSecurityTest {
     private BBjAuthenticationService service;
     private com.webforj.component.login.Login dialog;
     private EventListener<LoginSubmitEvent> listener;
+    private ComponentLifecycleObserver destroyObserver;
 
     @BeforeEach
     @SuppressWarnings("unchecked")
@@ -287,6 +341,10 @@ class BBjSecurityTest {
       BBjSecurity.login(dialog);
       Mockito.verify(dialog).onSubmit(captor.capture());
       listener = captor.getValue();
+      ArgumentCaptor<ComponentLifecycleObserver> observerCaptor =
+          ArgumentCaptor.forClass(ComponentLifecycleObserver.class);
+      Mockito.verify(dialog).addLifecycleObserver(observerCaptor.capture());
+      destroyObserver = observerCaptor.getValue();
     }
 
     @AfterEach
@@ -361,6 +419,78 @@ class BBjSecurityTest {
 
       Mockito.verify(service, Mockito.times(2)).startLogin("alice", "pw");
       Mockito.verify(dialog, Mockito.times(2)).setError(false);
+    }
+
+    @Test
+    void shouldCancelTheLoginWhenTheDialogIsDestroyed() {
+      PendingResult<BBjLoginStatus> pending = new PendingResult<>();
+      Mockito.when(service.startLogin("alice", "pw")).thenReturn(pending);
+      listener.onEvent(submitEvent());
+
+      destroyObserver.onComponentLifecycleEvent(dialog, LifecycleEvent.DESTROY);
+      pending.complete(BBjLoginStatus.AUTHENTICATED);
+
+      assertTrue(pending.isCancelled());
+      Mockito.verify(dialog, Mockito.never()).close();
+    }
+
+    @Test
+    void shouldKeepTheLoginWhenAnotherLifecycleEventArrives() {
+      PendingResult<BBjLoginStatus> pending = new PendingResult<>();
+      Mockito.when(service.startLogin("alice", "pw")).thenReturn(pending);
+      listener.onEvent(submitEvent());
+
+      destroyObserver.onComponentLifecycleEvent(dialog, LifecycleEvent.CREATE);
+
+      assertFalse(pending.isCancelled());
+    }
+
+    @Test
+    void shouldAcceptADestroyedDialogWithoutASubmit() {
+      assertDoesNotThrow(
+          () -> destroyObserver.onComponentLifecycleEvent(dialog, LifecycleEvent.DESTROY));
+    }
+
+    @Test
+    void shouldEnableTheFormAndRethrowWhenTheLoginThrows() {
+      IllegalStateException failure = new IllegalStateException("not available");
+      Mockito.when(service.startLogin("alice", "pw")).thenThrow(failure);
+      LoginSubmitEvent event = submitEvent();
+
+      IllegalStateException thrown =
+          assertThrows(IllegalStateException.class, () -> listener.onEvent(event));
+
+      assertSame(failure, thrown);
+      Mockito.verify(dialog).setEnabled(true);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldShowTheGivenTextOnUnavailable() {
+      com.webforj.component.login.Login other =
+          Mockito.mock(com.webforj.component.login.Login.class);
+      ArgumentCaptor<EventListener<LoginSubmitEvent>> captor =
+          ArgumentCaptor.forClass(EventListener.class);
+      BBjSecurity.login(other, "Anmeldung nicht moeglich.");
+      Mockito.verify(other).onSubmit(captor.capture());
+      Mockito.when(service.startLogin("alice", "pw"))
+          .thenReturn(PendingResult.completedWith(BBjLoginStatus.UNAVAILABLE));
+
+      captor.getValue().onEvent(submitEvent());
+
+      mockedToast.verify(() -> Toast.show("Anmeldung nicht moeglich.", Theme.WARNING));
+      Mockito.verify(other).setEnabled(true);
+    }
+
+    @Test
+    void shouldRejectANullDialogOrText() {
+      com.webforj.component.login.Login other =
+          Mockito.mock(com.webforj.component.login.Login.class);
+
+      com.webforj.component.login.Login none = null;
+
+      assertThrows(NullPointerException.class, () -> BBjSecurity.login(none, "text"));
+      assertThrows(NullPointerException.class, () -> BBjSecurity.login(other, null));
     }
   }
 }

@@ -248,6 +248,134 @@ class BBjRouteSecurityConfigurationTest {
     }
   }
 
+  @Nested
+  class DefaultSuccessPathKey {
+
+    @Test
+    void shouldUseTheRootSilentlyWhenTheKeyIsMissing() {
+      BBjRouteSecurityConfiguration configuration =
+          BBjRouteSecurityConfiguration.create(ConfigFactory.empty());
+
+      assertEquals(new Location("/"), configuration.getDefaultSuccessLocation());
+      assertTrue(warnings.isEmpty());
+      assertTrue(debugs.contains("webforj.security.bbj.default-success-path is not set, using /"));
+    }
+
+    @Test
+    void shouldReadTheValue() {
+      Config config =
+          ConfigFactory.parseString("webforj.security.bbj.default-success-path = \"/home?tab=1\"");
+
+      assertEquals(new Location("/home?tab=1"),
+          BBjRouteSecurityConfiguration.create(config).getDefaultSuccessLocation());
+      assertTrue(warnings.isEmpty());
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.webforj.bbj.security.BBjRouteSecurityConfigurationTest#createInvalidPaths")
+    void shouldUseTheRootWithOneWarningWhenTheValueIsInvalid(String value) {
+      Config config =
+          ConfigFactory.parseString("webforj.security.bbj.default-success-path = " + value);
+
+      assertEquals(new Location("/"),
+          BBjRouteSecurityConfiguration.create(config).getDefaultSuccessLocation());
+      assertEquals(1, warnings.size());
+      assertTrue(warnings.getFirst().contains("webforj.security.bbj.default-success-path"));
+    }
+
+    @Test
+    void shouldNotShareTheLocationBetweenCalls() {
+      BBjRouteSecurityConfiguration configuration =
+          BBjRouteSecurityConfiguration.create(ConfigFactory.empty());
+
+      configuration.getDefaultSuccessLocation().getQueryParameters().put("reason", "x");
+
+      assertEquals(new Location("/"), configuration.getDefaultSuccessLocation());
+    }
+  }
+
+  @Nested
+  class ReturnAfterLoginKey {
+
+    @Test
+    void shouldReturnSilentlyWhenTheKeyIsMissing() {
+      BBjRouteSecurityConfiguration configuration =
+          BBjRouteSecurityConfiguration.create(ConfigFactory.empty());
+
+      assertTrue(configuration.isReturnAfterLogin());
+      assertTrue(warnings.isEmpty());
+      assertTrue(debugs.contains("webforj.security.bbj.return-after-login is not set, using true"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.webforj.bbj.security.BBjRouteSecurityConfigurationTest#createBooleans")
+    void shouldReadTheValue(String value, boolean expected) {
+      Config config =
+          ConfigFactory.parseString("webforj.security.bbj.return-after-login = " + value);
+
+      assertEquals(expected, BBjRouteSecurityConfiguration.create(config).isReturnAfterLogin());
+      assertTrue(warnings.isEmpty());
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.webforj.bbj.security.BBjRouteSecurityConfigurationTest#createBadBooleans")
+    void shouldReturnWithOneWarningWhenTheValueIsInvalid(String value) {
+      Config config =
+          ConfigFactory.parseString("webforj.security.bbj.return-after-login = " + value);
+
+      assertTrue(BBjRouteSecurityConfiguration.create(config).isReturnAfterLogin());
+      assertEquals(1, warnings.size());
+      assertTrue(warnings.getFirst().contains("webforj.security.bbj.return-after-login"));
+    }
+  }
+
+  @Nested
+  class LogoutSuccessPathKey {
+
+    @Test
+    void shouldDeriveTheDefaultFromTheDefaultAuthenticationPath() {
+      BBjRouteSecurityConfiguration configuration =
+          BBjRouteSecurityConfiguration.create(ConfigFactory.empty());
+
+      assertEquals(new Location("/login?logout"), configuration.getLogoutLocation());
+      assertTrue(warnings.isEmpty());
+      assertTrue(debugs.contains(
+          "webforj.security.bbj.logout-success-path is not set, using the authentication path with a logout query parameter"));
+    }
+
+    @Test
+    void shouldDeriveTheDefaultFromAConfiguredAuthenticationPath() {
+      Config config =
+          ConfigFactory.parseString("webforj.security.authentication-path = \"/signin\"");
+
+      assertEquals(new Location("/signin?logout"),
+          BBjRouteSecurityConfiguration.create(config).getLogoutLocation());
+    }
+
+    @Test
+    void shouldReadTheValue() {
+      Config config =
+          ConfigFactory.parseString("webforj.security.authentication-path = \"/signin\"\n"
+              + "webforj.security.bbj.logout-success-path = \"/public\"");
+
+      assertEquals(new Location("/public"),
+          BBjRouteSecurityConfiguration.create(config).getLogoutLocation());
+      assertTrue(warnings.isEmpty());
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.webforj.bbj.security.BBjRouteSecurityConfigurationTest#createInvalidPaths")
+    void shouldUseTheDerivedDefaultWithOneWarningWhenTheValueIsInvalid(String value) {
+      Config config =
+          ConfigFactory.parseString("webforj.security.bbj.logout-success-path = " + value);
+
+      assertEquals(new Location("/login?logout"),
+          BBjRouteSecurityConfiguration.create(config).getLogoutLocation());
+      assertEquals(1, warnings.size());
+      assertTrue(warnings.getFirst().contains("webforj.security.bbj.logout-success-path"));
+    }
+  }
+
   private static Stream<Arguments> createBooleans() {
     return Stream.of(Arguments.of("true", true), Arguments.of("false", false));
   }
