@@ -3,14 +3,17 @@ package com.webforj.bbj.security;
 import com.webforj.App;
 import com.webforj.AppLifecycleListener;
 import com.webforj.Environment;
+import com.webforj.PendingResult;
 import com.webforj.annotation.AppListenerPriority;
 import com.webforj.environment.ObjectTable;
+import com.webforj.environment.namespace.GlobalNamespace;
 import com.webforj.router.Router;
 import com.webforj.router.security.RouteSecurityObserver;
 import com.webforj.webstorage.SessionStorage;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.time.Clock;
+import java.util.function.Function;
 
 /**
  * Registers route security with the router when an app runs in BBjServices.
@@ -59,13 +62,24 @@ public final class BBjRouteSecurityRegistrar implements AppLifecycleListener {
         return;
       }
 
-      BBjRouteSecurityManager manager = new BBjRouteSecurityManager(configuration,
-          new BBjAuthenticationState(), Clock.systemUTC(),
+      Clock clock = Clock.systemUTC();
+      BBjAuthenticationState state = new BBjAuthenticationState();
+      BBjRouteSecurityManager manager = new BBjRouteSecurityManager(configuration, state, clock,
           new BBjBrowserRequestedLocationStore(BBjRouteSecurityRegistrar::findSessionStorage));
       BBjRouteSecurityEvaluatorLoader.loadEvaluators(Thread.currentThread().getContextClassLoader())
           .forEach(evaluator -> manager.registerEvaluator(evaluator, evaluator.getPriority()));
 
+      BBjAdminTaskRunner runner = new BBjAdminTaskRunner(adminConfiguration.getTimeout(),
+          BBjRouteSecurityRegistrar::createDispatcher);
+      BBjAuthenticationService service = new BBjAuthenticationService(
+          new BBjFactoryAdminGateway(adminConfiguration, clock), runner,
+          new BBjNamespaceTokenStore(GlobalNamespace::new, App::getApplicationName,
+              SessionStorage::getCurrent, clock),
+          state, manager::consumePreAuthenticationLocation, location -> router.navigate(location));
+
       ObjectTable.put(BBjRouteSecurityContext.class.getName(), manager.getSecurityContext());
+      ObjectTable.put(BBjAdminTaskRunner.class.getName(), runner);
+      ObjectTable.put(BBjAuthenticationService.class.getName(), service);
       router.getRenderer().addObserver(new RouteSecurityObserver(manager));
       logger.log(Level.INFO, "BBj route security enabled with {0} evaluators",
           manager.getEvaluators().size());
@@ -73,6 +87,28 @@ public final class BBjRouteSecurityRegistrar implements AppLifecycleListener {
       logger.log(Level.ERROR, "Route security could not be registered, the app does not start", e);
       throw new BBjSecurityError("Route security could not be registered", e);
     }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void onWillTerminate(App app) {
+    try {
+      String key = BBjAdminTaskRunner.class.getName();
+      if (ObjectTable.contains(key)) {
+        ((BBjAdminTaskRunner) ObjectTable.get(key)).destroy();
+      }
+    } catch (RuntimeException e) {
+      logger.log(Level.WARNING, "The Admin API task runner could not be stopped, {0}",
+          e.getClass().getName());
+    }
+  }
+
+  private static Function<Runnable, PendingResult<Void>> createDispatcher() {
+    Environment environment = Environment.getCurrent();
+
+    return task -> Environment.runLater(environment, task);
   }
 
   private static SessionStorage findSessionStorage() {

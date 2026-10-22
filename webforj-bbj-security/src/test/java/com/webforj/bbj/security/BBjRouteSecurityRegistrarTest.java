@@ -151,6 +151,50 @@ class BBjRouteSecurityRegistrarTest {
   }
 
   @Test
+  void shouldRegisterTheSignInServiceAndTheTaskRunnerForTheApp() {
+    when(environment.getConfig())
+        .thenReturn(ConfigFactory.parseString("webforj.security.enabled = true"));
+
+    registrar.onWillRun(app);
+
+    mockedObjectTable.verify(() -> ObjectTable.put(eq(BBjAdminTaskRunner.class.getName()),
+        any(BBjAdminTaskRunner.class)));
+    mockedObjectTable.verify(() -> ObjectTable.put(eq(BBjAuthenticationService.class.getName()),
+        any(BBjAuthenticationService.class)));
+  }
+
+  @Test
+  void shouldDestroyTheTaskRunnerWhenTheAppTerminates() {
+    BBjAdminTaskRunner runner = mock(BBjAdminTaskRunner.class);
+    String key = BBjAdminTaskRunner.class.getName();
+    mockedObjectTable.when(() -> ObjectTable.contains(key)).thenReturn(true);
+    mockedObjectTable.when(() -> ObjectTable.get(key)).thenReturn(runner);
+
+    registrar.onWillTerminate(app);
+
+    verify(runner).destroy();
+  }
+
+  @Test
+  void shouldDoNothingWhenTheAppTerminatesWithoutATaskRunner() {
+    mockedObjectTable.when(() -> ObjectTable.contains(BBjAdminTaskRunner.class.getName()))
+        .thenReturn(false);
+
+    assertDoesNotThrow(() -> registrar.onWillTerminate(app));
+  }
+
+  @Test
+  void shouldNotThrowWhenTheTaskRunnerCannotBeStopped() {
+    BBjAdminTaskRunner runner = mock(BBjAdminTaskRunner.class);
+    String key = BBjAdminTaskRunner.class.getName();
+    mockedObjectTable.when(() -> ObjectTable.contains(key)).thenReturn(true);
+    mockedObjectTable.when(() -> ObjectTable.get(key)).thenReturn(runner);
+    doThrow(new IllegalStateException()).when(runner).destroy();
+
+    assertDoesNotThrow(() -> registrar.onWillTerminate(app));
+  }
+
+  @Test
   void shouldNotRegisterWhenDisabledByConfiguration() {
     when(environment.getConfig())
         .thenReturn(ConfigFactory.parseString("webforj.security.enabled = false"));

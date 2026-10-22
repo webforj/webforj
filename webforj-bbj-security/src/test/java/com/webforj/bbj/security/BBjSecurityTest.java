@@ -2,15 +2,20 @@ package com.webforj.bbj.security;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.webforj.Environment;
+import com.webforj.PendingResult;
+import com.webforj.bbj.security.model.BBjLoginStatus;
 import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.environment.ObjectTable;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -157,15 +162,97 @@ class BBjSecurityTest {
   @Nested
   class WithoutContext {
 
+    @BeforeEach
+    void setUp() {
+      mockedObjectTable.when(() -> ObjectTable.contains(KEY)).thenReturn(false);
+      mockedObjectTable.when(() -> ObjectTable.get(KEY)).thenThrow(new NoSuchElementException());
+    }
+
+    @Test
+    void shouldHaveNoCurrentUser() {
+      assertTrue(BBjSecurity.currentUser().isEmpty());
+    }
+
+    @Test
+    void shouldHaveNoRole() {
+      assertFalse(BBjSecurity.hasRole("admin"));
+    }
+
+    @Test
+    void shouldHaveNoPermission() {
+      assertFalse(BBjSecurity.hasPermission("admin"));
+    }
+
+    @Test
+    void shouldFailToRequireAuthentication() {
+      assertThrows(SecurityException.class, BBjSecurity::require);
+    }
+
+    @Test
+    void shouldFailToRequireRole() {
+      assertThrows(SecurityException.class, () -> BBjSecurity.require("admin"));
+    }
+
     @Test
     void shouldBehaveLikeAnonymousWhenNothingIsRegistered() {
-      mockedObjectTable.when(() -> ObjectTable.contains(KEY)).thenReturn(false);
 
       assertTrue(BBjSecurity.currentUser().isEmpty());
       assertFalse(BBjSecurity.hasRole("admin"));
       assertFalse(BBjSecurity.hasPermission("admin"));
       assertThrows(SecurityException.class, BBjSecurity::require);
       assertThrows(SecurityException.class, () -> BBjSecurity.require("admin"));
+    }
+  }
+
+  @Nested
+  class Login {
+    private final String serviceKey = BBjAuthenticationService.class.getName();
+    private MockedStatic<Environment> mockedEnvironment;
+
+    @BeforeEach
+    void setUp() {
+      mockedEnvironment = Mockito.mockStatic(Environment.class);
+    }
+
+    @AfterEach
+    void tearDown() {
+      mockedEnvironment.close();
+    }
+
+    @Test
+    void shouldDelegateToTheRegisteredService() {
+      BBjAuthenticationService service = Mockito.mock(BBjAuthenticationService.class);
+      PendingResult<BBjLoginStatus> expected =
+          PendingResult.completedWith(BBjLoginStatus.AUTHENTICATED);
+      Mockito.when(service.startLogin("alice", "pw")).thenReturn(expected);
+      mockedEnvironment.when(Environment::getCurrent).thenReturn(Mockito.mock(Environment.class));
+      mockedObjectTable.when(() -> ObjectTable.contains(serviceKey)).thenReturn(true);
+      mockedObjectTable.when(() -> ObjectTable.get(serviceKey)).thenReturn(service);
+
+      assertSame(expected, BBjSecurity.login("alice", "pw"));
+    }
+
+    @Test
+    void shouldFailWithoutARegisteredService() {
+      mockedEnvironment.when(Environment::getCurrent).thenReturn(Mockito.mock(Environment.class));
+      mockedObjectTable.when(() -> ObjectTable.contains(serviceKey)).thenReturn(false);
+
+      IllegalStateException exception =
+          assertThrows(IllegalStateException.class, () -> BBjSecurity.login("alice", "pw"));
+
+      assertEquals("Sign-in is not available, route security is not enabled",
+          exception.getMessage());
+    }
+
+    @Test
+    void shouldFailOffTheEnvironmentThread() {
+      mockedEnvironment.when(Environment::getCurrent).thenReturn(null);
+
+      IllegalStateException exception =
+          assertThrows(IllegalStateException.class, () -> BBjSecurity.login("alice", "pw"));
+
+      assertEquals("Sign-in must be called on the Environment thread of the app",
+          exception.getMessage());
     }
   }
 }

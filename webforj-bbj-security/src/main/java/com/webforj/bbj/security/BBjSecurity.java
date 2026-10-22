@@ -1,5 +1,8 @@
 package com.webforj.bbj.security;
 
+import com.webforj.Environment;
+import com.webforj.PendingResult;
+import com.webforj.bbj.security.model.BBjLoginStatus;
 import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.environment.ObjectTable;
 import java.util.Objects;
@@ -89,8 +92,50 @@ public final class BBjSecurity {
     return principal;
   }
 
+  /**
+   * Signs a user in.
+   *
+   * <p>
+   * The call must run on the Environment thread of the app, for example in an event handler. The
+   * Admin API call runs on a worker thread, within the time limit of the configuration, and the
+   * returned result completes on the Environment thread. It never completes exceptionally.
+   * </p>
+   *
+   * <p>
+   * On {@link BBjLoginStatus#AUTHENTICATED} the user is signed in and the app has navigated to the
+   * location the visitor asked for, or to the root. A blank user name or password answers
+   * {@link BBjLoginStatus#INVALID_CREDENTIALS} without a server call. Cancelling the result before
+   * it completes keeps the visitor signed out.
+   * </p>
+   *
+   * @param userName the BBj user name
+   * @param password the password of the user
+   * @return the result of the sign-in
+   *
+   * @throws NullPointerException if an argument is {@code null}
+   * @throws IllegalStateException if route security is not enabled or the call is not on the
+   *         Environment thread of the app
+   */
+  public static PendingResult<BBjLoginStatus> login(String userName, String password) {
+    if (Environment.getCurrent() == null) {
+      throw new IllegalStateException(
+          "Sign-in must be called on the Environment thread of the app");
+    }
+
+    String key = BBjAuthenticationService.class.getName();
+    if (!ObjectTable.contains(key)) {
+      throw new IllegalStateException("Sign-in is not available, route security is not enabled");
+    }
+
+    return ((BBjAuthenticationService) ObjectTable.get(key)).startLogin(userName, password);
+  }
+
   private static Optional<BBjRouteSecurityContext> getContext() {
     String key = BBjRouteSecurityContext.class.getName();
-    return Optional.ofNullable((BBjRouteSecurityContext) ObjectTable.get(key));
+    if (!ObjectTable.contains(key)) {
+      return Optional.empty();
+    }
+
+    return Optional.of((BBjRouteSecurityContext) ObjectTable.get(key));
   }
 }
