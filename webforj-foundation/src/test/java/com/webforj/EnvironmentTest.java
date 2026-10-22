@@ -1,5 +1,6 @@
 package com.webforj;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -247,6 +248,35 @@ class EnvironmentTest {
 
         assertThrows(ConfigException.UnresolvedSubstitution.class,
             () -> Environment.init(mockApi, debug));
+      } finally {
+        Files.deleteIfExists(tempConfigFile);
+      }
+    }
+
+    @Test
+    void shouldKeepPreviousConfigWhenLayerFailsToResolve() throws Exception {
+      Path tempConfigFile = Files.createTempFile("test-config", ".conf");
+      Files.writeString(tempConfigFile, """
+          test.value = "file"
+          """);
+      System.setProperty("webforj.conf", tempConfigFile.toAbsolutePath().toString());
+
+      try {
+        BBjAPI mockApi = mock(BBjAPI.class);
+        when(mockApi.openSysGui(anyString())).thenReturn(mock(BBjSysGui.class));
+
+        Environment.init(mockApi, 0);
+        Config failingLayer =
+            ConfigFactory.parseString("test.broken = ${WEBFORJ_TEST_UNSET_VARIABLE_4711}");
+        Config validLayer = ConfigFactory.parseString("test.other = \"later\"");
+
+        assertThrows(ConfigException.UnresolvedSubstitution.class,
+            () -> Environment.getCurrent().setConfig(failingLayer));
+        assertEquals("file", Environment.getCurrent().getConfig().getString("test.value"));
+
+        assertDoesNotThrow(() -> Environment.getCurrent().setConfig(validLayer));
+        assertEquals("file", Environment.getCurrent().getConfig().getString("test.value"));
+        assertEquals("later", Environment.getCurrent().getConfig().getString("test.other"));
       } finally {
         Files.deleteIfExists(tempConfigFile);
       }

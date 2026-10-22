@@ -433,7 +433,8 @@ public final class Environment {
    * <p>
    * This method merges additional configuration sources with the existing configuration. The
    * additional config takes precedence over existing values. The merged configuration is resolved,
-   * so substitutions such as {@code ${?VAR}} read environment variables.
+   * so substitutions such as {@code ${?VAR}} read environment variables. When resolution fails, the
+   * previous configuration stays in place.
    * </p>
    *
    * @param additionalConfig the additional configuration to merge
@@ -441,13 +442,12 @@ public final class Environment {
    * @since 25.03
    */
   public Config setConfig(Config additionalConfig) {
-    if (this.unresolvedConfig == null) {
-      this.unresolvedConfig = additionalConfig;
-    } else {
-      this.unresolvedConfig = additionalConfig.withFallback(this.unresolvedConfig);
-    }
+    Config mergedConfig = this.unresolvedConfig == null ? additionalConfig
+        : additionalConfig.withFallback(this.unresolvedConfig);
+    Config resolvedConfig = mergedConfig.resolve();
 
-    this.config = this.unresolvedConfig.resolve();
+    this.unresolvedConfig = mergedConfig;
+    this.config = resolvedConfig;
 
     // Apply the configuration settings
     applyConfig(this.config);
