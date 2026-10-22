@@ -37,7 +37,6 @@ class BBjAdminConfigurationTest {
   private static final String PASSWORD = PREFIX + "admin.truststore-password";
   private static final String TIMEOUT = PREFIX + "admin.timeout-seconds";
   private static final String TOKEN_MINUTES = PREFIX + "token.minutes";
-  private static final String STORE_MAX_ENTRIES = PREFIX + "token.store-max-entries";
   private CapturedLog log;
 
   @BeforeEach
@@ -70,25 +69,23 @@ class BBjAdminConfigurationTest {
     assertEquals(Duration.ofSeconds(10), configuration.getTimeout());
     assertEquals(Duration.ofMinutes(30), configuration.getTokenLifetime());
     assertTrue(log.getMessages(Level.WARNING).isEmpty());
-    assertEquals(
-        List.of(HOST + " is not set, using 127.0.0.1", PORT + " is not set, using 2002",
-            SSL + " is not set, using false", PASSWORD + " is not set, using empty",
-            TIMEOUT + " is not set, using 10", TOKEN_MINUTES + " is not set, using 30",
-            STORE_MAX_ENTRIES + " is not set, using 10000", TRUSTSTORE + " is not set, using none"),
-        log.getMessages(Level.FINE));
+    assertEquals(List.of(HOST + " is not set, using 127.0.0.1", PORT + " is not set, using 2002",
+        SSL + " is not set, using false", PASSWORD + " is not set, using empty",
+        TIMEOUT + " is not set, using 10", TOKEN_MINUTES + " is not set, using 30",
+        TRUSTSTORE + " is not set, using none"), log.getMessages(Level.FINE));
   }
 
   @Test
   void shouldTreatNullValuesAsMissing() {
     BBjAdminConfiguration configuration = createConfiguration(HOST + " = null", PORT + " = null",
         SSL + " = null", TRUSTSTORE + " = null", PASSWORD + " = null", TIMEOUT + " = null",
-        TOKEN_MINUTES + " = null", STORE_MAX_ENTRIES + " = null");
+        TOKEN_MINUTES + " = null");
 
     assertEquals("127.0.0.1", configuration.getHost());
     assertEquals(2002, configuration.getPort());
     assertEquals(Duration.ofSeconds(10), configuration.getTimeout());
     assertEquals(Duration.ofMinutes(30), configuration.getTokenLifetime());
-    assertEquals(8, log.getMessages(Level.FINE).size());
+    assertEquals(7, log.getMessages(Level.FINE).size());
     assertTrue(log.getMessages(Level.WARNING).isEmpty());
   }
 
@@ -139,47 +136,6 @@ class BBjAdminConfigurationTest {
       assertEquals(Duration.ofMinutes(60),
           createConfiguration(TOKEN_MINUTES + " = 60").getTokenLifetime());
       assertTrue(log.getMessages(Level.WARNING).isEmpty());
-    }
-  }
-
-  @Nested
-  class TokenStoreMaxEntries {
-    static Stream<String> invalidValues() {
-      return Stream.of("0", "-1", "100001", "1.5", "\"notANumberValue\"", "${nowhere.nothing}");
-    }
-
-    @Test
-    void shouldDefaultToTenThousand() {
-      assertEquals(10000,
-          BBjAdminConfiguration.create(ConfigFactory.empty()).getTokenStoreMaxEntries());
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"1", "250", "100000"})
-    void shouldReadValidValue(String value) {
-      BBjAdminConfiguration configuration = createConfiguration(STORE_MAX_ENTRIES + " = " + value);
-
-      assertEquals(Integer.parseInt(value), configuration.getTokenStoreMaxEntries());
-      assertTrue(log.getMessages(Level.WARNING).isEmpty());
-    }
-
-    @ParameterizedTest
-    @MethodSource("invalidValues")
-    void shouldUseTheDefaultAndWarnOnceNamingTheKeyButNotTheValue(String value) {
-      BBjAdminConfiguration configuration = createConfiguration(STORE_MAX_ENTRIES + " = " + value);
-
-      assertEquals(10000, configuration.getTokenStoreMaxEntries());
-      List<String> warnings = log.getMessages(Level.WARNING);
-      assertEquals(1, warnings.size());
-      assertTrue(warnings.get(0).contains(STORE_MAX_ENTRIES));
-      assertFalse(warnings.get(0).contains("notA"));
-    }
-
-    @Test
-    void shouldNotWarnAboutTheKeyAsUnknown() {
-      createConfiguration(STORE_MAX_ENTRIES + " = 20");
-
-      assertTrue(log.getAllMessages().stream().noneMatch(text -> text.contains("not a known")));
     }
   }
 
@@ -518,9 +474,17 @@ class BBjAdminConfigurationTest {
 
       createConfiguration(HOST + " = localhost", PORT + " = 2003", SSL + " = true",
           TRUSTSTORE + " = \"" + file + "\"", PASSWORD + " = x", TIMEOUT + " = 20",
-          TOKEN_MINUTES + " = 45", STORE_MAX_ENTRIES + " = 500");
+          TOKEN_MINUTES + " = 45");
 
       assertTrue(log.getMessages(Level.WARNING).isEmpty());
+    }
+
+    @Test
+    void shouldWarnAboutTheRemovedTokenStoreKeyAsUnknown() {
+      createConfiguration(PREFIX + "token.store-max-entries = 500");
+
+      assertEquals(List.of(PREFIX + "token.store-max-entries is not a known key and is ignored"),
+          log.getMessages(Level.WARNING));
     }
 
     @Test
