@@ -2,6 +2,7 @@ package com.webforj.bbj.security;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
@@ -264,16 +265,22 @@ class BBjAdminConfigurationTest {
       IllegalArgumentException exception =
           assertThrows(IllegalArgumentException.class, () -> BBjAdminConfiguration.create(config));
 
-      assertTrue(exception.getMessage().contains(HOST));
-      assertTrue(exception.getMessage().contains(SSL));
-      assertTrue(exception.getMessage().contains(TRUSTSTORE));
+      assertEquals(
+          "The host in " + HOST + " is not a loopback address, so " + SSL + " must be true",
+          exception.getMessage());
     }
 
     @Test
     void shouldRefuseRemoteHostWithTlsButWithoutTruststore() {
       Config config = createConfig(HOST + " = \"bbj.example.com\"", SSL + " = true");
 
-      assertThrows(IllegalArgumentException.class, () -> BBjAdminConfiguration.create(config));
+      IllegalArgumentException exception =
+          assertThrows(IllegalArgumentException.class, () -> BBjAdminConfiguration.create(config));
+
+      assertEquals(
+          "The host in " + HOST + " is not a loopback address, so " + TRUSTSTORE + " must be set",
+          exception.getMessage());
+      assertNull(exception.getCause());
     }
 
     @Test
@@ -283,7 +290,13 @@ class BBjAdminConfigurationTest {
       Config config =
           createConfig(HOST + " = \"bbj.example.com\"", TRUSTSTORE + " = \"" + file + "\"");
 
-      assertThrows(IllegalArgumentException.class, () -> BBjAdminConfiguration.create(config));
+      IllegalArgumentException exception =
+          assertThrows(IllegalArgumentException.class, () -> BBjAdminConfiguration.create(config));
+
+      assertEquals(
+          "The host in " + HOST + " is not a loopback address, so " + SSL + " must be true",
+          exception.getMessage());
+      assertFalse(exception.getMessage().contains(file.toString()));
     }
 
     @Test
@@ -383,6 +396,137 @@ class BBjAdminConfigurationTest {
           createConfiguration(HOST + " = localhost", PORT + " = 2003", SSL + " = true",
               TRUSTSTORE + " = \"" + file + "\"", PASSWORD + " = " + SECRET, TIMEOUT + " = 20",
               TOKEN_MINUTES + " = 45").toString());
+    }
+  }
+
+  @Nested
+  class TruststoreProblems {
+    @Test
+    void shouldNameTheTruststoreForAMissingFile(@TempDir Path folder) {
+      Path missing = folder.resolve("missing.jks");
+      Config config = createConfig(SSL + " = true", TRUSTSTORE + " = \"" + missing + "\"");
+
+      IllegalArgumentException exception =
+          assertThrows(IllegalArgumentException.class, () -> BBjAdminConfiguration.create(config));
+
+      assertEquals(TRUSTSTORE + " must name an existing file", exception.getMessage());
+      assertNull(exception.getCause());
+    }
+
+    @Test
+    void shouldNameTheTruststoreForAFolder(@TempDir Path folder) {
+      Config config = createConfig(SSL + " = true", TRUSTSTORE + " = \"" + folder + "\"");
+
+      IllegalArgumentException exception =
+          assertThrows(IllegalArgumentException.class, () -> BBjAdminConfiguration.create(config));
+
+      assertEquals(TRUSTSTORE + " must name a regular file", exception.getMessage());
+    }
+
+    @Test
+    void shouldNameTheTruststoreForAFileThatCannotBeRead(@TempDir Path folder) throws IOException {
+      Path file = Files.createFile(folder.resolve("locked.jks"));
+      assumeTrue(file.toFile().setReadable(false) && !Files.isReadable(file));
+      Config config = createConfig(SSL + " = true", TRUSTSTORE + " = \"" + file + "\"");
+
+      IllegalArgumentException exception =
+          assertThrows(IllegalArgumentException.class, () -> BBjAdminConfiguration.create(config));
+
+      assertEquals(TRUSTSTORE + " must name a file that can be read", exception.getMessage());
+    }
+
+    @Test
+    void shouldNameTheTruststoreForARemoteHostWithAMissingFile(@TempDir Path folder) {
+      Path missing = folder.resolve("missing.jks");
+      Config config = createConfig(HOST + " = \"bbj.example.com\"", SSL + " = true",
+          TRUSTSTORE + " = \"" + missing + "\"");
+
+      IllegalArgumentException exception =
+          assertThrows(IllegalArgumentException.class, () -> BBjAdminConfiguration.create(config));
+
+      assertEquals(TRUSTSTORE + " must name an existing file", exception.getMessage());
+      assertFalse(exception.getMessage().contains(missing.toString()));
+      assertTrue(
+          log.getAllMessages().stream().noneMatch(text -> text.contains(missing.toString())));
+    }
+
+    @Test
+    void shouldWarnAboutAMisspelledTruststoreKeyAndNameTheMissingOne() {
+      Config config = createConfig(HOST + " = \"bbj.example.com\"", SSL + " = true",
+          PREFIX + "admin.trustore = \"secretStorePath\"");
+
+      IllegalArgumentException exception =
+          assertThrows(IllegalArgumentException.class, () -> BBjAdminConfiguration.create(config));
+
+      assertEquals(
+          "The host in " + HOST + " is not a loopback address, so " + TRUSTSTORE + " must be set",
+          exception.getMessage());
+      assertEquals(List.of(PREFIX + "admin.trustore is not a known key and is ignored"),
+          log.getMessages(Level.WARNING));
+    }
+  }
+
+  @Nested
+  class UnknownKeys {
+    @Test
+    void shouldAcceptEveryKnownKeyWithoutAWarning(@TempDir Path folder) throws IOException {
+      Path file = Files.createFile(folder.resolve("store.jks"));
+
+      createConfiguration(HOST + " = localhost", PORT + " = 2003", SSL + " = true",
+          TRUSTSTORE + " = \"" + file + "\"", PASSWORD + " = x", TIMEOUT + " = 20",
+          TOKEN_MINUTES + " = 45");
+
+      assertTrue(log.getMessages(Level.WARNING).isEmpty());
+    }
+
+    @Test
+    void shouldWarnOncePerUnknownKeyNamingTheFullPathButNotTheValue() {
+      createConfiguration(PREFIX + "admin.foo = secretValueOne", PREFIX + "other = secretValueTwo",
+          PREFIX + "admin.foo2.bar = secretValueThree", PREFIX + "admin.trustore = secretValueFour",
+          PORT + " = 2003");
+
+      assertEquals(
+          List.of(PREFIX + "admin.foo is not a known key and is ignored",
+              PREFIX + "admin.foo2.bar is not a known key and is ignored",
+              PREFIX + "admin.trustore is not a known key and is ignored",
+              PREFIX + "other is not a known key and is ignored"),
+          log.getMessages(Level.WARNING).stream().sorted().toList());
+      assertTrue(log.getAllMessages().stream().noneMatch(text -> text.contains("secretValue")));
+    }
+
+    @Test
+    void shouldWarnForAnUnknownKeyWithAnUnresolvableSubstitution() {
+      BBjAdminConfiguration configuration =
+          createConfiguration(PREFIX + "admin.mystery = ${nowhere.nothing}",
+              PREFIX + "admin.maybe = ${?NOWHERE_AT_ALL}", PORT + " = 2003");
+
+      assertEquals(2003, configuration.getPort());
+      assertEquals(List.of(PREFIX + "admin.mystery is not a known key and is ignored"),
+          log.getMessages(Level.WARNING));
+    }
+
+    @Test
+    void shouldWarnForAKeyThatIsSetToNull() {
+      createConfiguration(PREFIX + "admin.nothing = null");
+
+      assertEquals(List.of(PREFIX + "admin.nothing is not a known key and is ignored"),
+          log.getMessages(Level.WARNING));
+    }
+
+    @Test
+    void shouldNotWarnForKeysOutsideTheBbjObject() {
+      createConfiguration("webforj.security.enabled = true", "webforj.security.other = 1",
+          "somewhere.else = 2");
+
+      assertTrue(log.getMessages(Level.WARNING).isEmpty());
+    }
+
+    @Test
+    void shouldNotWarnWhenTheBbjObjectIsMissingOrNotAnObject() {
+      createConfiguration();
+      createConfiguration("webforj.security.bbj = \"secretValue\"");
+
+      assertTrue(log.getAllMessages().stream().noneMatch(text -> text.contains("not a known")));
     }
   }
 

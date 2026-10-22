@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,17 +25,20 @@ import java.util.regex.Pattern;
  * <p>
  * Supported keys are {@code admin.host}, {@code admin.port}, {@code admin.ssl},
  * {@code admin.truststore}, {@code admin.truststore-password}, {@code admin.timeout-seconds} and
- * {@code token.minutes}. The defaults are {@code 127.0.0.1}, {@code 2002}, {@code false}, no
- * truststore, an empty password, 10 seconds and 30 minutes. A key that is not set, or is set to
- * {@code null}, uses its default and is logged at debug level.
+ * {@code token.minutes}. A key below {@code webforj.security.bbj} that is not supported is logged
+ * once as a warning, naming the key and never the value, and is ignored. The defaults are
+ * {@code 127.0.0.1}, {@code 2002}, {@code false}, no truststore, an empty password, 10 seconds and
+ * 30 minutes. A key that is not set, or is set to {@code null}, uses its default and is logged at
+ * debug level.
  * </p>
  *
  * <p>
  * The connection keys decide which server answers the logins. An invalid value of a connection key
  * stops the creation with an {@link IllegalArgumentException} that names the key. A host that is
  * not a loopback address requires {@code admin.ssl} to be {@code true} and {@code admin.truststore}
- * to name a readable file. A truststore is ignored with a warning while {@code admin.ssl} is
- * {@code false}.
+ * to be set. With {@code admin.ssl} set to {@code true}, {@code admin.truststore} must name an
+ * existing, regular and readable file. The message names the key that failed and never a value or a
+ * path. A truststore is ignored with a warning while {@code admin.ssl} is {@code false}.
  * </p>
  *
  * <p>
@@ -59,6 +63,8 @@ final class BBjAdminConfiguration {
   private static final String TRUSTSTORE_PASSWORD = PREFIX + "admin.truststore-password";
   private static final String TIMEOUT_SECONDS = PREFIX + "admin.timeout-seconds";
   private static final String TOKEN_MINUTES = PREFIX + "token.minutes";
+  private static final Set<String> KNOWN_KEYS =
+      Set.of(HOST, PORT, SSL, TRUSTSTORE, TRUSTSTORE_PASSWORD, TIMEOUT_SECONDS, TOKEN_MINUTES);
   private static final String DEFAULT_HOST = "127.0.0.1";
   private static final int DEFAULT_PORT = 2002;
   private static final int DEFAULT_TIMEOUT_SECONDS = 10;
@@ -179,6 +185,7 @@ final class BBjAdminConfiguration {
    */
   static BBjAdminConfiguration create(Config config) {
     final BBjConfigReader reader = new BBjConfigReader(resolveSubstitutions(config), logger);
+    reader.warnUnknownKeys(PREFIX.substring(0, PREFIX.length() - 1), KNOWN_KEYS);
     final Builder builder = new Builder();
     builder.host = reader
         .requireString(HOST, DEFAULT_HOST, BBjAdminConfiguration::isHost,
@@ -193,13 +200,25 @@ final class BBjAdminConfiguration {
     builder.tokenLifetime = Duration.ofMinutes(
         reader.readClampedInt(TOKEN_MINUTES, DEFAULT_TOKEN_MINUTES, 1, MAX_TOKEN_MINUTES));
 
-    Optional<String> truststorePath = reader.requireString(TRUSTSTORE, "none",
-        builder.ssl ? BBjAdminConfiguration::isReadableFile : path -> !path.isBlank(),
-        builder.ssl ? "the path of a readable file" : "a path");
+    Optional<String> truststorePath =
+        reader.requireString(TRUSTSTORE, "none", BBjAdminConfiguration::isPath, "a path");
 
-    if (!isLoopback(builder.host) && (!builder.ssl || truststorePath.isEmpty())) {
-      throw new IllegalArgumentException("The host in " + HOST + " is not a loopback address, so "
-          + SSL + " must be true and " + TRUSTSTORE + " must name a readable file");
+    if (builder.ssl && truststorePath.isPresent()) {
+      findTruststoreProblem(truststorePath.get()).ifPresent(problem -> {
+        throw new IllegalArgumentException(problem);
+      });
+    }
+
+    if (!isLoopback(builder.host)) {
+      if (!builder.ssl) {
+        throw new IllegalArgumentException(
+            "The host in " + HOST + " is not a loopback address, so " + SSL + " must be true");
+      }
+
+      if (truststorePath.isEmpty()) {
+        throw new IllegalArgumentException("The host in " + HOST + " is not a loopback address, so "
+            + TRUSTSTORE + " must be set");
+      }
     }
 
     if (builder.ssl) {
@@ -260,10 +279,26 @@ final class BBjAdminConfiguration {
     return Integer.parseInt(text) <= 255;
   }
 
-  private static boolean isReadableFile(String path) {
+
+
+  private static Optional<String> findTruststoreProblem(String path) {
+    Path file = Path.of(path);
+    if (!Files.exists(file)) {
+      return Optional.of(TRUSTSTORE + " must name an existing file");
+    }
+
+    if (!Files.isRegularFile(file)) {
+      return Optional.of(TRUSTSTORE + " must name a regular file");
+    }
+
+    return Files.isReadable(file) ? Optional.empty()
+        : Optional.of(TRUSTSTORE + " must name a file that can be read");
+  }
+
+  private static boolean isPath(String path) {
     try {
-      Path file = Path.of(path);
-      return Files.isRegularFile(file) && Files.isReadable(file);
+      Path.of(path);
+      return !path.isBlank();
     } catch (InvalidPathException e) {
       return false;
     }
