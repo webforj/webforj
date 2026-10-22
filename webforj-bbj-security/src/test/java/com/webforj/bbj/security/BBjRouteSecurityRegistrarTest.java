@@ -259,7 +259,7 @@ class BBjRouteSecurityRegistrarTest {
     when(router.getRenderer()).thenThrow(failure);
 
     CapturingHandler handler = captureLog();
-    Error error = assertThrows(Error.class, () -> registrar.onWillRun(app));
+    BBjSecurityError error = assertThrows(BBjSecurityError.class, () -> registrar.onWillRun(app));
 
     assertSame(failure, error.getCause());
     assertEquals(1, handler.getErrors().size());
@@ -274,7 +274,7 @@ class BBjRouteSecurityRegistrarTest {
     doThrow(failure).when(renderer).addObserver(any());
 
     CapturingHandler handler = captureLog();
-    Error error = assertThrows(Error.class, () -> registrar.onWillRun(app));
+    BBjSecurityError error = assertThrows(BBjSecurityError.class, () -> registrar.onWillRun(app));
 
     assertSame(failure, error.getCause());
     assertEquals(1, handler.getErrors().size());
@@ -287,7 +287,7 @@ class BBjRouteSecurityRegistrarTest {
     mockedObjectTable.when(() -> ObjectTable.put(any(), any())).thenThrow(failure);
 
     CapturingHandler handler = captureLog();
-    Error error = assertThrows(Error.class, () -> registrar.onWillRun(app));
+    BBjSecurityError error = assertThrows(BBjSecurityError.class, () -> registrar.onWillRun(app));
 
     assertSame(failure, error.getCause());
     assertEquals(1, handler.getErrors().size());
@@ -303,7 +303,7 @@ class BBjRouteSecurityRegistrarTest {
           throw new IllegalStateException("no manager");
         })) {
       CapturingHandler handler = captureLog();
-      Error error = assertThrows(Error.class, () -> registrar.onWillRun(app));
+      BBjSecurityError error = assertThrows(BBjSecurityError.class, () -> registrar.onWillRun(app));
 
       assertInstanceOf(RuntimeException.class, error.getCause());
       assertEquals(1, handler.getErrors().size());
@@ -324,7 +324,7 @@ class BBjRouteSecurityRegistrarTest {
       loader.when(() -> BBjRouteSecurityEvaluatorLoader.loadEvaluators(any()))
           .thenReturn(List.of(evaluator));
       CapturingHandler handler = captureLog();
-      Error error = assertThrows(Error.class, () -> registrar.onWillRun(app));
+      BBjSecurityError error = assertThrows(BBjSecurityError.class, () -> registrar.onWillRun(app));
 
       assertSame(failure, error.getCause());
       assertEquals(1, handler.getErrors().size());
@@ -383,7 +383,7 @@ class BBjRouteSecurityRegistrarTest {
         MockedConstruction<BBjRouteSecurityManager> constructed =
             mockConstruction(BBjRouteSecurityManager.class);
         CapturedLog log = new CapturedLog(BBjRouteSecurityRegistrar.class.getPackageName())) {
-      Error error = assertThrows(Error.class, () -> registrar.onWillRun(app));
+      BBjSecurityError error = assertThrows(BBjSecurityError.class, () -> registrar.onWillRun(app));
 
       assertInstanceOf(IllegalArgumentException.class, error.getCause());
       assertTrue(error.getCause().getMessage().contains("webforj.security.bbj.admin.port"));

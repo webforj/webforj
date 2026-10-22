@@ -17,8 +17,8 @@ import java.time.Clock;
  *
  * <p>
  * Once route security is enabled, a failure while registering it or an invalid connection setting
- * of the Admin API stops the app start with an {@link Error}, so the app never runs without route
- * security.
+ * of the Admin API stops the app start with a {@link BBjSecurityError}, so the app never runs
+ * without route security.
  * </p>
  *
  * @author Christian Liebhardt
@@ -31,7 +31,7 @@ public final class BBjRouteSecurityRegistrar implements AppLifecycleListener {
   /**
    * {@inheritDoc}
    *
-   * @throws Error when route security is enabled and cannot be registered
+   * @throws BBjSecurityError when route security is enabled and cannot be registered
    */
   @Override
   public void onWillRun(App app) {
@@ -71,7 +71,7 @@ public final class BBjRouteSecurityRegistrar implements AppLifecycleListener {
           manager.getEvaluators().size());
     } catch (RuntimeException e) {
       logger.log(Level.ERROR, "Route security could not be registered, the app does not start", e);
-      throw new Error("Route security could not be registered", e);
+      throw new BBjSecurityError("Route security could not be registered", e);
     }
   }
 
