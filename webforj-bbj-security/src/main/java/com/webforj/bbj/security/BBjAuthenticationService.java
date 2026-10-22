@@ -16,8 +16,10 @@ import java.util.function.Supplier;
  *
  * <p>
  * A sign-in runs on a worker thread. Its result is delivered on the Environment thread, where the
- * session is kept, the authentication state is filled and the visitor is sent to the requested
- * location. No message of this class carries a password, a token or the text of an exception.
+ * session is kept and the authentication state is filled. The visitor is sent to the requested
+ * location after the result is completed, so a view that cancels its result when the navigation
+ * destroys it finds nothing left to cancel. No message of this class carries a password, a token or
+ * the text of an exception.
  * </p>
  *
  * @author Christian Liebhardt
@@ -79,8 +81,16 @@ final class BBjAuthenticationService {
       return PendingResult.completedWith(BBjLoginStatus.INVALID_CREDENTIALS);
     }
 
-    return runner.start(() -> gateway.openSession(userName, password), this::applySession,
-        this::applyFailure, this::closeLateSession);
+    PendingResult<BBjLoginStatus> result =
+        runner.start(() -> gateway.openSession(userName, password), this::applySession,
+            this::applyFailure, this::closeLateSession);
+    result.thenAccept(status -> {
+      if (status == BBjLoginStatus.AUTHENTICATED) {
+        openTargetLocation();
+      }
+    });
+
+    return result;
   }
 
   private BBjLoginStatus applySession(BBjLoginSession session) {
@@ -96,7 +106,6 @@ final class BBjAuthenticationService {
 
     state.setAuthentication(
         new BBjAuthentication(session.getUserName(), Set.of(), session.getExpiresAt()));
-    openTargetLocation();
 
     return BBjLoginStatus.AUTHENTICATED;
   }

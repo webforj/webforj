@@ -89,7 +89,7 @@ class BBjAuthenticationServiceTest {
     assertEquals("alice", authentication.getUserName());
     assertTrue(authentication.getRoles().isEmpty());
     assertEquals(EXPIRY, authentication.getExpiresAt());
-    verify(navigator).accept(target);
+    verify(navigator, timeout(5000)).accept(target);
   }
 
   @Test
@@ -98,21 +98,24 @@ class BBjAuthenticationServiceTest {
 
     getStatus(createService().startLogin("alice", PASSWORD));
 
-    verify(navigator).accept(new Location("/"));
+    verify(navigator, timeout(5000)).accept(new Location("/"));
   }
 
   @Test
   void shouldFillTheStateBeforeNavigating() throws Exception {
     when(gateway.openSession("alice", PASSWORD)).thenReturn(session);
     AtomicBoolean signedInOnNavigation = new AtomicBoolean();
+    CountDownLatch navigated = new CountDownLatch(1);
     doAnswer(invocation -> {
       signedInOnNavigation.set(state.getAuthentication().isPresent());
+      navigated.countDown();
 
       return null;
     }).when(navigator).accept(any());
 
     getStatus(createService().startLogin("alice", PASSWORD));
 
+    assertTrue(navigated.await(5, TimeUnit.SECONDS));
     assertTrue(signedInOnNavigation.get());
   }
 
@@ -204,11 +207,8 @@ class BBjAuthenticationServiceTest {
 
     try (CapturedLog log = new CapturedLog(BBjAuthenticationService.class.getPackageName())) {
       getStatus(createService().startLogin("alice", PASSWORD));
-      verify(gateway, timeout(5000)).closeSession(session);
-      Thread.sleep(200);
-
-      assertTrue(log.getMessages(Level.WARNING)
-          .contains("A session that was not kept could not be closed on the server"));
+      assertTrue(log.awaitMessage(Level.WARNING,
+          "A session that was not kept could not be closed on the server", 5, TimeUnit.SECONDS));
     }
   }
 
@@ -221,9 +221,39 @@ class BBjAuthenticationServiceTest {
       BBjLoginStatus status = getStatus(createService().startLogin("alice", PASSWORD));
 
       assertEquals(BBjLoginStatus.AUTHENTICATED, status);
+      assertTrue(log.awaitMessage(Level.WARNING,
+          "Navigation after sign-in failed with java.lang.IllegalStateException", 5,
+          TimeUnit.SECONDS));
       assertEquals(List.of("Navigation after sign-in failed with java.lang.IllegalStateException"),
           log.getMessages(Level.WARNING));
     }
+  }
+
+  @Test
+  void shouldKeepTheSignInWhenTheNavigationCancelsTheResult() throws Exception {
+    AtomicReference<Runnable> posted = new AtomicReference<>();
+    CountDownLatch postedLatch = new CountDownLatch(1);
+    runner.destroy();
+    runner = new BBjAdminTaskRunner(Duration.ofSeconds(10), () -> task -> {
+      posted.set(task);
+      postedLatch.countDown();
+
+      return PendingResult.completedWith(null);
+    });
+    when(gateway.openSession("alice", PASSWORD)).thenReturn(session);
+    PendingResult<BBjLoginStatus> result = createService().startLogin("alice", PASSWORD);
+    doAnswer(invocation -> {
+      result.cancel();
+
+      return null;
+    }).when(navigator).accept(any());
+    assertTrue(postedLatch.await(5, TimeUnit.SECONDS));
+
+    posted.get().run();
+
+    assertEquals(BBjLoginStatus.AUTHENTICATED, getStatus(result));
+    verify(gateway, never()).closeSession(any());
+    assertTrue(state.getAuthentication().isPresent());
   }
 
   @Test
@@ -275,7 +305,8 @@ class BBjAuthenticationServiceTest {
       result.cancel();
       posted.get().run();
       assertTrue(closed.await(5, TimeUnit.SECONDS));
-      Thread.sleep(200);
+      assertTrue(log.awaitMessage(Level.WARNING,
+          "A session nobody took could not be closed on the server", 5, TimeUnit.SECONDS));
 
       assertEquals(List.of("A session nobody took could not be closed on the server"),
           log.getMessages(Level.WARNING));
