@@ -47,7 +47,7 @@ public class Router {
   private final Map<String, RoutePattern> patterns = new HashMap<>();
   private final EventDispatcher eventDispatcher = new EventDispatcher();
   private ListenerRegistration<HistoryStateChangeEvent> historyListener;
-  private String root;
+  private final String root;
   private Location lastResolvedLocation;
   private boolean debug = false;
 

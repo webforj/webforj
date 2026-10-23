@@ -20,8 +20,8 @@ import java.util.Optional;
  * @since 24.12
  */
 public class BrowserHistory implements History {
-  private Gson gson = new Gson();
-  private EventDispatcher dispatcher = new EventDispatcher();
+  private final Gson gson = new Gson();
+  private final EventDispatcher dispatcher = new EventDispatcher();
   private boolean isPopStateListenerRegistered = false;
 
   /**
