@@ -29,6 +29,8 @@ import com.webforj.component.element.event.ElementEventOptions;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRuntimeException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -304,6 +306,42 @@ class ElementTest {
     void functionNameMustNotStartWithDot() {
       assertThrows(IllegalArgumentException.class,
           () -> component.buildCallJsFunctionScript(".test", true));
+    }
+
+    @Test
+    @DisplayName("should encode a component argument as an object holding its client id")
+    void shouldEncodeComponentArgumentAsObjectHoldingItsClientId() {
+      ComponentMock arg = mock(ComponentMock.class);
+      when(arg.getClientComponentId()).thenReturn("12");
+
+      String script = component.buildCallJsFunctionScript("testFunction", true, arg);
+
+      assertEquals("[{\"__webforjClientComponentId\":\"12\"}]", readArguments(script));
+    }
+
+    @Test
+    @DisplayName("should encode a string argument as plain data")
+    void shouldEncodeStringArgumentAsPlainData() {
+      String script = component.buildCallJsFunctionScript("testFunction", true, "objects.get(12)");
+
+      assertEquals("[\"objects.get(12)\"]", readArguments(script));
+      assertFalse(script.contains("eval("));
+    }
+
+    @Test
+    @DisplayName("should resolve a component argument by its client id")
+    void shouldResolveComponentArgumentByItsClientId() {
+      String script = component.buildCallJsFunctionScript("testFunction", true);
+
+      assertTrue(script.contains("return objects.get(arg['__webforjClientComponentId']);"));
+    }
+
+    private String readArguments(String script) {
+      int start = script.indexOf('`') + 1;
+      int end = script.indexOf('`', start);
+      byte[] arguments = Base64.getDecoder().decode(script.substring(start, end));
+
+      return new String(arguments, StandardCharsets.UTF_8);
     }
   }
 
