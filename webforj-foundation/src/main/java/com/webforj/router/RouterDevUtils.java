@@ -81,14 +81,16 @@ public final class RouterDevUtils {
     Location location = context.getLocation();
     NavigationOptions options = context.getOptions().orElseGet(NavigationOptions::new);
     ParametersBag routeParameters = context.getRouteParameters();
+    Gson gson = new Gson();
 
     StringBuilder js = new StringBuilder();
 
-    js.append("(function() {").append("   console.groupCollapsed('%cNavigation:%c ' + '")
-        .append(location.getFullURI())
-        .append("', 'background: #008080; color: white; padding: 2px 6px; border-radius: 5px;', "
+    js.append("(function() {").append("   console.groupCollapsed('%cNavigation:%c ' + ")
+        .append(gson.toJson(location.getFullURI()))
+        .append(", 'background: #008080; color: white; padding: 2px 6px; border-radius: 5px;', "
             + "'color: inherit');")
-        .append("   console.info('Component :', '").append(component.getName()).append("');")
+        .append("   console.info('Component :', ").append(gson.toJson(component.getName()))
+        .append(");")
 
         // Navigation Options group
         .append("   console.groupCollapsed('Options');")
@@ -102,8 +104,8 @@ public final class RouterDevUtils {
     js.append("   console.groupCollapsed('Parameters');");
 
     for (Map.Entry<String, String> param : routeParameters) {
-      js.append("   console.info('").append(param.getKey()).append(" : ', '")
-          .append(param.getValue()).append("');");
+      js.append("   console.info(").append(gson.toJson(param.getKey() + " : ")).append(", ")
+          .append(gson.toJson(param.getValue())).append(");");
     }
 
     js.append("   console.groupEnd();") // Close the parameters group

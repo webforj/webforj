@@ -1,5 +1,6 @@
 package com.webforj.router;
 
+import com.google.gson.Gson;
 import com.webforj.Page;
 import com.webforj.ViewTransition;
 import com.webforj.component.Component;
@@ -856,10 +857,10 @@ public class Router {
       }
 
 
-      Page.getCurrent().executeJsVoidAsync(String.format("""
-          const navigateEvent = new CustomEvent('dwc-navigated', {detail:'%s'});
+      Page.getCurrent().executeJsVoidAsync("""
+          const navigateEvent = new CustomEvent('dwc-navigated', {detail:%s});
           window.dispatchEvent(navigateEvent);
-          """, context.getLocation().getFullURI()));
+          """.formatted(new Gson().toJson(context.getLocation().getFullURI())));
     });
   }
 

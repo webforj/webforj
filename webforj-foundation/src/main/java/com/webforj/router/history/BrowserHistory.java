@@ -92,12 +92,12 @@ public class BrowserHistory implements History {
   @Override
   public History pushState(Object state, Location location) {
     Page.ifPresent(page -> {
-      String path = location.getFullURI();
+      String path = gson.toJson(location.getFullURI());
       String stringifiedState = gson.toJson(state == null ? new Object() : state);
       String encodedState = Base64.getEncoder().encodeToString(stringifiedState.getBytes());
 
       page.executeJsVoidAsync(
-          "window.history.pushState(JSON.parse(atob('" + encodedState + "')), '', '" + path + "')");
+          "window.history.pushState(JSON.parse(atob('%s')), '', %s)".formatted(encodedState, path));
     });
 
     return this;
@@ -109,12 +109,12 @@ public class BrowserHistory implements History {
   @Override
   public History replaceState(Object state, Location location) {
     Page.ifPresent(page -> {
-      String path = location.getFullURI();
+      String path = gson.toJson(location.getFullURI());
       String stringifiedState = gson.toJson(state == null ? new Object() : state);
       String encodedState = Base64.getEncoder().encodeToString(stringifiedState.getBytes());
 
-      page.executeJsVoidAsync("window.history.replaceState(JSON.parse(atob('" + encodedState
-          + "')), '', '" + path + "')");
+      page.executeJsVoidAsync("window.history.replaceState(JSON.parse(atob('%s')), '', %s)"
+          .formatted(encodedState, path));
     });
 
     return this;
