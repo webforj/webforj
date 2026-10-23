@@ -55,6 +55,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 
 
@@ -178,6 +179,21 @@ class RouterTest {
       router.navigate(location);
 
       assertEquals("/main", history.getLocation().orElseThrow().getFullURI());
+    }
+
+    @Test
+    void shouldDispatchTheNavigatedEventWithTheLocationAsStringLiteral() {
+      Page page = Page.getCurrent();
+      ArgumentCaptor<String> script = ArgumentCaptor.forClass(String.class);
+
+      router.navigate(new Location("/about?q=it's);#a'("));
+
+      verify(page).executeJsVoidAsync(script.capture());
+      assertEquals("""
+          const navigateEvent = new CustomEvent('dwc-navigated', \
+          {detail:"/about?q\\u003dit\\u0027s);#a\\u0027("});
+          window.dispatchEvent(navigateEvent);
+          """, script.getValue());
     }
   }
 
