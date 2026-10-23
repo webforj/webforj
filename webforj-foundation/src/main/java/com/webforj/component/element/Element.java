@@ -7,6 +7,7 @@ import com.basis.startup.type.BBjException;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.webforj.PendingResult;
 import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.bridge.ComponentAccessor;
@@ -60,6 +61,8 @@ import java.util.Optional;
  */
 public final class Element extends DwcContainer<Element> implements HasFocus<Element>,
     HasEnablement<Element>, HasJsExecution, HasDisableOnClick<Element> {
+
+  private static final String COMPONENT_ID_PROPERTY = "__webforjClientComponentId";
 
   private final String nodeName;
   private final Map<String, ComponentEventSinkRegistry<ElementEvent>> registries = new HashMap<>();
@@ -864,7 +867,9 @@ public final class Element extends DwcContainer<Element> implements HasFocus<Ele
       if (arg instanceof Component component) {
         // For Component instances, get the client component ID
         String clientComponentId = component.getClientComponentId();
-        jsonArgsArray.add("objects.get('" + clientComponentId + "')");
+        JsonObject componentArgument = new JsonObject();
+        componentArgument.addProperty(COMPONENT_ID_PROPERTY, clientComponentId);
+        jsonArgsArray.add(componentArgument);
       } else {
         // For other arguments, serialize them
         JsonElement jsonElement = gson.toJsonTree(arg);
@@ -909,8 +914,10 @@ public final class Element extends DwcContainer<Element> implements HasFocus<Ele
     sb.append("  if (arg === 'this') {");
     sb.append("    return component;");
     sb.append("  }");
-    sb.append("  if (typeof arg === 'string' && arg.startsWith('objects.get')) {");
-    sb.append("    return eval(arg);");
+    sb.append("  if (arg !== null && typeof arg === 'object'")
+        .append(" && Object.prototype.hasOwnProperty.call(arg, '").append(COMPONENT_ID_PROPERTY)
+        .append("')) {");
+    sb.append("    return objects.get(arg['").append(COMPONENT_ID_PROPERTY).append("']);");
     sb.append("  }");
     sb.append("  return arg;");
     sb.append("});");
