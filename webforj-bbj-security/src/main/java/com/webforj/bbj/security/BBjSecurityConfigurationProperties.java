@@ -4,7 +4,8 @@ package com.webforj.bbj.security;
  * Route security configuration properties of a BBj application.
  *
  * <p>
- * Security is enabled and routes are secure by default unless set otherwise. No authentication path
+ * Security is enabled and routes are secure by default unless set otherwise. No
+ * authentication path
  * and no deny path are set by default.
  * </p>
  *
@@ -16,6 +17,12 @@ public class BBjSecurityConfigurationProperties {
   private Boolean secureByDefault = true;
   private String authenticationPath;
   private String denyPath;
+  private String adminHost = "127.0.0.1";
+  private Integer adminPort = 2002;
+  private Integer adminTimeoutSeconds = 10;
+  private Integer tokenMinutes = 30;
+  private String defaultSuccessPath = "/";
+  private Boolean returnAfterLogin = true;
 
   /**
    * Gets whether security is enabled.
@@ -87,6 +94,54 @@ public class BBjSecurityConfigurationProperties {
    */
   public void setDenyPath(String denyPath) {
     this.denyPath = denyPath;
+  }
+
+  public String getAdminHost() {
+    return adminHost;
+  }
+
+  public void setAdminHost(String adminHost) {
+    this.adminHost = adminHost;
+  }
+
+  public Integer getAdminPort() {
+    return adminPort;
+  }
+
+  public void setAdminPort(Integer adminPort) {
+    this.adminPort = adminPort;
+  }
+
+  public Integer getAdminTimeoutSeconds() {
+    return adminTimeoutSeconds;
+  }
+
+  public void setAdminTimeoutSeconds(Integer adminTimeoutSeconds) {
+    this.adminTimeoutSeconds = adminTimeoutSeconds;
+  }
+
+  public Integer getTokenMinutes() {
+    return tokenMinutes;
+  }
+
+  public void setTokenMinutes(Integer tokenMinutes) {
+    this.tokenMinutes = tokenMinutes;
+  }
+
+  public String getDefaultSuccessPath() {
+    return defaultSuccessPath;
+  }
+
+  public void setDefaultSuccessPath(String defaultSuccessPath) {
+    this.defaultSuccessPath = defaultSuccessPath;
+  }
+
+  public Boolean getReturnAfterLogin() {
+    return returnAfterLogin;
+  }
+
+  public void setReturnAfterLogin(Boolean returnAfterLogin) {
+    this.returnAfterLogin = returnAfterLogin;
   }
 
 }
