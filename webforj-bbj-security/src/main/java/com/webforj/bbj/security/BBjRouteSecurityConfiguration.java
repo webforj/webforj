@@ -18,12 +18,14 @@ public class BBjRouteSecurityConfiguration implements RouteSecurityConfiguration
 
   @Override
   public Optional<Location> getAuthenticationLocation() {
-    return Optional.ofNullable(properties.getAuthenticationPath()).map(Location::new);
+    return Optional.ofNullable(properties.getAuthenticationPath()).map(Location::new)
+        .or(RouteSecurityConfiguration.super::getAuthenticationLocation);
   }
 
   @Override
   public Optional<Location> getDenyLocation() {
-    return Optional.ofNullable(properties.getDenyPath()).map(Location::new);
+    return Optional.ofNullable(properties.getDenyPath()).map(Location::new)
+        .or(RouteSecurityConfiguration.super::getDenyLocation);
   }
 
   @Override
