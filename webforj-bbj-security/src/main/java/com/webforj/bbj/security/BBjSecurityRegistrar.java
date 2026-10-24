@@ -44,7 +44,9 @@ public class BBjSecurityRegistrar implements AppLifecycleListener {
       return;
     }
 
-    var configuration = BBjConfigReader.readConfig(config);
+    var properties = new BBjSecurityConfigurationProperties();
+    BBjConfigReader.readConfig(properties, config);
+    var configuration = new BBjRouteSecurityConfiguration(properties);
 
     if (!configuration.isEnabled()) {
       logger.log(Level.INFO, "Route security disabled by configuration");
