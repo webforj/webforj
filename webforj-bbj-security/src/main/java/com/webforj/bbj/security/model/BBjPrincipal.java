@@ -1,5 +1,6 @@
 package com.webforj.bbj.security.model;
 
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -16,14 +17,20 @@ public class BBjPrincipal {
   /**
    * Creates a principal.
    *
-   * @param userName the user name
-   * @param roles the roles of the user
+   * @param userName    the user name
+   * @param roles       the roles of the user
    * @param authorities the authorities granted to the user
+   * @throws NullPointerException     if any parameter is {@code null}.
+   * @throws IllegalArgumentException if {@code}userName} is blank.
    */
   public BBjPrincipal(String userName, Set<String> roles, Set<String> authorities) {
+    Objects.requireNonNull(userName, "userName");
+    if (userName.isBlank()) {
+      throw new IllegalArgumentException("userName");
+    }
     this.userName = userName;
-    this.roles = roles;
-    this.authorities = authorities;
+    this.roles = Objects.requireNonNull(roles, "roles");
+    this.authorities = Objects.requireNonNull(authorities, "authorities");
   }
 
   /**
