@@ -12,12 +12,24 @@ import com.webforj.router.Router;
 import com.webforj.router.security.RouteSecurityObserver;
 
 /**
- * BBjSecurityRegistrar
+ * Registers route security for a BBj application when it starts.
+ *
+ * <p>
+ * When security is enabled in the configuration, the route security observer is added to the
+ * router. Nothing is registered when the environment, the configuration or the router is not
+ * available.
+ * </p>
+ *
+ * @author Christian Liebhardt
+ * @since 26.03
  */
 @AppListenerPriority(1)
 public class BBjSecurityRegistrar implements AppLifecycleListener {
   private static final Logger logger = System.getLogger(BBjSecurityRegistrar.class.getName());
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void onWillRun(App app) {
     var environment = Environment.getCurrent();

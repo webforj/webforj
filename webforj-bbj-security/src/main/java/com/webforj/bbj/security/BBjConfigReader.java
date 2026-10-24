@@ -1,9 +1,25 @@
 package com.webforj.bbj.security;
 
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
+import java.util.Optional;
+
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigException;
 
 /**
- * BBjConfigReader
+ * Reads the route security configuration of a BBj application.
+ *
+ * <p>
+ * The settings are the keys {@code enabled}, {@code secure-by-default}, {@code authentication-path}
+ * and {@code deny-path} below {@code webforj.security}. A key that is not set keeps the default of
+ * {@link BBjSecurityConfigurationProperties}. A value of {@code enabled} or
+ * {@code secure-by-default} that is not a boolean counts as true. A path that is not a string keeps
+ * its default. Each such value is logged as a warning that names the key.
+ * </p>
+ *
+ * @author Christian Liebhardt
+ * @since 26.03
  */
 public final class BBjConfigReader {
   private static final Logger logger = System.getLogger(BBjConfigReader.class.getName());
@@ -15,6 +31,13 @@ public final class BBjConfigReader {
 
   private BBjConfigReader() {}
 
+  /**
+   * Reads the route security configuration from the application configuration.
+   *
+   * @param config the application configuration
+   *
+   * @return the route security configuration
+   */
   static BBjRouteSecurityConfiguration readConfig(Config config) {
     var properties = new BBjSecurityConfigurationProperties();
 

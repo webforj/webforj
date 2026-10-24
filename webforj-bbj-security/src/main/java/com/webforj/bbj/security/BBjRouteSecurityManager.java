@@ -22,7 +22,16 @@ import com.webforj.router.security.evaluator.PermitAllEvaluator;
 import com.webforj.router.security.evaluator.RolesAllowedEvaluator;
 
 /**
- * BBjRouteSecurityManager
+ * {@link AbstractRouteSecurityManager} of a BBj application.
+ *
+ * <p>
+ * Registers the core evaluators. Users who need to authenticate are sent to the authentication
+ * location and the location they requested is saved. Users who are denied access are sent to the
+ * deny location with the reason.
+ * </p>
+ *
+ * @author Christian Liebhardt
+ * @since 26.03
  */
 public class BBjRouteSecurityManager extends AbstractRouteSecurityManager {
   private static final Logger logger = System.getLogger(BBjRouteSecurityManager.class.getName());
@@ -30,6 +39,16 @@ public class BBjRouteSecurityManager extends AbstractRouteSecurityManager {
   private final BBjRequestedLocationStore locationStore;
   private final BBjRouteSecurityContext securityContext;
 
+  /**
+   * Creates a manager with the core evaluators registered.
+   *
+   * @param configuration the route security configuration
+   * @param securityContext the route security context
+   * @param locationStore the store of the location requested before authentication
+   *
+   * @throws NullPointerException if {@code configuration}, {@code securityContext} or
+   *         {@code locationStore} is null
+   */
   public BBjRouteSecurityManager(BBjRouteSecurityConfiguration configuration,
       BBjRouteSecurityContext securityContext, BBjRequestedLocationStore locationStore) {
     this.configuration = Objects.requireNonNull(configuration, "configuration");
@@ -43,16 +62,29 @@ public class BBjRouteSecurityManager extends AbstractRouteSecurityManager {
     registerEvaluator(new RolesAllowedEvaluator(), 5);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void clearPreAuthenticationLocation() {
     locationStore.clearLocation();
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Optional<Location> getPreAuthenticationLocation() {
     return locationStore.readLocation();
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>
+   * When authentication is required, the requested location is saved before the user is sent on.
+   * </p>
+   */
   @Override
   public void onAccessDenied(RouteAccessDecision decision, NavigationContext context) {
     logger.log(Level.DEBUG, "Access denied: type={0}, reason={1}", decision.getDenialType(),
@@ -65,6 +97,15 @@ public class BBjRouteSecurityManager extends AbstractRouteSecurityManager {
     onPostAccessDenied(decision, context);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>
+   * A denial that requires authentication sends the user to the authentication location. A denial
+   * of access sends the user to the deny location and adds the reason as the query parameter
+   * {@code reason}.
+   * </p>
+   */
   @Override
   protected void onPostAccessDenied(RouteAccessDecision decision, NavigationContext context) {
     switch (decision.getDenialType()) {
@@ -78,17 +119,21 @@ public class BBjRouteSecurityManager extends AbstractRouteSecurityManager {
         navigateRecreating(location);
       });
       default -> {
-
       }
-
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public RouteSecurityContext getSecurityContext() {
     return securityContext;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public RouteSecurityConfiguration getConfiguration() {
     return configuration;
