@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
+import com.typesafe.config.ConfigValueType;
 
 /**
  * Reads the route security configuration of a BBj application.
@@ -32,15 +33,18 @@ public final class BBjConfigReader {
   private BBjConfigReader() {}
 
   /**
-   * Reads the route security configuration from the application configuration.
+   * Fills the given properties from the application configuration.
    *
+   * @param properties the properties to fill
    * @param config the application configuration
-   *
-   * @return the route security configuration
    */
-  static BBjRouteSecurityConfiguration readConfig(Config config) {
-    var properties = new BBjSecurityConfigurationProperties();
+  static void readConfig(BBjSecurityConfigurationProperties properties, Config config) {
+    readSecurityKeys(properties, config);
+    readAdminKeys(properties, config);
+  }
 
+  private static void readSecurityKeys(BBjSecurityConfigurationProperties properties,
+      Config config) {
     if (config.hasPath(ENABLED)) {
       properties.setEnabled(readBoolean(config, ENABLED));
     }
@@ -56,8 +60,10 @@ public final class BBjConfigReader {
     if (config.hasPath(DENY_PATH)) {
       readString(config, DENY_PATH).ifPresent(properties::setDenyPath);
     }
+  }
 
-    return new BBjRouteSecurityConfiguration(properties);
+  private static void readAdminKeys(BBjSecurityConfigurationProperties properties, Config config) {
+
   }
 
   private static boolean readBoolean(Config config, String key) {
@@ -71,13 +77,13 @@ public final class BBjConfigReader {
   }
 
   private static Optional<String> readString(Config config, String key) {
-    try {
+    if (config.getValue(key).valueType() == ConfigValueType.STRING) {
       return Optional.of(config.getString(key));
-    } catch (ConfigException.WrongType e) {
-      logger.log(Level.WARNING, "The configuration key {0} is not a string and keeps its default",
-          key);
-      return Optional.empty();
     }
+
+    logger.log(Level.WARNING, "The configuration key {0} is not a string and keeps its default",
+        key);
+    return Optional.empty();
   }
 
 }
