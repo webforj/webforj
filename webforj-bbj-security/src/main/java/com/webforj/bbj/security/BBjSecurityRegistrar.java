@@ -40,7 +40,8 @@ public class BBjSecurityRegistrar implements AppLifecycleListener {
     }
 
     var context = new BBjRouteSecurityContext(Optional::empty);
-    var manager = new BBjRouteSecurityManager(configuration, context);
+    var manager =
+        new BBjRouteSecurityManager(configuration, context, new BBjBrowserRequestedLocationStore());
 
     var router = Router.getCurrent();
     if (router != null) {

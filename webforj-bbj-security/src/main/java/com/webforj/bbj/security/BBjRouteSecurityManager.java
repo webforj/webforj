@@ -31,10 +31,10 @@ public class BBjRouteSecurityManager extends AbstractRouteSecurityManager {
   private final BBjRouteSecurityContext securityContext;
 
   public BBjRouteSecurityManager(BBjRouteSecurityConfiguration configuration,
-      BBjRouteSecurityContext securityContext) {
+      BBjRouteSecurityContext securityContext, BBjRequestedLocationStore locationStore) {
     this.configuration = Objects.requireNonNull(configuration, "configuration");
     this.securityContext = Objects.requireNonNull(securityContext, "securityContext");
-    locationStore = null;
+    this.locationStore = Objects.requireNonNull(locationStore, "locationStore");
 
     registerEvaluator(new DenyAllEvaluator(), 1);
     registerEvaluator(new AnonymousAccessEvaluator(), 2);
@@ -68,9 +68,9 @@ public class BBjRouteSecurityManager extends AbstractRouteSecurityManager {
   @Override
   protected void onPostAccessDenied(RouteAccessDecision decision, NavigationContext context) {
     switch (decision.getDenialType()) {
-      case ACCESS_DENIED ->
-        configuration.getAuthenticationLocation().ifPresent(this::navigateRecreating);;
-      case AUTHENTICATION_REQUIRED -> configuration.getDenyLocation().ifPresent(location -> {
+      case AUTHENTICATION_REQUIRED ->
+        configuration.getAuthenticationLocation().ifPresent(this::navigateRecreating);
+      case ACCESS_DENIED -> configuration.getDenyLocation().ifPresent(location -> {
         if (decision.getReason() != null && !decision.getReason().isEmpty()) {
           location.getQueryParameters().put("reason", decision.getReason());
         }
