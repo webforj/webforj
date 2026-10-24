@@ -6,6 +6,7 @@ import com.typesafe.config.Config;
  * BBjConfigReader
  */
 public final class BBjConfigReader {
+  private static final Logger logger = System.getLogger(BBjConfigReader.class.getName());
   private static final String PREFIX = "webforj.security.";
   private static final String ENABLED = PREFIX + "enabled";
   private static final String SECURE_BY_DEFAULT = PREFIX + "secure-by-default";
@@ -16,16 +17,44 @@ public final class BBjConfigReader {
 
   static BBjRouteSecurityConfiguration readConfig(Config config) {
     var properties = new BBjSecurityConfigurationProperties();
-    var enabled = config.getBoolean(ENABLED);
-    properties.setEnabled(enabled);
-    var secureByDefault = config.getBoolean(SECURE_BY_DEFAULT);
-    properties.setSecureByDefault(secureByDefault);
-    var authenticationPath = config.getString(AUTHENTICATION_PATH);
-    properties.setAuthenticationPath(authenticationPath);
-    var denyPath = config.getString(DENY_PATH);
-    properties.setDenyPath(denyPath);
+
+    if (config.hasPath(ENABLED)) {
+      properties.setEnabled(readBoolean(config, ENABLED));
+    }
+
+    if (config.hasPath(SECURE_BY_DEFAULT)) {
+      properties.setSecureByDefault(readBoolean(config, SECURE_BY_DEFAULT));
+    }
+
+    if (config.hasPath(AUTHENTICATION_PATH)) {
+      readString(config, AUTHENTICATION_PATH).ifPresent(properties::setAuthenticationPath);
+    }
+
+    if (config.hasPath(DENY_PATH)) {
+      readString(config, DENY_PATH).ifPresent(properties::setDenyPath);
+    }
 
     return new BBjRouteSecurityConfiguration(properties);
+  }
+
+  private static boolean readBoolean(Config config, String key) {
+    try {
+      return config.getBoolean(key);
+    } catch (ConfigException.WrongType e) {
+      logger.log(Level.WARNING, "The configuration key {0} is not a boolean and counts as true",
+          key);
+      return true;
+    }
+  }
+
+  private static Optional<String> readString(Config config, String key) {
+    try {
+      return Optional.of(config.getString(key));
+    } catch (ConfigException.WrongType e) {
+      logger.log(Level.WARNING, "The configuration key {0} is not a string and keeps its default",
+          key);
+      return Optional.empty();
+    }
   }
 
 }
