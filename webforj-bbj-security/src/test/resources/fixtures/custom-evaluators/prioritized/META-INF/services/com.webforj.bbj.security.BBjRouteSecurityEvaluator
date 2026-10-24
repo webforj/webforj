@@ -1,0 +1,4 @@
+com.webforj.bbj.security.fixture.LateOwnerEvaluator
+com.webforj.bbj.security.fixture.ZuluOwnerEvaluator
+com.webforj.bbj.security.fixture.FirstOwnerEvaluator
+com.webforj.bbj.security.fixture.AlphaOwnerEvaluator

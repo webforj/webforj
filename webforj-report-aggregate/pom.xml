@@ -68,6 +68,13 @@
       <version>${project.version}</version>
     </dependency>
 
+    <!-- webforj bbj security -->
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-bbj-security</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
     <!-- webforj jbang -->
     <dependency>
       <groupId>com.webforj</groupId>
