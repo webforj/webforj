@@ -12,8 +12,7 @@ public final class BBjConfigReader {
   private static final String AUTHENTICATION_PATH = PREFIX + "authentication-path";
   private static final String DENY_PATH = PREFIX + "deny-path";
 
-  private BBjConfigReader() {
-  }
+  private BBjConfigReader() {}
 
   static BBjRouteSecurityConfiguration readConfig(Config config) {
     var properties = new BBjSecurityConfigurationProperties();

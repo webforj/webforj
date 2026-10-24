@@ -30,7 +30,8 @@ public class BBjRouteSecurityManager extends AbstractRouteSecurityManager {
   private final BBjRequestedLocationStore locationStore;
   private final BBjRouteSecurityContext securityContext;
 
-  public BBjRouteSecurityManager(BBjRouteSecurityConfiguration configuration, BBjRouteSecurityContext securityContext) {
+  public BBjRouteSecurityManager(BBjRouteSecurityConfiguration configuration,
+      BBjRouteSecurityContext securityContext) {
     this.configuration = Objects.requireNonNull(configuration, "configuration");
     this.securityContext = Objects.requireNonNull(securityContext, "securityContext");
     locationStore = null;

@@ -46,7 +46,8 @@ public class BBjSecurityRegistrar implements AppLifecycleListener {
     if (router != null) {
       var securityObserver = new RouteSecurityObserver(manager);
       router.getRenderer().addObserver(securityObserver);
-      logger.log(Level.INFO, "Route security enabled with {0} evaluators", manager.getEvaluators().size());
+      logger.log(Level.INFO, "Route security enabled with {0} evaluators",
+          manager.getEvaluators().size());
     } else {
       logger.log(Level.WARNING, "Router not available, security not registered");
     }
