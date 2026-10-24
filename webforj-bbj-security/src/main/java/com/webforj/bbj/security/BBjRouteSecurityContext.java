@@ -45,7 +45,6 @@ public class BBjRouteSecurityContext implements RouteSecurityContext {
   }
 
   @Override
-  public void setAttribute(String name, Object value) {
-  }
+  public void setAttribute(String name, Object value) {}
 
 }
