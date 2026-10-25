@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -18,6 +19,8 @@ import com.basis.bbj.proxies.sysgui.BBjTree;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import com.basis.util.common.BasisNumber;
+import com.google.gson.Gson;
+import com.webforj.Page;
 import com.webforj.component.tree.event.TreeClickEvent;
 import com.webforj.component.tree.event.TreeCollapseEvent;
 import com.webforj.component.tree.event.TreeDeselectEvent;
@@ -26,13 +29,20 @@ import com.webforj.component.tree.event.TreeExpandEvent;
 import com.webforj.component.tree.event.TreeSelectEvent;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.MockedStatic;
 
 
 class TreeTest {
@@ -809,6 +819,40 @@ class TreeTest {
 
       tree.setLeafIconsVisible(true);
       assertTrue(tree.isLeafIconsVisible());
+    }
+
+    @ParameterizedTest
+    @MethodSource("getNodeIconSetters")
+    void shouldSendNodeIconToClientAsJsonString(String property,
+        BiConsumer<TreeNode, String> setter) {
+      try (MockedStatic<Page> mockedPage = mockStatic(Page.class)) {
+        Page page = mock(Page.class);
+        mockedPage.when(() -> Page.ifPresent(any())).thenAnswer(inv -> {
+          Consumer<Page> consumer = inv.getArgument(0);
+          consumer.accept(page);
+
+          return null;
+        });
+
+        String icon = "it's);alert(1);//";
+        TreeNode node = Tree.node("node");
+        tree.add(node);
+        setter.accept(node, icon);
+
+        doReturn(true).when(tree).isAttached();
+        tree.onAttach();
+
+        ArgumentCaptor<String> script = ArgumentCaptor.forClass(String.class);
+        verify(page).executeJsVoidAsync(script.capture());
+        assertTrue(script.getValue()
+            .contains("node['" + property + "'] = " + new Gson().toJson(icon) + ";"));
+        assertFalse(script.getValue().contains("'it's"));
+      }
+    }
+
+    private static Stream<Arguments> getNodeIconSetters() {
+      return Stream.of(Arguments.of("icon", (BiConsumer<TreeNode, String>) TreeNode::setIcon),
+          Arguments.of("iconSelected", (BiConsumer<TreeNode, String>) TreeNode::setSelectedIcon));
     }
   }
 

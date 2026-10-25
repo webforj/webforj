@@ -6,6 +6,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import com.basis.util.common.BasisNumber;
+import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.webforj.Page;
 import com.webforj.bridge.ComponentAccessor;
@@ -65,6 +66,7 @@ public final class Tree extends DwcFocusableComponent<Tree>
     ItemMultiSelectable<Tree, TreeNode>, KeyMultiSelectable<Tree>,
     HasSelectionMode<Tree, Tree.SelectionMode> {
   static final String PROP_CONNECT = "connect";
+  private static final Gson GSON = new Gson();
   private static final String NULL_KEY_MESSAGE = "Key cannot be null";
   private static final String NULL_TEXT_MESSAGE = "Text cannot be null";
   private static final String NULL_ITEM_MESSAGE = "Item cannot be null";
@@ -1577,12 +1579,12 @@ public final class Tree extends DwcFocusableComponent<Tree>
             tree.componentOnReady().then(() => {
               const node = tree.querySelector('[data-node-id="%s"]');
               if(node) {
-                node['%s'] = '%s';
+                node['%s'] = %s;
               }
             });
           })();
               """;
-      page.executeJsVoidAsync(String.format(script, uuid, node.getUniqueId(), prop, icon));
+      page.executeJsVoidAsync(script.formatted(uuid, node.getUniqueId(), prop, GSON.toJson(icon)));
     });
   }
 }
