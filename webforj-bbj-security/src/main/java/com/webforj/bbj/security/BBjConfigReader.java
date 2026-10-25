@@ -4,6 +4,7 @@ import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.util.Optional;
 
+import com.basis.api.simple.ProxyOutputStreamToSimpleInstance;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigValueType;
@@ -12,10 +13,13 @@ import com.typesafe.config.ConfigValueType;
  * Reads the route security configuration of a BBj application.
  *
  * <p>
- * The settings are the keys {@code enabled}, {@code secure-by-default}, {@code authentication-path}
- * and {@code deny-path} below {@code webforj.security}. A key that is not set keeps the default of
+ * The settings are the keys {@code enabled}, {@code secure-by-default},
+ * {@code authentication-path}
+ * and {@code deny-path} below {@code webforj.security}. A key that is not set
+ * keeps the default of
  * {@link BBjSecurityConfigurationProperties}. A value of {@code enabled} or
- * {@code secure-by-default} that is not a boolean counts as true. A path that is not a string keeps
+ * {@code secure-by-default} that is not a boolean counts as true. A path that
+ * is not a string keeps
  * its default. Each such value is logged as a warning that names the key.
  * </p>
  *
@@ -30,22 +34,26 @@ public final class BBjConfigReader {
   private static final String SECURE_BY_DEFAULT = PREFIX + "secure-by-default";
   private static final String AUTHENTICATION_PATH = PREFIX + "authentication-path";
   private static final String DENY_PATH = PREFIX + "deny-path";
-  // Admin Keys
+  // BBj Keys
   private static final String BBJ_PREFIX = PREFIX + "bbj.";
-  private static final String ADMIN_HOST = BBJ_PREFIX + "admin.host";
-  private static final String ADMIN_PORT = BBJ_PREFIX + "admin.port";
   private static final String ADMIN_TIMEOUT_SECONDS = BBJ_PREFIX + "admin.timeout-seconds";
   private static final String TOKEN_MINUTES = BBJ_PREFIX + "token.minutes";
   private static final String DEFAULT_SUCCESS_PATH = BBJ_PREFIX + "default-success-path";
   private static final String RETURN_AFTER_LOGIN = BBJ_PREFIX + "return-after-login";
+  private static final String LOGOUT_SUCCESS_PATH = BBJ_PREFIX + "logout-success-path";
+  // Admin Keys
+  private static final String ADMIN_PREFIX = BBJ_PREFIX + "admin.";
+  private static final String ADMIN_HOST = ADMIN_PREFIX + "host";
+  private static final String ADMIN_PORT = ADMIN_PREFIX + "port";
 
-  private BBjConfigReader() {}
+  private BBjConfigReader() {
+  }
 
   /**
    * Fills the given properties from the application configuration.
    *
    * @param properties the properties to fill
-   * @param config the application configuration
+   * @param config     the application configuration
    */
   static void readConfig(BBjSecurityConfigurationProperties properties, Config config) {
     readSecurityKeys(properties, config);
@@ -90,6 +98,9 @@ public final class BBjConfigReader {
     }
     if (config.hasPath(RETURN_AFTER_LOGIN)) {
       properties.setReturnAfterLogin(readBoolean(config, RETURN_AFTER_LOGIN));
+    }
+    if (config.hasPath(LOGOUT_SUCCESS_PATH)) {
+      readString(config, LOGOUT_SUCCESS_PATH).ifPresent(properties::setLogoutSuccessPath);
     }
   }
 
