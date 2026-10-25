@@ -4,6 +4,7 @@ import com.webforj.Environment;
 import com.webforj.component.icons.IconDefinition;
 import com.webforj.environment.ObjectTable;
 import com.webforj.exceptions.WebforjRuntimeException;
+import com.webforj.utilities.Assets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -141,7 +142,8 @@ public final class TreeNode implements TreeNodeDelegate {
    * @throws NullPointerException if {@code icon} is null
    */
   public TreeNode setIcon(String src) {
-    this.icon = Objects.requireNonNull(src, NULL_ICON_MESSAGE);
+    Objects.requireNonNull(src, NULL_ICON_MESSAGE);
+    this.icon = Optional.ofNullable(Assets.resolveImageSource(src)).orElse(src);
     withTree(t -> t.doSetIcon(this));
     return this;
   }
@@ -179,7 +181,8 @@ public final class TreeNode implements TreeNodeDelegate {
    * @throws NullPointerException if {@code selectedIcon} is null
    */
   public TreeNode setSelectedIcon(String icon) {
-    this.selectedIcon = Objects.requireNonNull(icon, NULL_SELECTED_ICON_MESSAGE);
+    Objects.requireNonNull(icon, NULL_SELECTED_ICON_MESSAGE);
+    this.selectedIcon = Optional.ofNullable(Assets.resolveImageSource(icon)).orElse(icon);
     withTree(t -> t.doSetSelectedIcon(this));
     return this;
   }
