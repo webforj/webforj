@@ -1,5 +1,6 @@
 package com.webforj.bbj.security;
 
+import com.webforj.bbj.security.model.BBjSession;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

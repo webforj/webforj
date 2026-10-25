@@ -1,5 +1,6 @@
 package com.webforj.bbj.security;
 
+import com.webforj.bbj.security.model.BBjSession;
 import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.BBjAdminException;
 import com.basis.api.admin.BBjAdminFactory;
@@ -24,7 +25,16 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * BBjAdminGateway
+ * Opens sessions for users through the BBj Admin API.
+ *
+ * <p>
+ * The host, the port, the time limit and the lifetime of the token come from the
+ * {@link BBjSecurityConfigurationProperties} that were given when the gateway was created. A
+ * failure never carries the password or the token in its message.
+ * </p>
+ *
+ * @author Christian Liebhardt
+ * @since 26.03
  */
 public final class BBjAdminGateway {
   private static final Logger logger = System.getLogger(BBjAdminGateway.class.getName());
@@ -45,10 +55,25 @@ public final class BBjAdminGateway {
   private final Duration tokenLifetime;
   private final Clock clock;
 
+  /**
+   * Creates a gateway that measures token lifetimes with the system clock.
+   *
+   * @param properties the configuration of the Admin API connection
+   *
+   * @throws NullPointerException if {@code properties} is {@code null}
+   */
   BBjAdminGateway(BBjSecurityConfigurationProperties properties) {
     this(properties, Clock.systemUTC());
   }
 
+  /**
+   * Creates a gateway that measures token lifetimes with the given clock.
+   *
+   * @param properties the configuration of the Admin API connection
+   * @param clock the clock that gives the start of a session
+   *
+   * @throws NullPointerException if any parameter is {@code null}
+   */
   BBjAdminGateway(BBjSecurityConfigurationProperties properties, Clock clock) {
     Objects.requireNonNull(properties, "properties");
     this.clock = Objects.requireNonNull(clock, "clock");
@@ -58,6 +83,27 @@ public final class BBjAdminGateway {
     tokenLifetime = Duration.ofMinutes(properties.getTokenMinutes());
   }
 
+  /**
+   * Signs a user in and opens a session for them.
+   *
+   * <p>
+   * The call blocks until the Admin API answers or the time limit passes. The principal of the
+   * session carries the user name the Admin API reports and no roles and no authorities. The
+   * session expires after the configured token lifetime, counted from the start of the call. When
+   * the user name cannot be read after the token was issued, the token is not revoked and expires
+   * on its own.
+   * </p>
+   *
+   * @param userName the user name
+   * @param password the password
+   *
+   * @return the opened session
+   * @throws NullPointerException if any parameter is {@code null}
+   * @throws BBjAdminFailure with the kind {@code INVALID_CREDENTIALS} when the credentials are
+   *         refused, {@code TWO_FACTOR_REQUIRED} when the account needs a 2 factor code,
+   *         {@code TOKEN_REJECTED} when the server refuses the issued token, and
+   *         {@code UNAVAILABLE} when the Admin API cannot be reached or fails otherwise
+   */
   BBjSession openSession(String userName, String password) {
     Objects.requireNonNull(userName, "userName");
     Objects.requireNonNull(password, "password");
@@ -190,7 +236,9 @@ public final class BBjAdminGateway {
   }
 
   /**
-   * AdminCall
+   * A call on an Admin API connection that returns a value.
+   *
+   * @param <T> the type of the value
    */
   @FunctionalInterface
   private interface AdminCall<T> {

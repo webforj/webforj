@@ -40,6 +40,36 @@ class BBjSecurityConfigurationPropertiesTest {
     void shouldHaveNullDenyPath() {
       assertNull(properties.getDenyPath());
     }
+
+    @Test
+    void shouldHaveDefaultAdminHost() {
+      assertEquals("127.0.0.1", properties.getAdminHost());
+    }
+
+    @Test
+    void shouldHaveDefaultAdminPort() {
+      assertEquals(2002, properties.getAdminPort());
+    }
+
+    @Test
+    void shouldHaveDefaultAdminTimeoutSeconds() {
+      assertEquals(10, properties.getAdminTimeoutSeconds());
+    }
+
+    @Test
+    void shouldHaveDefaultTokenMinutes() {
+      assertEquals(30, properties.getTokenMinutes());
+    }
+
+    @Test
+    void shouldHaveDefaultSuccessPath() {
+      assertEquals("/", properties.getDefaultSuccessPath());
+    }
+
+    @Test
+    void shouldHaveDefaultReturnAfterLogin() {
+      assertTrue(properties.getReturnAfterLogin());
+    }
   }
 
   @Nested
@@ -67,6 +97,42 @@ class BBjSecurityConfigurationPropertiesTest {
     void shouldSetDenyPath() {
       properties.setDenyPath("/access-denied");
       assertEquals("/access-denied", properties.getDenyPath());
+    }
+
+    @Test
+    void shouldSetAdminHost() {
+      properties.setAdminHost("bbj.example.com");
+      assertEquals("bbj.example.com", properties.getAdminHost());
+    }
+
+    @Test
+    void shouldSetAdminPort() {
+      properties.setAdminPort(2020);
+      assertEquals(2020, properties.getAdminPort());
+    }
+
+    @Test
+    void shouldSetAdminTimeoutSeconds() {
+      properties.setAdminTimeoutSeconds(5);
+      assertEquals(5, properties.getAdminTimeoutSeconds());
+    }
+
+    @Test
+    void shouldSetTokenMinutes() {
+      properties.setTokenMinutes(15);
+      assertEquals(15, properties.getTokenMinutes());
+    }
+
+    @Test
+    void shouldSetDefaultSuccessPath() {
+      properties.setDefaultSuccessPath("/home");
+      assertEquals("/home", properties.getDefaultSuccessPath());
+    }
+
+    @Test
+    void shouldSetReturnAfterLogin() {
+      properties.setReturnAfterLogin(false);
+      assertFalse(properties.getReturnAfterLogin());
     }
   }
 }

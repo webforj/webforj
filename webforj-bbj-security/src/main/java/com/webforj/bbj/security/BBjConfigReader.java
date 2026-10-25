@@ -3,7 +3,6 @@ package com.webforj.bbj.security;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.util.Optional;
-import java.util.OptionalInt;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
@@ -38,7 +37,7 @@ public final class BBjConfigReader {
   private static final String ADMIN_TIMEOUT_SECONDS = BBJ_PREFIX + "admin.timeout-seconds";
   private static final String TOKEN_MINUTES = BBJ_PREFIX + "token.minutes";
   private static final String DEFAULT_SUCCESS_PATH = BBJ_PREFIX + "default-success-path";
-  private static final String RETURN_AFTER_LOGIN = BBJ_PREFIX + "return-after-lgoin";
+  private static final String RETURN_AFTER_LOGIN = BBJ_PREFIX + "return-after-login";
 
   private BBjConfigReader() {}
 
@@ -78,13 +77,13 @@ public final class BBjConfigReader {
     }
 
     if (config.hasPath(ADMIN_PORT)) {
-      readInt(config, ADMIN_PORT).ifPresent(properties::setAdminPort);
+      readInt(config, ADMIN_PORT, 1, 65535).ifPresent(properties::setAdminPort);
     }
     if (config.hasPath(ADMIN_TIMEOUT_SECONDS)) {
-      readInt(config, ADMIN_TIMEOUT_SECONDS).ifPresent(properties::setAdminTimeoutSeconds);
+      readInt(config, ADMIN_TIMEOUT_SECONDS, 1, 9999).ifPresent(properties::setAdminTimeoutSeconds);
     }
     if (config.hasPath(TOKEN_MINUTES)) {
-      readInt(config, TOKEN_MINUTES).ifPresent(properties::setTokenMinutes);
+      readInt(config, TOKEN_MINUTES, 1, 480).ifPresent(properties::setTokenMinutes);
     }
     if (config.hasPath(DEFAULT_SUCCESS_PATH)) {
       readString(config, DEFAULT_SUCCESS_PATH).ifPresent(properties::setDefaultSuccessPath);
@@ -114,13 +113,34 @@ public final class BBjConfigReader {
     return Optional.empty();
   }
 
-  private static OptionalInt readInt(Config config, String key) {
-    try {
-      return OptionalInt.of(config.getInt(key));
-    } catch (ConfigException.WrongType e) {
-      logger.log(Level.WARNING, "The configuraiton key {0} is not an integer and keeps its default",
+  private static Optional<Integer> readInt(Config config, String key, int min, int max) {
+    Optional<Integer> value = toInt(config, key);
+    if (value.isEmpty()) {
+      logger.log(Level.WARNING, "The configuration key {0} is not an integer and keeps its default",
           key);
-      return OptionalInt.empty();
+
+      return value;
+    }
+
+    if (value.get() < min || value.get() > max) {
+      logger.log(Level.WARNING,
+          "The configuration key {0} is not between {1} and {2} and keeps its default", key,
+          String.valueOf(min), String.valueOf(max));
+
+      return Optional.empty();
+    }
+
+    return value;
+  }
+
+  private static Optional<Integer> toInt(Config config, String key) {
+    try {
+      Number number = config.getNumber(key);
+
+      return number.doubleValue() == number.intValue() ? Optional.of(number.intValue())
+          : Optional.empty();
+    } catch (ConfigException.WrongType e) {
+      return Optional.empty();
     }
   }
 

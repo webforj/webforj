@@ -11,7 +11,7 @@ package com.webforj.bbj.security;
  * @author Christian Liebhardt
  * @since 26.03
  */
-public class BBjSecurityConfigurationProperties {
+public final class BBjSecurityConfigurationProperties {
   private Boolean enabled = true;
   private Boolean secureByDefault = true;
   private String authenticationPath;
@@ -95,50 +95,110 @@ public class BBjSecurityConfigurationProperties {
     this.denyPath = denyPath;
   }
 
+  /**
+   * Gets the host of the BBj Admin API.
+   *
+   * @return the host
+   */
   public String getAdminHost() {
     return adminHost;
   }
 
+  /**
+   * Sets the host of the BBj Admin API.
+   *
+   * @param adminHost the host
+   */
   public void setAdminHost(String adminHost) {
     this.adminHost = adminHost;
   }
 
+  /**
+   * Gets the port of the BBj Admin API.
+   *
+   * @return the port
+   */
   public Integer getAdminPort() {
     return adminPort;
   }
 
+  /**
+   * Sets the port of the BBj Admin API.
+   *
+   * @param adminPort the port
+   */
   public void setAdminPort(Integer adminPort) {
     this.adminPort = adminPort;
   }
 
+  /**
+   * Gets the time limit of an Admin API call in seconds.
+   *
+   * @return the time limit in seconds
+   */
   public Integer getAdminTimeoutSeconds() {
     return adminTimeoutSeconds;
   }
 
+  /**
+   * Sets the time limit of an Admin API call in seconds.
+   *
+   * @param adminTimeoutSeconds the time limit in seconds
+   */
   public void setAdminTimeoutSeconds(Integer adminTimeoutSeconds) {
     this.adminTimeoutSeconds = adminTimeoutSeconds;
   }
 
+  /**
+   * Gets the lifetime of a login token in minutes.
+   *
+   * @return the lifetime in minutes
+   */
   public Integer getTokenMinutes() {
     return tokenMinutes;
   }
 
+  /**
+   * Sets the lifetime of a login token in minutes.
+   *
+   * @param tokenMinutes the lifetime in minutes
+   */
   public void setTokenMinutes(Integer tokenMinutes) {
     this.tokenMinutes = tokenMinutes;
   }
 
+  /**
+   * Gets the path opened after a sign in when no requested location is used.
+   *
+   * @return the default success path
+   */
   public String getDefaultSuccessPath() {
     return defaultSuccessPath;
   }
 
+  /**
+   * Sets the path opened after a sign in when no requested location is used.
+   *
+   * @param defaultSuccessPath the default success path
+   */
   public void setDefaultSuccessPath(String defaultSuccessPath) {
     this.defaultSuccessPath = defaultSuccessPath;
   }
 
+  /**
+   * Gets whether the user returns to the requested location after a sign in.
+   *
+   * @return true if the user returns to the requested location, false otherwise
+   */
   public Boolean getReturnAfterLogin() {
     return returnAfterLogin;
   }
 
+  /**
+   * Sets whether the user returns to the requested location after a sign in.
+   *
+   * @param returnAfterLogin true to return to the requested location, false otherwise
+   */
   public void setReturnAfterLogin(Boolean returnAfterLogin) {
     this.returnAfterLogin = returnAfterLogin;
   }

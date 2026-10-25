@@ -17,7 +17,7 @@ import com.webforj.router.security.RouteSecurityContext;
  * @author Christian Liebhardt
  * @since 26.03
  */
-public class BBjRouteSecurityContext implements RouteSecurityContext {
+public final class BBjRouteSecurityContext implements RouteSecurityContext {
   private final Supplier<Optional<BBjPrincipal>> principalSupplier;
 
   /**
@@ -28,7 +28,7 @@ public class BBjRouteSecurityContext implements RouteSecurityContext {
    *
    * @throws NullPointerException if {@code principalSupplier} is null
    */
-  public BBjRouteSecurityContext(Supplier<Optional<BBjPrincipal>> principalSupplier) {
+  BBjRouteSecurityContext(Supplier<Optional<BBjPrincipal>> principalSupplier) {
     this.principalSupplier = Objects.requireNonNull(principalSupplier, "principalSupplier");
   }
 

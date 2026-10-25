@@ -26,7 +26,7 @@ import com.webforj.router.security.RouteSecurityObserver;
  * @since 26.03
  */
 @AppListenerPriority(1)
-public class BBjSecurityRegistrar implements AppLifecycleListener {
+public final class BBjSecurityRegistrar implements AppLifecycleListener {
   private static final Logger logger = System.getLogger(BBjSecurityRegistrar.class.getName());
 
   /**
