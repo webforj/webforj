@@ -5,11 +5,6 @@ import java.lang.System.Logger.Level;
 import java.util.Optional;
 import java.util.OptionalInt;
 
-import com.basis.bbj.comm.f;
-import com.basis.bbj.comm.k;
-import com.basis.bbj.comm.s;
-import com.basis.bbj.processor.instruction.co;
-import com.basis.bbj.processor.instruction.fi;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigValueType;
@@ -127,7 +122,8 @@ public final class BBjConfigReader {
     try {
       return OptionalInt.of(config.getInt(key));
     } catch (ConfigException.WrongType e) {
-      logger.log(Level.WARNING, "The configuraiton key {0} is not an integer and keeps its default", key);
+      logger.log(Level.WARNING, "The configuraiton key {0} is not an integer and keeps its default",
+          key);
       return OptionalInt.empty();
     }
   }
