@@ -8,10 +8,20 @@ import java.util.function.Consumer;
 
 import com.webforj.PendingResult;
 import com.webforj.bbj.security.model.BBjPrincipal;
+import com.webforj.bbj.security.model.BBjSession;
+import com.webforj.bbj.security.model.BBjLoginStatus;
 import com.webforj.router.history.Location;
 
 /**
- * BBjAuthenticationService
+ * Signs users in against BBj and keeps the user that signed in.
+ *
+ * <p>
+ * The service is registered in the object table of the environment under
+ * {@link BBjSecurity#SERVICE_KEY}. Apps use {@link BBjSecurity} to reach it.
+ * </p>
+ *
+ * @author Christian Liebhardt
+ * @since 26.03
  */
 public final class BBjAuthenticationService {
   private static final Logger logger = System.getLogger(BBjAuthenticationService.class.getName());
@@ -24,6 +34,17 @@ public final class BBjAuthenticationService {
   private final Consumer<Location> navigator;
   private BBjSession session;
 
+  /**
+   * Creates a service.
+   *
+   * @param gateway opens the sessions
+   * @param worker runs the sign in away from the calling thread
+   * @param locationStore holds the location the user requested before signing in
+   * @param properties the configuration of the sign in
+   * @param navigator opens the location the user lands on after signing in
+   *
+   * @throws NullPointerException if any parameter is {@code null}
+   */
   BBjAuthenticationService(BBjAdminGateway gateway, BBjAdminWorker worker,
       BBjRequestedLocationStore locationStore, BBjSecurityConfigurationProperties properties,
       Consumer<Location> navigator) {
@@ -34,6 +55,23 @@ public final class BBjAuthenticationService {
     this.navigator = Objects.requireNonNull(navigator, "navigator");
   }
 
+  /**
+   * Starts signing a user in.
+   *
+   * <p>
+   * An empty or blank user name or password, a user name longer than 256 characters and a password
+   * longer than 1024 characters are refused at once as invalid credentials. Otherwise the sign in
+   * runs in the background. After a successful sign in the service opens the location the user
+   * requested before signing in, or the default success path when no location was requested or
+   * returning is switched off. The requested location is cleared either way.
+   * </p>
+   *
+   * @param userName the user name
+   * @param password the password
+   *
+   * @return the pending status of the sign in
+   * @throws NullPointerException if any parameter is {@code null}
+   */
   PendingResult<BBjLoginStatus> startLogin(String userName, String password) {
     Objects.requireNonNull(userName, "userName");
     Objects.requireNonNull(password, "password");
@@ -54,6 +92,11 @@ public final class BBjAuthenticationService {
     return result;
   }
 
+  /**
+   * Gets the user that signed in.
+   *
+   * @return the signed in user, or empty if nobody has signed in
+   */
   Optional<BBjPrincipal> currentUser() {
     return Optional.ofNullable(session).map(BBjSession::getPrincipal);
   }
