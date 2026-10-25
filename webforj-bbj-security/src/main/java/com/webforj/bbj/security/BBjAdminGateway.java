@@ -45,6 +45,7 @@ public final class BBjAdminGateway {
   private static final String ENTRY_SEPARATOR = " / ";
   private static final int MAX_CAUSES = 5;
   private static final int MAX_DETAIL_LENGTH = 300;
+  private static final int CLOSING_MINUTES = 1;
   private static final char FIRST_PRINTABLE = ' ';
   private static final char DELETE = '\u007f';
   private static final Pattern TOKEN_SHAPE =
@@ -126,6 +127,18 @@ public final class BBjAdminGateway {
       logger.log(Level.WARNING, CLOSED_TOKEN_NOTE);
 
       throw failure;
+    }
+  }
+
+  void closeSession(BBjSession session) {
+    if (session == null) {
+      return;
+    }
+    var token = session.getToken();
+    try {
+      sendCall(token, admin -> admin.renewToken(1, true));
+    } catch (BBjAdminException | UnknownHostException | RuntimeException e) {
+      throw toFailure(e, token);
     }
   }
 

@@ -2,6 +2,7 @@ package com.webforj.bbj.security;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -20,11 +21,13 @@ import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.environment.ObjectTable;
 import com.webforj.router.RouteRenderer;
 import com.webforj.router.Router;
+import com.webforj.router.history.Location;
 import com.webforj.router.security.RouteSecurityObserver;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -192,6 +195,50 @@ class BBjSecurityRegistrarTest {
       assertEquals(Optional.of(principal), contexts.get(0).getPrincipal());
       BBjAuthenticationService registered = services.constructed().get(0);
       tableMock.verify(() -> ObjectTable.put(BBjSecurity.SERVICE_KEY, registered));
+    }
+  }
+
+  @Test
+  void shouldShareOneLocationStoreBetweenTheServiceAndTheSecurityManager() {
+    List<Object> serviceStores = new ArrayList<>();
+    List<Object> managerStores = new ArrayList<>();
+    when(environment.getConfig()).thenReturn(ConfigFactory.empty());
+
+    try (
+        MockedConstruction<BBjAuthenticationService> services =
+            mockConstruction(BBjAuthenticationService.class,
+                (service, context) -> serviceStores.add(context.arguments().get(2)));
+        MockedConstruction<BBjRouteSecurityManager> managers =
+            mockConstruction(BBjRouteSecurityManager.class,
+                (manager, context) -> managerStores.add(context.arguments().get(2)))) {
+      registrar.onWillRun(app);
+
+      assertEquals(1, serviceStores.size());
+      assertEquals(1, managerStores.size());
+      assertSame(serviceStores.get(0), managerStores.get(0));
+    }
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void shouldGiveTheServiceTheLogoutLocationAndTheRouterNavigation() {
+    List<Object> serviceArguments = new ArrayList<>();
+    Location logoutLocation = new Location("/goodbye");
+    when(environment.getConfig()).thenReturn(
+        ConfigFactory.parseString("webforj.security.bbj.logout-success-path = \"/goodbye\""));
+
+    try (MockedConstruction<BBjAuthenticationService> services =
+        mockConstruction(BBjAuthenticationService.class,
+            (service, context) -> serviceArguments.addAll(context.arguments()))) {
+      registrar.onWillRun(app);
+
+      BBjRouteSecurityConfiguration configuration =
+          (BBjRouteSecurityConfiguration) serviceArguments.get(4);
+      Consumer<Location> navigator = (Consumer<Location>) serviceArguments.get(5);
+      navigator.accept(logoutLocation);
+
+      assertEquals(Optional.of(logoutLocation), configuration.getLogoutLocation());
+      verify(router).navigate(logoutLocation);
     }
   }
 }

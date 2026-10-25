@@ -4,8 +4,7 @@ package com.webforj.bbj.security;
  * Route security configuration properties of a BBj application.
  *
  * <p>
- * Security is enabled and routes are secure by default unless set otherwise. No
- * authentication path
+ * Security is enabled and routes are secure by default unless set otherwise. No authentication path
  * and no deny path are set by default.
  * </p>
  *
@@ -199,8 +198,7 @@ public final class BBjSecurityConfigurationProperties {
   /**
    * Sets whether the user returns to the requested location after a sign in.
    *
-   * @param returnAfterLogin true to return to the requested location, false
-   *                         otherwise
+   * @param returnAfterLogin true to return to the requested location, false otherwise
    */
   public void setReturnAfterLogin(Boolean returnAfterLogin) {
     this.returnAfterLogin = returnAfterLogin;

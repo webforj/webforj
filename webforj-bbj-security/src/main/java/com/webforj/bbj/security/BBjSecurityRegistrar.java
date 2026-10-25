@@ -17,10 +17,8 @@ import com.webforj.router.security.RouteSecurityObserver;
  * Registers route security for a BBj application when it starts.
  *
  * <p>
- * When security is enabled in the configuration, the route security observer is
- * added to the
- * router. Nothing is registered when the environment, the configuration or the
- * router is not
+ * When security is enabled in the configuration, the route security observer is added to the
+ * router. Nothing is registered when the environment, the configuration or the router is not
  * available.
  * </p>
  *
@@ -63,11 +61,11 @@ public final class BBjSecurityRegistrar implements AppLifecycleListener {
 
     var router = Router.getCurrent();
     if (router != null) {
-      var service = new BBjAuthenticationService(gateway, worker, store, properties, router::navigate);
+      var service = new BBjAuthenticationService(gateway, worker, store, properties, configuration,
+          router::navigate);
       ObjectTable.put(BBjSecurity.SERVICE_KEY, service);
       var context = new BBjRouteSecurityContext(service::currentUser);
-      var manager = new BBjRouteSecurityManager(configuration, context,
-          store);
+      var manager = new BBjRouteSecurityManager(configuration, context, store);
       var securityObserver = new RouteSecurityObserver(manager);
       router.getRenderer().addObserver(securityObserver);
       logger.log(Level.INFO, "Route security enabled with {0} evaluators",
