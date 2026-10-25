@@ -28,7 +28,8 @@ import java.util.regex.Pattern;
  */
 public final class BBjAdminGateway {
   private static final Logger logger = System.getLogger(BBjAdminGateway.class.getName());
-  private static final String CLOSED_TOKEN_NOTE = "A BBj login token could not be read after it was issued and expires on its own";
+  private static final String CLOSED_TOKEN_NOTE =
+      "A BBj login token could not be read after it was issued and expires on its own";
   private static final String MASK = "***";
   private static final String REFUSED_LOGIN_PREFIX = "server failed login:";
   private static final String ENTRY_SEPARATOR = " / ";
@@ -36,7 +37,8 @@ public final class BBjAdminGateway {
   private static final int MAX_DETAIL_LENGTH = 300;
   private static final char FIRST_PRINTABLE = ' ';
   private static final char DELETE = '\u007f';
-  private static final Pattern TOKEN_SHAPE = Pattern.compile("eyJ[A-Za-z0-9_-]*\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+");
+  private static final Pattern TOKEN_SHAPE =
+      Pattern.compile("eyJ[A-Za-z0-9_-]*\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+");
   private final String host;
   private final int port;
   private final int timeoutMillis;
@@ -98,8 +100,8 @@ public final class BBjAdminGateway {
 
   private static BBjAdminFailure toFailure(Throwable cause, String... secrets) {
     List<Throwable> causes = readCauses(Objects.requireNonNull(cause, "cause"));
-    BBjAdminFailure.Kind kind = cause instanceof BBjAdminException ? findKind(causes)
-        : BBjAdminFailure.Kind.UNAVAILABLE;
+    BBjAdminFailure.Kind kind =
+        cause instanceof BBjAdminException ? findKind(causes) : BBjAdminFailure.Kind.UNAVAILABLE;
 
     return new BBjAdminFailure(kind, getPrefix(kind) + ": " + createDetail(causes, secrets));
   }
@@ -176,8 +178,9 @@ public final class BBjAdminGateway {
   private static String hideSecrets(String text, String... secrets) {
     String hidden = text;
     if (secrets != null) {
-      List<String> ordered = Arrays.stream(secrets).filter(secret -> secret != null && !secret.isEmpty()).distinct()
-          .sorted(Comparator.comparingInt(String::length).reversed()).toList();
+      List<String> ordered =
+          Arrays.stream(secrets).filter(secret -> secret != null && !secret.isEmpty()).distinct()
+              .sorted(Comparator.comparingInt(String::length).reversed()).toList();
       for (String secret : ordered) {
         hidden = hidden.replace(secret, MASK);
       }
@@ -195,14 +198,16 @@ public final class BBjAdminGateway {
   }
 
   private enum KnownMessage {
-    INVALID_PASSWORD("invalid username/password", BBjAdminFailure.Kind.INVALID_CREDENTIALS),
-    INVALID_CODE("invalid 2-factor authentication code",
-        BBjAdminFailure.Kind.INVALID_CREDENTIALS),
-    CODE_REQUIRED("2-factor authentication code required",
-        BBjAdminFailure.Kind.TWO_FACTOR_REQUIRED),
-    TOKEN_EXPIRED("authentication token is expired", BBjAdminFailure.Kind.TOKEN_REJECTED),
-    TOKEN_UNVERIFIED("unable to verify authentication token",
-        BBjAdminFailure.Kind.TOKEN_REJECTED);
+    INVALID_PASSWORD("invalid username/password",
+        BBjAdminFailure.Kind.INVALID_CREDENTIALS), INVALID_CODE(
+            "invalid 2-factor authentication code",
+            BBjAdminFailure.Kind.INVALID_CREDENTIALS), CODE_REQUIRED(
+                "2-factor authentication code required",
+                BBjAdminFailure.Kind.TWO_FACTOR_REQUIRED), TOKEN_EXPIRED(
+                    "authentication token is expired",
+                    BBjAdminFailure.Kind.TOKEN_REJECTED), TOKEN_UNVERIFIED(
+                        "unable to verify authentication token",
+                        BBjAdminFailure.Kind.TOKEN_REJECTED);
 
     private final String text;
     private final BBjAdminFailure.Kind kind;
