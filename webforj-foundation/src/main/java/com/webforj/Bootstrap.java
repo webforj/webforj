@@ -10,6 +10,7 @@ import com.webforj.exceptions.WebforjException;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
+import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.List;
 
@@ -97,9 +98,19 @@ public final class Bootstrap {
     }
 
     try {
-      @SuppressWarnings("unchecked")
-      App app = ConceiverProvider.getCurrent()
-          .getApplication((Class<? extends App>) Class.forName(selectedClassName));
+      Class<?> candidate =
+          Class.forName(selectedClassName, false, Bootstrap.class.getClassLoader());
+      if (!App.class.isAssignableFrom(candidate)) {
+        throw new WebforjAppInitializeException("Application class '" + selectedClassName
+            + "' must extend " + App.class.getName() + ".");
+      }
+
+      if (Modifier.isAbstract(candidate.getModifiers())) {
+        throw new WebforjAppInitializeException(
+            "Application class '" + selectedClassName + "' must not be abstract.");
+      }
+
+      App app = ConceiverProvider.getCurrent().getApplication(candidate.asSubclass(App.class));
 
       // Register the already-discovered listeners with the app
       AppLifecycleListenerRegistry.registerListeners(app, listeners);
