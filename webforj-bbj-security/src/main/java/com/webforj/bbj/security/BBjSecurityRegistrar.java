@@ -2,12 +2,14 @@ package com.webforj.bbj.security;
 
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
+import java.time.Duration;
 import java.util.Optional;
 
 import com.webforj.App;
 import com.webforj.AppLifecycleListener;
 import com.webforj.Environment;
 import com.webforj.annotation.AppListenerPriority;
+import com.webforj.environment.ObjectTable;
 import com.webforj.router.Router;
 import com.webforj.router.security.RouteSecurityObserver;
 
@@ -53,12 +55,18 @@ public class BBjSecurityRegistrar implements AppLifecycleListener {
       return;
     }
 
-    var context = new BBjRouteSecurityContext(Optional::empty);
-    var manager =
-        new BBjRouteSecurityManager(configuration, context, new BBjBrowserRequestedLocationStore());
+    var gateway = new BBjAdminGateway(properties);
+    var worker = new BBjAdminWorker(Duration.ofSeconds(properties.getAdminTimeoutSeconds()));
+    var store = new BBjBrowserRequestedLocationStore();
 
     var router = Router.getCurrent();
     if (router != null) {
+      var service =
+          new BBjAuthenticationService(gateway, worker, store, properties, router::navigate);
+      ObjectTable.put(BBjSecurity.SERVICE_KEY, service);
+      var context = new BBjRouteSecurityContext(service::currentUser);
+      var manager = new BBjRouteSecurityManager(configuration, context,
+          new BBjBrowserRequestedLocationStore());
       var securityObserver = new RouteSecurityObserver(manager);
       router.getRenderer().addObserver(securityObserver);
       logger.log(Level.INFO, "Route security enabled with {0} evaluators",

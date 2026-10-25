@@ -16,11 +16,10 @@ import java.util.Optional;
  * BBjSecurity
  */
 public final class BBjSecurity {
-  private static final String SERVICE_KEY = BBjAuthenticationService.class.getName();
+  public static final String SERVICE_KEY = BBjAuthenticationService.class.getName();
   private static final String UNAVAILABLE_TEXT = "Cannot sign in right now.";
 
-  private BBjSecurity() {
-  }
+  private BBjSecurity() {}
 
   public static PendingResult<BBjLoginStatus> login(String userName, String password) {
     Objects.requireNonNull(userName, "userName");
