@@ -7,9 +7,12 @@ import static org.mockito.Mockito.when;
 
 import com.typesafe.config.Config;
 import com.webforj.Environment;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.MockedStatic;
@@ -20,7 +23,8 @@ class HtmlTextTest {
   class IsWrappedWithHtmlTag {
 
     @ParameterizedTest
-    @ValueSource(strings = {"<html>hi</html>", "  <html>hi</html>", "<html><b>hi</b></html>"})
+    @ValueSource(strings = {"<html>hi</html>", "  <html>hi</html>", "<html><b>hi</b></html>",
+        "<HTML>hi</HTML>", " <HTML>hi</HTML>"})
     void shouldBeTrueWhenWrapped(String input) {
       assertEquals(true, HtmlText.isWrappedWithHtmlTag(input));
     }
@@ -65,6 +69,12 @@ class HtmlTextTest {
     }
 
     @Test
+    void shouldEscapeNestedMarkerWhenLegacyDisabled() {
+      withLegacyHtmlInText(false, () -> assertEquals("&lt;html&gt;&lt;b&gt;hi&lt;/b&gt;",
+          HtmlText.forHtmlSink("<html><html><b>hi</b></html>")));
+    }
+
+    @Test
     void shouldLeavePlainTextUntouched() {
       assertEquals("Click Me", HtmlText.forHtmlSink("Click Me"));
     }
@@ -73,6 +83,33 @@ class HtmlTextTest {
     @NullAndEmptySource
     void shouldReturnEmptyForNullOrEmpty(String input) {
       assertEquals("", HtmlText.forHtmlSink(input));
+    }
+  }
+
+  @Nested
+  class StripMarker {
+
+    @ParameterizedTest
+    @MethodSource("getWrappedValues")
+    void shouldRemoveOneMarkerIgnoringCase(String input, String expected) {
+      assertEquals(expected, HtmlText.stripMarker(input));
+    }
+
+    private static Stream<Arguments> getWrappedValues() {
+      return Stream.of(Arguments.of("<HTML>hi</HTML>", "hi"),
+          Arguments.of("<html><html><b>hi</b></html>", "<html><b>hi</b>"));
+    }
+  }
+
+  @Nested
+  class StripMarkers {
+
+    @ParameterizedTest
+    @ValueSource(
+        strings = {"<html><b>x</b></html>", "<html><html><b>x</b></html>", " <html><b>x</b></html>",
+            "<HTML><b>x</b></HTML>", "<html> <html><b>x</b></html>", "<b>x</b>"})
+    void shouldRemoveEveryLeadingMarkerIgnoringCase(String input) {
+      assertEquals("<b>x</b>", HtmlText.stripMarkers(input));
     }
   }
 
