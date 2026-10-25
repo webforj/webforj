@@ -19,6 +19,7 @@ import com.basis.api.admin.BBjAdminException;
 import com.basis.api.admin.BBjAdminFactory;
 import com.basis.api.admin.BBjAdminSecurityException;
 import com.webforj.bbj.security.BBjAdminFailure.Kind;
+import com.webforj.bbj.security.model.BBjPrincipal;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.time.Clock;
@@ -27,6 +28,7 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -176,6 +178,80 @@ class BBjAdminGatewayTest {
       assertEquals(Kind.INVALID_CREDENTIALS, failure.getKind());
       factory.verify(() -> BBjAdminFactory.getBBjAdmin(loopback, 2002, false, 10000, TOKEN, null,
           Locale.ENGLISH, null, null), never());
+    }
+  }
+
+  @Nested
+  class CloseSession {
+    private final BBjSession session =
+        new BBjSession(new BBjPrincipal("alice", Set.of(), Set.of()), TOKEN, NOW.plusSeconds(60));
+
+    @BeforeEach
+    void setUp() {
+      setAdmin(TOKEN);
+    }
+
+    private BBjAdminFailure closeFailingSession() {
+      return assertThrows(BBjAdminFailure.class, () -> gateway.closeSession(session));
+    }
+
+    @Test
+    void shouldNotContactTheAdminApiForANullSession() {
+      assertDoesNotThrow(() -> gateway.closeSession(null));
+
+      factory.verifyNoInteractions();
+    }
+
+    @Test
+    void shouldCloseTheTokenAndReleaseTheConnection() throws Exception {
+      gateway.closeSession(session);
+
+      verify(admin, times(1)).renewToken(1, true);
+      verify(admin, times(1)).release();
+    }
+
+    @Test
+    void shouldClassifyARefusedTokenAsTokenRejected() throws Exception {
+      when(admin.renewToken(1, true))
+          .thenThrow(new BBjAdminException("Server failed login: Authentication token is expired"));
+
+      BBjAdminFailure failure = closeFailingSession();
+
+      assertEquals(Kind.TOKEN_REJECTED, failure.getKind());
+      verify(admin, times(1)).release();
+    }
+
+    @Test
+    void shouldClassifyARuntimeFailureAsUnavailable() throws Exception {
+      when(admin.renewToken(1, true)).thenThrow(new IllegalStateException("boom"));
+
+      BBjAdminFailure failure = closeFailingSession();
+
+      assertEquals(Kind.UNAVAILABLE, failure.getKind());
+      assertEquals(UNAVAILABLE + "IllegalStateException: boom", failure.getMessage());
+      verify(admin, times(1)).release();
+    }
+
+    @Test
+    void shouldClassifyAnUnresolvableHostAsUnavailable() {
+      BBjSecurityConfigurationProperties properties = new BBjSecurityConfigurationProperties();
+      properties.setAdminHost("no such host.invalid");
+      BBjAdminGateway unresolved = new BBjAdminGateway(properties, clock);
+
+      BBjAdminFailure failure =
+          assertThrows(BBjAdminFailure.class, () -> unresolved.closeSession(session));
+
+      assertEquals(Kind.UNAVAILABLE, failure.getKind());
+    }
+
+    @Test
+    void shouldHideTheTokenInTheMessage() throws Exception {
+      when(admin.renewToken(1, true)).thenThrow(new BBjAdminException("bad " + TOKEN + " again"));
+
+      BBjAdminFailure failure = closeFailingSession();
+
+      assertEquals(UNAVAILABLE + "BBjAdminException: bad *** again", failure.getMessage());
+      assertFalse(failure.toString().contains(TOKEN));
     }
   }
 

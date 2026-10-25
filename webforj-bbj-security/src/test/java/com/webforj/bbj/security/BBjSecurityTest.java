@@ -3,6 +3,7 @@ package com.webforj.bbj.security;
 import com.webforj.bbj.security.model.BBjLoginStatus;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -87,6 +88,17 @@ class BBjSecurityTest {
     }
 
     @Test
+    void shouldCompleteLogoutWithNull() {
+      PendingResult<Void> result = BBjSecurity.logout();
+
+      AtomicReference<Object> value = new AtomicReference<>("unset");
+      result.thenAccept(value::set);
+
+      assertTrue(result.isDone());
+      assertNull(value.get());
+    }
+
+    @Test
     void shouldReturnEmptyCurrentUser() {
       assertTrue(BBjSecurity.currentUser().isEmpty());
     }
@@ -137,6 +149,14 @@ class BBjSecurityTest {
       when(service.startLogin("alice", "pw")).thenReturn(expected);
 
       assertSame(expected, BBjSecurity.login(event));
+    }
+
+    @Test
+    void shouldReturnTheResultOfTheServiceForLogout() {
+      PendingResult<Void> expected = PendingResult.completedWith(null);
+      when(service.startLogout()).thenReturn(expected);
+
+      assertSame(expected, BBjSecurity.logout());
     }
 
     @Test

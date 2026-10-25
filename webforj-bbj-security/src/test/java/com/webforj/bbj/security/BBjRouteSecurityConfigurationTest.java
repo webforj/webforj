@@ -117,4 +117,37 @@ class BBjRouteSecurityConfigurationTest {
       assertTrue(location.get().getQueryParameters().containsKey("error"));
     }
   }
+
+  @Nested
+  class LogoutLocation {
+
+    @Test
+    void shouldUseTheLogoutPathWhenItIsSet() {
+      properties.setAuthenticationPath("/signin");
+      properties.setLogoutSuccessPath("/goodbye");
+
+      Optional<Location> location = configuration.getLogoutLocation();
+
+      assertTrue(location.isPresent());
+      assertEquals("/goodbye", location.get().getFullURI());
+    }
+
+    @Test
+    void shouldUseTheAuthenticationPathWhenNoLogoutPathIsSet() {
+      properties.setAuthenticationPath("/signin");
+
+      Optional<Location> location = configuration.getLogoutLocation();
+
+      assertTrue(location.isPresent());
+      assertEquals("/signin", location.get().getFullURI());
+    }
+
+    @Test
+    void shouldUseTheDefaultLoginPathWhenNeitherPathIsSet() {
+      Optional<Location> location = configuration.getLogoutLocation();
+
+      assertTrue(location.isPresent());
+      assertEquals("/login", location.get().getFullURI());
+    }
+  }
 }

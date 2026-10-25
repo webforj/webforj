@@ -6,9 +6,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import com.basis.bbj.processor.instruction.el;
 import com.webforj.PendingResult;
 import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.bbj.security.model.BBjSession;
+import com.webforj.bbj.security.BBjAdminFailure.Kind;
 import com.webforj.bbj.security.model.BBjLoginStatus;
 import com.webforj.router.history.Location;
 
@@ -31,6 +33,7 @@ public final class BBjAuthenticationService {
   private final BBjAdminWorker worker;
   private final BBjRequestedLocationStore locationStore;
   private final BBjSecurityConfigurationProperties properties;
+  private final BBjRouteSecurityConfiguration configuration;
   private final Consumer<Location> navigator;
   private BBjSession session;
 
@@ -47,11 +50,12 @@ public final class BBjAuthenticationService {
    */
   BBjAuthenticationService(BBjAdminGateway gateway, BBjAdminWorker worker,
       BBjRequestedLocationStore locationStore, BBjSecurityConfigurationProperties properties,
-      Consumer<Location> navigator) {
+      BBjRouteSecurityConfiguration configuration, Consumer<Location> navigator) {
     this.gateway = Objects.requireNonNull(gateway, "gateway");
     this.worker = Objects.requireNonNull(worker, "worker");
     this.locationStore = Objects.requireNonNull(locationStore, "locationStore");
     this.properties = Objects.requireNonNull(properties, "properties");
+    this.configuration = Objects.requireNonNull(configuration, "configuration");
     this.navigator = Objects.requireNonNull(navigator, "navigator");
   }
 
@@ -92,6 +96,17 @@ public final class BBjAuthenticationService {
     return result;
   }
 
+  PendingResult<Void> startLogout() {
+    if (session == null) {
+      return PendingResult.completedWith(null);
+    }
+    var current = session;
+    session = null;
+    locationStore.clearLocation();
+    openLogoutLocation();
+    return closeSession(current);
+  }
+
   /**
    * Gets the user that signed in.
    *
@@ -124,6 +139,24 @@ public final class BBjAuthenticationService {
     };
   }
 
+  private PendingResult<Void> closeSession(BBjSession session) {
+    return worker.start(() -> {
+      gateway.closeSession(session);
+      return Boolean.TRUE;
+    }, closed -> null, this::applyCloseFailure, discard -> {
+    });
+  }
+
+  private Void applyCloseFailure(BBjAdminFailure failure) {
+    var kind = failure.getKind();
+    if (kind == Kind.TOKEN_REJECTED) {
+      logger.log(Level.DEBUG, "The token was already ended.");
+    } else {
+      logger.log(Level.WARNING, "The token could not be ended and expires on its own.");
+    }
+    return null;
+  }
+
   private void openTargetLocation() {
     Optional<Location> requested = locationStore.readLocation();
     locationStore.clearLocation();
@@ -132,6 +165,10 @@ public final class BBjAuthenticationService {
     } else {
       navigator.accept(new Location(properties.getDefaultSuccessPath()));
     }
+  }
+
+  private void openLogoutLocation() {
+    configuration.getLogoutLocation().ifPresent(navigator::accept);
   }
 
   private void discardLateSession(BBjSession session) {}

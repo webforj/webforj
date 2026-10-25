@@ -110,6 +110,11 @@ public final class BBjSecurity {
     return result;
   }
 
+  public static PendingResult<Void> logout() {
+    return getService().map(BBjAuthenticationService::startLogout)
+        .orElse(PendingResult.completedWith(null));
+  }
+
   /**
    * Gets the user that signed in.
    *

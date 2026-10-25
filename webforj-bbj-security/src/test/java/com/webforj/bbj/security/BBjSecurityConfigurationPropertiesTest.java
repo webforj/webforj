@@ -42,6 +42,11 @@ class BBjSecurityConfigurationPropertiesTest {
     }
 
     @Test
+    void shouldHaveNullLogoutSuccessPath() {
+      assertNull(properties.getLogoutSuccessPath());
+    }
+
+    @Test
     void shouldHaveDefaultAdminHost() {
       assertEquals("127.0.0.1", properties.getAdminHost());
     }
@@ -97,6 +102,12 @@ class BBjSecurityConfigurationPropertiesTest {
     void shouldSetDenyPath() {
       properties.setDenyPath("/access-denied");
       assertEquals("/access-denied", properties.getDenyPath());
+    }
+
+    @Test
+    void shouldSetLogoutSuccessPath() {
+      properties.setLogoutSuccessPath("/goodbye");
+      assertEquals("/goodbye", properties.getLogoutSuccessPath());
     }
 
     @Test
