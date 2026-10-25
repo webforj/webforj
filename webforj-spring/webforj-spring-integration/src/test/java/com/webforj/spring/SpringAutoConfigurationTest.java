@@ -2,6 +2,7 @@ package com.webforj.spring;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mockStatic;
@@ -97,7 +98,7 @@ class SpringAutoConfigurationTest {
 
         assertNotNull(registrationBean1.getServlet());
         assertNotNull(registrationBean2.getServlet());
-        assert registrationBean1.getServlet() != registrationBean2.getServlet();
+        assertNotSame(registrationBean1.getServlet(), registrationBean2.getServlet());
 
         // Verify setConfig was called twice (once for each registration)
         mockedServlet.verify(() -> WebforjServlet.setConfig(config), times(2));
@@ -135,7 +136,7 @@ class SpringAutoConfigurationTest {
 
       assertNotNull(contextInjector1);
       assertNotNull(contextInjector2);
-      assert contextInjector1 != contextInjector2;
+      assertNotSame(contextInjector1, contextInjector2);
     }
   }
 
@@ -157,7 +158,7 @@ class SpringAutoConfigurationTest {
 
       assertNotNull(registrar1);
       assertNotNull(registrar2);
-      assert registrar1 != registrar2;
+      assertNotSame(registrar1, registrar2);
     }
   }
 }
