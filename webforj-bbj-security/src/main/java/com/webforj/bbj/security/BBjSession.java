@@ -1,6 +1,7 @@
 package com.webforj.bbj.security;
 
 import java.time.Instant;
+import java.util.Objects;
 
 import com.webforj.bbj.security.model.BBjPrincipal;
 
@@ -13,6 +14,12 @@ public class BBjSession {
   private final Instant expiresAt;
 
   public BBjSession(BBjPrincipal principal, String token, Instant expiresAt) {
+    Objects.requireNonNull(principal, "principal");
+    Objects.requireNonNull(token, "token");
+    Objects.requireNonNull(expiresAt, "expiresAt");
+    if (token.isBlank()) {
+      throw new IllegalArgumentException("token cannot be empty");
+    }
     this.principal = principal;
     this.token = token;
     this.expiresAt = expiresAt;
