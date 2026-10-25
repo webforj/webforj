@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -12,12 +13,18 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.basis.bbj.proxies.sysgui.BBjTree;
+import com.typesafe.config.Config;
+import com.webforj.Environment;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.MockedStatic;
 
 class TreeNodeTest {
 
@@ -102,6 +109,45 @@ class TreeNodeTest {
     @Test
     void shouldThrowExceptionIfTextIsNull() {
       assertThrows(NullPointerException.class, () -> root.setText(null));
+    }
+  }
+
+  @Nested
+  class IconTests {
+    @ParameterizedTest
+    @MethodSource("getIconSources")
+    void shouldStoreResolvedIcon(String src, String expected) {
+      try (MockedStatic<Environment> environmentMock = mockStatic(Environment.class)) {
+        Environment environment = mock(Environment.class);
+        environmentMock.when(Environment::getCurrent).thenReturn(environment);
+        environmentMock.when(Environment::getContextPath).thenReturn("/");
+        when(environment.getConfig()).thenReturn(mock(Config.class));
+
+        root.setIcon(src);
+
+        assertEquals(expected, root.getIcon());
+      }
+    }
+
+    @ParameterizedTest
+    @MethodSource("getIconSources")
+    void shouldStoreResolvedSelectedIcon(String src, String expected) {
+      try (MockedStatic<Environment> environmentMock = mockStatic(Environment.class)) {
+        Environment environment = mock(Environment.class);
+        environmentMock.when(Environment::getCurrent).thenReturn(environment);
+        environmentMock.when(Environment::getContextPath).thenReturn("/");
+        when(environment.getConfig()).thenReturn(mock(Config.class));
+
+        root.setSelectedIcon(src);
+
+        assertEquals(expected, root.getSelectedIcon());
+      }
+    }
+
+    private static Stream<Arguments> getIconSources() {
+      return Stream.of(Arguments.of("ws://images/folder.png", "/static/images/folder.png"),
+          Arguments.of("icons://folder.png", "/icons/folder.png"),
+          Arguments.of("https://example.com/folder.png", "https://example.com/folder.png"));
     }
   }
 
