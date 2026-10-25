@@ -31,7 +31,8 @@ public final class BBjRouteSecurityConfiguration implements RouteSecurityConfigu
    * {@inheritDoc}
    *
    * <p>
-   * When no authentication path is configured, the default authentication location applies.
+   * When no authentication path is configured, the default authentication
+   * location applies.
    * </p>
    */
   @Override
@@ -67,6 +68,11 @@ public final class BBjRouteSecurityConfiguration implements RouteSecurityConfigu
   @Override
   public boolean isSecureByDefault() {
     return Boolean.TRUE.equals(properties.getSecureByDefault());
+  }
+
+  public Optional<Location> getLogoutLocation() {
+    return Optional.ofNullable(properties.getLogoutSuccessPath()).map(Location::new)
+        .or(RouteSecurityConfiguration.super::getAuthenticationLocation);
   }
 
 }
