@@ -33,7 +33,7 @@ import com.webforj.router.security.evaluator.RolesAllowedEvaluator;
  * @author Christian Liebhardt
  * @since 26.03
  */
-public class BBjRouteSecurityManager extends AbstractRouteSecurityManager {
+public final class BBjRouteSecurityManager extends AbstractRouteSecurityManager {
   private static final Logger logger = System.getLogger(BBjRouteSecurityManager.class.getName());
   private final BBjRouteSecurityConfiguration configuration;
   private final BBjRequestedLocationStore locationStore;
@@ -49,7 +49,7 @@ public class BBjRouteSecurityManager extends AbstractRouteSecurityManager {
    * @throws NullPointerException if {@code configuration}, {@code securityContext} or
    *         {@code locationStore} is null
    */
-  public BBjRouteSecurityManager(BBjRouteSecurityConfiguration configuration,
+  BBjRouteSecurityManager(BBjRouteSecurityConfiguration configuration,
       BBjRouteSecurityContext securityContext, BBjRequestedLocationStore locationStore) {
     this.configuration = Objects.requireNonNull(configuration, "configuration");
     this.securityContext = Objects.requireNonNull(securityContext, "securityContext");

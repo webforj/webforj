@@ -13,7 +13,7 @@ import com.webforj.router.security.RouteSecurityConfiguration;
  * @author Christian Liebhardt
  * @since 26.03
  */
-public class BBjRouteSecurityConfiguration implements RouteSecurityConfiguration {
+public final class BBjRouteSecurityConfiguration implements RouteSecurityConfiguration {
   private final BBjSecurityConfigurationProperties properties;
 
   /**
@@ -23,7 +23,7 @@ public class BBjRouteSecurityConfiguration implements RouteSecurityConfiguration
    *
    * @throws NullPointerException if {@code properties} is null
    */
-  public BBjRouteSecurityConfiguration(BBjSecurityConfigurationProperties properties) {
+  BBjRouteSecurityConfiguration(BBjSecurityConfigurationProperties properties) {
     this.properties = Objects.requireNonNull(properties, "properties");
   }
 

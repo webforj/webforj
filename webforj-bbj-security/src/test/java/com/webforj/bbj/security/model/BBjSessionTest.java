@@ -1,11 +1,10 @@
-package com.webforj.bbj.security;
+package com.webforj.bbj.security.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.webforj.bbj.security.model.BBjPrincipal;
 import java.time.Instant;
 import java.util.Set;
 import org.junit.jupiter.api.Nested;

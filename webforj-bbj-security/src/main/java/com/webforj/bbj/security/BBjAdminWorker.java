@@ -21,7 +21,18 @@ import com.webforj.Environment;
 import com.webforj.PendingResult;
 
 /**
- * BBjAdminWorker
+ * Runs blocking BBj Admin API calls away from the calling thread and hands each outcome back to the
+ * environment of the caller.
+ *
+ * <p>
+ * At most two calls run at once and up to four more wait for a free thread. A call that does not
+ * finish within the time limit is reported as unavailable and abandoned. While two abandoned calls
+ * are still running, and after the worker is destroyed, new calls are refused and reported as
+ * unavailable.
+ * </p>
+ *
+ * @author Christian Liebhardt
+ * @since 26.03
  */
 public final class BBjAdminWorker {
   private static final Logger logger = System.getLogger(BBjAdminWorker.class.getName());
@@ -36,10 +47,25 @@ public final class BBjAdminWorker {
   private final ScheduledThreadPoolExecutor timer;
   private boolean destroyed;
 
+  /**
+   * Creates a worker that hands outcomes back through {@link Environment#runLater}.
+   *
+   * @param timeout the time limit of one call
+   *
+   * @throws NullPointerException if {@code timeout} is {@code null}
+   */
   BBjAdminWorker(Duration timeout) {
     this(timeout, Environment::runLater);
   }
 
+  /**
+   * Creates a worker that hands outcomes back through the given dispatcher.
+   *
+   * @param timeout the time limit of one call
+   * @param dispatcher runs a task in the given environment and completes when the task has run
+   *
+   * @throws NullPointerException if any parameter is {@code null}
+   */
   BBjAdminWorker(Duration timeout,
       BiFunction<Environment, Runnable, PendingResult<Void>> dispatcher) {
     this.timeout = Objects.requireNonNull(timeout, "timeout");
@@ -55,6 +81,33 @@ public final class BBjAdminWorker {
     timer.setRemoveOnCancelPolicy(true);
   }
 
+  /**
+   * Starts a call on a worker thread.
+   *
+   * <p>
+   * {@code work} runs on a worker thread. When it returns a value, {@code deliver} turns the value
+   * into the result. When it throws a {@link BBjAdminFailure}, {@code fail} turns that failure into
+   * the result. Any other runtime exception of {@code work} is reported to {@code fail} as an
+   * unavailable failure. Both hooks run in the environment that was current when the call started.
+   * </p>
+   *
+   * <p>
+   * When the call misses the time limit, or is refused, {@code fail} receives an unavailable
+   * failure. A value that arrives too late, or whose result was cancelled, is passed to
+   * {@code discard} instead. {@code discard} runs on a worker thread or on a separate thread. A
+   * hook that throws completes the result exceptionally.
+   * </p>
+   *
+   * @param <T> the type of the value of the call
+   * @param <R> the type of the result
+   * @param work the blocking call
+   * @param deliver turns the value of the call into the result
+   * @param fail turns a failure into the result
+   * @param discard releases a value that is not delivered
+   *
+   * @return the pending result
+   * @throws NullPointerException if any parameter is {@code null}
+   */
   <T, R> PendingResult<R> start(Supplier<? extends T> work,
       Function<? super T, ? extends R> deliver, Function<? super BBjAdminFailure, ? extends R> fail,
       Consumer<? super T> discard) {
@@ -76,6 +129,13 @@ public final class BBjAdminWorker {
     return task.result;
   }
 
+  /**
+   * Stops the worker threads and refuses every later call.
+   *
+   * <p>
+   * Calling it again has no effect.
+   * </p>
+   */
   void destroy() {
     synchronized (this) {
       if (destroyed) {
@@ -110,7 +170,10 @@ public final class BBjAdminWorker {
   }
 
   /**
-   * Task
+   * One call with its hooks, its time limit and its pending result.
+   *
+   * @param <T> the type of the value of the call
+   * @param <R> the type of the result
    */
   private final class Task<T, R> implements Runnable {
     private final Supplier<? extends T> work;
