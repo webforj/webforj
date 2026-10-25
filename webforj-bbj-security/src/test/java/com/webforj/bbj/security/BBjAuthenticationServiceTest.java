@@ -5,10 +5,12 @@ import com.webforj.bbj.security.model.BBjLoginStatus;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -59,6 +61,8 @@ class BBjAuthenticationServiceTest {
   private final BBjRequestedLocationStore locationStore = mock(BBjRequestedLocationStore.class);
   private final BBjSecurityConfigurationProperties properties =
       new BBjSecurityConfigurationProperties();
+  private final BBjRouteSecurityConfiguration configuration =
+      new BBjRouteSecurityConfiguration(properties);
   private final Consumer<Location> navigator = createNavigator();
   private final PendingResult<BBjLoginStatus> pending = new PendingResult<>();
   private final ArgumentCaptor<Supplier<BBjSession>> workCaptor = createCaptor(Supplier.class);
@@ -91,7 +95,8 @@ class BBjAuthenticationServiceTest {
     logger.addHandler(handler);
     properties.setDefaultSuccessPath("/home");
     doReturn(pending).when(worker).start(any(), any(), any(), any());
-    service = new BBjAuthenticationService(gateway, worker, locationStore, properties, navigator);
+    service = new BBjAuthenticationService(gateway, worker, locationStore, properties,
+        configuration, navigator);
   }
 
   @AfterEach
@@ -109,6 +114,11 @@ class BBjAuthenticationServiceTest {
   static Stream<Arguments> getAcceptedInputs() {
     return Stream.of(Arguments.of("a".repeat(256), PASSWORD),
         Arguments.of("alice", "p".repeat(1024)));
+  }
+
+  static Stream<Arguments> getLogoutCases() {
+    return Stream.of(Arguments.of("/goodbye", new Location("/goodbye")),
+        Arguments.of(null, new Location("/login")));
   }
 
   static Stream<Arguments> getNavigationCases() {
@@ -138,6 +148,17 @@ class BBjAuthenticationServiceTest {
     return future.get(5, TimeUnit.SECONDS);
   }
 
+  private static <T> T getValue(PendingResult<T> result) throws Exception {
+    CompletableFuture<T> future = new CompletableFuture<>();
+    result.thenAccept(future::complete).exceptionally(error -> {
+      future.completeExceptionally(error);
+
+      return null;
+    });
+
+    return future.get(5, TimeUnit.SECONDS);
+  }
+
   private void captureHooks() {
     verify(worker).start(workCaptor.capture(), deliverCaptor.capture(), failCaptor.capture(),
         discardCaptor.capture());
@@ -150,20 +171,28 @@ class BBjAuthenticationServiceTest {
         .map(formatter::formatMessage).toList();
   }
 
+  private List<String> getDebugMessages() {
+    SimpleFormatter formatter = new SimpleFormatter();
+
+    return records.stream().filter(record -> record.getLevel() == Level.FINE)
+        .map(formatter::formatMessage).toList();
+  }
+
   @Nested
   class Construction {
 
     @ParameterizedTest
-    @ValueSource(ints = {0, 1, 2, 3, 4})
+    @ValueSource(ints = {0, 1, 2, 3, 4, 5})
     void shouldRefuseANullArgument(int position) {
       BBjAdminGateway givenGateway = position == 0 ? null : gateway;
       BBjAdminWorker givenWorker = position == 1 ? null : worker;
       BBjRequestedLocationStore givenStore = position == 2 ? null : locationStore;
       BBjSecurityConfigurationProperties givenProperties = position == 3 ? null : properties;
-      Consumer<Location> givenNavigator = position == 4 ? null : navigator;
+      BBjRouteSecurityConfiguration givenConfiguration = position == 4 ? null : configuration;
+      Consumer<Location> givenNavigator = position == 5 ? null : navigator;
 
       assertThrows(NullPointerException.class, () -> new BBjAuthenticationService(givenGateway,
-          givenWorker, givenStore, givenProperties, givenNavigator));
+          givenWorker, givenStore, givenProperties, givenConfiguration, givenNavigator));
     }
   }
 
@@ -307,6 +336,136 @@ class BBjAuthenticationServiceTest {
 
       assertEquals(BBjLoginStatus.UNAVAILABLE, getStatus(result));
       assertFalse(service.currentUser().isPresent());
+    }
+  }
+
+  @Nested
+  class Logout {
+    private final PendingResult<Void> closePending = new PendingResult<>();
+    private final ArgumentCaptor<Supplier<Boolean>> closeWorkCaptor = createCaptor(Supplier.class);
+    private final ArgumentCaptor<Function<Boolean, Void>> closeDeliverCaptor =
+        createCaptor(Function.class);
+    private final ArgumentCaptor<Function<BBjAdminFailure, Void>> closeFailCaptor =
+        createCaptor(Function.class);
+    private final ArgumentCaptor<Consumer<Boolean>> closeDiscardCaptor =
+        createCaptor(Consumer.class);
+
+    private void startSignedInSession() {
+      service.startLogin("alice", PASSWORD);
+      captureHooks();
+      pending.complete(deliverCaptor.getValue().apply(session));
+      clearInvocations(worker, navigator, locationStore, gateway);
+      doReturn(closePending).when(worker).start(any(), any(), any(), any());
+    }
+
+    private void readCloseHooks() {
+      verify(worker).start(closeWorkCaptor.capture(), closeDeliverCaptor.capture(),
+          closeFailCaptor.capture(), closeDiscardCaptor.capture());
+    }
+
+    @Test
+    void shouldCompleteWithNullAndCallNoOneWhenNobodySignedIn() throws Exception {
+      PendingResult<Void> result = service.startLogout();
+
+      assertTrue(result.isDone());
+      assertNull(getValue(result));
+      verifyNoInteractions(navigator, worker, gateway, locationStore);
+    }
+
+    @Test
+    void shouldForgetTheUserRightAway() {
+      startSignedInSession();
+
+      service.startLogout();
+
+      assertFalse(service.currentUser().isPresent());
+    }
+
+    @Test
+    void shouldClearTheLocationStore() {
+      startSignedInSession();
+
+      service.startLogout();
+
+      verify(locationStore).clearLocation();
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.webforj.bbj.security.BBjAuthenticationServiceTest#getLogoutCases")
+    void shouldOpenTheLogoutLocationOfTheConfiguration(String logoutPath, Location expected) {
+      properties.setLogoutSuccessPath(logoutPath);
+      startSignedInSession();
+
+      service.startLogout();
+
+      verify(navigator).accept(expected);
+    }
+
+    @Test
+    void shouldCloseTheSignedInSession() {
+      startSignedInSession();
+      service.startLogout();
+      readCloseHooks();
+
+      closeWorkCaptor.getValue().get();
+
+      verify(gateway).closeSession(session);
+    }
+
+    @Test
+    void shouldCompleteWithNullAfterTheClose() throws Exception {
+      startSignedInSession();
+      PendingResult<Void> result = service.startLogout();
+      readCloseHooks();
+      closeWorkCaptor.getValue().get();
+      assertFalse(result.isDone());
+
+      closePending.complete(closeDeliverCaptor.getValue().apply(Boolean.TRUE));
+
+      assertSame(closePending, result);
+      assertNull(getValue(result));
+    }
+
+    @Test
+    void shouldCompleteWithNullAndLogDebugWhenTheTokenWasRejected() throws Exception {
+      startSignedInSession();
+      PendingResult<Void> result = service.startLogout();
+      readCloseHooks();
+      BBjAdminFailure failure = new BBjAdminFailure(Kind.TOKEN_REJECTED, "ended");
+
+      closePending.complete(closeFailCaptor.getValue().apply(failure));
+
+      assertNull(getValue(result));
+      assertEquals(List.of("The token was already ended."), getDebugMessages());
+      assertEquals(List.of(), getWarnings());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Kind.class, mode = Mode.EXCLUDE, names = "TOKEN_REJECTED")
+    void shouldCompleteWithNullAndWarnWhenTheTokenCouldNotBeEnded(Kind kind) throws Exception {
+      startSignedInSession();
+      PendingResult<Void> result = service.startLogout();
+      readCloseHooks();
+      BBjAdminFailure failure = new BBjAdminFailure(kind, "not served");
+
+      closePending.complete(closeFailCaptor.getValue().apply(failure));
+
+      assertNull(getValue(result));
+      assertEquals(List.of("The token could not be ended and expires on its own."), getWarnings());
+      assertEquals(List.of(), getDebugMessages());
+    }
+
+    @Test
+    void shouldActLikeNobodySignedInOnASecondLogout() throws Exception {
+      startSignedInSession();
+      service.startLogout();
+      clearInvocations(worker, navigator, locationStore, gateway);
+
+      PendingResult<Void> result = service.startLogout();
+
+      assertTrue(result.isDone());
+      assertNull(getValue(result));
+      verifyNoInteractions(navigator, worker, gateway, locationStore);
     }
   }
 

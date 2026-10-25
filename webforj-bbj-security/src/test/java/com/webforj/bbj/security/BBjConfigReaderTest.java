@@ -61,6 +61,7 @@ class BBjConfigReaderTest {
           token.minutes = 15
           default-success-path = "/home"
           return-after-login = false
+          logout-success-path = "/goodbye"
         }
         """);
 
@@ -72,6 +73,7 @@ class BBjConfigReaderTest {
     assertEquals(15, properties.getTokenMinutes());
     assertEquals("/home", properties.getDefaultSuccessPath());
     assertFalse(properties.getReturnAfterLogin());
+    assertEquals("/goodbye", properties.getLogoutSuccessPath());
   }
 
   @Nested
@@ -436,6 +438,32 @@ class BBjConfigReaderTest {
           new SimpleFormatter().formatMessage(warnings.get(0)));
     }
 
+    @ParameterizedTest
+    @MethodSource("invalidLogoutSuccessPathValues")
+    void shouldKeepThePreviousLogoutSuccessPathWhenItIsNotAString(String value) {
+      properties.setLogoutSuccessPath("/before-goodbye");
+      Config config =
+          ConfigFactory.parseString("webforj.security.bbj.logout-success-path = " + value);
+
+      BBjConfigReader.readConfig(properties, config);
+
+      assertEquals("/before-goodbye", properties.getLogoutSuccessPath());
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidLogoutSuccessPathValues")
+    void shouldLogTheKeyWhenTheLogoutSuccessPathIsNotAString(String value) {
+      Config config =
+          ConfigFactory.parseString("webforj.security.bbj.logout-success-path = " + value);
+
+      BBjConfigReader.readConfig(properties, config);
+
+      List<LogRecord> warnings = getWarnings();
+      assertEquals(1, warnings.size());
+      assertEquals("The configuration key webforj.security.bbj.logout-success-path is not a string"
+          + " and keeps its default", new SimpleFormatter().formatMessage(warnings.get(0)));
+    }
+
     private List<LogRecord> getWarnings() {
       return records.stream().filter(record -> record.getLevel() == Level.WARNING).toList();
     }
@@ -461,6 +489,11 @@ class BBjConfigReaderTest {
     private static Stream<Arguments> invalidAdminStringValues() {
       return Stream.of("admin.host", "default-success-path").flatMap(key -> Stream
           .of("[\"a\"]", "{a = 1}", "5", "true").map(value -> Arguments.of(key, value)));
+    }
+
+    private static Stream<Arguments> invalidLogoutSuccessPathValues() {
+      return Stream.of(Arguments.of("[\"/goodbye\"]"), Arguments.of("{a = 1}"), Arguments.of("5"),
+          Arguments.of("true"));
     }
 
     private static Stream<Arguments> invalidPathValues() {
