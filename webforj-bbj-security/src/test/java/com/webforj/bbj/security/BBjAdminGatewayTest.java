@@ -66,13 +66,13 @@ class BBjAdminGatewayTest {
   }
 
   private void setToken(String token) {
-    factory.when(() -> BBjAdminFactory.getAuthToken(loopback, 2002, false, 10000, "alice",
-        PASSWORD, Locale.ENGLISH, null, null, 30L, Map.of())).thenReturn(token);
+    factory.when(() -> BBjAdminFactory.getAuthToken(loopback, 2002, false, 10000, "alice", PASSWORD,
+        Locale.ENGLISH, null, null, 30L, Map.of())).thenReturn(token);
   }
 
   private void setTokenFailure(Throwable failure) {
-    factory.when(() -> BBjAdminFactory.getAuthToken(loopback, 2002, false, 10000, "alice",
-        PASSWORD, Locale.ENGLISH, null, null, 30L, Map.of())).thenThrow(failure);
+    factory.when(() -> BBjAdminFactory.getAuthToken(loopback, 2002, false, 10000, "alice", PASSWORD,
+        Locale.ENGLISH, null, null, 30L, Map.of())).thenThrow(failure);
   }
 
   private void setAdmin(String token) {
@@ -111,10 +111,12 @@ class BBjAdminGatewayTest {
 
   private static Stream<Arguments> getKindMessages() {
     return Stream.of(
-        Arguments.of("Invalid username/password", "BBj Admin API refused the credentials: "
-            + "BBjAdminException: Invalid username/password"),
-        Arguments.of("2-factor authentication code required", "BBj Admin API requires a 2-factor "
-            + "code: BBjAdminException: 2-factor authentication code required"),
+        Arguments.of("Invalid username/password",
+            "BBj Admin API refused the credentials: "
+                + "BBjAdminException: Invalid username/password"),
+        Arguments.of("2-factor authentication code required",
+            "BBj Admin API requires a 2-factor "
+                + "code: BBjAdminException: 2-factor authentication code required"),
         Arguments.of("Server failed login: Authentication token is expired",
             "BBj Admin API refused the token: BBjAdminException: "
                 + "Server failed login: Authentication token is expired"),
@@ -306,8 +308,7 @@ class BBjAdminGatewayTest {
 
       BBjAdminFailure failure = openFailingSession(first);
 
-      assertEquals(
-          UNAVAILABLE + "BBjAdminException: first / BBjAdminException: second",
+      assertEquals(UNAVAILABLE + "BBjAdminException: first / BBjAdminException: second",
           failure.getMessage());
     }
   }
@@ -434,8 +435,8 @@ class BBjAdminGatewayTest {
 
     @Test
     void shouldReleaseTheConnectionAndWarnOnceWhenTheUserNameCannotBeRead() throws Exception {
-      when(admin.getUser()).thenThrow(
-          new BBjAdminException("Server failed login: Authentication token is expired"));
+      when(admin.getUser())
+          .thenThrow(new BBjAdminException("Server failed login: Authentication token is expired"));
 
       BBjAdminFailure failure =
           assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD));
@@ -456,12 +457,13 @@ class BBjAdminGatewayTest {
           assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD));
 
       assertEquals(UNAVAILABLE + "BBjAdminException: bad *** and ***", failure.getMessage());
-      assertTrue(records.stream()
-          .noneMatch(record -> String.valueOf(record.getMessage()).contains(TOKEN)
+      assertTrue(
+          records.stream().noneMatch(record -> String.valueOf(record.getMessage()).contains(TOKEN)
               || String.valueOf(record.getMessage()).contains(PASSWORD)));
-      assertTrue(records.stream().allMatch(record -> record.getThrown() == null
-          || (!String.valueOf(record.getThrown().getMessage()).contains(TOKEN)
-              && !String.valueOf(record.getThrown().getMessage()).contains(PASSWORD))));
+      assertTrue(records.stream()
+          .allMatch(record -> record.getThrown() == null
+              || (!String.valueOf(record.getThrown().getMessage()).contains(TOKEN)
+                  && !String.valueOf(record.getThrown().getMessage()).contains(PASSWORD))));
     }
 
     @Test
