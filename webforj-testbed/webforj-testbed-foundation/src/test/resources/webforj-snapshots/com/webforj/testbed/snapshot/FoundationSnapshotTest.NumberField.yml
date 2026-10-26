@@ -1,0 +1,2 @@
+# webforJ testbed snapshot v1
+- NumberField "42.5" [min=0.0] [max=100.0] [step=0.5]

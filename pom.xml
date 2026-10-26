@@ -87,6 +87,8 @@
     <module>webforj-plugins</module>
     <module>webforj-report-aggregate</module>
     <module>webforj-spring</module>
+    <module>webforj-automation</module>
+    <module>webforj-testbed</module>
     <module>webforj-webswing</module>
     <module>webforj-push</module>
   </modules>

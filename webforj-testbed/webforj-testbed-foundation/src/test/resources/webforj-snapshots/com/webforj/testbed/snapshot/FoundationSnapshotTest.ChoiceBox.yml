@@ -1,0 +1,4 @@
+# webforJ testbed snapshot v1
+- ChoiceBox [name=country] [label=Country]:
+  - ListItem "Germany" [key=de] [selected]
+  - ListItem "France" [key=fr]

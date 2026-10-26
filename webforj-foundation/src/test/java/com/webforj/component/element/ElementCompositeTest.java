@@ -9,8 +9,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -36,10 +38,10 @@ import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRuntimeException;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
@@ -146,6 +148,45 @@ class ElementCompositeTest {
 
       assertTrue(composite.get(opened, true, Boolean.class));
       assertEquals(20d, composite.get(position, true, Double.class));
+    }
+
+    @Test
+    @DisplayName("should answer the server state when read from a missing client")
+    void shouldAnswerServerStateWhenReadFromClientWhileNoClientIsPresent() {
+      Element element = spy(composite.getElement());
+      doReturn(true).when(element).isAttached();
+      ElementCompositeMock attached = new ElementCompositeMock() {
+        @Override
+        protected Element getElement() {
+          return element;
+        }
+      };
+      PropertyDescriptor<Boolean> opened = PropertyDescriptor.property("opened", true);
+
+      System.setProperty("webforj.noClient", "true");
+      try {
+        assertTrue(attached.get(opened, true, Boolean.class));
+        verify(element, never()).getProperty(anyString(), any(Type.class));
+      } finally {
+        System.clearProperty("webforj.noClient");
+      }
+    }
+
+    @Test
+    @DisplayName("should ask the client when one is present")
+    void shouldAskTheClientWhenOneIsPresent() {
+      Element element = spy(composite.getElement());
+      doReturn(true).when(element).isAttached();
+      doReturn(false).when(element).getProperty(anyString(), any(Type.class));
+      ElementCompositeMock attached = new ElementCompositeMock() {
+        @Override
+        protected Element getElement() {
+          return element;
+        }
+      };
+      PropertyDescriptor<Boolean> opened = PropertyDescriptor.property("opened", true);
+
+      assertFalse(attached.get(opened, true, Boolean.class));
     }
 
     @Test

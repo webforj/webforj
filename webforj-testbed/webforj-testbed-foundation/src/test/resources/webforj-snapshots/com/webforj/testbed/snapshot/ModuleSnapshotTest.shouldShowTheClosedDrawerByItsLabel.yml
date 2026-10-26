@@ -1,0 +1,4 @@
+# webforJ testbed snapshot v1
+- Drawer [label=Filters]:
+  - Paragraph "Filter by owner"
+  - Button "Apply" [slot=footer]

@@ -43,9 +43,11 @@ import com.webforj.utilities.BBjFunctionalityHelper;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.EventObject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -262,14 +264,8 @@ public final class Element extends DwcContainer<Element> implements HasFocus<Ele
           new ElementEventSink(this, type, getEventDispatcher()), ElementEvent.class);
     });
 
-    return registry.addEventListener(new EventListener<ElementEvent>() {
-      @Override
-      public void onEvent(ElementEvent event) {
-        if (String.valueOf(event.getId()).equals(registry.getCallbackId(this))) {
-          listener.onEvent(event);
-        }
-      }
-    }, finalEventOptions);
+    return registry.addEventListener(
+        new ElementTypeListener(type, listener, finalEventOptions, registry), finalEventOptions);
   }
 
   /**
@@ -659,6 +655,32 @@ public final class Element extends DwcContainer<Element> implements HasFocus<Ele
   }
 
   /**
+   * Delivers an event of the given type with the given data to every listener registered for that
+   * type, as the client sends it.
+   *
+   * <p>
+   * Each listener receives the event once, with the options it was registered with. A null data map
+   * is delivered as an empty map.
+   * </p>
+   *
+   * @param type the type of the event
+   * @param data the event data
+   *
+   * @throws NullPointerException if the type is null
+   */
+  void handleEvent(String type, Map<String, Object> data) {
+    Objects.requireNonNull(type, "The event type must not be null");
+    Map<String, Object> eventData = data == null ? Map.of() : data;
+
+    for (EventListener<ElementEvent> listener : getEventDispatcher()
+        .getListeners(ElementEvent.class)) {
+      if (listener instanceof ElementTypeListener typeListener && typeListener.hasType(type)) {
+        typeListener.handleEvent(eventData);
+      }
+    }
+  }
+
+  /**
    * {@inheritDoc}
    */
   @Override
@@ -766,6 +788,18 @@ public final class Element extends DwcContainer<Element> implements HasFocus<Ele
     properties.clear();
     whenDefinedResults.clear();
     slotRegistry.dispose();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void fireComponentEvent(EventObject event) {
+    if (event instanceof ElementEvent elementEvent) {
+      handleEvent(elementEvent.getType(), elementEvent.getData());
+    } else {
+      super.fireComponentEvent(event);
+    }
   }
 
   /**
@@ -970,6 +1004,44 @@ public final class Element extends DwcContainer<Element> implements HasFocus<Ele
     @Override
     protected int doExecuteJsVoidAsync(String script) throws BBjException {
       return inferControl().executeAsyncScript(script, true, false);
+    }
+  }
+
+  /**
+   * An {@link ElementEvent} listener registered for one event type.
+   */
+  private final class ElementTypeListener implements EventListener<ElementEvent> {
+    private final String type;
+    private final EventListener<ElementEvent> listener;
+    private final ElementEventOptions options;
+    private final ComponentEventSinkRegistry<ElementEvent> registry;
+
+    private ElementTypeListener(String type, EventListener<ElementEvent> listener,
+        ElementEventOptions options, ComponentEventSinkRegistry<ElementEvent> registry) {
+      this.type = type;
+      this.listener = listener;
+      this.options = options;
+      this.registry = registry;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onEvent(ElementEvent event) {
+      if (String.valueOf(event.getId()).equals(registry.getCallbackId(this))) {
+        listener.onEvent(event);
+      }
+    }
+
+    private boolean hasType(String eventType) {
+      return type.equals(eventType);
+    }
+
+    private void handleEvent(Map<String, Object> data) {
+      String callbackId = registry.getCallbackId(this);
+      int id = callbackId == null ? 0 : Integer.parseInt(callbackId);
+      listener.onEvent(new ElementEvent(Element.this, data, type, id, options));
     }
   }
 }

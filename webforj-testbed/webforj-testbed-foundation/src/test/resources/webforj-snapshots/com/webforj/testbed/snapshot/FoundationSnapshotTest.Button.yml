@@ -1,0 +1,3 @@
+# webforJ testbed snapshot v1
+- Button "Save" [name=save] [theme=primary]:
+  - Label "+" [slot=prefix]

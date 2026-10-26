@@ -1,0 +1,5 @@
+# webforJ testbed snapshot v1
+- Tree [name=folders] [multiple]:
+  - TreeNode "2025" [key=2025] [expanded]:
+    - TreeNode "Q1" [key=q1] [selected]
+  - TreeNode "2024" [key=2024]

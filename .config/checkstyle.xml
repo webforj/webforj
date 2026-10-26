@@ -263,7 +263,8 @@
       <property name="query"
                value="//IDENT[matches(@text, '(^|[a-z0-9_])BBj($|[A-Z0-9_])')
                     and not(matches(@text, 'BBj[a-z]'))
-                    and not(matches(replace(replace(@text, 'BBj', 'Bbj'),
+                    and not(matches(replace(replace(replace(@text, 'BBj', 'Bbj'),
+                    '^(Bbj[A-Za-z]*?)([A-Z])([A-Z][a-z])', '$1$2x$3'),
                     '(^|[^A-Z])API($|[^A-Z]|[A-Z][a-z])', '$1Api$2'), '[A-Z]{2}'))]"/>
     </module>
     <module name="AbbreviationAsWordInName">

@@ -1,0 +1,4 @@
+# webforJ testbed snapshot v1
+- Panel [name=sidebar]:
+  - Label "Menu"
+  - Button "Orders"

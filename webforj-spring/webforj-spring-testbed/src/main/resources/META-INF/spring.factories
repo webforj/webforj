@@ -1,0 +1,4 @@
+org.springframework.test.context.ContextCustomizerFactory=\
+com.webforj.spring.testbed.WebforjTestbedContextCustomizerFactory
+org.springframework.test.context.TestExecutionListener=\
+com.webforj.spring.testbed.WebforjTestbedTestExecutionListener

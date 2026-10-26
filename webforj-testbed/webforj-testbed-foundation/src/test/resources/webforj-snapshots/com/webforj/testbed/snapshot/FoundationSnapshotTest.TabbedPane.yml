@@ -1,0 +1,9 @@
+# webforJ testbed snapshot v1
+- TabbedPane [name=main]:
+  - Tab "Orders" [tooltip="Open orders"] [selected]:
+    - Label "3" [slot=suffix]
+    - Label "orders here"
+  - Tab "Invoices" [closable]:
+    - Label "invoices here"
+  - Tab "Archive" [disabled]:
+    - Label "archived"

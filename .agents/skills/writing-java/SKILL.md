@@ -30,7 +30,7 @@ Every method name starts with a verb from this closed list, then the noun it act
 | Data | `load` `fetch` `read` `write` `save` `parse` `format` `resolve` `find` `merge` |
 | Mutation | `add` `remove` `clear` `update` `apply` `toggle` |
 | Flow | `start` `stop` `open` `close` `show` `hide` `send` `emit` |
-| Events | `handle` |
+| Events | `handle` `fire` |
 | Conversion | `to` |
 
 Nothing else. `ensureX`, `compactX`, `makeX`, `doX`, `processX`, `checkX`, `computeX` are rejected. `makeX` is `createX`. A check that answers yes or no is `isX` or `hasX`.

@@ -1,0 +1,2 @@
+# webforJ testbed snapshot v1
+- MaskedTimeFieldSpinner "10:30 AM" [value="10:30"] [step=1.0] [mask="%h:%mz %a"]

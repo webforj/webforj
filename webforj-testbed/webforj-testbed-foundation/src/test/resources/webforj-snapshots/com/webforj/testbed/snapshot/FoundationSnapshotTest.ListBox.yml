@@ -1,0 +1,5 @@
+# webforJ testbed snapshot v1
+- ListBox [name=fruits] [multiple]:
+  - ListItem "Apple" [key=apple]
+  - ListItem "Pear" [key=pear] [selected]
+  - ListItem "Plum" [key=plum] [selected]

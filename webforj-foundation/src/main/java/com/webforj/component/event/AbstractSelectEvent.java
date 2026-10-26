@@ -1,9 +1,7 @@
 package com.webforj.component.event;
 
-import com.basis.startup.type.BBjVector;
 import com.webforj.component.Component;
 import com.webforj.data.selection.event.SelectEvent;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -54,8 +52,8 @@ public abstract class AbstractSelectEvent<T extends Component, V> extends Compon
       return Collections.emptyList();
     }
 
-    BBjVector indices = (BBjVector) selectedIndices;
-    return Arrays.stream(indices.toArray())
-        .mapToInt(index -> Integer.parseInt(String.valueOf(index))).boxed().toList();
+    List<?> indices = (List<?>) selectedIndices;
+    return indices.stream().mapToInt(index -> Integer.parseInt(String.valueOf(index))).boxed()
+        .toList();
   }
 }

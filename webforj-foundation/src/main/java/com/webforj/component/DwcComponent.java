@@ -920,6 +920,14 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   }
 
   /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void fireComponentEvent(EventObject event) {
+    getEventDispatcher().dispatchEvent(event);
+  }
+
+  /**
    * Sets the value for a property in the component. This method does not check if the property is
    * restricted or not.
    *

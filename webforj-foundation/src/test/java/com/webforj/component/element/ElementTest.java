@@ -1,12 +1,17 @@
 package com.webforj.component.element;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -15,27 +20,34 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.basis.bbj.proxies.event.BBjWebEvent;
 import com.basis.bbj.proxies.event.BBjWebEventOptions;
 import com.basis.bbj.proxies.sysgui.BBjWebComponent;
 import com.basis.startup.type.BBjException;
 import com.webforj.PendingResult;
 import com.webforj.component.Component;
 import com.webforj.component.ComponentMock;
+import com.webforj.component.ComponentUtil;
 import com.webforj.component.DwcComponentMock;
 import com.webforj.component.ReflectionUtils;
 import com.webforj.component.element.event.ElementDefinedEvent;
 import com.webforj.component.element.event.ElementEvent;
 import com.webforj.component.element.event.ElementEventOptions;
+import com.webforj.component.element.sink.ElementEventSink;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRuntimeException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -257,6 +269,193 @@ class ElementTest {
       assertNotSame(r1, r2);
       assertNotSame(r1, r3);
       assertNotSame(r2, r3);
+    }
+
+    @Test
+    @DisplayName("should deliver a handled event to every listener of its type")
+    void shouldDeliverHandledEventToEveryListenerOfItsType() throws BBjException {
+      when(control.newEventOptions()).thenReturn(mock(BBjWebEventOptions.class));
+      when(control.setCallback(anyString(), any(), anyString(), any(BBjWebEventOptions.class)))
+          .thenReturn(1, 2, 3);
+      List<ElementEvent> first = new ArrayList<>();
+      List<ElementEvent> second = new ArrayList<>();
+      List<ElementEvent> other = new ArrayList<>();
+      component.addEventListener("progress", first::add);
+      component.addEventListener("progress", second::add);
+      component.addEventListener("other", other::add);
+      Map<String, Object> data = Map.of("percent", 50);
+
+      component.handleEvent("progress", data);
+
+      assertEquals(1, first.size());
+      assertEquals(1, second.size());
+      assertTrue(other.isEmpty());
+      assertEquals("progress", first.get(0).getType());
+      assertEquals(data, first.get(0).getEventMap());
+      assertSame(component, second.get(0).getComponent());
+    }
+
+    @Test
+    @DisplayName("should ignore a handled event without listeners of its type")
+    void shouldIgnoreHandledEventWithoutListeners() {
+      Map<String, Object> data = Map.of();
+
+      assertDoesNotThrow(() -> component.handleEvent("progress", data));
+    }
+
+    @Test
+    @DisplayName("should deliver a handled event before the element is attached")
+    void shouldDeliverHandledEventBeforeAttach() {
+      Element element = new Element("div");
+      List<ElementEvent> received = new ArrayList<>();
+      element.addEventListener("progress", received::add);
+      Map<String, Object> data = Map.of("percent", 50);
+
+      element.handleEvent("progress", data);
+
+      assertEquals(1, received.size());
+      assertEquals(data, received.get(0).getData());
+    }
+
+    @Test
+    @DisplayName("should deliver a handled event with the options of the listener")
+    void shouldDeliverHandledEventWithListenerOptions() throws BBjException {
+      when(control.newEventOptions()).thenReturn(mock(BBjWebEventOptions.class));
+      when(control.setCallback(anyString(), any(), anyString(), any(BBjWebEventOptions.class)))
+          .thenReturn(1);
+      List<ElementEvent> received = new ArrayList<>();
+      component.addEventListener("progress", received::add,
+          new ElementEventOptions().setCode("event.preventDefault()"));
+
+      component.handleEvent("progress", Map.of());
+
+      assertEquals("event.preventDefault()", received.get(0).getOptions().getCode());
+    }
+
+    @Test
+    @DisplayName("should deliver a handled event without data as an event with empty data")
+    void shouldDeliverHandledEventWithoutDataAsEventWithEmptyData() {
+      Element element = new Element("div");
+      List<ElementEvent> received = new ArrayList<>();
+      element.addEventListener("progress", received::add);
+
+      element.handleEvent("progress", null);
+
+      assertEquals(Map.of(), received.get(0).getData());
+    }
+
+    @Test
+    @DisplayName("should route a fired element event to the listeners of its type")
+    void shouldRouteFiredElementEventToListenersOfItsType() throws BBjException {
+      when(control.newEventOptions()).thenReturn(mock(BBjWebEventOptions.class));
+      when(control.setCallback(anyString(), any(), anyString(), any(BBjWebEventOptions.class)))
+          .thenReturn(1, 2);
+      List<ElementEvent> clicks = new ArrayList<>();
+      List<ElementEvent> other = new ArrayList<>();
+      component.addEventListener("click", clicks::add);
+      component.addEventListener("other", other::add);
+      ElementEvent event = new ElementEvent(component, Map.of("x", 1), "click", 0, null);
+
+      ComponentUtil.fireComponentEvent(component, event);
+
+      assertEquals(1, clicks.size());
+      assertEquals(Map.of("x", 1), clicks.get(0).getData());
+      assertTrue(other.isEmpty());
+    }
+
+    @Test
+    @DisplayName("should deliver a fired event of another class to the element dispatcher")
+    void shouldDeliverFiredEventOfAnotherClassToElementDispatcher() {
+      Element element = new Element("div");
+      ElementDefinedEvent event = new ElementDefinedEvent(element, Map.of());
+
+      ComponentUtil.fireComponentEvent(element, event);
+
+      assertTrue(element.isDefined());
+    }
+
+    @Test
+    @DisplayName("should reject a handled event without a type")
+    void shouldRejectHandledEventWithoutType() {
+      String type = null;
+      Map<String, Object> data = Map.of();
+
+      NullPointerException exception =
+          assertThrows(NullPointerException.class, () -> component.handleEvent(type, data));
+      assertEquals("The event type must not be null", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("should deliver a client event only to the listener of its callback id")
+    void shouldDeliverClientEventOnlyToListenerOfItsCallbackId() throws BBjException {
+      when(control.newEventOptions()).thenReturn(mock(BBjWebEventOptions.class));
+      when(control.setCallback(anyString(), any(), anyString(), any(BBjWebEventOptions.class)))
+          .thenReturn(1, 2);
+      List<ElementEvent> first = new ArrayList<>();
+      List<ElementEvent> second = new ArrayList<>();
+      component.addEventListener("progress", first::add);
+      component.addEventListener("progress", second::add);
+      ElementEventSink sink = findSink("progress");
+      BBjWebEvent event = createClientEvent(1);
+
+      sink.handleEvent(event);
+
+      assertEquals(1, first.size());
+      assertTrue(second.isEmpty());
+    }
+
+    @Test
+    @DisplayName("should not deliver a client event to the listeners of another type")
+    void shouldNotDeliverClientEventToListenersOfAnotherType() throws BBjException {
+      when(control.newEventOptions()).thenReturn(mock(BBjWebEventOptions.class));
+      when(control.setCallback(anyString(), any(), anyString(), any(BBjWebEventOptions.class)))
+          .thenReturn(1, 2);
+      List<ElementEvent> progress = new ArrayList<>();
+      List<ElementEvent> other = new ArrayList<>();
+      component.addEventListener("progress", progress::add);
+      component.addEventListener("other", other::add);
+      ElementEventSink sink = findSink("other");
+      BBjWebEvent event = createClientEvent(2);
+
+      sink.handleEvent(event);
+
+      assertTrue(progress.isEmpty());
+      assertEquals(1, other.size());
+    }
+
+    @Test
+    @DisplayName("should ignore a client event with a callback id of no listener")
+    void shouldIgnoreClientEventWithCallbackIdOfNoListener() throws BBjException {
+      when(control.newEventOptions()).thenReturn(mock(BBjWebEventOptions.class));
+      when(control.setCallback(anyString(), any(), anyString(), any(BBjWebEventOptions.class)))
+          .thenReturn(1, 2);
+      List<ElementEvent> progress = new ArrayList<>();
+      List<ElementEvent> other = new ArrayList<>();
+      component.addEventListener("progress", progress::add);
+      component.addEventListener("other", other::add);
+      ElementEventSink sink = findSink("progress");
+      BBjWebEvent event = createClientEvent(3);
+
+      sink.handleEvent(event);
+
+      assertTrue(progress.isEmpty());
+      assertTrue(other.isEmpty());
+    }
+
+    private ElementEventSink findSink(String type) throws BBjException {
+      ArgumentCaptor<Object> handler = ArgumentCaptor.forClass(Object.class);
+      verify(control, atLeastOnce()).setCallback(eq(type), handler.capture(), anyString(),
+          any(BBjWebEventOptions.class));
+
+      return (ElementEventSink) handler.getValue();
+    }
+
+    private BBjWebEvent createClientEvent(int callbackId) {
+      BBjWebEvent event = mock(BBjWebEvent.class);
+      when(event.getCallbackID()).thenReturn(callbackId);
+      when(event.getEventMap()).thenReturn(Map.of());
+
+      return event;
     }
   }
 

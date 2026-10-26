@@ -70,10 +70,34 @@
         <version>${project.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>com.webforj</groupId>
+        <artifactId>webforj-automation</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.webforj</groupId>
+        <artifactId>webforj-testbed-foundation</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.webforj</groupId>
+        <artifactId>webforj-testbed-junit</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
       <!-- Start Spring -->
       <dependency>
         <groupId>com.webforj</groupId>
         <artifactId>webforj-spring-integration</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.webforj</groupId>
+        <artifactId>webforj-spring-testbed</artifactId>
         <version>${project.version}</version>
       </dependency>
 

@@ -1,0 +1,4 @@
+# webforJ testbed snapshot v1
+- Upload [name=attachments] [maxFiles=3] [drop] [multiple]:
+  - Filter "Documents" [pattern="*.pdf;*.docx"] [selected]
+  - Filter "Images" [pattern="*.png"]
