@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -60,6 +61,7 @@ class BBjAuthenticationServiceTest {
   private final BBjAdminGateway gateway = mock(BBjAdminGateway.class);
   private final BBjAdminWorker worker = mock(BBjAdminWorker.class);
   private final BBjRequestedLocationStore locationStore = mock(BBjRequestedLocationStore.class);
+  private final BBjSessionStore sessionStore = mock(BBjSessionStore.class);
   private final BBjSecurityConfigurationProperties properties =
       new BBjSecurityConfigurationProperties();
   private final BBjRouteSecurityConfiguration configuration =
@@ -100,8 +102,7 @@ class BBjAuthenticationServiceTest {
     logger.addHandler(handler);
     properties.setDefaultSuccessPath("/home");
     doReturn(pending).when(worker).start(any(), any(), any(), any());
-    service = new BBjAuthenticationService(gateway, worker, locationStore, properties,
-        configuration, navigator);
+    service = createBuilder().build();
   }
 
   @AfterEach
@@ -140,6 +141,12 @@ class BBjAuthenticationServiceTest {
   @SuppressWarnings("unchecked")
   private static Consumer<Location> createNavigator() {
     return mock(Consumer.class);
+  }
+
+  private BBjAuthenticationService.Builder createBuilder() {
+    return BBjAuthenticationService.builder().setGateway(gateway).setWorker(worker)
+        .setLocationStore(locationStore).setSessionStore(sessionStore).setProperties(properties)
+        .setConfiguration(configuration).setNavigator(navigator);
   }
 
   private static BBjLoginStatus getStatus(PendingResult<BBjLoginStatus> result) throws Exception {
@@ -187,17 +194,23 @@ class BBjAuthenticationServiceTest {
   class Construction {
 
     @ParameterizedTest
-    @ValueSource(ints = {0, 1, 2, 3, 4, 5})
-    void shouldRefuseNullArgument(int position) {
-      BBjAdminGateway givenGateway = position == 0 ? null : gateway;
-      BBjAdminWorker givenWorker = position == 1 ? null : worker;
-      BBjRequestedLocationStore givenStore = position == 2 ? null : locationStore;
-      BBjSecurityConfigurationProperties givenProperties = position == 3 ? null : properties;
-      BBjRouteSecurityConfiguration givenConfiguration = position == 4 ? null : configuration;
-      Consumer<Location> givenNavigator = position == 5 ? null : navigator;
+    @ValueSource(strings = {"gateway", "worker", "locationStore", "sessionStore", "properties",
+        "configuration", "navigator"})
+    void shouldRefuseMissingValueNamingIt(String name) {
+      BBjAuthenticationService.Builder builder = createBuilder();
+      switch (name) {
+        case "gateway" -> builder.setGateway(null);
+        case "worker" -> builder.setWorker(null);
+        case "locationStore" -> builder.setLocationStore(null);
+        case "sessionStore" -> builder.setSessionStore(null);
+        case "properties" -> builder.setProperties(null);
+        case "configuration" -> builder.setConfiguration(null);
+        default -> builder.setNavigator(null);
+      }
 
-      assertThrows(NullPointerException.class, () -> new BBjAuthenticationService(givenGateway,
-          givenWorker, givenStore, givenProperties, givenConfiguration, givenNavigator));
+      NullPointerException thrown = assertThrows(NullPointerException.class, builder::build);
+
+      assertEquals(name, thrown.getMessage());
     }
   }
 
@@ -309,6 +322,60 @@ class BBjAuthenticationServiceTest {
       verify(gateway).closeSession(session);
       verifyNoMoreInteractions(gateway);
       assertSame(replacing.getPrincipal(), service.currentUser().orElseThrow());
+    }
+
+    @Test
+    void shouldSaveTheSessionInTheStore() {
+      service.startLogin("alice", PASSWORD);
+      captureHooks();
+
+      pending.complete(deliverCaptor.getValue().apply(session));
+
+      verify(sessionStore).saveSession(session);
+    }
+
+    @Test
+    void shouldGiveUnavailableAndKeepNobodyWhenTheSaveFails() {
+      doThrow(new IllegalStateException("not kept")).when(sessionStore).saveSession(session);
+      doReturn(pending).doReturn(new PendingResult<Void>()).when(worker).start(any(), any(), any(),
+          any());
+      service.startLogin("alice", PASSWORD);
+      captureHooks();
+      clearInvocations(worker);
+
+      BBjLoginStatus status = deliverCaptor.getValue().apply(session);
+
+      assertEquals(BBjLoginStatus.UNAVAILABLE, status);
+      assertFalse(service.currentUser().isPresent());
+      verify(worker).start(workCaptor.capture(), any(), any(), any());
+      workCaptor.getValue().get();
+      verify(gateway).closeSession(session);
+    }
+
+    @Test
+    void shouldKeepThePreviousSessionAndCloseOnlyTheNewTokenWhenTheSaveFails() {
+      PendingResult<BBjLoginStatus> second = new PendingResult<>();
+      doReturn(pending).doReturn(second).doReturn(new PendingResult<Void>()).when(worker)
+          .start(any(), any(), any(), any());
+      service.startLogin("alice", PASSWORD);
+      captureHooks();
+      pending.complete(deliverCaptor.getValue().apply(session));
+      clearInvocations(worker);
+      service.startLogin("alice", PASSWORD);
+      captureHooks();
+      clearInvocations(worker);
+      BBjSession replacing =
+          new BBjSession(principal, "tok-def-456", Instant.parse("2026-01-01T14:00:00Z"));
+      doThrow(new IllegalStateException("not kept")).when(sessionStore).saveSession(replacing);
+
+      BBjLoginStatus status = deliverCaptor.getValue().apply(replacing);
+
+      assertEquals(BBjLoginStatus.UNAVAILABLE, status);
+      assertSame(principal, service.currentUser().orElseThrow());
+      verify(worker).start(workCaptor.capture(), any(), any(), any());
+      workCaptor.getValue().get();
+      verify(gateway).closeSession(replacing);
+      verifyNoMoreInteractions(gateway);
     }
 
     @ParameterizedTest
@@ -452,6 +519,15 @@ class BBjAuthenticationServiceTest {
     }
 
     @Test
+    void shouldClearTheSessionStore() {
+      startSignedInSession();
+
+      service.startLogout();
+
+      verify(sessionStore).clearSession();
+    }
+
+    @Test
     void shouldClearTheLocationStore() {
       startSignedInSession();
 
@@ -557,6 +633,28 @@ class BBjAuthenticationServiceTest {
 
       assertFalse(service.currentUser().isPresent());
       verifyNoInteractions(navigator);
+    }
+  }
+
+  @Nested
+  class RestoreSession {
+
+    @Test
+    void shouldPutTheStoredSessionInPlace() {
+      when(sessionStore.readSession()).thenReturn(Optional.of(session));
+
+      service.restoreSession();
+
+      assertSame(principal, service.currentUser().orElseThrow());
+    }
+
+    @Test
+    void shouldLeaveNobodySignedInWhenTheStoreIsEmpty() {
+      when(sessionStore.readSession()).thenReturn(Optional.empty());
+
+      service.restoreSession();
+
+      assertFalse(service.currentUser().isPresent());
     }
   }
 

@@ -117,6 +117,8 @@ public final class BBjRouteSecurityManager extends AbstractRouteSecurityManager 
 
         navigateRecreating(location);
       });
+      default -> {
+      }
     }
   }
 

@@ -6,12 +6,15 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.RETURNS_SELF;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -204,10 +207,16 @@ class BBjSecurityRegistrarTest {
     List<Object> managerStores = new ArrayList<>();
     when(environment.getConfig()).thenReturn(ConfigFactory.empty());
 
-    try (
-        MockedConstruction<BBjAuthenticationService> services =
-            mockConstruction(BBjAuthenticationService.class,
-                (service, context) -> serviceStores.add(context.arguments().get(2)));
+    try (MockedConstruction<BBjAuthenticationService.Builder> builders =
+        mockConstruction(BBjAuthenticationService.Builder.class,
+            withSettings().defaultAnswer(RETURNS_SELF), (builder, context) -> {
+              when(builder.setLocationStore(any())).thenAnswer(invocation -> {
+                serviceStores.add(invocation.getArgument(0));
+
+                return builder;
+              });
+              when(builder.build()).thenReturn(mock(BBjAuthenticationService.class));
+            });
         MockedConstruction<BBjRouteSecurityManager> managers =
             mockConstruction(BBjRouteSecurityManager.class,
                 (manager, context) -> managerStores.add(context.arguments().get(2)))) {
@@ -222,23 +231,54 @@ class BBjSecurityRegistrarTest {
   @Test
   @SuppressWarnings("unchecked")
   void shouldGiveTheServiceTheLogoutLocationAndTheRouterNavigation() {
-    List<Object> serviceArguments = new ArrayList<>();
+    List<Object> configurations = new ArrayList<>();
+    List<Object> navigators = new ArrayList<>();
     Location logoutLocation = new Location("/goodbye");
     when(environment.getConfig()).thenReturn(
         ConfigFactory.parseString("webforj.security.bbj.logout-success-path = \"/goodbye\""));
 
-    try (MockedConstruction<BBjAuthenticationService> services =
-        mockConstruction(BBjAuthenticationService.class,
-            (service, context) -> serviceArguments.addAll(context.arguments()))) {
+    try (MockedConstruction<BBjAuthenticationService.Builder> builders =
+        mockConstruction(BBjAuthenticationService.Builder.class,
+            withSettings().defaultAnswer(RETURNS_SELF), (builder, context) -> {
+              when(builder.setConfiguration(any())).thenAnswer(invocation -> {
+                configurations.add(invocation.getArgument(0));
+
+                return builder;
+              });
+              when(builder.setNavigator(any())).thenAnswer(invocation -> {
+                navigators.add(invocation.getArgument(0));
+
+                return builder;
+              });
+              when(builder.build()).thenReturn(mock(BBjAuthenticationService.class));
+            })) {
       registrar.onWillRun(app);
 
       BBjRouteSecurityConfiguration configuration =
-          (BBjRouteSecurityConfiguration) serviceArguments.get(4);
-      Consumer<Location> navigator = (Consumer<Location>) serviceArguments.get(5);
+          (BBjRouteSecurityConfiguration) configurations.get(0);
+      Consumer<Location> navigator = (Consumer<Location>) navigators.get(0);
       navigator.accept(logoutLocation);
 
       assertEquals(Optional.of(logoutLocation), configuration.getLogoutLocation());
       verify(router).navigate(logoutLocation);
+    }
+  }
+
+  @Test
+  void shouldRestoreTheSessionBetweenRegisteringTheServiceAndAddingTheObserver() {
+    List<String> events = new ArrayList<>();
+    when(environment.getConfig()).thenReturn(ConfigFactory.empty());
+    tableMock.when(() -> ObjectTable.put(eq(BBjSecurity.SERVICE_KEY), any()))
+        .thenAnswer(invocation -> events.add("put"));
+    doAnswer(invocation -> events.add("observe")).when(renderer).addObserver(any());
+
+    try (MockedConstruction<BBjAuthenticationService> services =
+        mockConstruction(BBjAuthenticationService.class,
+            (service, context) -> doAnswer(invocation -> events.add("restore")).when(service)
+                .restoreSession())) {
+      registrar.onWillRun(app);
+
+      assertEquals(List.of("put", "restore", "observe"), events);
     }
   }
 }

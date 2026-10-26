@@ -8,7 +8,6 @@ import com.webforj.environment.ObjectTable;
 import com.webforj.router.Router;
 import com.webforj.router.security.RouteSecurityObserver;
 import com.webforj.webstorage.SessionStorage;
-
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.nio.file.Path;
@@ -18,10 +17,8 @@ import java.time.Duration;
  * Registers route security for a BBj application when it starts.
  *
  * <p>
- * When security is enabled in the configuration, the route security observer is
- * added to the
- * router. Nothing is registered when the environment, the configuration or the
- * router is not
+ * When security is enabled in the configuration, the route security observer is added to the
+ * router. Nothing is registered when the environment, the configuration or the router is not
  * available.
  * </p>
  *
@@ -70,6 +67,7 @@ public final class BBjSecurityRegistrar implements AppLifecycleListener {
           .setLocationStore(locationStore).setSessionStore(sessionStore).setProperties(properties)
           .setConfiguration(configuration).setNavigator(router::navigate).build();
       ObjectTable.put(BBjSecurity.SERVICE_KEY, service);
+      service.restoreSession();
       var context = new BBjRouteSecurityContext(service::currentUser);
       var manager = new BBjRouteSecurityManager(configuration, context, locationStore);
       var securityObserver = new RouteSecurityObserver(manager);

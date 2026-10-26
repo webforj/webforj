@@ -49,24 +49,18 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- * Keeps the session of each signed in tab encrypted in one file per
- * application.
+ * Keeps the session of each signed in tab encrypted in one file per application.
  *
  * <p>
- * The file holds one line per signed in tab with the name of the entry and the
- * encrypted session.
- * The session storage of the tab holds the name of the entry and the key that
- * opens it, so the file
- * never holds the key and the browser never holds the token. A new key and a
- * new name are made on
+ * The file holds one line per signed in tab with the name of the entry and the encrypted session.
+ * The session storage of the tab holds the name of the entry and the key that opens it, so the file
+ * never holds the key and the browser never holds the token. A new key and a new name are made on
  * every save.
  * </p>
  *
  * <p>
- * Every save removes expired entries and, at the limit of 10000 entries, the
- * entries that expire
- * first. Lines that are not entries are dropped by the next write. Nothing
- * secret is logged. A
+ * Every save removes expired entries and, at the limit of 10000 entries, the entries that expire
+ * first. Lines that are not entries are dropped by the next write. Nothing secret is logged. A
  * failure is logged by its class name only.
  * </p>
  *
@@ -242,10 +236,8 @@ public final class BBjFileSessionStore implements BBjSessionStore {
    * Creates the part of the file name that names one application.
    *
    * <p>
-   * A name that holds a character other than a letter, a digit, an underscore or
-   * a hyphen, or that
-   * is empty or longer than 64 characters, is replaced by a safe form followed by
-   * a short hash of
+   * A name that holds a character other than a letter, a digit, an underscore or a hyphen, or that
+   * is empty or longer than 64 characters, is replaced by a safe form followed by a short hash of
    * the original name, so that two applications never share a file.
    * </p>
    *
@@ -301,7 +293,8 @@ public final class BBjFileSessionStore implements BBjSessionStore {
       Files.newByteChannel(target, Set.of(StandardOpenOption.CREATE, StandardOpenOption.WRITE),
           createAttributes(target, "rw-------")).close();
       try (
-          FileChannel channel = FileChannel.open(target, StandardOpenOption.READ, StandardOpenOption.WRITE);
+          FileChannel channel =
+              FileChannel.open(target, StandardOpenOption.READ, StandardOpenOption.WRITE);
           FileLock ignored = channel.lock()) {
         Map<String, String> entries = readEntries(target);
         change.accept(entries);
@@ -413,12 +406,13 @@ public final class BBjFileSessionStore implements BBjSessionStore {
     }
 
     return new FileAttribute<?>[] {
-        PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString(permissions)) };
+        PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString(permissions))};
   }
 
   private static String createHash(String text) {
     try {
-      byte[] digest = MessageDigest.getInstance("SHA-256").digest(text.getBytes(StandardCharsets.UTF_8));
+      byte[] digest =
+          MessageDigest.getInstance("SHA-256").digest(text.getBytes(StandardCharsets.UTF_8));
       return HexFormat.of().formatHex(digest, 0, 4);
     } catch (NoSuchAlgorithmException e) {
       throw new IllegalStateException("The JVM has no SHA-256", e);
@@ -429,10 +423,8 @@ public final class BBjFileSessionStore implements BBjSessionStore {
    * Encrypts a session into the text of one entry and reads it back.
    *
    * <p>
-   * The text is the Base64 URL form of a random initialization vector followed by
-   * the AES-256-GCM
-   * ciphertext. The name of the entry is authenticated with it, so a text moved
-   * to another entry
+   * The text is the Base64 URL form of a random initialization vector followed by the AES-256-GCM
+   * ciphertext. The name of the entry is authenticated with it, so a text moved to another entry
    * name cannot be read.
    * </p>
    *
@@ -469,13 +461,12 @@ public final class BBjFileSessionStore implements BBjSessionStore {
      * Encrypts a session into the text of an entry.
      *
      * @param entryName the name of the entry, authenticated with the text
-     * @param key       the key made by {@link #createKey()}
-     * @param session   the session to encrypt
+     * @param key the key made by {@link #createKey()}
+     * @param session the session to encrypt
      * @return the text of the entry
      *
-     * @throws IllegalStateException if the session cannot be encrypted, the message
-     *                               holds no secret
-     *                               and there is no cause
+     * @throws IllegalStateException if the session cannot be encrypted, the message holds no secret
+     *         and there is no cause
      */
     String formatEntry(String entryName, String key, BBjSession session) {
       byte[] plain = null;
@@ -508,10 +499,9 @@ public final class BBjFileSessionStore implements BBjSessionStore {
      * Decrypts the text of an entry.
      *
      * @param entryName the name of the entry the text was made for
-     * @param key       the key the text was made with
-     * @param entry     the text of the entry
-     * @return the session, or empty when the key, the name or the text is wrong or
-     *         the text was
+     * @param key the key the text was made with
+     * @param entry the text of the entry
+     * @return the session, or empty when the key, the name or the text is wrong or the text was
      *         changed
      */
     Optional<BBjSession> parseEntry(String entryName, String key, String entry) {
