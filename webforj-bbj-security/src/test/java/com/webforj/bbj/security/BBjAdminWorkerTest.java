@@ -94,9 +94,24 @@ class BBjAdminWorkerTest {
       worker.destroy();
     }
 
+    awaitWorkerThreads();
     environmentMock.close();
     logger.removeHandler(handler);
     logger.setLevel(previousLevel);
+  }
+
+  private static void awaitWorkerThreads() {
+    for (Thread thread : Thread.getAllStackTraces().keySet()) {
+      if (thread.getName().startsWith("bbj-admin")) {
+        try {
+          thread.join(5000);
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+
+          return;
+        }
+      }
+    }
   }
 
   private static BBjAdminWorker createWorker(Duration timeout,
