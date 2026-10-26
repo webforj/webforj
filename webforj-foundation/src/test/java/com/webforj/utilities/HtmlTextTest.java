@@ -111,6 +111,11 @@ class HtmlTextTest {
     void shouldRemoveEveryLeadingMarkerIgnoringCase(String input) {
       assertEquals("<b>x</b>", HtmlText.stripMarkers(input));
     }
+
+    @Test
+    void shouldKeepWhitespaceOfContent() {
+      assertEquals(" hello ", HtmlText.stripMarkers("<html> hello </html>"));
+    }
   }
 
   @Nested

@@ -98,7 +98,8 @@ public final class HtmlText {
   public static String stripMarkers(String text) {
     String value = (text == null ? "" : text).trim();
     while (startsWithMarker(value)) {
-      value = value.substring(HTML_MARKER.length()).trim();
+      String content = value.substring(HTML_MARKER.length());
+      value = startsWithMarker(content.trim()) ? content.trim() : content;
     }
 
     return removeEndMarker(value);
