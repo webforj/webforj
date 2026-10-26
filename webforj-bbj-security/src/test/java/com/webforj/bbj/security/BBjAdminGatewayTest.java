@@ -483,15 +483,19 @@ class BBjAdminGatewayTest {
     private final Logger logger = Logger.getLogger(BBjAdminGateway.class.getName());
     private final Handler handler = new Handler() {
       @Override
-      public void publish(LogRecord record) {
-        records.add(record);
+      public void publish(LogRecord logRecord) {
+        records.add(logRecord);
       }
 
       @Override
-      public void flush() {}
+      public void flush() {
+        // Not implemented
+      }
 
       @Override
-      public void close() {}
+      public void close() {
+        // Not implemented
+      }
     };
     private Level previousLevel;
 
@@ -521,7 +525,7 @@ class BBjAdminGatewayTest {
       assertEquals(Kind.TOKEN_REJECTED, failure.getKind());
       verify(admin, times(1)).release();
       List<LogRecord> warnings =
-          records.stream().filter(record -> record.getLevel() == Level.WARNING).toList();
+          records.stream().filter(it -> it.getLevel() == Level.WARNING).toList();
       assertEquals(1, warnings.size());
       assertTrue(warnings.getFirst().getMessage().contains("expires on its own"));
     }
@@ -534,13 +538,12 @@ class BBjAdminGatewayTest {
           assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD));
 
       assertEquals(UNAVAILABLE + "BBjAdminException: bad *** and ***", failure.getMessage());
-      assertTrue(
-          records.stream().noneMatch(record -> String.valueOf(record.getMessage()).contains(TOKEN)
-              || String.valueOf(record.getMessage()).contains(PASSWORD)));
+      assertTrue(records.stream().noneMatch(it -> String.valueOf(it.getMessage()).contains(TOKEN)
+          || String.valueOf(it.getMessage()).contains(PASSWORD)));
       assertTrue(records.stream()
-          .allMatch(record -> record.getThrown() == null
-              || (!String.valueOf(record.getThrown().getMessage()).contains(TOKEN)
-                  && !String.valueOf(record.getThrown().getMessage()).contains(PASSWORD))));
+          .allMatch(it -> it.getThrown() == null
+              || (!String.valueOf(it.getThrown().getMessage()).contains(TOKEN)
+                  && !String.valueOf(it.getThrown().getMessage()).contains(PASSWORD))));
     }
 
     @Test
