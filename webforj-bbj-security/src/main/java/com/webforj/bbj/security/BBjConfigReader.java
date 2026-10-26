@@ -4,7 +4,6 @@ import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.util.Optional;
 
-import com.basis.api.simple.ProxyOutputStreamToSimpleInstance;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigValueType;
@@ -14,10 +13,14 @@ import com.typesafe.config.ConfigValueType;
  *
  * <p>
  * The settings are the keys {@code enabled}, {@code secure-by-default}, {@code authentication-path}
- * and {@code deny-path} below {@code webforj.security}. A key that is not set keeps the default of
- * {@link BBjSecurityConfigurationProperties}. A value of {@code enabled} or
- * {@code secure-by-default} that is not a boolean counts as true. A path that is not a string keeps
- * its default. Each such value is logged as a warning that names the key.
+ * and {@code deny-path} below {@code webforj.security}. Below {@code webforj.security.bbj} the keys
+ * are {@code default-success-path}, {@code return-after-login}, {@code logout-success-path},
+ * {@code token.minutes}, {@code admin.host}, {@code admin.port} and {@code admin.timeout-seconds}.
+ * A key that is not set keeps the default of {@link BBjSecurityConfigurationProperties}. A value of
+ * {@code enabled}, {@code secure-by-default} or {@code return-after-login} that is not a boolean
+ * counts as true. A path or host that is not a string keeps its default. A number that is not an
+ * integer or lies outside its allowed range keeps its default. Each such value is logged as a
+ * warning that names the key.
  * </p>
  *
  * @author Christian Liebhardt
