@@ -1,6 +1,5 @@
 package com.webforj.bbj.security;
 
-import com.basis.bbj.processor.instruction.bu;
 import com.webforj.PendingResult;
 import com.webforj.bbj.security.BBjAdminFailure.Kind;
 import com.webforj.bbj.security.model.BBjLoginStatus;
@@ -39,16 +38,9 @@ public final class BBjAuthenticationService {
   private PendingResult<BBjLoginStatus> pendingLogin;
 
   /**
-   * Creates a service.
+   * Creates a service from the values of a builder.
    *
-   * @param gateway opens the sessions
-   * @param worker runs the sign in away from the calling thread
-   * @param locationStore holds the location the user requested before signing in
-   * @param properties the configuration of the sign in
-   * @param configuration the route security configuration that gives the logout location
-   * @param navigator opens the location the user lands on after signing in
-   *
-   * @throws NullPointerException if any parameter is {@code null}
+   * @param builder the builder that holds the values of the service
    */
   private BBjAuthenticationService(Builder builder) {
     gateway = builder.gateway;
@@ -60,6 +52,11 @@ public final class BBjAuthenticationService {
     navigator = builder.navigator;
   }
 
+  /**
+   * Creates a builder for a service.
+   *
+   * @return a new builder
+   */
   static Builder builder() {
     return new Builder();
   }
@@ -71,9 +68,14 @@ public final class BBjAuthenticationService {
    * An empty or blank user name or password, a user name longer than 256 characters and a password
    * longer than 1024 characters are refused at once as invalid credentials. Otherwise a sign in
    * that is still running is cancelled and the new sign in runs in the background. After a
-   * successful sign in the service opens the location the user requested before signing in, or the
-   * default success path when no location was requested or returning is switched off. The requested
-   * location is cleared either way.
+   * successful sign in the session is saved in the session store and the service opens the location
+   * the user requested before signing in, or the default success path when no location was
+   * requested or returning is switched off. The requested location is cleared either way.
+   * </p>
+   *
+   * <p>
+   * When the session cannot be saved, the sign in fails as unavailable, its login token is ended
+   * and the user that was signed in before stays signed in.
    * </p>
    *
    * @param userName the user name
@@ -111,9 +113,9 @@ public final class BBjAuthenticationService {
    * <p>
    * A sign in that is still running is cancelled and never keeps a session. When nobody has signed
    * in, the pending result is complete and nothing else happens. Otherwise the user is signed out
-   * at once, the requested location is cleared and the service opens the logout location. The login
-   * token is ended in the background and the pending result completes when that ends, also when
-   * ending the token fails.
+   * at once, the saved session is cleared, the requested location is cleared and the service opens
+   * the logout location. The login token is ended in the background and the pending result
+   * completes when that ends, also when ending the token fails.
    * </p>
    *
    * @return the pending end of the sign out
@@ -140,21 +142,30 @@ public final class BBjAuthenticationService {
     return Optional.ofNullable(session).map(BBjSession::getPrincipal);
   }
 
+  /**
+   * Restores the user that signed in before the page was reloaded.
+   *
+   * <p>
+   * The session saved for the current tab is put in place without calling BBj. When the store holds
+   * no usable session, nobody is signed in.
+   * </p>
+   */
   void restoreSession() {
     sessionStore.readSession().ifPresent(it -> session = it);
   }
 
   private BBjLoginStatus applySession(BBjSession session) {
-    var replaced = this.session;
-    this.session = session;
-    if (replaced != null) {
-      closeSession(replaced);
-    }
     try {
       sessionStore.saveSession(session);
     } catch (IllegalStateException e) {
       closeSession(session);
       return BBjLoginStatus.UNAVAILABLE;
+    }
+
+    var replaced = this.session;
+    this.session = session;
+    if (replaced != null) {
+      closeSession(replaced);
     }
 
     return BBjLoginStatus.AUTHENTICATED;
@@ -221,6 +232,12 @@ public final class BBjAuthenticationService {
     gateway.closeSession(session);
   }
 
+  /**
+   * Builds a {@link BBjAuthenticationService}.
+   *
+   * @author Christian Liebhardt
+   * @since 26.03
+   */
   public static final class Builder {
     private BBjAdminGateway gateway;
     private BBjAdminWorker worker;
@@ -230,6 +247,12 @@ public final class BBjAuthenticationService {
     private BBjRouteSecurityConfiguration configuration;
     private Consumer<Location> navigator;
 
+    /**
+     * Builds the service.
+     *
+     * @return the service
+     * @throws NullPointerException if a value was not set, naming the missing value
+     */
     public BBjAuthenticationService build() {
       Objects.requireNonNull(gateway, "gateway");
       Objects.requireNonNull(worker, "worker");
@@ -241,40 +264,88 @@ public final class BBjAuthenticationService {
       return new BBjAuthenticationService(this);
     }
 
+    /**
+     * Sets the gateway of the service.
+     *
+     * @param gateway opens and closes the sessions
+     *
+     * @return this builder
+     */
     public Builder setGateway(BBjAdminGateway gateway) {
       this.gateway = gateway;
       return this;
     }
 
+    /**
+     * Sets the worker of the service.
+     *
+     * @param worker runs the sign in away from the calling thread
+     *
+     * @return this builder
+     */
     public Builder setWorker(BBjAdminWorker worker) {
       this.worker = worker;
       return this;
     }
 
+    /**
+     * Sets the location store of the service.
+     *
+     * @param locationStore holds the location the user requested before signing in
+     *
+     * @return this builder
+     */
     public Builder setLocationStore(BBjRequestedLocationStore locationStore) {
       this.locationStore = locationStore;
       return this;
     }
 
+    /**
+     * Sets the session store of the service.
+     *
+     * @param sessionStore keeps the session of the signed in user across a page reload
+     *
+     * @return this builder
+     */
     public Builder setSessionStore(BBjSessionStore sessionStore) {
       this.sessionStore = sessionStore;
       return this;
     }
 
+    /**
+     * Sets the properties of the service.
+     *
+     * @param properties the configuration of the sign in
+     *
+     * @return this builder
+     */
     public Builder setProperties(BBjSecurityConfigurationProperties properties) {
       this.properties = properties;
       return this;
     }
 
+    /**
+     * Sets the configuration of the service.
+     *
+     * @param configuration the route security configuration that gives the logout location
+     *
+     * @return this builder
+     */
     public Builder setConfiguration(BBjRouteSecurityConfiguration configuration) {
       this.configuration = configuration;
       return this;
     }
 
+    /**
+     * Sets the navigator of the service.
+     *
+     * @param navigator opens the location the user lands on after signing in
+     *
+     * @return this builder
+     */
     public Builder setNavigator(Consumer<Location> navigator) {
       this.navigator = navigator;
       return this;
     }
-
   }
 }
