@@ -4,8 +4,8 @@ package com.webforj.bbj.security;
  * Route security configuration properties of a BBj application.
  *
  * <p>
- * Security is enabled and routes are secure by default unless set otherwise. No authentication path
- * and no deny path are set by default.
+ * Security is enabled and routes are secure by default unless set otherwise. No authentication
+ * path, no deny path and no logout success path are set by default.
  * </p>
  *
  * @author Christian Liebhardt
@@ -204,10 +204,20 @@ public final class BBjSecurityConfigurationProperties {
     this.returnAfterLogin = returnAfterLogin;
   }
 
+  /**
+   * Gets the path opened after a sign out.
+   *
+   * @return the logout success path, or null if none is set
+   */
   public String getLogoutSuccessPath() {
     return logoutSuccessPath;
   }
 
+  /**
+   * Sets the path opened after a sign out.
+   *
+   * @param logoutSuccessPath the logout success path
+   */
   public void setLogoutSuccessPath(String logoutSuccessPath) {
     this.logoutSuccessPath = logoutSuccessPath;
   }

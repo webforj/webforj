@@ -315,6 +315,20 @@ class BBjAuthenticationServiceTest {
     }
 
     @ParameterizedTest
+    @EnumSource(value = Kind.class, names = {"TOKEN_REJECTED", "UNAVAILABLE"})
+    void shouldLogTheFailureMessageWhenTheSignInCouldNotComplete(Kind kind) {
+      service.startLogin("alice", PASSWORD);
+      captureHooks();
+      BBjAdminFailure failure = new BBjAdminFailure(kind, "NoClassDefFoundError: BBjAdminFactory");
+
+      pending.complete(failCaptor.getValue().apply(failure));
+
+      assertEquals(List.of(
+          "The BBj Admin API could not complete the sign in: NoClassDefFoundError: BBjAdminFactory"),
+          getWarnings());
+    }
+
+    @ParameterizedTest
     @EnumSource(Kind.class)
     void shouldKeepNoSessionAndNotNavigate(Kind kind) {
       service.startLogin("alice", PASSWORD);
@@ -436,7 +450,7 @@ class BBjAuthenticationServiceTest {
       closePending.complete(closeFailCaptor.getValue().apply(failure));
 
       assertNull(getValue(result));
-      assertEquals(List.of("The token was already ended."), getDebugMessages());
+      assertEquals(List.of("The token was already ended: ended"), getDebugMessages());
       assertEquals(List.of(), getWarnings());
     }
 
@@ -451,7 +465,8 @@ class BBjAuthenticationServiceTest {
       closePending.complete(closeFailCaptor.getValue().apply(failure));
 
       assertNull(getValue(result));
-      assertEquals(List.of("The token could not be ended and expires on its own."), getWarnings());
+      assertEquals(List.of("The token could not be ended and expires on its own: not served"),
+          getWarnings());
       assertEquals(List.of(), getDebugMessages());
     }
 

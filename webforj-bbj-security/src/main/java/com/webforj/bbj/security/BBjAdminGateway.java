@@ -130,6 +130,20 @@ public final class BBjAdminGateway {
     }
   }
 
+  /**
+   * Ends the login token of a session.
+   *
+   * <p>
+   * The call blocks until the Admin API answers or the time limit passes. Nothing happens when the
+   * session is {@code null}.
+   * </p>
+   *
+   * @param session the session whose token is ended
+   *
+   * @throws BBjAdminFailure with the kind {@code TOKEN_REJECTED} when the server refuses the token,
+   *         for example because it ended already, and {@code UNAVAILABLE} when the Admin API cannot
+   *         be reached or fails otherwise
+   */
   void closeSession(BBjSession session) {
     if (session == null) {
       return;

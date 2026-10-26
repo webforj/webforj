@@ -14,12 +14,12 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Entry point of an app to sign users in against BBj and to read the user that signed in.
+ * Entry point of an app to sign users in and out against BBj and to read the user that signed in.
  *
  * <p>
  * The calls work on the {@link BBjAuthenticationService} of the current environment. When BBj
- * security is not set up for the app, {@code login} reports {@link BBjLoginStatus#UNAVAILABLE} and
- * {@code currentUser} is empty.
+ * security is not set up for the app, {@code login} reports {@link BBjLoginStatus#UNAVAILABLE},
+ * {@code logout} completes at once and {@code currentUser} is empty.
  * </p>
  *
  * @author Christian Liebhardt
@@ -110,6 +110,19 @@ public final class BBjSecurity {
     return result;
   }
 
+  /**
+   * Signs the current user out.
+   *
+   * <p>
+   * When nobody has signed in, the pending result is complete and nothing happens. Otherwise the
+   * user is signed out at once, the requested location is forgotten and the app opens the logout
+   * location. The login token is ended in the background and the pending result completes when that
+   * ends, also when ending the token fails. When BBj security is not set up for the app, the
+   * pending result is complete at once.
+   * </p>
+   *
+   * @return the pending end of the sign out
+   */
   public static PendingResult<Void> logout() {
     return getService().map(BBjAuthenticationService::startLogout)
         .orElse(PendingResult.completedWith(null));

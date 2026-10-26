@@ -69,6 +69,16 @@ public final class BBjRouteSecurityConfiguration implements RouteSecurityConfigu
     return Boolean.TRUE.equals(properties.getSecureByDefault());
   }
 
+  /**
+   * Gets the location the app opens after a sign out.
+   *
+   * <p>
+   * When no logout success path is configured, the authentication location applies.
+   * </p>
+   *
+   * @return the logout location, or empty if neither a logout success path nor an authentication
+   *         location is available
+   */
   public Optional<Location> getLogoutLocation() {
     return Optional.ofNullable(properties.getLogoutSuccessPath()).map(Location::new)
         .or(this::getAuthenticationLocation);
