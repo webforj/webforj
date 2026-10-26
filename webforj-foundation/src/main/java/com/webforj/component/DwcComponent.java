@@ -400,7 +400,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    */
   @Override
   public String getHtml() {
-    return removeHtmlTag(doGetText());
+    return HtmlText.stripMarker(doGetText());
   }
 
   /**
@@ -414,7 +414,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
       if (HtmlText.isLegacyHtmlInTextEnabled()) {
         setHtml(HtmlText.forHtmlSink(value));
       } else {
-        doSetText(removeHtmlTag(value));
+        doSetText(HtmlText.stripMarkers(value));
       }
     } else {
       doSetText(value);
@@ -1372,20 +1372,6 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
     String value = text == null ? "" : text;
     if (!HtmlText.isWrappedWithHtmlTag(value)) {
       value = "<html>" + value + "</html>";
-    }
-
-    return value;
-  }
-
-  private String removeHtmlTag(String text) {
-    String value = text == null ? "" : text;
-
-    if (value.startsWith("<html>")) {
-      value = value.substring(6);
-    }
-
-    if (value.endsWith("</html>")) {
-      value = value.substring(0, value.length() - 7);
     }
 
     return value;

@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -20,6 +21,8 @@ import static org.mockito.Mockito.when;
 import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+import com.typesafe.config.Config;
+import com.webforj.Environment;
 import com.webforj.component.event.MouseEnterEvent;
 import com.webforj.component.event.MouseExitEvent;
 import com.webforj.component.event.RightMouseDownEvent;
@@ -35,8 +38,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -470,6 +475,26 @@ class DwcComponentTest {
       verify(control, times(1)).setText("<html><b>hi</b><script>alert(1)</script></html>");
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"<html><b>x</b></html>", "<html><html><b>x</b></html>",
+        " <html><b>x</b></html>", "<HTML><b>x</b></HTML>", "<html> <html><b>x</b></html>"})
+    void shouldSendPlainContentOfHtmlWrappedTextWhenLegacyDisabled(String text)
+        throws BBjException {
+      try (MockedStatic<Environment> mocked = mockStatic(Environment.class)) {
+        Environment environment = mock(Environment.class);
+        Config config = mock(Config.class);
+        mocked.when(Environment::getCurrent).thenReturn(environment);
+        when(environment.getConfig()).thenReturn(config);
+        when(config.hasPath("webforj.legacyHtmlInText")).thenReturn(true);
+        when(config.getIsNull("webforj.legacyHtmlInText")).thenReturn(false);
+        when(config.getBoolean("webforj.legacyHtmlInText")).thenReturn(false);
+
+        component.setText(text);
+      }
+
+      verify(control, times(1)).setText("<b>x</b>");
+    }
+
     @Test
     @DisplayName("When value is null then empty string is returned")
     void whenValueIsNullThenEmptyStringIsReturned() throws IllegalAccessException {
@@ -529,6 +554,14 @@ class DwcComponentTest {
 
       verify(control, times(1)).setText(expected);
       verify(control, times(1)).getText();
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"<HTML>x</HTML>", " <html>x</html>"})
+    void shouldReturnContentOfHtmlWrappedValueFromGetHtml(String html) throws BBjException {
+      doReturn(html).when(control).getText();
+
+      assertEquals("x", component.getHtml());
     }
   }
 

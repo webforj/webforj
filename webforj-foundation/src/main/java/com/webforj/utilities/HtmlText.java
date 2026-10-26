@@ -18,6 +18,7 @@ import org.jsoup.nodes.TextNode;
 public final class HtmlText {
   static final String LEGACY_HTML_IN_TEXT = "webforj.legacyHtmlInText";
   private static final String HTML_MARKER = "<html>";
+  private static final String HTML_END_MARKER = "</html>";
   private static final Logger logger = System.getLogger(HtmlText.class.getName());
   private static final Set<String> warnedCallers = ConcurrentHashMap.newKeySet();
 
@@ -28,10 +29,10 @@ public final class HtmlText {
    * tag.
    *
    * @param text the value to check
-   * @return {@code true} when the trimmed value starts with {@code <html>}
+   * @return {@code true} when the trimmed value starts with {@code <html>} in any letter case
    */
   public static boolean isWrappedWithHtmlTag(String text) {
-    return (text == null ? "" : text).trim().startsWith(HTML_MARKER);
+    return startsWithMarker((text == null ? "" : text).trim());
   }
 
   /**
@@ -67,7 +68,7 @@ public final class HtmlText {
   }
 
   /**
-   * Removes the {@code <html>} opt-in marker, returning the content it wrapped.
+   * Removes the {@code <html>} opt in marker in any letter case, returning the content it wrapped.
    *
    * @param text the value wrapped in {@code <html>}
    * @return the content inside the marker
@@ -75,15 +76,33 @@ public final class HtmlText {
   public static String stripMarker(String text) {
     String value = (text == null ? "" : text).trim();
 
-    if (value.startsWith(HTML_MARKER)) {
+    if (startsWithMarker(value)) {
       value = value.substring(HTML_MARKER.length());
     }
 
-    if (value.endsWith("</html>")) {
-      value = value.substring(0, value.length() - "</html>".length());
+    return removeEndMarker(value);
+  }
+
+  /**
+   * Removes every leading {@code <html>} opt in marker in any letter case, returning the content
+   * they wrapped.
+   *
+   * <p>
+   * A value such as {@code "<html> <html><b>hi</b></html>"} becomes {@code "<b>hi</b>"}. A value
+   * without the marker is returned trimmed. A {@code null} value is treated as an empty string.
+   * </p>
+   *
+   * @param text the value wrapped in {@code <html>}
+   * @return the content inside the markers, never {@code null}
+   */
+  public static String stripMarkers(String text) {
+    String value = (text == null ? "" : text).trim();
+    while (startsWithMarker(value)) {
+      String content = value.substring(HTML_MARKER.length());
+      value = startsWithMarker(content.trim()) ? content.trim() : content;
     }
 
-    return value;
+    return removeEndMarker(value);
   }
 
   /**
@@ -168,5 +187,18 @@ public final class HtmlText {
     String value = text.strip();
 
     return value.length() <= 60 ? value : value.substring(0, 57) + "...";
+  }
+
+  private static boolean startsWithMarker(String value) {
+    return value.regionMatches(true, 0, HTML_MARKER, 0, HTML_MARKER.length());
+  }
+
+  private static String removeEndMarker(String text) {
+    int end = text.length() - HTML_END_MARKER.length();
+    if (text.regionMatches(true, end, HTML_END_MARKER, 0, HTML_END_MARKER.length())) {
+      return text.substring(0, end);
+    }
+
+    return text;
   }
 }
