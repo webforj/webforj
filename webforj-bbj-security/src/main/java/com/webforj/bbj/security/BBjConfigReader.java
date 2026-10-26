@@ -1,12 +1,11 @@
 package com.webforj.bbj.security;
 
-import java.lang.System.Logger;
-import java.lang.System.Logger.Level;
-import java.util.Optional;
-
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigValueType;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
+import java.util.Optional;
 
 /**
  * Reads the route security configuration of a BBj application.

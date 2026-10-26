@@ -1,10 +1,5 @@
 package com.webforj.bbj.security;
 
-import java.lang.System.Logger;
-import java.lang.System.Logger.Level;
-import java.time.Duration;
-import java.util.Optional;
-
 import com.webforj.App;
 import com.webforj.AppLifecycleListener;
 import com.webforj.Environment;
@@ -12,6 +7,9 @@ import com.webforj.annotation.AppListenerPriority;
 import com.webforj.environment.ObjectTable;
 import com.webforj.router.Router;
 import com.webforj.router.security.RouteSecurityObserver;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
+import java.time.Duration;
 
 /**
  * Registers route security for a BBj application when it starts.

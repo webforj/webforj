@@ -281,7 +281,7 @@ class BBjConfigReaderTest {
 
     @ParameterizedTest
     @MethodSource("invalidBooleanKeys")
-    void shouldLogTheKeyWhenABooleanIsNotABoolean(String key) {
+    void shouldLogTheKeyWhenTheValueIsNotBoolean(String key) {
       Config config = ConfigFactory.parseString("webforj.security.%s = 5".formatted(key));
 
       BBjConfigReader.readConfig(properties, config);
@@ -294,7 +294,7 @@ class BBjConfigReaderTest {
 
     @ParameterizedTest
     @MethodSource("invalidPathValues")
-    void shouldKeepThePreviousPathWhenItIsNotAString(String key, String value) {
+    void shouldKeepThePreviousPathWhenItIsNotString(String key, String value) {
       properties.setAuthenticationPath("/before-signin");
       properties.setDenyPath("/before-denied");
       Config config = ConfigFactory.parseString("webforj.security.%s = %s".formatted(key, value));
@@ -307,7 +307,7 @@ class BBjConfigReaderTest {
 
     @ParameterizedTest
     @MethodSource("invalidPathValues")
-    void shouldLogTheKeyWhenAPathIsNotAString(String key, String value) {
+    void shouldLogTheKeyWhenPathIsNotString(String key, String value) {
       Config config = ConfigFactory.parseString("webforj.security.%s = %s".formatted(key, value));
 
       BBjConfigReader.readConfig(properties, config);
@@ -395,7 +395,7 @@ class BBjConfigReaderTest {
     }
 
     @Test
-    void shouldLogTheKeyWhenReturnAfterLoginIsNotABoolean() {
+    void shouldLogTheKeyWhenReturnAfterLoginIsNotBoolean() {
       Config config = ConfigFactory.parseString("webforj.security.bbj.return-after-login = 5");
 
       BBjConfigReader.readConfig(properties, config);
@@ -410,7 +410,7 @@ class BBjConfigReaderTest {
 
     @ParameterizedTest
     @MethodSource("invalidAdminStringValues")
-    void shouldKeepThePreviousAdminStringWhenItIsNotAString(String key, String value) {
+    void shouldKeepThePreviousAdminStringWhenItIsNotString(String key, String value) {
       properties.setAdminHost("before.example.com");
       properties.setDefaultSuccessPath("/before-home");
       Config config =
@@ -424,7 +424,7 @@ class BBjConfigReaderTest {
 
     @ParameterizedTest
     @MethodSource("invalidAdminStringValues")
-    void shouldLogTheKeyWhenAnAdminStringIsNotAString(String key, String value) {
+    void shouldLogTheKeyWhenAnAdminStringIsNotString(String key, String value) {
       Config config =
           ConfigFactory.parseString("webforj.security.bbj.%s = %s".formatted(key, value));
 
@@ -440,7 +440,7 @@ class BBjConfigReaderTest {
 
     @ParameterizedTest
     @MethodSource("invalidLogoutSuccessPathValues")
-    void shouldKeepThePreviousLogoutSuccessPathWhenItIsNotAString(String value) {
+    void shouldKeepThePreviousLogoutSuccessPathWhenItIsNotString(String value) {
       properties.setLogoutSuccessPath("/before-goodbye");
       Config config =
           ConfigFactory.parseString("webforj.security.bbj.logout-success-path = " + value);
@@ -452,7 +452,7 @@ class BBjConfigReaderTest {
 
     @ParameterizedTest
     @MethodSource("invalidLogoutSuccessPathValues")
-    void shouldLogTheKeyWhenTheLogoutSuccessPathIsNotAString(String value) {
+    void shouldLogTheKeyWhenTheLogoutSuccessPathIsNotString(String value) {
       Config config =
           ConfigFactory.parseString("webforj.security.bbj.logout-success-path = " + value);
 

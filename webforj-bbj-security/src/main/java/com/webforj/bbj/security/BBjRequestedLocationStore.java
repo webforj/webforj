@@ -1,8 +1,7 @@
 package com.webforj.bbj.security;
 
-import java.util.Optional;
-
 import com.webforj.router.history.Location;
+import java.util.Optional;
 
 /**
  * Stores the location a user requested before being sent to authenticate.

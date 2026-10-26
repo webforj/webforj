@@ -16,6 +16,7 @@ class BBjPrincipalTest {
     assertThrows(NullPointerException.class, () -> new BBjPrincipal("alice", Set.of(), null));
   }
 
+  @Test
   void shouldThrowForBlankUsername() {
     assertThrows(IllegalArgumentException.class, () -> new BBjPrincipal("", Set.of(), Set.of()));
     assertThrows(IllegalArgumentException.class, () -> new BBjPrincipal("   ", Set.of(), Set.of()));
