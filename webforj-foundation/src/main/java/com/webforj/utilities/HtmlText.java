@@ -32,8 +32,7 @@ public final class HtmlText {
    * @return {@code true} when the trimmed value starts with {@code <html>} in any letter case
    */
   public static boolean isWrappedWithHtmlTag(String text) {
-    String value = (text == null ? "" : text).trim();
-    return value.regionMatches(true, 0, HTML_MARKER, 0, HTML_MARKER.length());
+    return startsWithMarker((text == null ? "" : text).trim());
   }
 
   /**
@@ -77,7 +76,7 @@ public final class HtmlText {
   public static String stripMarker(String text) {
     String value = (text == null ? "" : text).trim();
 
-    if (isWrappedWithHtmlTag(value)) {
+    if (startsWithMarker(value)) {
       value = value.substring(HTML_MARKER.length());
     }
 
@@ -98,8 +97,8 @@ public final class HtmlText {
    */
   public static String stripMarkers(String text) {
     String value = (text == null ? "" : text).trim();
-    while (isWrappedWithHtmlTag(value)) {
-      value = value.trim().substring(HTML_MARKER.length());
+    while (startsWithMarker(value)) {
+      value = value.substring(HTML_MARKER.length()).trim();
     }
 
     return removeEndMarker(value);
@@ -187,6 +186,10 @@ public final class HtmlText {
     String value = text.strip();
 
     return value.length() <= 60 ? value : value.substring(0, 57) + "...";
+  }
+
+  private static boolean startsWithMarker(String value) {
+    return value.regionMatches(true, 0, HTML_MARKER, 0, HTML_MARKER.length());
   }
 
   private static String removeEndMarker(String text) {
