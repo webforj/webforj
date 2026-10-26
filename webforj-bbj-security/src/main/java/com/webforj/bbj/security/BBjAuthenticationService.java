@@ -1,5 +1,6 @@
 package com.webforj.bbj.security;
 
+import com.basis.bbj.processor.instruction.bu;
 import com.webforj.PendingResult;
 import com.webforj.bbj.security.BBjAdminFailure.Kind;
 import com.webforj.bbj.security.model.BBjLoginStatus;
@@ -30,6 +31,7 @@ public final class BBjAuthenticationService {
   private final BBjAdminGateway gateway;
   private final BBjAdminWorker worker;
   private final BBjRequestedLocationStore locationStore;
+  private final BBjSessionStore sessionStore;
   private final BBjSecurityConfigurationProperties properties;
   private final BBjRouteSecurityConfiguration configuration;
   private final Consumer<Location> navigator;
@@ -48,15 +50,18 @@ public final class BBjAuthenticationService {
    *
    * @throws NullPointerException if any parameter is {@code null}
    */
-  BBjAuthenticationService(BBjAdminGateway gateway, BBjAdminWorker worker,
-      BBjRequestedLocationStore locationStore, BBjSecurityConfigurationProperties properties,
-      BBjRouteSecurityConfiguration configuration, Consumer<Location> navigator) {
-    this.gateway = Objects.requireNonNull(gateway, "gateway");
-    this.worker = Objects.requireNonNull(worker, "worker");
-    this.locationStore = Objects.requireNonNull(locationStore, "locationStore");
-    this.properties = Objects.requireNonNull(properties, "properties");
-    this.configuration = Objects.requireNonNull(configuration, "configuration");
-    this.navigator = Objects.requireNonNull(navigator, "navigator");
+  private BBjAuthenticationService(Builder builder) {
+    gateway = builder.gateway;
+    worker = builder.worker;
+    locationStore = builder.locationStore;
+    sessionStore = builder.sessionStore;
+    properties = builder.properties;
+    configuration = builder.configuration;
+    navigator = builder.navigator;
+  }
+
+  static Builder builder() {
+    return new Builder();
   }
 
   /**
@@ -120,6 +125,7 @@ public final class BBjAuthenticationService {
     }
     final var current = session;
     session = null;
+    sessionStore.clearSession();
     locationStore.clearLocation();
     openLogoutLocation();
     return closeSession(current);
@@ -134,11 +140,21 @@ public final class BBjAuthenticationService {
     return Optional.ofNullable(session).map(BBjSession::getPrincipal);
   }
 
+  void restoreSession() {
+    sessionStore.readSession().ifPresent(it -> session = it);
+  }
+
   private BBjLoginStatus applySession(BBjSession session) {
     var replaced = this.session;
     this.session = session;
     if (replaced != null) {
       closeSession(replaced);
+    }
+    try {
+      sessionStore.saveSession(session);
+    } catch (IllegalStateException e) {
+      closeSession(session);
+      return BBjLoginStatus.UNAVAILABLE;
     }
 
     return BBjLoginStatus.AUTHENTICATED;
@@ -203,5 +219,62 @@ public final class BBjAuthenticationService {
 
   private void discardLateSession(BBjSession session) {
     gateway.closeSession(session);
+  }
+
+  public static final class Builder {
+    private BBjAdminGateway gateway;
+    private BBjAdminWorker worker;
+    private BBjRequestedLocationStore locationStore;
+    private BBjSessionStore sessionStore;
+    private BBjSecurityConfigurationProperties properties;
+    private BBjRouteSecurityConfiguration configuration;
+    private Consumer<Location> navigator;
+
+    public BBjAuthenticationService build() {
+      Objects.requireNonNull(gateway, "gateway");
+      Objects.requireNonNull(worker, "worker");
+      Objects.requireNonNull(locationStore, "locationStore");
+      Objects.requireNonNull(sessionStore, "sessionStore");
+      Objects.requireNonNull(properties, "properties");
+      Objects.requireNonNull(configuration, "configuration");
+      Objects.requireNonNull(navigator, "navigator");
+      return new BBjAuthenticationService(this);
+    }
+
+    public Builder setGateway(BBjAdminGateway gateway) {
+      this.gateway = gateway;
+      return this;
+    }
+
+    public Builder setWorker(BBjAdminWorker worker) {
+      this.worker = worker;
+      return this;
+    }
+
+    public Builder setLocationStore(BBjRequestedLocationStore locationStore) {
+      this.locationStore = locationStore;
+      return this;
+    }
+
+    public Builder setSessionStore(BBjSessionStore sessionStore) {
+      this.sessionStore = sessionStore;
+      return this;
+    }
+
+    public Builder setProperties(BBjSecurityConfigurationProperties properties) {
+      this.properties = properties;
+      return this;
+    }
+
+    public Builder setConfiguration(BBjRouteSecurityConfiguration configuration) {
+      this.configuration = configuration;
+      return this;
+    }
+
+    public Builder setNavigator(Consumer<Location> navigator) {
+      this.navigator = navigator;
+      return this;
+    }
+
   }
 }
