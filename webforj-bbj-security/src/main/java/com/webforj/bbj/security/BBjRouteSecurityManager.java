@@ -1,10 +1,5 @@
 package com.webforj.bbj.security;
 
-import java.lang.System.Logger;
-import java.lang.System.Logger.Level;
-import java.util.Objects;
-import java.util.Optional;
-
 import com.webforj.component.Component;
 import com.webforj.router.NavigationContext;
 import com.webforj.router.NavigationOptions;
@@ -20,6 +15,10 @@ import com.webforj.router.security.evaluator.AuthenticationRequiredEvaluator;
 import com.webforj.router.security.evaluator.DenyAllEvaluator;
 import com.webforj.router.security.evaluator.PermitAllEvaluator;
 import com.webforj.router.security.evaluator.RolesAllowedEvaluator;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * {@link AbstractRouteSecurityManager} of a BBj application.

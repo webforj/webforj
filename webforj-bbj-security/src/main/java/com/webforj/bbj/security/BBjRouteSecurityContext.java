@@ -1,11 +1,10 @@
 package com.webforj.bbj.security;
 
+import com.webforj.bbj.security.model.BBjPrincipal;
+import com.webforj.router.security.RouteSecurityContext;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
-
-import com.webforj.bbj.security.model.BBjPrincipal;
-import com.webforj.router.security.RouteSecurityContext;
 
 /**
  * {@link RouteSecurityContext} of a BBj application.

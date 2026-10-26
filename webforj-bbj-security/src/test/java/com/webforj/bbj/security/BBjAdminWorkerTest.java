@@ -175,7 +175,7 @@ class BBjAdminWorkerTest {
   class Refusals {
 
     @Test
-    void shouldRefuseAStartAfterDestroy() throws Exception {
+    void shouldRefuseStartAfterDestroy() throws Exception {
       worker = new BBjAdminWorker(LONG);
       worker.destroy();
       AtomicBoolean ran = new AtomicBoolean();
@@ -193,7 +193,7 @@ class BBjAdminWorkerTest {
     }
 
     @Test
-    void shouldRefuseAStartWhileBothWorkersAreAbandoned() throws Exception {
+    void shouldRefuseStartWhileBothWorkersAreAbandoned() throws Exception {
       worker = new BBjAdminWorker(SHORT);
       CountDownLatch interrupted = new CountDownLatch(2);
       CountDownLatch release = createGate();
@@ -222,7 +222,7 @@ class BBjAdminWorkerTest {
     }
 
     @Test
-    void shouldRefuseAStartWhenTwoAreRunningAndFourAreWaiting() throws Exception {
+    void shouldRefuseStartWhenTwoAreRunningAndFourAreWaiting() throws Exception {
       worker = new BBjAdminWorker(LONG);
       CountDownLatch release = createGate();
       for (int count = 0; count < 6; count++) {
@@ -248,7 +248,7 @@ class BBjAdminWorkerTest {
     }
 
     @Test
-    void shouldCompleteExceptionallyAndWarnWhenTheFailHookThrowsOnARefusal() {
+    void shouldCompleteExceptionallyAndWarnWhenTheFailHookThrowsOnRefusal() {
       worker = new BBjAdminWorker(LONG);
       worker.destroy();
 
@@ -268,14 +268,14 @@ class BBjAdminWorkerTest {
   class NullArguments {
 
     @Test
-    void shouldRejectANullTimeout() {
+    void shouldRejectNullTimeout() {
       Duration timeout = null;
 
       assertThrows(NullPointerException.class, () -> new BBjAdminWorker(timeout));
     }
 
     @Test
-    void shouldRejectANullDispatcher() {
+    void shouldRejectNullDispatcher() {
       BiFunction<Environment, Runnable, PendingResult<Void>> dispatcher = null;
 
       assertThrows(NullPointerException.class, () -> new BBjAdminWorker(LONG, dispatcher));
@@ -283,7 +283,7 @@ class BBjAdminWorkerTest {
 
     @ParameterizedTest
     @MethodSource("createNullCalls")
-    void shouldRejectANullArgumentOfStart(Consumer<BBjAdminWorker> call) {
+    void shouldRejectNullArgumentOfStart(Consumer<BBjAdminWorker> call) {
       worker = new BBjAdminWorker(LONG);
 
       assertThrows(NullPointerException.class, () -> call.accept(worker));
@@ -343,7 +343,7 @@ class BBjAdminWorkerTest {
 
     @ParameterizedTest
     @EnumSource(Kind.class)
-    void shouldHandTheKindOfAThrownFailureToTheFailHook(Kind kind) throws Exception {
+    void shouldHandTheKindOfThrownFailureToTheFailHook(Kind kind) throws Exception {
       worker = createWorker(LONG, BBjAdminWorkerTest::sendDirectly);
 
       PendingResult<Kind> result = worker.<String, Kind>start(() -> {
@@ -400,7 +400,7 @@ class BBjAdminWorkerTest {
     }
 
     @Test
-    void shouldDiscardALateValueAndNeverDeliverIt() throws Exception {
+    void shouldDiscardLateValueAndNeverDeliverIt() throws Exception {
       worker = createWorker(SHORT, BBjAdminWorkerTest::sendDirectly);
       CountDownLatch interrupted = new CountDownLatch(1);
       CountDownLatch release = createGate();
@@ -426,7 +426,7 @@ class BBjAdminWorkerTest {
     }
 
     @Test
-    void shouldFailAQueuedTaskAtTheTimeLimitWithoutRunningIt() throws Exception {
+    void shouldFailQueuedTaskAtTheTimeLimitWithoutRunningIt() throws Exception {
       worker = createWorker(SHORT, BBjAdminWorkerTest::sendDirectly);
       CountDownLatch release = createGate();
       CountDownLatch discarded = new CountDownLatch(2);
@@ -501,7 +501,7 @@ class BBjAdminWorkerTest {
   class CancelledResults {
 
     @Test
-    void shouldDiscardTheValueOfACancelledResult() throws Exception {
+    void shouldDiscardTheValueOfCancelledResult() throws Exception {
       AtomicReference<Runnable> posted = new AtomicReference<>();
       CountDownLatch postedLatch = new CountDownLatch(1);
       worker = createWorker(LONG, task -> {
@@ -527,7 +527,7 @@ class BBjAdminWorkerTest {
     }
 
     @Test
-    void shouldDropTheFailureOfACancelledResult() throws Exception {
+    void shouldDropTheFailureOfCancelledResult() throws Exception {
       AtomicReference<Runnable> posted = new AtomicReference<>();
       CountDownLatch postedLatch = new CountDownLatch(1);
       worker = createWorker(LONG, task -> {
@@ -577,7 +577,7 @@ class BBjAdminWorkerTest {
     }
 
     @Test
-    void shouldCompleteExceptionallyWhenTheFailHookThrowsAfterAFailure() throws Exception {
+    void shouldCompleteExceptionallyWhenTheFailHookThrowsAfterFailure() throws Exception {
       worker = createWorker(LONG, BBjAdminWorkerTest::sendDirectly);
 
       PendingResult<String> result = worker.<String, String>start(() -> {
@@ -668,7 +668,7 @@ class BBjAdminWorkerTest {
     }
 
     @Test
-    void shouldRunTheDeadlineOnADaemonTimerThread() throws Exception {
+    void shouldRunTheDeadlineOnDaemonTimerThread() throws Exception {
       worker = createWorker(SHORT, BBjAdminWorkerTest::sendDirectly);
       CountDownLatch release = createGate();
 
@@ -685,7 +685,7 @@ class BBjAdminWorkerTest {
     }
 
     @Test
-    void shouldDiscardALateValueOnTheWorkerThread() throws Exception {
+    void shouldDiscardLateValueOnTheWorkerThread() throws Exception {
       worker = createWorker(SHORT, BBjAdminWorkerTest::sendDirectly);
       CountDownLatch interrupted = new CountDownLatch(1);
       CountDownLatch release = createGate();

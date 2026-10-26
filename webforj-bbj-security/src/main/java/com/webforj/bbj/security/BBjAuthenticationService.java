@@ -1,17 +1,16 @@
 package com.webforj.bbj.security;
 
+import com.webforj.PendingResult;
+import com.webforj.bbj.security.BBjAdminFailure.Kind;
+import com.webforj.bbj.security.model.BBjLoginStatus;
+import com.webforj.bbj.security.model.BBjPrincipal;
+import com.webforj.bbj.security.model.BBjSession;
+import com.webforj.router.history.Location;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
-
-import com.webforj.PendingResult;
-import com.webforj.bbj.security.model.BBjPrincipal;
-import com.webforj.bbj.security.model.BBjSession;
-import com.webforj.bbj.security.BBjAdminFailure.Kind;
-import com.webforj.bbj.security.model.BBjLoginStatus;
-import com.webforj.router.history.Location;
 
 /**
  * Signs users in against BBj and keeps the user that signed in.
@@ -35,6 +34,7 @@ public final class BBjAuthenticationService {
   private final BBjRouteSecurityConfiguration configuration;
   private final Consumer<Location> navigator;
   private BBjSession session;
+  private PendingResult<BBjLoginStatus> pendingLogin;
 
   /**
    * Creates a service.
@@ -64,10 +64,11 @@ public final class BBjAuthenticationService {
    *
    * <p>
    * An empty or blank user name or password, a user name longer than 256 characters and a password
-   * longer than 1024 characters are refused at once as invalid credentials. Otherwise the sign in
-   * runs in the background. After a successful sign in the service opens the location the user
-   * requested before signing in, or the default success path when no location was requested or
-   * returning is switched off. The requested location is cleared either way.
+   * longer than 1024 characters are refused at once as invalid credentials. Otherwise a sign in
+   * that is still running is cancelled and the new sign in runs in the background. After a
+   * successful sign in the service opens the location the user requested before signing in, or the
+   * default success path when no location was requested or returning is switched off. The requested
+   * location is cleared either way.
    * </p>
    *
    * @param userName the user name
@@ -84,10 +85,13 @@ public final class BBjAuthenticationService {
       return PendingResult.completedWith(BBjLoginStatus.INVALID_CREDENTIALS);
     }
 
+    stopPendingLogin();
     PendingResult<BBjLoginStatus> result =
         worker.start(() -> gateway.openSession(userName, password), this::applySession,
             this::applyFailure, this::discardLateSession);
+    pendingLogin = result;
     result.thenAccept(status -> {
+      pendingLogin = null;
       if (status == BBjLoginStatus.AUTHENTICATED) {
         openTargetLocation();
       }
@@ -100,19 +104,21 @@ public final class BBjAuthenticationService {
    * Starts signing the current user out.
    *
    * <p>
-   * When nobody has signed in, the pending result is complete and nothing happens. Otherwise the
-   * user is signed out at once, the requested location is cleared and the service opens the logout
-   * location. The login token is ended in the background and the pending result completes when that
-   * ends, also when ending the token fails.
+   * A sign in that is still running is cancelled and never keeps a session. When nobody has signed
+   * in, the pending result is complete and nothing else happens. Otherwise the user is signed out
+   * at once, the requested location is cleared and the service opens the logout location. The login
+   * token is ended in the background and the pending result completes when that ends, also when
+   * ending the token fails.
    * </p>
    *
    * @return the pending end of the sign out
    */
   PendingResult<Void> startLogout() {
+    stopPendingLogin();
     if (session == null) {
       return PendingResult.completedWith(null);
     }
-    var current = session;
+    final var current = session;
     session = null;
     locationStore.clearLocation();
     openLogoutLocation();
@@ -129,7 +135,11 @@ public final class BBjAuthenticationService {
   }
 
   private BBjLoginStatus applySession(BBjSession session) {
+    var replaced = this.session;
     this.session = session;
+    if (replaced != null) {
+      closeSession(replaced);
+    }
 
     return BBjLoginStatus.AUTHENTICATED;
   }
@@ -152,12 +162,18 @@ public final class BBjAuthenticationService {
     };
   }
 
+  private void stopPendingLogin() {
+    if (pendingLogin != null) {
+      pendingLogin.cancel();
+      pendingLogin = null;
+    }
+  }
+
   private PendingResult<Void> closeSession(BBjSession session) {
     return worker.start(() -> {
       gateway.closeSession(session);
       return Boolean.TRUE;
-    }, closed -> null, this::applyCloseFailure, discard -> {
-    });
+    }, closed -> null, this::applyCloseFailure, discard -> gateway.closeSession(session));
   }
 
   private Void applyCloseFailure(BBjAdminFailure failure) {

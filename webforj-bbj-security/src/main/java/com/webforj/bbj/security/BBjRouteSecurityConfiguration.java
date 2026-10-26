@@ -1,10 +1,9 @@
 package com.webforj.bbj.security;
 
-import java.util.Objects;
-import java.util.Optional;
-
 import com.webforj.router.history.Location;
 import com.webforj.router.security.RouteSecurityConfiguration;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * {@link RouteSecurityConfiguration} of a BBj application, backed by
