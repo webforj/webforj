@@ -7,16 +7,21 @@ import com.webforj.annotation.AppListenerPriority;
 import com.webforj.environment.ObjectTable;
 import com.webforj.router.Router;
 import com.webforj.router.security.RouteSecurityObserver;
+import com.webforj.webstorage.SessionStorage;
+
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
+import java.nio.file.Path;
 import java.time.Duration;
 
 /**
  * Registers route security for a BBj application when it starts.
  *
  * <p>
- * When security is enabled in the configuration, the route security observer is added to the
- * router. Nothing is registered when the environment, the configuration or the router is not
+ * When security is enabled in the configuration, the route security observer is
+ * added to the
+ * router. Nothing is registered when the environment, the configuration or the
+ * router is not
  * available.
  * </p>
  *
@@ -55,15 +60,18 @@ public final class BBjSecurityRegistrar implements AppLifecycleListener {
 
     var gateway = new BBjAdminGateway(properties);
     var worker = new BBjAdminWorker(Duration.ofSeconds(properties.getAdminTimeoutSeconds()));
-    var store = new BBjBrowserRequestedLocationStore();
+    var locationStore = new BBjBrowserRequestedLocationStore();
+    var sessionStore = new BBjFileSessionStore(() -> Path.of(System.getProperty("java.io.tmpdir")),
+        App::getApplicationName, SessionStorage::getCurrent);
 
     var router = Router.getCurrent();
     if (router != null) {
-      var service = new BBjAuthenticationService(gateway, worker, store, properties, configuration,
-          router::navigate);
+      var service = BBjAuthenticationService.builder().setGateway(gateway).setWorker(worker)
+          .setLocationStore(locationStore).setSessionStore(sessionStore).setProperties(properties)
+          .setConfiguration(configuration).setNavigator(router::navigate).build();
       ObjectTable.put(BBjSecurity.SERVICE_KEY, service);
       var context = new BBjRouteSecurityContext(service::currentUser);
-      var manager = new BBjRouteSecurityManager(configuration, context, store);
+      var manager = new BBjRouteSecurityManager(configuration, context, locationStore);
       var securityObserver = new RouteSecurityObserver(manager);
       router.getRenderer().addObserver(securityObserver);
       logger.log(Level.INFO, "Route security enabled with {0} evaluators",
