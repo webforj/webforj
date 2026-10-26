@@ -56,18 +56,22 @@ class BBjAdminWorkerTest {
   private final Logger logger = Logger.getLogger(BBjAdminWorker.class.getName());
   private final Handler handler = new Handler() {
     @Override
-    public void publish(LogRecord record) {
-      records.add(record);
-      if (record.getLevel() == Level.WARNING) {
+    public void publish(LogRecord logRecord) {
+      records.add(logRecord);
+      if (logRecord.getLevel() == Level.WARNING) {
         warned.countDown();
       }
     }
 
     @Override
-    public void flush() {}
+    public void flush() {
+      // Not implemented
+    }
 
     @Override
-    public void close() {}
+    public void close() {
+      // Not implemented
+    }
   };
   private MockedStatic<Environment> environmentMock;
   private Level previousLevel;
@@ -79,7 +83,8 @@ class BBjAdminWorkerTest {
     logger.setLevel(Level.ALL);
     logger.addHandler(handler);
     environmentMock = mockStatic(Environment.class);
-    environmentMock.when(Environment::getCurrent).thenReturn(mock(Environment.class));
+    var mockEvniornment = mock(Environment.class);
+    environmentMock.when(Environment::getCurrent).thenReturn(mockEvniornment);
   }
 
   @AfterEach
@@ -119,7 +124,7 @@ class BBjAdminWorkerTest {
   private List<String> getWarnings() {
     SimpleFormatter formatter = new SimpleFormatter();
 
-    return records.stream().filter(record -> record.getLevel() == Level.WARNING)
+    return records.stream().filter(it -> it.getLevel() == Level.WARNING)
         .map(formatter::formatMessage).toList();
   }
 
@@ -373,7 +378,7 @@ class BBjAdminWorkerTest {
       assertNull(failure.get().getCause());
       assertFalse(failure.get().getMessage().contains("secret"));
       assertTrue(records.stream()
-          .noneMatch(record -> new SimpleFormatter().formatMessage(record).contains("secret")));
+          .noneMatch(it -> new SimpleFormatter().formatMessage(it).contains("secret")));
     }
   }
 
@@ -577,7 +582,7 @@ class BBjAdminWorkerTest {
     }
 
     @Test
-    void shouldCompleteExceptionallyWhenTheFailHookThrowsAfterFailure() throws Exception {
+    void shouldCompleteExceptionallyWhenTheFailHookThrowsAfterFailure() {
       worker = createWorker(LONG, BBjAdminWorkerTest::sendDirectly);
 
       PendingResult<String> result = worker.<String, String>start(() -> {

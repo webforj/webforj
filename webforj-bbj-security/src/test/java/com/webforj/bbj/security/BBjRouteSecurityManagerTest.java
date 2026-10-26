@@ -60,7 +60,8 @@ class BBjRouteSecurityManagerTest {
     configuration = mock(BBjRouteSecurityConfiguration.class);
     securityContext = mock(BBjRouteSecurityContext.class);
     environmentMock = mockStatic(Environment.class);
-    environmentMock.when(Environment::getCurrent).thenReturn(mock(Environment.class));
+    var mockEnviornment = mock(Environment.class);
+    environmentMock.when(Environment::getCurrent).thenReturn(mockEnviornment);
     storageMock = mockStatic(SessionStorage.class);
     storageMock.when(SessionStorage::getCurrent).thenReturn(storage);
     routerMock = mockStatic(Router.class);
@@ -83,26 +84,22 @@ class BBjRouteSecurityManagerTest {
 
     @Test
     void shouldRejectNullConfiguration() {
-      BBjRouteSecurityConfiguration missing = null;
-
-      assertThrows(NullPointerException.class, () -> new BBjRouteSecurityManager(missing,
-          securityContext, new BBjBrowserRequestedLocationStore()));
+      var locationStore = new BBjBrowserRequestedLocationStore();
+      assertThrows(NullPointerException.class,
+          () -> new BBjRouteSecurityManager(null, securityContext, locationStore));
     }
 
     @Test
     void shouldRejectNullSecurityContext() {
-      BBjRouteSecurityContext missing = null;
-
-      assertThrows(NullPointerException.class, () -> new BBjRouteSecurityManager(configuration,
-          missing, new BBjBrowserRequestedLocationStore()));
+      var locationStore = new BBjBrowserRequestedLocationStore();
+      assertThrows(NullPointerException.class,
+          () -> new BBjRouteSecurityManager(configuration, null, locationStore));
     }
 
     @Test
     void shouldRejectNullLocationStore() {
-      BBjRequestedLocationStore missing = null;
-
       assertThrows(NullPointerException.class,
-          () -> new BBjRouteSecurityManager(configuration, securityContext, missing));
+          () -> new BBjRouteSecurityManager(configuration, securityContext, null));
     }
 
     @Test

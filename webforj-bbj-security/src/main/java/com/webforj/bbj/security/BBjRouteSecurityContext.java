@@ -75,6 +75,8 @@ public final class BBjRouteSecurityContext implements RouteSecurityContext {
    * {@inheritDoc}
    */
   @Override
-  public void setAttribute(String name, Object value) {}
+  public void setAttribute(String name, Object value) {
+    throw new UnsupportedOperationException("setAttribute");
+  }
 
 }

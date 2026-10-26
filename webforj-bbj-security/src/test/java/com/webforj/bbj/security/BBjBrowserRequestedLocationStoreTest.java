@@ -47,7 +47,8 @@ class BBjBrowserRequestedLocationStoreTest {
   void setUp() {
     storage = mock(SessionStorage.class);
     environmentMock = mockStatic(Environment.class);
-    environmentMock.when(Environment::getCurrent).thenReturn(mock(Environment.class));
+    var mockEnviornment = mock(Environment.class);
+    environmentMock.when(Environment::getCurrent).thenReturn(mockEnviornment);
     storageMock = mockStatic(SessionStorage.class);
     storageMock.when(SessionStorage::getCurrent).thenReturn(storage);
     store = new BBjBrowserRequestedLocationStore();
@@ -172,15 +173,19 @@ class BBjBrowserRequestedLocationStoreTest {
     private final List<LogRecord> records = new ArrayList<>();
     private final Handler handler = new Handler() {
       @Override
-      public void publish(LogRecord record) {
-        records.add(record);
+      public void publish(LogRecord logRecord) {
+        records.add(logRecord);
       }
 
       @Override
-      public void flush() {}
+      public void flush() {
+        // Not implemented
+      }
 
       @Override
-      public void close() {}
+      public void close() {
+        // Not implemented
+      }
     };
     private Level previousLevel;
 
@@ -209,7 +214,7 @@ class BBjBrowserRequestedLocationStoreTest {
       assertDoesNotThrow(() -> operation.accept(store));
 
       List<LogRecord> warnings =
-          records.stream().filter(record -> record.getLevel() == Level.WARNING).toList();
+          records.stream().filter(it -> it.getLevel() == Level.WARNING).toList();
       assertEquals(1, warnings.size());
       assertEquals(expected, new SimpleFormatter().formatMessage(warnings.get(0)));
     }
