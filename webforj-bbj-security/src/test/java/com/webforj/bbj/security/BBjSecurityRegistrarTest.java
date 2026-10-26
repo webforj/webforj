@@ -188,8 +188,8 @@ class BBjSecurityRegistrarTest {
         MockedConstruction<BBjAuthenticationService> services = mockConstruction(
             BBjAuthenticationService.class,
             (service, context) -> when(service.currentUser()).thenReturn(Optional.of(principal)));
-        MockedConstruction<BBjRouteSecurityManager> managers =
-            mockConstruction(BBjRouteSecurityManager.class, (manager, context) -> contexts
+        MockedConstruction<BBjRouteSecurityManager> managers = mockConstruction(BBjRouteSecurityManager.class,
+            (manager, context) -> contexts
                 .add((BBjRouteSecurityContext) context.arguments().get(1)))) {
       registrar.onWillRun(app);
 
@@ -207,19 +207,19 @@ class BBjSecurityRegistrarTest {
     List<Object> managerStores = new ArrayList<>();
     when(environment.getConfig()).thenReturn(ConfigFactory.empty());
 
-    try (MockedConstruction<BBjAuthenticationService.Builder> builders =
-        mockConstruction(BBjAuthenticationService.Builder.class,
-            withSettings().defaultAnswer(RETURNS_SELF), (builder, context) -> {
-              when(builder.setLocationStore(any())).thenAnswer(invocation -> {
-                serviceStores.add(invocation.getArgument(0));
+    try (MockedConstruction<BBjAuthenticationService.Builder> builders = mockConstruction(
+        BBjAuthenticationService.Builder.class,
+        withSettings().defaultAnswer(RETURNS_SELF), (builder, context) -> {
+          when(builder.setLocationStore(any())).thenAnswer(invocation -> {
+            serviceStores.add(invocation.getArgument(0));
 
-                return builder;
-              });
-              when(builder.build()).thenReturn(mock(BBjAuthenticationService.class));
-            });
-        MockedConstruction<BBjRouteSecurityManager> managers =
-            mockConstruction(BBjRouteSecurityManager.class,
-                (manager, context) -> managerStores.add(context.arguments().get(2)))) {
+            return builder;
+          });
+          var mockService = mock(BBjAuthenticationService.class);
+          when(builder.build()).thenReturn(mockService);
+        });
+        MockedConstruction<BBjRouteSecurityManager> managers = mockConstruction(BBjRouteSecurityManager.class,
+            (manager, context) -> managerStores.add(context.arguments().get(2)))) {
       registrar.onWillRun(app);
 
       assertEquals(1, serviceStores.size());
@@ -237,25 +237,25 @@ class BBjSecurityRegistrarTest {
     when(environment.getConfig()).thenReturn(
         ConfigFactory.parseString("webforj.security.bbj.logout-success-path = \"/goodbye\""));
 
-    try (MockedConstruction<BBjAuthenticationService.Builder> builders =
-        mockConstruction(BBjAuthenticationService.Builder.class,
-            withSettings().defaultAnswer(RETURNS_SELF), (builder, context) -> {
-              when(builder.setConfiguration(any())).thenAnswer(invocation -> {
-                configurations.add(invocation.getArgument(0));
+    try (MockedConstruction<BBjAuthenticationService.Builder> builders = mockConstruction(
+        BBjAuthenticationService.Builder.class,
+        withSettings().defaultAnswer(RETURNS_SELF), (builder, context) -> {
+          when(builder.setConfiguration(any())).thenAnswer(invocation -> {
+            configurations.add(invocation.getArgument(0));
 
-                return builder;
-              });
-              when(builder.setNavigator(any())).thenAnswer(invocation -> {
-                navigators.add(invocation.getArgument(0));
+            return builder;
+          });
+          when(builder.setNavigator(any())).thenAnswer(invocation -> {
+            navigators.add(invocation.getArgument(0));
 
-                return builder;
-              });
-              when(builder.build()).thenReturn(mock(BBjAuthenticationService.class));
-            })) {
+            return builder;
+          });
+          var mockService = mock(BBjAuthenticationService.class);
+          when(builder.build()).thenReturn(mockService);
+        })) {
       registrar.onWillRun(app);
 
-      BBjRouteSecurityConfiguration configuration =
-          (BBjRouteSecurityConfiguration) configurations.get(0);
+      BBjRouteSecurityConfiguration configuration = (BBjRouteSecurityConfiguration) configurations.get(0);
       Consumer<Location> navigator = (Consumer<Location>) navigators.get(0);
       navigator.accept(logoutLocation);
 
@@ -272,10 +272,9 @@ class BBjSecurityRegistrarTest {
         .thenAnswer(invocation -> events.add("put"));
     doAnswer(invocation -> events.add("observe")).when(renderer).addObserver(any());
 
-    try (MockedConstruction<BBjAuthenticationService> services =
-        mockConstruction(BBjAuthenticationService.class,
-            (service, context) -> doAnswer(invocation -> events.add("restore")).when(service)
-                .restoreSession())) {
+    try (MockedConstruction<BBjAuthenticationService> services = mockConstruction(BBjAuthenticationService.class,
+        (service, context) -> doAnswer(invocation -> events.add("restore")).when(service)
+            .restoreSession())) {
       registrar.onWillRun(app);
 
       assertEquals(List.of("put", "restore", "observe"), events);
