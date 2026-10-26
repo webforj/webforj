@@ -1,6 +1,5 @@
 package com.webforj.bbj.security;
 
-import com.webforj.bbj.security.model.BBjSession;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -20,6 +19,7 @@ import com.basis.api.admin.BBjAdminFactory;
 import com.basis.api.admin.BBjAdminSecurityException;
 import com.webforj.bbj.security.BBjAdminFailure.Kind;
 import com.webforj.bbj.security.model.BBjPrincipal;
+import com.webforj.bbj.security.model.BBjSession;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.time.Clock;
@@ -196,7 +196,7 @@ class BBjAdminGatewayTest {
     }
 
     @Test
-    void shouldNotContactTheAdminApiForANullSession() {
+    void shouldNotContactTheAdminApiForNullSession() {
       assertDoesNotThrow(() -> gateway.closeSession(null));
 
       factory.verifyNoInteractions();
@@ -211,7 +211,7 @@ class BBjAdminGatewayTest {
     }
 
     @Test
-    void shouldClassifyARefusedTokenAsTokenRejected() throws Exception {
+    void shouldClassifyRefusedTokenAsTokenRejected() throws Exception {
       when(admin.renewToken(1, true))
           .thenThrow(new BBjAdminException("Server failed login: Authentication token is expired"));
 
@@ -222,7 +222,7 @@ class BBjAdminGatewayTest {
     }
 
     @Test
-    void shouldClassifyARuntimeFailureAsUnavailable() throws Exception {
+    void shouldClassifyRuntimeFailureAsUnavailable() throws Exception {
       when(admin.renewToken(1, true)).thenThrow(new IllegalStateException("boom"));
 
       BBjAdminFailure failure = closeFailingSession();
@@ -259,14 +259,14 @@ class BBjAdminGatewayTest {
   class NullArguments {
 
     @Test
-    void shouldRefuseANullUserName() {
+    void shouldRefuseNullUserName() {
       String password = PASSWORD;
 
       assertThrows(NullPointerException.class, () -> gateway.openSession(null, password));
     }
 
     @Test
-    void shouldRefuseANullPassword() {
+    void shouldRefuseNullPassword() {
       String userName = "alice";
 
       assertThrows(NullPointerException.class, () -> gateway.openSession(userName, null));
@@ -278,7 +278,7 @@ class BBjAdminGatewayTest {
     }
 
     @Test
-    void shouldRefuseANullClock() {
+    void shouldRefuseNullClock() {
       BBjSecurityConfigurationProperties properties = new BBjSecurityConfigurationProperties();
 
       assertThrows(NullPointerException.class, () -> new BBjAdminGateway(properties, null));
@@ -296,14 +296,14 @@ class BBjAdminGatewayTest {
 
     @ParameterizedTest
     @MethodSource("com.webforj.bbj.security.BBjAdminGatewayTest#getKnownTexts")
-    void shouldClassifyTheTextOfACause(String text, Kind kind) {
+    void shouldClassifyTheTextOfCause(String text, Kind kind) {
       BBjAdminException wrapped = new BBjAdminException(new IOException(text));
 
       assertEquals(kind, openFailingSession(wrapped).getKind());
     }
 
     @Test
-    void shouldClassifyANullMessageAsUnavailable() {
+    void shouldClassifyNullMessageAsUnavailable() {
       assertEquals(Kind.UNAVAILABLE,
           openFailingSession(new BBjAdminException((String) null)).getKind());
     }
@@ -317,7 +317,7 @@ class BBjAdminGatewayTest {
     }
 
     @Test
-    void shouldPreferTheRefusedLoginPrefixToAKnownText() {
+    void shouldPreferTheRefusedLoginPrefixToKnownText() {
       BBjAdminException exception = new BBjAdminException(
           "Server failed login: Authentication failed. Invalid username/password.");
 
@@ -325,7 +325,7 @@ class BBjAdminGatewayTest {
     }
 
     @Test
-    void shouldPreferTheRefusedLoginPrefixOfACause() {
+    void shouldPreferTheRefusedLoginPrefixOfCause() {
       BBjAdminException exception = new BBjAdminException("Invalid username/password",
           new IOException("Server failed login: nothing known"));
 
@@ -341,7 +341,7 @@ class BBjAdminGatewayTest {
     }
 
     @Test
-    void shouldClassifyAPermissionRefusalAsUnavailable() {
+    void shouldClassifyPermissionRefusalAsUnavailable() {
       BBjAdminSecurityException exception =
           new BBjAdminSecurityException("User 'x' does not have permission.");
 
@@ -349,7 +349,7 @@ class BBjAdminGatewayTest {
     }
 
     @Test
-    void shouldNeverTakeAVerdictFromAnExceptionThatIsNotAnAdminException() {
+    void shouldNeverTakeVerdictFromAnExceptionThatIsNotAnAdminException() {
       IllegalStateException state = new IllegalStateException("Invalid username/password");
 
       assertEquals(Kind.UNAVAILABLE, openFailingSession(state).getKind());
@@ -378,7 +378,7 @@ class BBjAdminGatewayTest {
     }
 
     @Test
-    void shouldStopAtACycleOfCauses() {
+    void shouldStopAtCycleOfCauses() {
       BBjAdminException first = new BBjAdminException("first");
       BBjAdminException second = new BBjAdminException("second", first);
       first.initCause(second);
@@ -426,7 +426,7 @@ class BBjAdminGatewayTest {
     }
 
     @Test
-    void shouldNameAnExceptionWithoutAMessage() {
+    void shouldNameAnExceptionWithoutMessage() {
       BBjAdminException exception = new BBjAdminException(new IllegalStateException());
 
       assertEquals(UNAVAILABLE + "BBjAdminException: java.lang.IllegalStateException"
@@ -453,7 +453,7 @@ class BBjAdminGatewayTest {
     }
 
     @Test
-    void shouldReplaceATokenShapedText() {
+    void shouldReplaceTokenShapedText() {
       BBjAdminException exception =
           new BBjAdminException("got eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoiYSJ9.c2ln_-x here");
 
@@ -544,7 +544,7 @@ class BBjAdminGatewayTest {
     }
 
     @Test
-    void shouldClassifyARuntimeFailureOfTheUserNameAsUnavailable() throws Exception {
+    void shouldClassifyRuntimeFailureOfTheUserNameAsUnavailable() throws Exception {
       when(admin.getUser()).thenThrow(new IllegalStateException("boom"));
 
       BBjAdminFailure failure =

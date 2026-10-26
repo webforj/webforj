@@ -1,7 +1,7 @@
 package com.webforj.bbj.security;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -249,7 +249,7 @@ class BBjRouteSecurityManagerTest {
     }
 
     @Test
-    void shouldNotRecreateFromARouteWhenNothingIsRendered() {
+    void shouldNotRecreateFromRouteWhenNothingIsRendered() {
       RouteRenderer renderer = mock(RouteRenderer.class);
       when(router.getRenderer()).thenReturn(renderer);
       when(renderer.getActiveRoutePath()).thenReturn(Optional.empty());

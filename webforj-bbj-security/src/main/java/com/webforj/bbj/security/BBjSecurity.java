@@ -1,8 +1,8 @@
 package com.webforj.bbj.security;
 
 import com.webforj.PendingResult;
-import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.bbj.security.model.BBjLoginStatus;
+import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.component.ComponentLifecycleObserver;
 import com.webforj.component.ComponentLifecycleObserver.LifecycleEvent;
 import com.webforj.component.Theme;

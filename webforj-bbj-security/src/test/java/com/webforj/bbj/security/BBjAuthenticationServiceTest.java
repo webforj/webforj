@@ -1,7 +1,5 @@
 package com.webforj.bbj.security;
 
-import com.webforj.bbj.security.model.BBjSession;
-import com.webforj.bbj.security.model.BBjLoginStatus;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -15,11 +13,14 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import com.webforj.PendingResult;
 import com.webforj.bbj.security.BBjAdminFailure.Kind;
+import com.webforj.bbj.security.model.BBjLoginStatus;
 import com.webforj.bbj.security.model.BBjPrincipal;
+import com.webforj.bbj.security.model.BBjSession;
 import com.webforj.router.history.Location;
 import java.time.Instant;
 import java.util.List;
@@ -183,7 +184,7 @@ class BBjAuthenticationServiceTest {
 
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 2, 3, 4, 5})
-    void shouldRefuseANullArgument(int position) {
+    void shouldRefuseNullArgument(int position) {
       BBjAdminGateway givenGateway = position == 0 ? null : gateway;
       BBjAdminWorker givenWorker = position == 1 ? null : worker;
       BBjRequestedLocationStore givenStore = position == 2 ? null : locationStore;
@@ -200,12 +201,12 @@ class BBjAuthenticationServiceTest {
   class StartLoginInput {
 
     @Test
-    void shouldRefuseANullUserName() {
+    void shouldRefuseNullUserName() {
       assertThrows(NullPointerException.class, () -> service.startLogin(null, PASSWORD));
     }
 
     @Test
-    void shouldRefuseANullPassword() {
+    void shouldRefuseNullPassword() {
       assertThrows(NullPointerException.class, () -> service.startLogin("alice", null));
     }
 
@@ -245,6 +246,19 @@ class BBjAuthenticationServiceTest {
     }
 
     @Test
+    void shouldCancelTheRunningSignInWhenSecondOneStarts() {
+      PendingResult<BBjLoginStatus> second = new PendingResult<>();
+      doReturn(pending).doReturn(second).when(worker).start(any(), any(), any(), any());
+      service.startLogin("alice", PASSWORD);
+
+      PendingResult<BBjLoginStatus> result = service.startLogin("alice", PASSWORD);
+
+      assertTrue(pending.isCancelled());
+      assertSame(second, result);
+      assertFalse(second.isCancelled());
+    }
+
+    @Test
     void shouldOpenTheSessionInTheWork() {
       when(gateway.openSession("alice", PASSWORD)).thenReturn(session);
       service.startLogin("alice", PASSWORD);
@@ -267,6 +281,30 @@ class BBjAuthenticationServiceTest {
 
       assertEquals(BBjLoginStatus.AUTHENTICATED, getStatus(result));
       assertSame(principal, service.currentUser().orElseThrow());
+    }
+
+    @Test
+    void shouldCloseTheTokenOfTheSessionItReplaces() {
+      PendingResult<BBjLoginStatus> second = new PendingResult<>();
+      doReturn(pending).doReturn(second).doReturn(new PendingResult<Void>()).when(worker)
+          .start(any(), any(), any(), any());
+      service.startLogin("alice", PASSWORD);
+      captureHooks();
+      pending.complete(deliverCaptor.getValue().apply(session));
+      clearInvocations(worker);
+      service.startLogin("alice", PASSWORD);
+      captureHooks();
+      clearInvocations(worker);
+      BBjSession replacing =
+          new BBjSession(principal, "tok-def-456", Instant.parse("2026-01-01T14:00:00Z"));
+
+      second.complete(deliverCaptor.getValue().apply(replacing));
+
+      verify(worker).start(workCaptor.capture(), any(), any(), any());
+      workCaptor.getValue().get();
+      verify(gateway).closeSession(session);
+      verifyNoMoreInteractions(gateway);
+      assertSame(replacing.getPrincipal(), service.currentUser().orElseThrow());
     }
 
     @ParameterizedTest
@@ -319,12 +357,13 @@ class BBjAuthenticationServiceTest {
     void shouldLogTheFailureMessageWhenTheSignInCouldNotComplete(Kind kind) {
       service.startLogin("alice", PASSWORD);
       captureHooks();
-      BBjAdminFailure failure = new BBjAdminFailure(kind, "NoClassDefFoundError: BBjAdminFactory");
+      BBjAdminFailure failure = new BBjAdminFailure(kind, "NoClassDefFoundError: Factory");
 
       pending.complete(failCaptor.getValue().apply(failure));
 
-      assertEquals(List.of(
-          "The BBj Admin API could not complete the sign in: NoClassDefFoundError: BBjAdminFactory"),
+      assertEquals(
+          List.of(
+              "The BBj Admin API could not complete the sign in: NoClassDefFoundError: Factory"),
           getWarnings());
     }
 
@@ -384,6 +423,19 @@ class BBjAuthenticationServiceTest {
       assertTrue(result.isDone());
       assertNull(getValue(result));
       verifyNoInteractions(navigator, worker, gateway, locationStore);
+    }
+
+    @Test
+    void shouldCancelTheRunningSignInAndNeverKeepItsSession() {
+      service.startLogin("alice", PASSWORD);
+
+      PendingResult<Void> result = service.startLogout();
+
+      assertTrue(pending.isCancelled());
+      assertFalse(pending.complete(BBjLoginStatus.AUTHENTICATED));
+      assertTrue(result.isDone());
+      assertFalse(service.currentUser().isPresent());
+      verifyNoInteractions(navigator);
     }
 
     @Test
@@ -471,7 +523,7 @@ class BBjAuthenticationServiceTest {
     }
 
     @Test
-    void shouldActLikeNobodySignedInOnASecondLogout() throws Exception {
+    void shouldActLikeNobodySignedInOnSecondLogout() throws Exception {
       startSignedInSession();
       service.startLogout();
       clearInvocations(worker, navigator, locationStore, gateway);
@@ -493,7 +545,7 @@ class BBjAuthenticationServiceTest {
     }
 
     @Test
-    void shouldNeverKeepADiscardedSession() {
+    void shouldNeverKeepDiscardedSession() {
       service.startLogin("alice", PASSWORD);
       captureHooks();
 

@@ -47,23 +47,23 @@ class BBjSessionTest {
   class Refusals {
 
     @Test
-    void shouldRefuseANullPrincipal() {
+    void shouldRefuseNullPrincipal() {
       assertThrows(NullPointerException.class, () -> new BBjSession(null, TOKEN, EXPIRES_AT));
     }
 
     @Test
-    void shouldRefuseANullToken() {
+    void shouldRefuseNullToken() {
       assertThrows(NullPointerException.class, () -> new BBjSession(principal, null, EXPIRES_AT));
     }
 
     @Test
-    void shouldRefuseANullExpiry() {
+    void shouldRefuseNullExpiry() {
       assertThrows(NullPointerException.class, () -> new BBjSession(principal, TOKEN, null));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"", "  ", "\t"})
-    void shouldRefuseABlankToken(String token) {
+    void shouldRefuseBlankToken(String token) {
       assertThrows(IllegalArgumentException.class,
           () -> new BBjSession(principal, token, EXPIRES_AT));
     }

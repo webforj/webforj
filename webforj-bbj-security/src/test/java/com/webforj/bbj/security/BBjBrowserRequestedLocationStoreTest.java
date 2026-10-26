@@ -92,7 +92,7 @@ class BBjBrowserRequestedLocationStoreTest {
 
     @ParameterizedTest
     @MethodSource("invalidValues")
-    void shouldDiscardAValueThatIsNotAPathInsideTheApp(String value) {
+    void shouldDiscardValueThatIsNotPathInsideTheApp(String value) {
       when(storage.get(KEY)).thenReturn(value);
 
       assertTrue(store.readLocation().isEmpty());
@@ -102,7 +102,7 @@ class BBjBrowserRequestedLocationStoreTest {
 
     @ParameterizedTest
     @MethodSource("controlCharacterValues")
-    void shouldDiscardAValueWithAControlCharacter(String value) {
+    void shouldDiscardValueWithControlCharacter(String value) {
       when(storage.get(KEY)).thenReturn(value);
 
       assertTrue(store.readLocation().isEmpty());

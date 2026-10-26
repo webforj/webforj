@@ -1,13 +1,12 @@
 package com.webforj.bbj.security;
 
-import java.lang.System.Logger;
-import java.lang.System.Logger.Level;
-import java.util.Optional;
-
 import com.webforj.Environment;
 import com.webforj.router.history.Location;
 import com.webforj.router.security.AbstractRouteSecurityManager;
 import com.webforj.webstorage.SessionStorage;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
+import java.util.Optional;
 
 /**
  * {@link BBjRequestedLocationStore} that keeps the requested location in the browser session

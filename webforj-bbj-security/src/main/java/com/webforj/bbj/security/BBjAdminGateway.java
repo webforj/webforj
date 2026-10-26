@@ -1,10 +1,10 @@
 package com.webforj.bbj.security;
 
-import com.webforj.bbj.security.model.BBjSession;
 import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.BBjAdminException;
 import com.basis.api.admin.BBjAdminFactory;
 import com.webforj.bbj.security.model.BBjPrincipal;
+import com.webforj.bbj.security.model.BBjSession;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.net.InetAddress;
@@ -150,7 +150,7 @@ public final class BBjAdminGateway {
     }
     var token = session.getToken();
     try {
-      sendCall(token, admin -> admin.renewToken(1, true));
+      sendCall(token, admin -> admin.renewToken(CLOSING_MINUTES, true));
     } catch (BBjAdminException | UnknownHostException | RuntimeException e) {
       throw toFailure(e, token);
     }

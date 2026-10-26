@@ -1,6 +1,5 @@
 package com.webforj.bbj.security;
 
-import com.webforj.bbj.security.model.BBjLoginStatus;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -15,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.webforj.PendingResult;
+import com.webforj.bbj.security.model.BBjLoginStatus;
 import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.component.ComponentLifecycleObserver;
 import com.webforj.component.ComponentLifecycleObserver.LifecycleEvent;
