@@ -34,7 +34,6 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -200,11 +199,10 @@ class BBjFileSessionStoreTest {
 
     @Test
     void shouldFailWithoutStorage() {
-      BBjFileSessionStore withoutStorage =
-          new BBjFileSessionStore(() -> directory, () -> APP, () -> null);
+      BBjFileSessionStore withoutStorage = new BBjFileSessionStore(() -> directory, () -> APP, () -> null);
 
-      IllegalStateException thrown =
-          assertThrows(IllegalStateException.class, () -> withoutStorage.saveSession(session));
+      IllegalStateException thrown = assertThrows(IllegalStateException.class,
+          () -> withoutStorage.saveSession(session));
 
       assertEquals("The sign in could not be kept", thrown.getMessage());
     }
@@ -212,11 +210,9 @@ class BBjFileSessionStoreTest {
     @Test
     void shouldFailWhenTheFolderCannotBeCreated() throws IOException {
       Path blocker = Files.createFile(directory.resolve("blocker"));
-      BBjFileSessionStore blocked =
-          new BBjFileSessionStore(() -> blocker, () -> APP, () -> storage);
+      BBjFileSessionStore blocked = new BBjFileSessionStore(() -> blocker, () -> APP, () -> storage);
 
-      IllegalStateException thrown =
-          assertThrows(IllegalStateException.class, () -> blocked.saveSession(session));
+      IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> blocked.saveSession(session));
 
       assertEquals("The sign in could not be kept", thrown.getMessage());
       assertTrue(tab.isEmpty());
@@ -228,18 +224,16 @@ class BBjFileSessionStoreTest {
         throw new IllegalArgumentException("secret-path");
       }, () -> APP, () -> storage);
 
-      IllegalStateException thrown =
-          assertThrows(IllegalStateException.class, () -> broken.saveSession(session));
+      IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> broken.saveSession(session));
 
       assertEquals("The sign in could not be kept", thrown.getMessage());
     }
 
     @Test
-    void shouldFailWhenTheSessionCannotBeEncrypted() throws IOException {
+    void shouldFailWhenTheSessionCannotBeEncrypted() {
       BBjSession large = new BBjSession(session.getPrincipal(), "t".repeat(70000), EXPIRES_AT);
 
-      IllegalStateException thrown =
-          assertThrows(IllegalStateException.class, () -> store.saveSession(large));
+      IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> store.saveSession(large));
 
       assertEquals("The sign in could not be encrypted", thrown.getMessage());
       assertTrue(tab.isEmpty());
@@ -278,8 +272,7 @@ class BBjFileSessionStoreTest {
     void shouldStillSaveWhenTheSweepFails() throws IOException {
       Clock failing = mock(Clock.class);
       when(failing.instant()).thenThrow(new IllegalStateException(TOKEN));
-      BBjFileSessionStore failingStore =
-          new BBjFileSessionStore(() -> directory, () -> APP, () -> storage, failing);
+      BBjFileSessionStore failingStore = new BBjFileSessionStore(() -> directory, () -> APP, () -> storage, failing);
       List<String> messages = new ArrayList<>();
       Logger logger = Logger.getLogger(BBjFileSessionStore.class.getName());
       Handler handler = createHandler(messages);
@@ -299,10 +292,8 @@ class BBjFileSessionStoreTest {
 
     @Test
     void shouldAcceptTheConstructorWithTheSystemClock() {
-      BBjSession later =
-          new BBjSession(session.getPrincipal(), TOKEN, Instant.now().plusSeconds(3600));
-      BBjFileSessionStore system =
-          new BBjFileSessionStore(() -> directory, () -> APP, () -> storage);
+      BBjSession later = new BBjSession(session.getPrincipal(), TOKEN, Instant.now().plusSeconds(3600));
+      BBjFileSessionStore system = new BBjFileSessionStore(() -> directory, () -> APP, () -> storage);
 
       system.saveSession(later);
 
@@ -328,8 +319,7 @@ class BBjFileSessionStoreTest {
 
     @Test
     void shouldReadNothingWithoutStorage() {
-      BBjFileSessionStore withoutStorage =
-          new BBjFileSessionStore(() -> directory, () -> APP, () -> null);
+      BBjFileSessionStore withoutStorage = new BBjFileSessionStore(() -> directory, () -> APP, () -> null);
 
       assertTrue(withoutStorage.readSession().isEmpty());
     }
@@ -484,8 +474,7 @@ class BBjFileSessionStoreTest {
 
     @Test
     void shouldDoNothingWithoutStorage() {
-      BBjFileSessionStore withoutStorage =
-          new BBjFileSessionStore(() -> directory, () -> APP, () -> null);
+      BBjFileSessionStore withoutStorage = new BBjFileSessionStore(() -> directory, () -> APP, () -> null);
 
       assertDoesNotThrow(withoutStorage::clearSession);
     }
@@ -577,10 +566,14 @@ class BBjFileSessionStoreTest {
       }
 
       @Override
-      public void flush() {}
+      public void flush() {
+        // Not implemented
+      }
 
       @Override
-      public void close() {}
+      public void close() {
+        // Not implemented
+      }
     };
   }
 }
