@@ -6,7 +6,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import com.basis.bbj.processor.instruction.el;
 import com.webforj.PendingResult;
 import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.bbj.security.model.BBjSession;
@@ -44,6 +43,7 @@ public final class BBjAuthenticationService {
    * @param worker runs the sign in away from the calling thread
    * @param locationStore holds the location the user requested before signing in
    * @param properties the configuration of the sign in
+   * @param configuration the route security configuration that gives the logout location
    * @param navigator opens the location the user lands on after signing in
    *
    * @throws NullPointerException if any parameter is {@code null}
@@ -96,6 +96,18 @@ public final class BBjAuthenticationService {
     return result;
   }
 
+  /**
+   * Starts signing the current user out.
+   *
+   * <p>
+   * When nobody has signed in, the pending result is complete and nothing happens. Otherwise the
+   * user is signed out at once, the requested location is cleared and the service opens the logout
+   * location. The login token is ended in the background and the pending result completes when that
+   * ends, also when ending the token fails.
+   * </p>
+   *
+   * @return the pending end of the sign out
+   */
   PendingResult<Void> startLogout() {
     if (session == null) {
       return PendingResult.completedWith(null);
@@ -132,7 +144,8 @@ public final class BBjAuthenticationService {
         yield BBjLoginStatus.UNAVAILABLE;
       }
       case TOKEN_REJECTED, UNAVAILABLE -> {
-        logger.log(Level.WARNING, "The BBj Admin API could not complete the sign in");
+        logger.log(Level.WARNING, "The BBj Admin API could not complete the sign in: {0}",
+            failure.getMessage());
 
         yield BBjLoginStatus.UNAVAILABLE;
       }
@@ -150,9 +163,10 @@ public final class BBjAuthenticationService {
   private Void applyCloseFailure(BBjAdminFailure failure) {
     var kind = failure.getKind();
     if (kind == Kind.TOKEN_REJECTED) {
-      logger.log(Level.DEBUG, "The token was already ended.");
+      logger.log(Level.DEBUG, "The token was already ended: {0}", failure.getMessage());
     } else {
-      logger.log(Level.WARNING, "The token could not be ended and expires on its own.");
+      logger.log(Level.WARNING, "The token could not be ended and expires on its own: {0}",
+          failure.getMessage());
     }
     return null;
   }
