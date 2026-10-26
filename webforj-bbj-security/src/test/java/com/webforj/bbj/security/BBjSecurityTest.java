@@ -77,7 +77,8 @@ class BBjSecurityTest {
       LoginSubmitEvent event = mock(LoginSubmitEvent.class);
       when(event.getUsername()).thenReturn("alice");
       when(event.getPassword()).thenReturn("pw");
-      when(event.getComponent()).thenReturn(mock(Login.class));
+      var mockLogin = mock(Login.class);
+      when(event.getComponent()).thenReturn(mockLogin);
 
       PendingResult<BBjLoginStatus> result = BBjSecurity.login(event);
 
@@ -143,7 +144,8 @@ class BBjSecurityTest {
       LoginSubmitEvent event = mock(LoginSubmitEvent.class);
       when(event.getUsername()).thenReturn("alice");
       when(event.getPassword()).thenReturn("pw");
-      when(event.getComponent()).thenReturn(mock(Login.class));
+      var mockLogin = mock(Login.class);
+      when(event.getComponent()).thenReturn(mockLogin);
       PendingResult<BBjLoginStatus> expected =
           PendingResult.completedWith(BBjLoginStatus.INVALID_CREDENTIALS);
       when(service.startLogin("alice", "pw")).thenReturn(expected);

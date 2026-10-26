@@ -173,7 +173,7 @@ public final class BBjAuthenticationService {
     return worker.start(() -> {
       gateway.closeSession(session);
       return Boolean.TRUE;
-    }, closed -> null, this::applyCloseFailure, discard -> gateway.closeSession(session));
+    }, closed -> null, this::applyCloseFailure, discard -> discardLateSession(session));
   }
 
   private Void applyCloseFailure(BBjAdminFailure failure) {
@@ -201,5 +201,7 @@ public final class BBjAuthenticationService {
     configuration.getLogoutLocation().ifPresent(navigator::accept);
   }
 
-  private void discardLateSession(BBjSession session) {}
+  private void discardLateSession(BBjSession session) {
+    gateway.closeSession(session);
+  }
 }

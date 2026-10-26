@@ -76,15 +76,19 @@ class BBjAuthenticationServiceTest {
   private final Logger logger = Logger.getLogger(BBjAuthenticationService.class.getName());
   private final Handler handler = new Handler() {
     @Override
-    public void publish(LogRecord record) {
-      records.add(record);
+    public void publish(LogRecord logRecord) {
+      records.add(logRecord);
     }
 
     @Override
-    public void flush() {}
+    public void flush() {
+      // Not implemented
+    }
 
     @Override
-    public void close() {}
+    public void close() {
+      // Not implemented
+    }
   };
   private Level previousLevel;
   private BBjAuthenticationService service;
@@ -168,15 +172,15 @@ class BBjAuthenticationServiceTest {
   private List<String> getWarnings() {
     SimpleFormatter formatter = new SimpleFormatter();
 
-    return records.stream().filter(record -> record.getLevel() == Level.WARNING)
+    return records.stream().filter(it -> it.getLevel() == Level.WARNING)
         .map(formatter::formatMessage).toList();
   }
 
   private List<String> getDebugMessages() {
     SimpleFormatter formatter = new SimpleFormatter();
 
-    return records.stream().filter(record -> record.getLevel() == Level.FINE)
-        .map(formatter::formatMessage).toList();
+    return records.stream().filter(it -> it.getLevel() == Level.FINE).map(formatter::formatMessage)
+        .toList();
   }
 
   @Nested
@@ -570,7 +574,7 @@ class BBjAuthenticationServiceTest {
       discardCaptor.getValue().accept(session);
 
       SimpleFormatter formatter = new SimpleFormatter();
-      assertTrue(records.stream().noneMatch(record -> formatter.format(record).contains(PASSWORD)));
+      assertTrue(records.stream().noneMatch(it -> formatter.format(it).contains(PASSWORD)));
     }
   }
 }
