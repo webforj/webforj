@@ -35,13 +35,17 @@ public final class BBjConfigReader {
   private static final String DENY_PATH = PREFIX + "deny-path";
   // BBj Keys
   private static final String BBJ_PREFIX = PREFIX + "bbj.";
-  private static final String ADMIN_TIMEOUT_SECONDS = BBJ_PREFIX + "admin.timeout-seconds";
-  private static final String TOKEN_MINUTES = BBJ_PREFIX + "token.minutes";
   private static final String DEFAULT_SUCCESS_PATH = BBJ_PREFIX + "default-success-path";
   private static final String RETURN_AFTER_LOGIN = BBJ_PREFIX + "return-after-login";
   private static final String LOGOUT_SUCCESS_PATH = BBJ_PREFIX + "logout-success-path";
+  // Token Keys
+  private static final String TOKEN_PREFIX = BBJ_PREFIX + "token.";
+  private static final String TOKEN_MINUTES = TOKEN_PREFIX + "minutes";
+  private static final String CHECK_SECONDS = TOKEN_PREFIX + "check-seconds";
+  private static final String RENEW_BEFORE_MINUTES = TOKEN_PREFIX + "renew-before-minutes";
   // Admin Keys
   private static final String ADMIN_PREFIX = BBJ_PREFIX + "admin.";
+  private static final String ADMIN_TIMEOUT_SECONDS = ADMIN_PREFIX + "timeout-seconds";
   private static final String ADMIN_HOST = ADMIN_PREFIX + "host";
   private static final String ADMIN_PORT = ADMIN_PREFIX + "port";
 
@@ -55,6 +59,8 @@ public final class BBjConfigReader {
    */
   static void readConfig(BBjSecurityConfigurationProperties properties, Config config) {
     readSecurityKeys(properties, config);
+    readBBjKeys(properties, config);
+    readTokenKeys(properties, config);
     readAdminKeys(properties, config);
   }
 
@@ -77,20 +83,7 @@ public final class BBjConfigReader {
     }
   }
 
-  private static void readAdminKeys(BBjSecurityConfigurationProperties properties, Config config) {
-    if (config.hasPath(ADMIN_HOST)) {
-      readString(config, ADMIN_HOST).ifPresent(properties::setAdminHost);
-    }
-
-    if (config.hasPath(ADMIN_PORT)) {
-      readInt(config, ADMIN_PORT, 1, 65535).ifPresent(properties::setAdminPort);
-    }
-    if (config.hasPath(ADMIN_TIMEOUT_SECONDS)) {
-      readInt(config, ADMIN_TIMEOUT_SECONDS, 1, 9999).ifPresent(properties::setAdminTimeoutSeconds);
-    }
-    if (config.hasPath(TOKEN_MINUTES)) {
-      readInt(config, TOKEN_MINUTES, 1, 480).ifPresent(properties::setTokenMinutes);
-    }
+  private static void readBBjKeys(BBjSecurityConfigurationProperties properties, Config config) {
     if (config.hasPath(DEFAULT_SUCCESS_PATH)) {
       readString(config, DEFAULT_SUCCESS_PATH).ifPresent(properties::setDefaultSuccessPath);
     }
@@ -99,6 +92,30 @@ public final class BBjConfigReader {
     }
     if (config.hasPath(LOGOUT_SUCCESS_PATH)) {
       readString(config, LOGOUT_SUCCESS_PATH).ifPresent(properties::setLogoutSuccessPath);
+    }
+  }
+
+  private static void readTokenKeys(BBjSecurityConfigurationProperties properties, Config config) {
+    if (config.hasPath(TOKEN_MINUTES)) {
+      readInt(config, TOKEN_MINUTES, 1, 480).ifPresent(properties::setTokenMinutes);
+    }
+    if (config.hasPath(CHECK_SECONDS)) {
+      readInt(config, CHECK_SECONDS, 0, 3600).ifPresent(properties::setCheckSeconds);
+    }
+    if (config.hasPath(RENEW_BEFORE_MINUTES)) {
+      readInt(config, RENEW_BEFORE_MINUTES, 0, 480).ifPresent(properties::setRenewBeforeMinutes);
+    }
+  }
+
+  private static void readAdminKeys(BBjSecurityConfigurationProperties properties, Config config) {
+    if (config.hasPath(ADMIN_HOST)) {
+      readString(config, ADMIN_HOST).ifPresent(properties::setAdminHost);
+    }
+    if (config.hasPath(ADMIN_PORT)) {
+      readInt(config, ADMIN_PORT, 1, 65535).ifPresent(properties::setAdminPort);
+    }
+    if (config.hasPath(ADMIN_TIMEOUT_SECONDS)) {
+      readInt(config, ADMIN_TIMEOUT_SECONDS, 1, 9999).ifPresent(properties::setAdminTimeoutSeconds);
     }
   }
 
