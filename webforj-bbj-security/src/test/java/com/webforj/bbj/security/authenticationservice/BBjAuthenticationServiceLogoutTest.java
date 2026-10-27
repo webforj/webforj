@@ -8,16 +8,16 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-import com.webforj.bbj.security.BBjAdminFailure.Kind;
 import com.webforj.bbj.security.BBjAdminFailure;
+import com.webforj.bbj.security.BBjAdminFailure.Kind;
 import com.webforj.bbj.security.SignInFixture;
 import com.webforj.router.history.Location;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource.Mode;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.EnumSource.Mode;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class BBjAuthenticationServiceLogoutTest {

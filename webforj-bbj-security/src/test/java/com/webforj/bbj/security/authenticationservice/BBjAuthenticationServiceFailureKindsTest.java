@@ -5,16 +5,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-import com.webforj.bbj.security.BBjAdminFailure.Kind;
 import com.webforj.bbj.security.BBjAdminFailure;
+import com.webforj.bbj.security.BBjAdminFailure.Kind;
 import com.webforj.bbj.security.SignInFixture;
 import com.webforj.bbj.security.model.BBjLoginStatus;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource.Mode;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.EnumSource.Mode;
 
 class BBjAuthenticationServiceFailureKindsTest {
   private final SignInFixture fixture = new SignInFixture();

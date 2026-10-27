@@ -3,8 +3,8 @@ package com.webforj.bbj.security.authenticationservice;
 import static com.webforj.bbj.security.SignInFixture.PASSWORD;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.webforj.bbj.security.BBjAdminFailure.Kind;
 import com.webforj.bbj.security.BBjAdminFailure;
+import com.webforj.bbj.security.BBjAdminFailure.Kind;
 import com.webforj.bbj.security.SignInFixture;
 import java.util.logging.SimpleFormatter;
 import org.junit.jupiter.api.AfterEach;
