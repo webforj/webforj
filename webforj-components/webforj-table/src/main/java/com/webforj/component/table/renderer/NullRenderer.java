@@ -63,6 +63,6 @@ public class NullRenderer<T> extends Renderer<T> {
     String escaped = placeholder.replace("'", "\\'");
     return "<% if (cell.value == null || cell.value === '' || cell.value === undefined"
         + " || cell.value === 'null') { %>" + "<span>" + escaped + "</span>" + "<% } else { %>"
-        + "<%= cell.value %>" + "<% } %>";
+        + "<%- cell.value %>" + "<% } %>";
   }
 }

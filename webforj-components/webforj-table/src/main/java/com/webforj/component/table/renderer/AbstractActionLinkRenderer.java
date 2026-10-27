@@ -59,7 +59,7 @@ abstract class AbstractActionLinkRenderer<T> extends AbstractElementRenderer<T> 
   /** {@inheritDoc} */
   @Override
   public String build() {
-    setAttribute("href", "<%= '" + getHrefPrefix() + "' + cell.value %>", false);
+    setAttribute("href", "<%- '" + getHrefPrefix() + "' + cell.value %>", false);
     setAttribute("tabindex", "-1", false);
     setAttribute("style", "color:inherit;text-decoration:none", false);
 
@@ -68,7 +68,7 @@ abstract class AbstractActionLinkRenderer<T> extends AbstractElementRenderer<T> 
           + "' theme='" + toAttributeValue(iconTheme) + "'></dwc-icon> ";
       String html = super.build();
       String content = getContent();
-      String resolvedContent = content == null ? "<%= cell.value %>" : content;
+      String resolvedContent = content == null ? "<%- cell.value %>" : content;
       return html.replace(resolvedContent, iconHtml + resolvedContent);
     }
 

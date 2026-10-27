@@ -26,7 +26,7 @@ public abstract class AbstractVoidElementRenderer<T> extends Renderer<T> {
   /** {@inheritDoc} */
   @Override
   public String build() {
-    String theContent = content == null ? "<%= cell.value %>" : content;
+    String theContent = content == null ? "<%- cell.value %>" : content;
     return /* html */"""
         <%1$s
           %2$s

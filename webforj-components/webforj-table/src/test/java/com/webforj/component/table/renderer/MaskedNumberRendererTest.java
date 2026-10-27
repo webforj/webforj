@@ -14,7 +14,7 @@ class MaskedNumberRendererTest {
     MaskedNumberRenderer<String> r = new MaskedNumberRenderer<>();
     String html = r.build();
     assertTrue(html.contains("<dwc-format-number"));
-    assertTrue(html.contains("value='<%= cell.value %>'"));
+    assertTrue(html.contains("value='<%- cell.value %>'"));
     assertTrue(html.contains("mask='" + MaskedNumberRenderer.DEFAULT_MASK + "'"));
   }
 

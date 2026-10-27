@@ -12,7 +12,7 @@ class MaskedTextRendererTest {
     MaskedTextRenderer<String> r = new MaskedTextRenderer<>();
     String html = r.build();
     assertTrue(html.contains("<dwc-format-text"));
-    assertTrue(html.contains("value='<%= cell.value %>'"));
+    assertTrue(html.contains("value='<%- cell.value %>'"));
     assertTrue(html.contains("mask='" + MaskedTextRenderer.DEFAULT_MASK + "'"));
   }
 

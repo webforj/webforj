@@ -12,7 +12,7 @@ class ImageRendererTest {
     ImageRenderer<String> r = new ImageRenderer<>();
     String html = r.build();
     assertTrue(html.contains("<img"));
-    assertTrue(html.contains("src='<%= cell.value %>'"));
+    assertTrue(html.contains("src='<%- cell.value %>'"));
     assertTrue(html.contains("display:block"));
     assertTrue(html.contains("vertical-align:middle"));
     assertTrue(html.contains("max-height:100%"));
@@ -23,7 +23,7 @@ class ImageRendererTest {
     ImageRenderer<String> r = new ImageRenderer<>("https://example.com/img.png");
     String html = r.build();
     assertTrue(html.contains("src='https://example.com/img.png'"));
-    assertFalse(html.contains("<%= cell.value %>"));
+    assertFalse(html.contains("<%- cell.value %>"));
   }
 
   @Test
@@ -50,7 +50,7 @@ class ImageRendererTest {
     ImageRenderer<String> r = new ImageRenderer<>();
     r.setAlt("Thumbnail");
     String html = r.build();
-    assertTrue(html.contains("src='<%= cell.value %>'"));
+    assertTrue(html.contains("src='<%- cell.value %>'"));
     assertTrue(html.contains("alt='Thumbnail'"));
   }
 

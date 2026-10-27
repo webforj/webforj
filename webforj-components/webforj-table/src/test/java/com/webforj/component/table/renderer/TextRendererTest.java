@@ -18,7 +18,7 @@ class TextRendererTest {
     String html = r.build();
     assertTrue(html.contains("<span"));
     assertTrue(html.contains("</span>"));
-    assertTrue(html.contains("<%= cell.value %>"));
+    assertTrue(html.contains("<%- cell.value %>"));
     assertFalse(html.contains("style="));
   }
 
@@ -39,7 +39,7 @@ class TextRendererTest {
     TextRenderer<String> r = new TextRenderer<>(Theme.SUCCESS);
     String html = r.build();
     assertTrue(html.contains("color:var(--dwc-color-success)"));
-    assertTrue(html.contains("<%= cell.value %>"));
+    assertTrue(html.contains("<%- cell.value %>"));
   }
 
   @Test

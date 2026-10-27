@@ -14,7 +14,7 @@ class ButtonRendererTest {
     String html = r.build();
     assertTrue(html.contains("<dwc-button"));
     assertTrue(html.contains("</dwc-button>"));
-    assertTrue(html.contains("<%= cell.value %>"));
+    assertTrue(html.contains("<%- cell.value %>"));
     assertTrue(html.contains("expanse=''"));
     assertTrue(html.contains("tab-traversable='-1'"));
   }

@@ -13,7 +13,7 @@ class MaskedDateTimeRendererTest {
     MaskedDateTimeRenderer<String> r = new MaskedDateTimeRenderer<>();
     String html = r.build();
     assertTrue(html.contains("<dwc-format-datetime"));
-    assertTrue(html.contains("value='<%= cell.value %>'"));
+    assertTrue(html.contains("value='<%- cell.value %>'"));
     assertTrue(html.contains("mask='" + MaskedDateTimeRenderer.DEFAULT_MASK + "'"));
     assertTrue(html.contains("locale="));
   }
