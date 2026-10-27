@@ -156,6 +156,33 @@ public final class BBjAdminGateway {
     }
   }
 
+  String readUserName(BBjSession session) {
+    if (session == null) {
+      return null;
+    }
+    var token = session.getToken();
+    try {
+      return sendCall(token, BBjAdminBase::getUser);
+    } catch (BBjAdminException | UnknownHostException | RuntimeException e) {
+      throw toFailure(e, token);
+    }
+  }
+
+  BBjSession renewSession(BBjSession session) {
+    if (session == null) {
+      return null;
+    }
+    var oldToken = session.getToken();
+    try {
+      var minutes = tokenLifetime.getSeconds() / 60;
+      var newToken = sendCall(oldToken, admin -> admin.renewToken(minutes, true));
+      var expiry = clock.instant().plus(tokenLifetime);
+      return new BBjSession(session.getPrincipal(), newToken, expiry);
+    } catch (Exception e) {
+      throw toFailure(e, oldToken);
+    }
+  }
+
   private InetAddress getAddress() throws UnknownHostException {
     return InetAddress.getByName(host);
   }
