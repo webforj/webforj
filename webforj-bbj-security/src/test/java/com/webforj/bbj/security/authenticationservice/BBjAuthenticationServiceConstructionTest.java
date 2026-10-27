@@ -1,8 +1,10 @@
-package com.webforj.bbj.security;
+package com.webforj.bbj.security.authenticationservice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.webforj.bbj.security.BBjAuthenticationService;
+import com.webforj.bbj.security.SignInFixture;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,13 +19,12 @@ class BBjAuthenticationServiceConstructionTest {
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {"gateway", "worker", "locationStore", "sessionStore", "properties",
-      "configuration", "navigator"})
+  @ValueSource(strings = {"gateway", "locationStore", "sessionStore", "properties", "configuration",
+      "navigator"})
   void shouldRefuseMissingValueNamingIt(String name) {
     BBjAuthenticationService.Builder builder = fixture.createBuilder();
     switch (name) {
       case "gateway" -> builder.setGateway(null);
-      case "worker" -> builder.setWorker(null);
       case "locationStore" -> builder.setLocationStore(null);
       case "sessionStore" -> builder.setSessionStore(null);
       case "properties" -> builder.setProperties(null);

@@ -1,10 +1,7 @@
 package com.webforj.bbj.security;
 
-import com.webforj.PendingResult;
 import com.webforj.bbj.security.model.BBjLoginStatus;
 import com.webforj.bbj.security.model.BBjPrincipal;
-import com.webforj.component.ComponentLifecycleObserver;
-import com.webforj.component.ComponentLifecycleObserver.LifecycleEvent;
 import com.webforj.component.Theme;
 import com.webforj.component.login.Login;
 import com.webforj.component.login.event.LoginSubmitEvent;
@@ -19,7 +16,7 @@ import java.util.Optional;
  * <p>
  * The calls work on the {@link BBjAuthenticationService} of the current environment. When BBj
  * security is not set up for the app, {@code login} reports {@link BBjLoginStatus#UNAVAILABLE},
- * {@code logout} completes at once and {@code currentUser} is empty.
+ * {@code logout} does nothing and {@code currentUser} is empty.
  * </p>
  *
  * @author Christian Liebhardt
@@ -38,23 +35,27 @@ public final class BBjSecurity {
    * Signs a user in.
    *
    * <p>
-   * The sign in runs in the background and the pending result completes with its status. After a
-   * successful sign in the app navigates to the location the user requested before signing in, or
-   * to the default success path.
+   * The sign in runs on the calling thread. After a successful sign in the app navigates to the
+   * location the user requested before signing in, or to the default success path. When this method
+   * returns, the navigation has happened.
    * </p>
    *
    * @param userName the user name
    * @param password the password
    *
-   * @return the pending status of the sign in
+   * @return the status of the sign in
    * @throws NullPointerException if any parameter is {@code null}
    */
-  public static PendingResult<BBjLoginStatus> login(String userName, String password) {
+  public static BBjLoginStatus login(String userName, String password) {
     Objects.requireNonNull(userName, "userName");
     Objects.requireNonNull(password, "password");
 
-    return getService().map(it -> it.startLogin(userName, password))
-        .orElseGet(() -> PendingResult.completedWith(BBjLoginStatus.UNAVAILABLE));
+    var status = getStatus(userName, password);
+    if (status == BBjLoginStatus.AUTHENTICATED) {
+      getService().ifPresent(BBjAuthenticationService::openTargetLocation);
+    }
+
+    return status;
   }
 
   /**
@@ -63,69 +64,58 @@ public final class BBjSecurity {
    * <p>
    * The component shows no error while the sign in runs. When the credentials are invalid the
    * component shows its error state. When the sign in is unavailable a warning toast is shown.
-   * After a successful sign in the component is closed, otherwise it is enabled again. The sign in
-   * is cancelled when the component is destroyed before it completes.
+   * After a successful sign in the component is closed and then the app navigates to the location
+   * the user requested before signing in, or to the default success path. Otherwise the component
+   * is enabled again.
    * </p>
    *
    * @param event the submit event of the component
    *
-   * @return the pending status of the sign in
+   * @return the status of the sign in
    * @throws NullPointerException if {@code event} is {@code null}
    * @throws ClassCastException if the source of the event is not a {@link Login}
    */
-  public static PendingResult<BBjLoginStatus> login(LoginSubmitEvent event) {
+  public static BBjLoginStatus login(LoginSubmitEvent event) {
     Objects.requireNonNull(event, "event");
 
     Login login = (Login) event.getComponent();
     login.setError(false);
-    PendingResult<BBjLoginStatus> result;
+    BBjLoginStatus status;
     try {
-      result = login(event.getUsername(), event.getPassword());
+      status = getStatus(event.getUsername(), event.getPassword());
     } catch (RuntimeException e) {
       login.setEnabled(true);
       throw e;
     }
 
-    ComponentLifecycleObserver observer = (component, lifecycleEvent) -> {
-      if (lifecycleEvent == LifecycleEvent.DESTROY) {
-        result.cancel();
-      }
-    };
-    login.addLifecycleObserver(observer);
-    result.thenAccept(status -> {
-      login.removeLifecycleObserver(observer);
-      if (status == BBjLoginStatus.INVALID_CREDENTIALS) {
-        login.setError(true);
-      } else if (status == BBjLoginStatus.UNAVAILABLE) {
-        Toast.show(UNAVAILABLE_TEXT, Theme.WARNING);
-      }
+    if (status == BBjLoginStatus.INVALID_CREDENTIALS) {
+      login.setError(true);
+    } else if (status == BBjLoginStatus.UNAVAILABLE) {
+      Toast.show(UNAVAILABLE_TEXT, Theme.WARNING);
+    }
 
-      if (status == BBjLoginStatus.AUTHENTICATED) {
-        login.close();
-      } else {
-        login.setEnabled(true);
-      }
-    });
+    if (status == BBjLoginStatus.AUTHENTICATED) {
+      login.close();
+      getService().ifPresent(BBjAuthenticationService::openTargetLocation);
+    } else {
+      login.setEnabled(true);
+    }
 
-    return result;
+    return status;
   }
 
   /**
    * Signs the current user out.
    *
    * <p>
-   * When nobody has signed in, the pending result is complete and nothing happens. Otherwise the
-   * user is signed out at once, the requested location is forgotten and the app opens the logout
-   * location. The login token is ended in the background and the pending result completes when that
-   * ends, also when ending the token fails. When BBj security is not set up for the app, the
-   * pending result is complete at once.
+   * When nobody has signed in, nothing happens. Otherwise the user is signed out at once, the
+   * requested location is forgotten and the app opens the logout location. Then the login token is
+   * ended. A failure to end it is logged and the token expires on its own. When BBj security is not
+   * set up for the app, nothing happens.
    * </p>
-   *
-   * @return the pending end of the sign out
    */
-  public static PendingResult<Void> logout() {
-    return getService().map(BBjAuthenticationService::startLogout)
-        .orElse(PendingResult.completedWith(null));
+  public static void logout() {
+    getService().ifPresent(BBjAuthenticationService::logout);
   }
 
   /**
@@ -135,6 +125,10 @@ public final class BBjSecurity {
    */
   public static Optional<BBjPrincipal> currentUser() {
     return getService().flatMap(BBjAuthenticationService::currentUser);
+  }
+
+  private static BBjLoginStatus getStatus(String userName, String password) {
+    return getService().map(it -> it.login(userName, password)).orElse(BBjLoginStatus.UNAVAILABLE);
   }
 
   private static Optional<BBjAuthenticationService> getService() {

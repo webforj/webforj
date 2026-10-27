@@ -11,7 +11,6 @@ import com.webforj.webstorage.SessionStorage;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.nio.file.Path;
-import java.time.Duration;
 
 /**
  * Registers route security for a BBj application when it starts.
@@ -56,14 +55,13 @@ public final class BBjSecurityRegistrar implements AppLifecycleListener {
     }
 
     var gateway = new BBjAdminGateway(properties);
-    var worker = new BBjAdminWorker(Duration.ofSeconds(properties.getAdminTimeoutSeconds()));
     var locationStore = new BBjBrowserRequestedLocationStore();
     var sessionStore = new BBjFileSessionStore(() -> Path.of(System.getProperty("java.io.tmpdir")),
         App::getApplicationName, SessionStorage::getCurrent);
 
     var router = Router.getCurrent();
     if (router != null) {
-      var service = BBjAuthenticationService.builder().setGateway(gateway).setWorker(worker)
+      var service = BBjAuthenticationService.builder().setGateway(gateway)
           .setLocationStore(locationStore).setSessionStore(sessionStore).setProperties(properties)
           .setConfiguration(configuration).setNavigator(router::navigate).build();
       var observer = new BBjSessionObserver(service);
