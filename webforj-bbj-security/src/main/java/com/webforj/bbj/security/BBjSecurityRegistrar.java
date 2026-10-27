@@ -66,6 +66,8 @@ public final class BBjSecurityRegistrar implements AppLifecycleListener {
       var service = BBjAuthenticationService.builder().setGateway(gateway).setWorker(worker)
           .setLocationStore(locationStore).setSessionStore(sessionStore).setProperties(properties)
           .setConfiguration(configuration).setNavigator(router::navigate).build();
+      var observer = new BBjSessionObserver(service);
+      router.getRenderer().addObserver(observer);
       ObjectTable.put(BBjSecurity.SERVICE_KEY, service);
       service.restoreSession();
       var context = new BBjRouteSecurityContext(service::currentUser);
