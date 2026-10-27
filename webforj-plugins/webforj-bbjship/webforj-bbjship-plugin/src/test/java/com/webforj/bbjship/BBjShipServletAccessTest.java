@@ -2,19 +2,28 @@ package com.webforj.bbjship;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.BBjAdminException;
 import com.google.gson.JsonParser;
+import jakarta.servlet.ServletInputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -32,6 +41,14 @@ final class BBjShipServletAccessTest extends AdministratorRequest {
         "title": "Unauthorized",
         "status": 401,
         "detail": "Check the BBj administration credentials or token"
+      }""";
+  private static final String FORBIDDEN_PROBLEM = """
+      {
+        "type": "about:blank",
+        "title": "Forbidden",
+        "status": 403,
+        "detail": "The BBj user has no permission to perform administrative tasks. Use the \
+      credentials of a BBj administrator"
       }""";
 
   @ParameterizedTest
@@ -127,5 +144,38 @@ final class BBjShipServletAccessTest extends AdministratorRequest {
     verify(admin, never()).release();
     assertEquals(UNAUTHORIZED_PROBLEM,
         JSON.toJson(JsonParser.parseString(body.toString(StandardCharsets.UTF_8))));
+  }
+
+  @ParameterizedTest
+  @MethodSource("getRequestsOfUserWithoutAdministratorPermission")
+  void shouldAnswerForbiddenBeforeAnyWorkWhenTheUserIsNotAnAdministrator(String method, String path)
+      throws Exception {
+    Files.writeString(plugin.getDirectory().resolve("version.properties"),
+        "version=26.03-SNAPSHOT\n");
+    when(request.getMethod()).thenReturn(method);
+    when(request.getPathInfo()).thenReturn(path);
+    when(request.getInputStream()).thenReturn(mock(ServletInputStream.class));
+    when(admin.checkUserPermission(BBjAdminBase.PERMISSION_ALLOW_ADMIN)).thenReturn(false);
+
+    BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
+
+    verify(response).setStatus(403);
+    verify(response).setContentType("application/problem+json");
+    verify(response, never()).setHeader(anyString(), anyString());
+    verify(request, never()).getInputStream();
+    verify(admin, never()).getRemoteConfiguration();
+    verify(admin, never()).commit();
+    verify(admin).release();
+    assertEquals(FORBIDDEN_PROBLEM,
+        JSON.toJson(JsonParser.parseString(body.toString(StandardCharsets.UTF_8))));
+    try (Stream<Path> staged = Files.list(runtime)) {
+      assertEquals(List.of(), staged.toList());
+    }
+  }
+
+  private static Stream<Arguments> getRequestsOfUserWithoutAdministratorPermission() {
+    return Stream.of(Arguments.of("GET", VERSION_PATH),
+        Arguments.of("PUT", "/applications/hello-app"),
+        Arguments.of("DELETE", "/applications/hello-app"));
   }
 }

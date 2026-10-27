@@ -90,6 +90,7 @@ abstract class AdministratorRequest {
     when(response.getOutputStream()).thenReturn(output);
     when(sessions.create(argThat(login -> "administrator".equals(login.getUsername())
         && "secret".equals(login.getPassword())))).thenReturn(admin);
+    when(admin.checkUserPermission(BBjAdminBase.PERMISSION_ALLOW_ADMIN)).thenReturn(true);
     when(admin.getRemoteConfiguration()).thenReturn(configuration);
     when(admin.getClasspathNames()).thenReturn(new BBjAdminAdapterList<>(List.of()));
     when(configuration.getApplications()).thenReturn(new BBjAdminAdapterList<>(List.of()));
