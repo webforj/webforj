@@ -1,12 +1,11 @@
 package com.webforj.bbj.security;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.webforj.PendingResult;
 import com.webforj.bbj.security.model.BBjLoginStatus;
 import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.bbj.security.model.BBjSession;
@@ -15,12 +14,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -28,31 +23,38 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.stream.Stream;
 import org.junit.jupiter.params.provider.Arguments;
-import org.mockito.ArgumentCaptor;
+import org.mockito.stubbing.OngoingStubbing;
+import org.mockito.verification.VerificationMode;
 
-final class SignInFixture implements AutoCloseable {
-  static final String PASSWORD = "s3cret-pw";
-  static final Location DEFAULT_LOCATION = new Location("/home");
-  static final Location REQUESTED_LOCATION = new Location("/orders");
-  final BBjPrincipal principal = new BBjPrincipal("alice", Set.of("ROLE_USER"), Set.of());
-  final BBjSession session =
+/** Holds a sign in service with its mocked collaborators for the tests. */
+public final class SignInFixture implements AutoCloseable {
+  /** The password the tests sign in with. */
+  public static final String PASSWORD = "s3cret-pw";
+  /** The location opened after a sign in when nothing was requested. */
+  public static final Location DEFAULT_LOCATION = new Location("/home");
+  /** The location a user requested before the sign in. */
+  public static final Location REQUESTED_LOCATION = new Location("/orders");
+  /** The principal of the session. */
+  public final BBjPrincipal principal = new BBjPrincipal("alice", Set.of("ROLE_USER"), Set.of());
+  /** The session the gateway delivers. */
+  public final BBjSession session =
       new BBjSession(principal, "tok-abc-123", Instant.parse("2026-01-01T13:00:00Z"));
-  final BBjAdminGateway gateway = mock(BBjAdminGateway.class);
-  final BBjAdminWorker worker = mock(BBjAdminWorker.class);
-  final BBjRequestedLocationStore locationStore = mock(BBjRequestedLocationStore.class);
-  final BBjSessionStore sessionStore = mock(BBjSessionStore.class);
-  final BBjSecurityConfigurationProperties properties = new BBjSecurityConfigurationProperties();
-  final BBjRouteSecurityConfiguration configuration = new BBjRouteSecurityConfiguration(properties);
-  final Consumer<Location> navigator = createNavigator();
-  final PendingResult<BBjLoginStatus> pending = new PendingResult<>();
-  final ArgumentCaptor<Supplier<BBjSession>> workCaptor = createCaptor(Supplier.class);
-  final ArgumentCaptor<Function<BBjSession, BBjLoginStatus>> deliverCaptor =
-      createCaptor(Function.class);
-  final ArgumentCaptor<Function<BBjAdminFailure, BBjLoginStatus>> failCaptor =
-      createCaptor(Function.class);
-  final ArgumentCaptor<Consumer<BBjSession>> discardCaptor = createCaptor(Consumer.class);
-  final List<LogRecord> records = new CopyOnWriteArrayList<>();
-  BBjAuthenticationService service;
+  /** The mocked gateway. */
+  public final BBjAdminGateway gateway = mock(BBjAdminGateway.class);
+  /** The mocked store of the requested location. */
+  public final BBjRequestedLocationStore locationStore = mock(BBjRequestedLocationStore.class);
+  /** The mocked session store. */
+  public final BBjSessionStore sessionStore = mock(BBjSessionStore.class);
+  /** The configuration properties the service reads. */
+  public final BBjSecurityConfigurationProperties properties =
+      new BBjSecurityConfigurationProperties();
+  /** The route security configuration of the properties. */
+  public final BBjRouteSecurityConfiguration configuration =
+      new BBjRouteSecurityConfiguration(properties);
+  /** The mocked navigator. */
+  public final Consumer<Location> navigator = createNavigator();
+  /** The log records of the service. */
+  public final List<LogRecord> records = new CopyOnWriteArrayList<>();
   private final Logger logger = Logger.getLogger(BBjAuthenticationService.class.getName());
   private final Handler handler = new Handler() {
     @Override
@@ -71,90 +73,221 @@ final class SignInFixture implements AutoCloseable {
     }
   };
   private final Level previousLevel;
+  private BBjAuthenticationService service;
 
-  SignInFixture() {
+  /** Creates the fixture and starts capturing the log records of the service. */
+  public SignInFixture() {
     previousLevel = logger.getLevel();
     logger.setLevel(Level.ALL);
     logger.addHandler(handler);
     properties.setDefaultSuccessPath("/home");
-    doReturn(pending).when(worker).start(any(), any(), any(), any());
     service = createBuilder().build();
   }
 
+  /** Stops capturing the log records and restores the log level. */
   @Override
   public void close() {
     logger.removeHandler(handler);
     logger.setLevel(previousLevel);
   }
 
-  static Stream<Arguments> getRefusedInputs() {
+  /** Gives the user names and passwords the service refuses. */
+  public static Stream<Arguments> getRefusedInputs() {
     return Stream.of(Arguments.of("", PASSWORD), Arguments.of("  ", PASSWORD),
         Arguments.of("alice", ""), Arguments.of("alice", "  "),
         Arguments.of("a".repeat(257), PASSWORD), Arguments.of("alice", "p".repeat(1025)));
   }
 
-  static Stream<Arguments> getAcceptedInputs() {
+  /** Gives the user names and passwords at the limit that the service accepts. */
+  public static Stream<Arguments> getAcceptedInputs() {
     return Stream.of(Arguments.of("a".repeat(256), PASSWORD),
         Arguments.of("alice", "p".repeat(1024)));
   }
 
-  static Stream<Arguments> getLogoutCases() {
+  /** Gives the configured logout paths with the location opened for each. */
+  public static Stream<Arguments> getLogoutCases() {
     return Stream.of(Arguments.of("/goodbye", new Location("/goodbye")),
         Arguments.of(null, new Location("/login")));
   }
 
-  static Stream<Arguments> getNavigationCases() {
+  /** Gives the return settings and requested locations with the location opened for each. */
+  public static Stream<Arguments> getNavigationCases() {
     return Stream.of(Arguments.of(true, Optional.of(REQUESTED_LOCATION), REQUESTED_LOCATION),
         Arguments.of(true, Optional.empty(), DEFAULT_LOCATION),
         Arguments.of(false, Optional.of(REQUESTED_LOCATION), DEFAULT_LOCATION));
   }
 
-  @SuppressWarnings({"unchecked", "rawtypes"})
-  static <T> ArgumentCaptor<T> createCaptor(Class<?> type) {
-    return ArgumentCaptor.forClass((Class) type);
+  /** Creates a builder of the service with all values of the fixture. */
+  public BBjAuthenticationService.Builder createBuilder() {
+    return BBjAuthenticationService.builder().setGateway(gateway).setLocationStore(locationStore)
+        .setSessionStore(sessionStore).setProperties(properties).setConfiguration(configuration)
+        .setNavigator(navigator);
   }
 
-  static BBjLoginStatus getStatus(PendingResult<BBjLoginStatus> result) throws Exception {
-    CompletableFuture<BBjLoginStatus> future = new CompletableFuture<>();
-    result.thenAccept(future::complete).exceptionally(error -> {
-      future.completeExceptionally(error);
-
-      return null;
-    });
-
-    return future.get(5, TimeUnit.SECONDS);
+  /**
+   * Replaces the service under test.
+   *
+   * @param service the service the delegates call
+   */
+  public void setService(BBjAuthenticationService service) {
+    this.service = service;
   }
 
-  static <T> T getValue(PendingResult<T> result) throws Exception {
-    CompletableFuture<T> future = new CompletableFuture<>();
-    result.thenAccept(future::complete).exceptionally(error -> {
-      future.completeExceptionally(error);
-
-      return null;
-    });
-
-    return future.get(5, TimeUnit.SECONDS);
+  /**
+   * Signs in through the service.
+   *
+   * @param userName the user name
+   * @param password the password
+   *
+   * @return the status of the sign in
+   */
+  public BBjLoginStatus login(String userName, String password) {
+    return service.login(userName, password);
   }
 
-  BBjAuthenticationService.Builder createBuilder() {
-    return BBjAuthenticationService.builder().setGateway(gateway).setWorker(worker)
-        .setLocationStore(locationStore).setSessionStore(sessionStore).setProperties(properties)
-        .setConfiguration(configuration).setNavigator(navigator);
+  /** Opens the target location through the service. */
+  public void openTargetLocation() {
+    service.openTargetLocation();
   }
 
-  void captureHooks() {
-    verify(worker).start(workCaptor.capture(), deliverCaptor.capture(), failCaptor.capture(),
-        discardCaptor.capture());
+  /** Signs out through the service. */
+  public void logout() {
+    service.logout();
   }
 
-  List<String> getWarnings() {
+  /** Checks the sign in through the service. */
+  public void check() {
+    service.check();
+  }
+
+  /**
+   * Gives the signed in user of the service.
+   *
+   * @return the principal or empty when nobody is signed in
+   */
+  public Optional<BBjPrincipal> currentUser() {
+    return service.currentUser();
+  }
+
+  /** Restores the session of the session store through the service. */
+  public void restoreSession() {
+    service.restoreSession();
+  }
+
+  /**
+   * Stubs the opening of a session on the gateway.
+   *
+   * @param userName the user name
+   * @param password the password
+   *
+   * @return the stubbing
+   */
+  public OngoingStubbing<BBjSession> whenOpenSession(String userName, String password) {
+    return when(gateway.openSession(userName, password));
+  }
+
+  /**
+   * Stubs the reading of a user name on the gateway.
+   *
+   * @param target the session
+   *
+   * @return the stubbing
+   */
+  public OngoingStubbing<String> whenReadUserName(BBjSession target) {
+    return when(gateway.readUserName(target));
+  }
+
+  /**
+   * Stubs the renewal of a session on the gateway.
+   *
+   * @param target the session
+   *
+   * @return the stubbing
+   */
+  public OngoingStubbing<BBjSession> whenRenewSession(BBjSession target) {
+    return when(gateway.renewSession(target));
+  }
+
+  /**
+   * Makes the closing of a session fail on the gateway.
+   *
+   * @param target the session
+   * @param failure the failure to throw
+   */
+  public void setCloseSessionFailure(BBjSession target, Throwable failure) {
+    doThrow(failure).when(gateway).closeSession(target);
+  }
+
+  /**
+   * Makes the reading of a user name fail on the gateway.
+   *
+   * @param target the session
+   * @param failure the failure to throw
+   */
+  public void setReadUserNameFailure(BBjSession target, Throwable failure) {
+    doThrow(failure).when(gateway).readUserName(target);
+  }
+
+  /**
+   * Verifies the opening of a session on the gateway.
+   *
+   * @param mode the verification mode
+   * @param userName the user name
+   * @param password the password
+   */
+  public void verifyOpenSession(VerificationMode mode, String userName, String password) {
+    verify(gateway, mode).openSession(userName, password);
+  }
+
+  /**
+   * Verifies the closing of a session on the gateway.
+   *
+   * @param mode the verification mode
+   * @param target the session
+   */
+  public void verifyCloseSession(VerificationMode mode, BBjSession target) {
+    verify(gateway, mode).closeSession(target);
+  }
+
+  /**
+   * Verifies the reading of a user name on the gateway.
+   *
+   * @param mode the verification mode
+   * @param target the session
+   */
+  public void verifyReadUserName(VerificationMode mode, BBjSession target) {
+    verify(gateway, mode).readUserName(target);
+  }
+
+  /**
+   * Verifies the renewal of a session on the gateway.
+   *
+   * @param mode the verification mode
+   * @param target the session
+   */
+  public void verifyRenewSession(VerificationMode mode, BBjSession target) {
+    verify(gateway, mode).renewSession(target);
+  }
+
+  /**
+   * Verifies the renewal of any session on the gateway.
+   *
+   * @param mode the verification mode
+   */
+  public void verifyRenewSessionOfAny(VerificationMode mode) {
+    verify(gateway, mode).renewSession(any());
+  }
+
+  /** Gives the formatted warning messages of the service. */
+  public List<String> getWarnings() {
     SimpleFormatter formatter = new SimpleFormatter();
 
     return records.stream().filter(it -> it.getLevel() == Level.WARNING)
         .map(formatter::formatMessage).toList();
   }
 
-  List<String> getDebugMessages() {
+  /** Gives the formatted debug messages of the service. */
+  public List<String> getDebugMessages() {
     SimpleFormatter formatter = new SimpleFormatter();
 
     return records.stream().filter(it -> it.getLevel() == Level.FINE).map(formatter::formatMessage)

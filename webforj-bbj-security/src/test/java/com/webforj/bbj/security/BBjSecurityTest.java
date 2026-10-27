@@ -1,8 +1,7 @@
 package com.webforj.bbj.security;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -13,11 +12,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.webforj.PendingResult;
 import com.webforj.bbj.security.model.BBjLoginStatus;
 import com.webforj.bbj.security.model.BBjPrincipal;
-import com.webforj.component.ComponentLifecycleObserver;
-import com.webforj.component.ComponentLifecycleObserver.LifecycleEvent;
 import com.webforj.component.Theme;
 import com.webforj.component.login.Login;
 import com.webforj.component.login.event.LoginSubmitEvent;
@@ -25,12 +21,12 @@ import com.webforj.component.toast.Toast;
 import com.webforj.environment.ObjectTable;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InOrder;
 import org.mockito.MockedStatic;
 
@@ -63,40 +59,24 @@ class BBjSecurityTest {
   class WithoutService {
 
     @Test
-    void shouldCompleteWithUnavailableForUserNameAndPassword() {
-      PendingResult<BBjLoginStatus> result = BBjSecurity.login("alice", "pw");
-
-      AtomicReference<BBjLoginStatus> status = new AtomicReference<>();
-      result.thenAccept(status::set);
-
-      assertEquals(BBjLoginStatus.UNAVAILABLE, status.get());
+    void shouldGiveUnavailableForUserNameAndPassword() {
+      assertEquals(BBjLoginStatus.UNAVAILABLE, BBjSecurity.login("alice", "pw"));
     }
 
     @Test
-    void shouldCompleteWithUnavailableForSubmitEvent() {
+    void shouldGiveUnavailableForSubmitEvent() {
       LoginSubmitEvent event = mock(LoginSubmitEvent.class);
       when(event.getUsername()).thenReturn("alice");
       when(event.getPassword()).thenReturn("pw");
       var mockLogin = mock(Login.class);
       when(event.getComponent()).thenReturn(mockLogin);
 
-      PendingResult<BBjLoginStatus> result = BBjSecurity.login(event);
-
-      AtomicReference<BBjLoginStatus> status = new AtomicReference<>();
-      result.thenAccept(status::set);
-
-      assertEquals(BBjLoginStatus.UNAVAILABLE, status.get());
+      assertEquals(BBjLoginStatus.UNAVAILABLE, BBjSecurity.login(event));
     }
 
     @Test
-    void shouldCompleteLogoutWithNull() {
-      PendingResult<Void> result = BBjSecurity.logout();
-
-      AtomicReference<Object> value = new AtomicReference<>("unset");
-      result.thenAccept(value::set);
-
-      assertTrue(result.isDone());
-      assertNull(value.get());
+    void shouldDoNothingOnLogout() {
+      assertDoesNotThrow(BBjSecurity::logout);
     }
 
     @Test
@@ -131,12 +111,10 @@ class BBjSecurityTest {
     }
 
     @Test
-    void shouldReturnTheResultOfTheServiceForUserNameAndPassword() {
-      PendingResult<BBjLoginStatus> expected =
-          PendingResult.completedWith(BBjLoginStatus.AUTHENTICATED);
-      when(service.startLogin("alice", "pw")).thenReturn(expected);
+    void shouldReturnTheStatusOfTheServiceForUserNameAndPassword() {
+      when(service.login("alice", "pw")).thenReturn(BBjLoginStatus.AUTHENTICATED);
 
-      assertSame(expected, BBjSecurity.login("alice", "pw"));
+      assertEquals(BBjLoginStatus.AUTHENTICATED, BBjSecurity.login("alice", "pw"));
     }
 
     @Test
@@ -146,19 +124,37 @@ class BBjSecurityTest {
       when(event.getPassword()).thenReturn("pw");
       var mockLogin = mock(Login.class);
       when(event.getComponent()).thenReturn(mockLogin);
-      PendingResult<BBjLoginStatus> expected =
-          PendingResult.completedWith(BBjLoginStatus.INVALID_CREDENTIALS);
-      when(service.startLogin("alice", "pw")).thenReturn(expected);
+      when(service.login("alice", "pw")).thenReturn(BBjLoginStatus.INVALID_CREDENTIALS);
 
-      assertSame(expected, BBjSecurity.login(event));
+      assertEquals(BBjLoginStatus.INVALID_CREDENTIALS, BBjSecurity.login(event));
     }
 
     @Test
-    void shouldReturnTheResultOfTheServiceForLogout() {
-      PendingResult<Void> expected = PendingResult.completedWith(null);
-      when(service.startLogout()).thenReturn(expected);
+    void shouldOpenTheTargetLocationOnAuthenticatedForUserNameAndPassword() {
+      when(service.login("alice", "pw")).thenReturn(BBjLoginStatus.AUTHENTICATED);
 
-      assertSame(expected, BBjSecurity.logout());
+      BBjSecurity.login("alice", "pw");
+
+      InOrder order = inOrder(service);
+      order.verify(service).login("alice", "pw");
+      order.verify(service).openTargetLocation();
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = BBjLoginStatus.class, names = {"INVALID_CREDENTIALS", "UNAVAILABLE"})
+    void shouldNotOpenTheTargetLocationOtherwiseForUserNameAndPassword(BBjLoginStatus status) {
+      when(service.login("alice", "pw")).thenReturn(status);
+
+      BBjSecurity.login("alice", "pw");
+
+      verify(service, never()).openTargetLocation();
+    }
+
+    @Test
+    void shouldSignOutThroughTheService() {
+      BBjSecurity.logout();
+
+      verify(service).logout();
     }
 
     @Test
@@ -189,7 +185,6 @@ class BBjSecurityTest {
   class SubmitEventWithService {
     private Login login;
     private LoginSubmitEvent event;
-    private PendingResult<BBjLoginStatus> pending;
 
     @BeforeEach
     void setUp() {
@@ -199,16 +194,7 @@ class BBjSecurityTest {
       when(event.getComponent()).thenReturn(login);
       when(event.getUsername()).thenReturn("alice");
       when(event.getPassword()).thenReturn("pw");
-      pending = new PendingResult<>();
-      when(service.startLogin("alice", "pw")).thenReturn(pending);
-    }
-
-    private ComponentLifecycleObserver captureObserver() {
-      ArgumentCaptor<ComponentLifecycleObserver> captor =
-          ArgumentCaptor.forClass(ComponentLifecycleObserver.class);
-      verify(login).addLifecycleObserver(captor.capture());
-
-      return captor.getValue();
+      when(service.login("alice", "pw")).thenReturn(BBjLoginStatus.AUTHENTICATED);
     }
 
     @Test
@@ -217,18 +203,19 @@ class BBjSecurityTest {
 
       InOrder order = inOrder(login, service);
       order.verify(login).setError(false);
-      order.verify(service).startLogin("alice", "pw");
+      order.verify(service).login("alice", "pw");
     }
 
     @Test
-    void shouldReturnTheResultOfTheService() {
-      assertSame(pending, BBjSecurity.login(event));
+    void shouldReturnTheStatusOfTheService() {
+      assertEquals(BBjLoginStatus.AUTHENTICATED, BBjSecurity.login(event));
     }
 
     @Test
     void shouldSetTheErrorAndEnableTheFormOnInvalidCredentials() {
+      when(service.login("alice", "pw")).thenReturn(BBjLoginStatus.INVALID_CREDENTIALS);
+
       BBjSecurity.login(event);
-      pending.complete(BBjLoginStatus.INVALID_CREDENTIALS);
 
       verify(login).setError(true);
       verify(login).setEnabled(true);
@@ -236,8 +223,9 @@ class BBjSecurityTest {
 
     @Test
     void shouldShowTheToastAndEnableTheFormOnUnavailable() {
+      when(service.login("alice", "pw")).thenReturn(BBjLoginStatus.UNAVAILABLE);
+
       BBjSecurity.login(event);
-      pending.complete(BBjLoginStatus.UNAVAILABLE);
 
       toastMock.verify(() -> Toast.show("Cannot sign in right now.", Theme.WARNING));
       verify(login).setEnabled(true);
@@ -246,50 +234,40 @@ class BBjSecurityTest {
     @Test
     void shouldCloseTheFormWithoutEnablingItOnAuthenticated() {
       BBjSecurity.login(event);
-      pending.complete(BBjLoginStatus.AUTHENTICATED);
 
       verify(login).close();
       verify(login, never()).setEnabled(true);
     }
 
     @Test
+    void shouldCloseTheFormBeforeOpeningTheTargetLocation() {
+      BBjSecurity.login(event);
+
+      InOrder order = inOrder(login, service);
+      order.verify(login).close();
+      order.verify(service).openTargetLocation();
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = BBjLoginStatus.class, names = {"INVALID_CREDENTIALS", "UNAVAILABLE"})
+    void shouldNotOpenTheTargetLocationOtherwise(BBjLoginStatus status) {
+      when(service.login("alice", "pw")).thenReturn(status);
+
+      BBjSecurity.login(event);
+
+      verify(service, never()).openTargetLocation();
+    }
+
+    @Test
     void shouldEnableTheFormAndRethrowWhenTheServiceThrows() {
       IllegalStateException failure = new IllegalStateException("not available");
-      when(service.startLogin("alice", "pw")).thenThrow(failure);
+      when(service.login("alice", "pw")).thenThrow(failure);
 
       IllegalStateException thrown =
           assertThrows(IllegalStateException.class, () -> BBjSecurity.login(event));
 
       assertSame(failure, thrown);
       verify(login).setEnabled(true);
-    }
-
-    @Test
-    void shouldCancelTheRunningResultOnDestroy() {
-      BBjSecurity.login(event);
-
-      captureObserver().onComponentLifecycleEvent(login, LifecycleEvent.DESTROY);
-
-      assertTrue(pending.isCancelled());
-    }
-
-    @Test
-    void shouldKeepTheRunningResultOnAnotherLifecycleEvent() {
-      BBjSecurity.login(event);
-
-      captureObserver().onComponentLifecycleEvent(login, LifecycleEvent.CREATE);
-
-      assertFalse(pending.isCancelled());
-    }
-
-    @Test
-    void shouldRemoveTheObserverOnceTheResultCompletes() {
-      BBjSecurity.login(event);
-      ComponentLifecycleObserver observer = captureObserver();
-
-      pending.complete(BBjLoginStatus.AUTHENTICATED);
-
-      verify(login).removeLifecycleObserver(observer);
     }
   }
 }
