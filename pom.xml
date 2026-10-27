@@ -40,7 +40,7 @@
     <webforj.mcp-sdk.version>2.0.1</webforj.mcp-sdk.version>
     <webforj.mockito.version>5.24.0</webforj.mockito.version>
     <webforj.picocli.version>4.7.7</webforj.picocli.version>
-    <webforj.spring-boot.version>4.1.1</webforj.spring-boot.version>
+    <webforj.spring-boot.version>4.1.2</webforj.spring-boot.version>
     <webforj.typesafe-config.version>1.4.9</webforj.typesafe-config.version>
     <webforj.webpush.version>1.3.0</webforj.webpush.version>
   </properties>
