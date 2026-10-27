@@ -20,6 +20,8 @@ public final class BBjSecurityConfigurationProperties {
   private Integer adminPort = 2002;
   private Integer adminTimeoutSeconds = 10;
   private Integer tokenMinutes = 30;
+  private Integer checkSeconds = 30;
+  private Integer renewBeforeMinutes = 5;
   private String defaultSuccessPath = "/";
   private Boolean returnAfterLogin = true;
   private String logoutSuccessPath;
@@ -166,6 +168,42 @@ public final class BBjSecurityConfigurationProperties {
    */
   public void setTokenMinutes(Integer tokenMinutes) {
     this.tokenMinutes = tokenMinutes;
+  }
+
+  /**
+   * Gets the seconds between two checks of a login token against the server.
+   *
+   * @return the seconds between two checks, 0 for a check at every navigation
+   */
+  public Integer getCheckSeconds() {
+    return checkSeconds;
+  }
+
+  /**
+   * Sets the seconds between two checks of a login token against the server.
+   *
+   * @param checkSeconds the seconds between two checks
+   */
+  public void setCheckSeconds(Integer checkSeconds) {
+    this.checkSeconds = checkSeconds;
+  }
+
+  /**
+   * Gets the minutes before the expiry of a login token in which a check renews the token.
+   *
+   * @return the minutes before the expiry, 0 for no renewal
+   */
+  public Integer getRenewBeforeMinutes() {
+    return renewBeforeMinutes;
+  }
+
+  /**
+   * Sets the minutes before the expiry of a login token in which a check renews the token.
+   *
+   * @param renewBeforeMinutes the minutes before the expiry
+   */
+  public void setRenewBeforeMinutes(Integer renewBeforeMinutes) {
+    this.renewBeforeMinutes = renewBeforeMinutes;
   }
 
   /**
