@@ -13,10 +13,10 @@ class PercentageRendererTest {
     PercentageRenderer<String> r = new PercentageRenderer<>();
     String html = r.build();
     assertTrue(html.contains("<dwc-progressbar"));
-    assertTrue(html.contains("value='<%= cell.value %>'"));
+    assertTrue(html.contains("value='<%- cell.value %>'"));
     assertTrue(html.contains("text-visible='false'"));
     assertTrue(html.contains("--dwc-progressbar-height"));
-    assertTrue(html.contains("<%= cell.value %>%"));
+    assertTrue(html.contains("<%- cell.value %>%"));
   }
 
   @Test
@@ -24,7 +24,7 @@ class PercentageRendererTest {
     PercentageRenderer<String> r = new PercentageRenderer<>();
     r.setShowProgressBar(false);
     String html = r.build();
-    assertTrue(html.contains("<%= cell.value %>%"));
+    assertTrue(html.contains("<%- cell.value %>%"));
     assertTrue(html.contains("text-align:right"));
     assertTrue(html.contains("tabular-nums"));
     assertFalse(html.contains("dwc-progressbar"));

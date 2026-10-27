@@ -11,7 +11,7 @@ class NullRendererTest {
     NullRenderer<String> r = new NullRenderer<>();
     String html = r.build();
     assertTrue(html.contains(NullRenderer.DEFAULT_PLACEHOLDER));
-    assertTrue(html.contains("<%= cell.value %>"));
+    assertTrue(html.contains("<%- cell.value %>"));
     assertTrue(html.contains("cell.value == null"));
     assertTrue(html.contains("cell.value === ''"));
     assertTrue(html.contains("cell.value === undefined"));

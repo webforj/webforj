@@ -16,7 +16,7 @@ class BadgeRendererTest {
     String html = r.build();
     assertTrue(html.contains("<dwc-badge"));
     assertTrue(html.contains("</dwc-badge>"));
-    assertTrue(html.contains("<%= cell.value %>"));
+    assertTrue(html.contains("<%- cell.value %>"));
     assertTrue(html.contains("expanse=''"));
   }
 
@@ -33,7 +33,7 @@ class BadgeRendererTest {
     BadgeRenderer<String> r = new BadgeRenderer<>(BadgeTheme.PRIMARY);
     String html = r.build();
     assertTrue(html.contains("theme='primary'"));
-    assertTrue(html.contains("<%= cell.value %>"));
+    assertTrue(html.contains("<%- cell.value %>"));
   }
 
   @Test

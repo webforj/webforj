@@ -14,7 +14,7 @@ class StatusDotRendererTest {
     StatusDotRenderer<String> r = new StatusDotRenderer<>();
     String html = r.build();
     assertTrue(html.contains("var(--dwc-color-default)"));
-    assertTrue(html.contains("<%= cell.value %>"));
+    assertTrue(html.contains("<%- cell.value %>"));
   }
 
   @Test

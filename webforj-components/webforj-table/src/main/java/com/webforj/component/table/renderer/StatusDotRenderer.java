@@ -165,7 +165,7 @@ public class StatusDotRenderer<T> extends Renderer<T> {
     sb.append("<span style='display:inline-block;width:").append(dotSize).append(";height:")
         .append(dotSize)
         .append(";border-radius:50%;background:<%= __dotColor__ %>;flex-shrink:0'></span>");
-    sb.append("<%= cell.value %>");
+    sb.append("<%- cell.value %>");
     sb.append("</span>");
 
     return sb.toString();

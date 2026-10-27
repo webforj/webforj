@@ -14,7 +14,7 @@ class EmailRendererTest {
     String html = r.build();
     assertTrue(html.contains("<a"));
     assertTrue(html.contains("</a>"));
-    assertTrue(html.contains("<%= 'mailto:' + cell.value %>"));
+    assertTrue(html.contains("<%- 'mailto:' + cell.value %>"));
     assertTrue(html.contains("tabindex='-1'"));
     assertTrue(html.contains("<dwc-icon name='mail' pool='tabler' theme='primary'></dwc-icon>"));
     assertTrue(html.contains("color:inherit;text-decoration:none"));
@@ -26,7 +26,7 @@ class EmailRendererTest {
     String html = r.build();
     assertTrue(
         html.contains("<dwc-icon name='envelope' pool='custom' theme='primary'></dwc-icon>"));
-    assertTrue(html.contains("<%= 'mailto:' + cell.value %>"));
+    assertTrue(html.contains("<%- 'mailto:' + cell.value %>"));
   }
 
   @Test

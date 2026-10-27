@@ -15,7 +15,7 @@ class AvatarRendererTest {
     AvatarRenderer<String> r = new AvatarRenderer<>();
     String html = r.build();
     assertTrue(html.contains("<dwc-avatar"));
-    assertTrue(html.contains("label='<%= cell.value %>'"));
+    assertTrue(html.contains("label='<%- cell.value %>'"));
     assertTrue(html.contains("expanse=''"));
   }
 
@@ -39,9 +39,9 @@ class AvatarRendererTest {
   void shouldBuildWithClientSideInitials() {
     AvatarRenderer<String> r = new AvatarRenderer<>();
     String html = r.build();
-    assertTrue(html.contains("label='<%= cell.value %>'"));
+    assertTrue(html.contains("label='<%- cell.value %>'"));
     assertTrue(html.contains(
-        "initials='<%= cell.value.trim().split(' ').filter(s => s).map(s => s[0]).join('') %>'"));
+        "initials='<%- cell.value.trim().split(' ').filter(s => s).map(s => s[0]).join('') %>'"));
   }
 
   @Test

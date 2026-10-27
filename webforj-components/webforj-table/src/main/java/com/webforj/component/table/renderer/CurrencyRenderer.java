@@ -112,7 +112,7 @@ public class CurrencyRenderer<T> extends Renderer<T> {
     String init = "<% if (!window.KEY) {" + " window.KEY = new Intl.NumberFormat('LANG',"
         + " { style: 'currency', currency: 'CUR' }); } %>";
     String span = "<span style='display:block;text-align:right;"
-        + "font-variant-numeric:tabular-nums'>" + "<%= window.KEY.format(cell.value) %></span>";
+        + "font-variant-numeric:tabular-nums'>" + "<%- window.KEY.format(cell.value) %></span>";
 
     return init.replace("KEY", key).replace("LANG", languageTag).replace("CUR", currencyCode)
         + span.replace("KEY", key);

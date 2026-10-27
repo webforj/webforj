@@ -13,7 +13,7 @@ class NativeButtonRendererTest {
     String html = r.build();
     assertTrue(html.contains("<button"));
     assertTrue(html.contains("</button>"));
-    assertTrue(html.contains("<%= cell.value %>"));
+    assertTrue(html.contains("<%- cell.value %>"));
     assertTrue(html.contains("tabindex='-1'"));
   }
 

@@ -165,7 +165,7 @@ public class BadgeRenderer<T> extends AbstractElementRenderer<T> {
           "<dwc-icon name='" + icon.getName() + "' pool='" + icon.getPool() + "'></dwc-icon> ";
       String html = super.build();
       String content = getContent();
-      String resolvedContent = content == null ? "<%= cell.value %>" : content;
+      String resolvedContent = content == null ? "<%- cell.value %>" : content;
       return html.replace(resolvedContent, iconHtml + resolvedContent);
     }
 

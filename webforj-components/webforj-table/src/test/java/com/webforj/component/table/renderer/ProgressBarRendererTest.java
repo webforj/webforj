@@ -13,7 +13,7 @@ class ProgressBarRendererTest {
     ProgressBarRenderer<String> r = new ProgressBarRenderer<>();
     String html = r.build();
     assertTrue(html.contains("<dwc-progressbar"));
-    assertTrue(html.contains("value='<%= cell.value %>'"));
+    assertTrue(html.contains("value='<%- cell.value %>'"));
     assertTrue(html.contains("--dwc-progressbar-height"));
     assertTrue(html.contains("--dwc-font-size-s"));
   }
@@ -23,7 +23,7 @@ class ProgressBarRendererTest {
     ProgressBarRenderer<String> r = new ProgressBarRenderer<>(50);
     String html = r.build();
     assertTrue(html.contains("value='50'"));
-    assertFalse(html.contains("<%= cell.value %>"));
+    assertFalse(html.contains("<%- cell.value %>"));
   }
 
   @Test

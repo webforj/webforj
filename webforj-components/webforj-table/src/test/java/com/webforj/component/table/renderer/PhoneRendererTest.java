@@ -14,7 +14,7 @@ class PhoneRendererTest {
     String html = r.build();
     assertTrue(html.contains("<a"));
     assertTrue(html.contains("</a>"));
-    assertTrue(html.contains("<%= 'tel:' + cell.value %>"));
+    assertTrue(html.contains("<%- 'tel:' + cell.value %>"));
     assertTrue(html.contains("tabindex='-1'"));
     assertTrue(html.contains("<dwc-icon name='phone' pool='tabler' theme='primary'></dwc-icon>"));
     assertTrue(html.contains("color:inherit;text-decoration:none"));
@@ -26,7 +26,7 @@ class PhoneRendererTest {
     String html = r.build();
     assertTrue(
         html.contains("<dwc-icon name='phone-call' pool='custom' theme='primary'></dwc-icon>"));
-    assertTrue(html.contains("<%= 'tel:' + cell.value %>"));
+    assertTrue(html.contains("<%- 'tel:' + cell.value %>"));
   }
 
   @Test

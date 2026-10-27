@@ -13,7 +13,7 @@ class AnchorRendererTest {
     String html = r.build();
     assertTrue(html.contains("<a"));
     assertTrue(html.contains("</a>"));
-    assertTrue(html.contains("<%= cell.value %>"));
+    assertTrue(html.contains("<%- cell.value %>"));
     assertTrue(html.contains("tabindex='-1'"));
   }
 
