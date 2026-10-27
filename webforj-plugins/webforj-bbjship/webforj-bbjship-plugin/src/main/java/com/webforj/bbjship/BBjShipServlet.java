@@ -111,6 +111,13 @@ public final class BBjShipServlet {
 
     BBjAdminBase admin = session.get();
     try {
+      if (!admin.checkUserPermission(BBjAdminBase.PERMISSION_ALLOW_ADMIN)) {
+        writeProblem(response, Problem.FORBIDDEN,
+            "The BBj user has no permission to perform administrative tasks. Use the credentials "
+                + "of a BBj administrator");
+        return;
+      }
+
       handleOperation(request, response, plugin, release, admin);
     } catch (DeploymentException refused) {
       writeProblem(response, toProblem(refused), refused.getMessage());
