@@ -272,7 +272,8 @@ class BBjSecurityRegistrarTest {
     when(environment.getConfig()).thenReturn(ConfigFactory.empty());
     tableMock.when(() -> ObjectTable.put(eq(BBjSecurity.SERVICE_KEY), any()))
         .thenAnswer(invocation -> events.add("put"));
-    doAnswer(invocation -> events.add("observe")).when(renderer).addObserver(any());
+    doAnswer(invocation -> events.add(invocation.getArgument(0).getClass().getSimpleName()))
+        .when(renderer).addObserver(any());
 
     try (MockedConstruction<BBjAuthenticationService> services =
         mockConstruction(BBjAuthenticationService.class,
@@ -280,7 +281,8 @@ class BBjSecurityRegistrarTest {
                 .restoreSession())) {
       registrar.onWillRun(app);
 
-      assertEquals(List.of("put", "restore", "observe"), events);
+      assertEquals(List.of("BBjSessionObserver", "put", "restore", "RouteSecurityObserver"),
+          events);
     }
   }
 }
