@@ -1,20 +1,19 @@
-package com.webforj.bbj.security;
+package com.webforj.bbj.security.authenticationservice;
 
 import static com.webforj.bbj.security.SignInFixture.PASSWORD;
-import static com.webforj.bbj.security.SignInFixture.getStatus;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-import com.webforj.PendingResult;
+import com.webforj.bbj.security.SignInFixture;
 import com.webforj.bbj.security.model.BBjLoginStatus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-class BBjAuthenticationServiceStartLoginInputTest {
+class BBjAuthenticationServiceLoginInputTest {
   private final SignInFixture fixture = new SignInFixture();
 
   @AfterEach
@@ -24,30 +23,28 @@ class BBjAuthenticationServiceStartLoginInputTest {
 
   @Test
   void shouldRefuseNullUserName() {
-    assertThrows(NullPointerException.class, () -> fixture.service.startLogin(null, PASSWORD));
+    assertThrows(NullPointerException.class, () -> fixture.login(null, PASSWORD));
   }
 
   @Test
   void shouldRefuseNullPassword() {
-    assertThrows(NullPointerException.class, () -> fixture.service.startLogin("alice", null));
+    assertThrows(NullPointerException.class, () -> fixture.login("alice", null));
   }
 
   @ParameterizedTest
   @MethodSource("com.webforj.bbj.security.SignInFixture#getRefusedInputs")
-  void shouldCompleteWithInvalidCredentialsWithoutCallingAnyone(String userName, String password)
-      throws Exception {
-    PendingResult<BBjLoginStatus> result = fixture.service.startLogin(userName, password);
+  void shouldGiveInvalidCredentialsWithoutCallingAnyone(String userName, String password) {
+    BBjLoginStatus status = fixture.login(userName, password);
 
-    assertTrue(result.isDone());
-    assertEquals(BBjLoginStatus.INVALID_CREDENTIALS, getStatus(result));
-    verifyNoInteractions(fixture.worker, fixture.gateway);
+    assertEquals(BBjLoginStatus.INVALID_CREDENTIALS, status);
+    verifyNoInteractions(fixture.gateway);
   }
 
   @ParameterizedTest
   @MethodSource("com.webforj.bbj.security.SignInFixture#getAcceptedInputs")
   void shouldAcceptInputAtTheLimit(String userName, String password) {
-    fixture.service.startLogin(userName, password);
+    fixture.login(userName, password);
 
-    fixture.captureHooks();
+    fixture.verifyOpenSession(times(1), userName, password);
   }
 }

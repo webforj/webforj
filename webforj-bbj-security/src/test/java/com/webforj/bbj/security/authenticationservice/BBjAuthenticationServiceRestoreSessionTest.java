@@ -1,9 +1,10 @@
-package com.webforj.bbj.security;
+package com.webforj.bbj.security.authenticationservice;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.when;
 
+import com.webforj.bbj.security.SignInFixture;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -20,17 +21,17 @@ class BBjAuthenticationServiceRestoreSessionTest {
   void shouldPutTheStoredSessionInPlace() {
     when(fixture.sessionStore.readSession()).thenReturn(Optional.of(fixture.session));
 
-    fixture.service.restoreSession();
+    fixture.restoreSession();
 
-    assertSame(fixture.principal, fixture.service.currentUser().orElseThrow());
+    assertSame(fixture.principal, fixture.currentUser().orElseThrow());
   }
 
   @Test
   void shouldLeaveNobodySignedInWhenTheStoreIsEmpty() {
     when(fixture.sessionStore.readSession()).thenReturn(Optional.empty());
 
-    fixture.service.restoreSession();
+    fixture.restoreSession();
 
-    assertFalse(fixture.service.currentUser().isPresent());
+    assertFalse(fixture.currentUser().isPresent());
   }
 }

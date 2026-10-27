@@ -1,9 +1,11 @@
-package com.webforj.bbj.security;
+package com.webforj.bbj.security.authenticationservice;
 
 import static com.webforj.bbj.security.SignInFixture.PASSWORD;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.webforj.bbj.security.BBjAdminFailure.Kind;
+import com.webforj.bbj.security.BBjAdminFailure;
+import com.webforj.bbj.security.SignInFixture;
 import java.util.logging.SimpleFormatter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -21,12 +23,9 @@ class BBjAuthenticationServiceSecretsTest {
   @ParameterizedTest
   @EnumSource(Kind.class)
   void shouldKeepThePasswordOutOfEveryLogRecord(Kind kind) {
-    fixture.service.startLogin("alice", PASSWORD);
-    fixture.captureHooks();
-    BBjAdminFailure failure = new BBjAdminFailure(kind, "not served");
+    fixture.whenOpenSession("alice", PASSWORD).thenThrow(new BBjAdminFailure(kind, "not served"));
 
-    fixture.pending.complete(fixture.failCaptor.getValue().apply(failure));
-    fixture.discardCaptor.getValue().accept(fixture.session);
+    fixture.login("alice", PASSWORD);
 
     SimpleFormatter formatter = new SimpleFormatter();
     assertTrue(fixture.records.stream().noneMatch(it -> formatter.format(it).contains(PASSWORD)));

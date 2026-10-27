@@ -2,14 +2,12 @@ package com.webforj.bbj.security;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
 
-import com.webforj.PendingResult;
 import com.webforj.component.Component;
 import com.webforj.component.html.elements.Div;
 import com.webforj.router.NavigationContext;
@@ -83,118 +81,38 @@ class BBjSessionObserverTest {
   }
 
   @Test
-  void shouldContinueInTheSameCallWhenTheCheckIsCompleted() {
-    when(service.startCheck()).thenReturn(PendingResult.completedWith(null));
+  void shouldCheckAndContinueInTheSameCall() {
     Consumer<Boolean> callback = createCallback();
 
     observer.onInstantiate(Div.class, first, callback);
 
-    verify(callback, times(1)).accept(true);
-  }
-
-  @Test
-  void shouldHoldTheCallbackUntilTheCheckCompletes() {
-    PendingResult<Void> check = new PendingResult<>();
-    when(service.startCheck()).thenReturn(check);
-    Consumer<Boolean> callback = createCallback();
-
-    observer.onInstantiate(Div.class, first, callback);
-    verifyNoInteractions(callback);
-    check.complete(null);
-
+    verify(service, times(1)).check();
     verify(callback, times(1)).accept(true);
   }
 
   @Test
   void shouldShareOneCheckBetweenTheLayoutAndTheViewOfOneNavigation() {
-    PendingResult<Void> check = new PendingResult<>();
-    when(service.startCheck()).thenReturn(check);
     Consumer<Boolean> layoutCallback = createCallback();
     Consumer<Boolean> viewCallback = createCallback();
 
     observer.onInstantiate(Div.class, first, layoutCallback);
-    check.complete(null);
     observer.onInstantiate(Div.class, first, viewCallback);
 
     verify(layoutCallback, times(1)).accept(true);
     verify(viewCallback, times(1)).accept(true);
-    verify(service, times(1)).startCheck();
+    verify(service, times(1)).check();
   }
 
   @Test
-  void shouldStopTheHeldNavigationWhenAnotherOneArrives() {
-    PendingResult<Void> olderCheck = new PendingResult<>();
-    PendingResult<Void> newerCheck = new PendingResult<>();
-    when(service.startCheck()).thenReturn(olderCheck, newerCheck);
-    Consumer<Boolean> olderCallback = createCallback();
-    Consumer<Boolean> newerCallback = createCallback();
+  void shouldCheckAgainForAnotherNavigation() {
+    observer.onInstantiate(Div.class, first, createCallback());
+    observer.onInstantiate(Div.class, second, createCallback());
 
-    observer.onInstantiate(Div.class, first, olderCallback);
-    observer.onInstantiate(Div.class, second, newerCallback);
-
-    verify(olderCallback, times(1)).accept(false);
-    verifyNoInteractions(newerCallback);
-    olderCheck.complete(null);
-
-    verify(olderCallback, never()).accept(true);
-    verifyNoInteractions(newerCallback);
-    newerCheck.complete(null);
-
-    verify(newerCallback, times(1)).accept(true);
-    verify(newerCallback, never()).accept(false);
+    verify(service, times(2)).check();
   }
 
   @Test
-  void shouldContinueTheNewerNavigationWhenItsCheckIsCompleted() {
-    PendingResult<Void> olderCheck = new PendingResult<>();
-    when(service.startCheck()).thenReturn(olderCheck, PendingResult.completedWith(null));
-    Consumer<Boolean> olderCallback = createCallback();
-    Consumer<Boolean> newerCallback = createCallback();
-
-    observer.onInstantiate(Div.class, first, olderCallback);
-    observer.onInstantiate(Div.class, second, newerCallback);
-
-    verify(olderCallback, times(1)).accept(false);
-    verify(newerCallback, times(1)).accept(true);
-  }
-
-  @Test
-  void shouldStopTheHeldNavigationOnLifecycleEventOfAnotherNavigation() {
-    PendingResult<Void> check = new PendingResult<>();
-    when(service.startCheck()).thenReturn(check);
-    Consumer<Boolean> heldCallback = createCallback();
-    Consumer<Boolean> eventCallback = createCallback();
-
-    observer.onInstantiate(Div.class, first, heldCallback);
-    observer.onRouteRendererLifecycleEvent(component, LifecycleEvent.ACTIVATE, second,
-        eventCallback);
-    check.complete(null);
-
-    verify(heldCallback, times(1)).accept(false);
-    verify(heldCallback, never()).accept(true);
-    verify(eventCallback, times(1)).accept(true);
-  }
-
-  @Test
-  void shouldKeepHoldingOnLifecycleEventOfTheHeldNavigation() {
-    PendingResult<Void> check = new PendingResult<>();
-    when(service.startCheck()).thenReturn(check);
-    Consumer<Boolean> heldCallback = createCallback();
-    Consumer<Boolean> eventCallback = createCallback();
-
-    observer.onInstantiate(Div.class, first, heldCallback);
-    observer.onRouteRendererLifecycleEvent(component, LifecycleEvent.ACTIVATE, first,
-        eventCallback);
-
-    verify(eventCallback, times(1)).accept(true);
-    verifyNoInteractions(heldCallback);
-    check.complete(null);
-
-    verify(heldCallback, times(1)).accept(true);
-  }
-
-  @Test
-  void shouldContinueLifecycleEventWhenNothingIsHeld() {
+  void shouldContinueLifecycleEventWithoutChecking() {
     Consumer<Boolean> eventCallback = createCallback();
 
     observer.onRouteRendererLifecycleEvent(component, LifecycleEvent.ACTIVATE, first,
@@ -205,23 +123,8 @@ class BBjSessionObserverTest {
   }
 
   @Test
-  void shouldContinueAndWarnWhenTheCheckCompletesExceptionally() {
-    PendingResult<Void> check = new PendingResult<>();
-    when(service.startCheck()).thenReturn(check);
-    Consumer<Boolean> callback = createCallback();
-
-    observer.onInstantiate(Div.class, first, callback);
-    check.completeExceptionally(new IllegalStateException("alice"));
-
-    assertEquals(List.of("The sign in check failed with java.lang.IllegalStateException"),
-        getWarnings());
-    verify(callback, times(1)).accept(true);
-    verify(callback, never()).accept(false);
-  }
-
-  @Test
-  void shouldContinueAndWarnWhenTheCheckCannotBeStarted() {
-    when(service.startCheck()).thenThrow(new IllegalStateException("alice"));
+  void shouldContinueAndWarnWhenTheCheckThrows() {
+    doThrow(new IllegalStateException("alice")).when(service).check();
     Consumer<Boolean> callback = createCallback();
 
     observer.onInstantiate(Div.class, first, callback);
@@ -232,14 +135,14 @@ class BBjSessionObserverTest {
   }
 
   @Test
-  void shouldNotCheckAgainForTheNavigationWhoseCheckCouldNotBeStarted() {
-    when(service.startCheck()).thenThrow(new IllegalStateException("alice"));
+  void shouldNotCheckAgainForTheNavigationWhoseCheckThrew() {
+    doThrow(new IllegalStateException("alice")).when(service).check();
     Consumer<Boolean> callback = createCallback();
 
     observer.onInstantiate(Div.class, first, createCallback());
     observer.onInstantiate(Div.class, first, callback);
 
-    verify(service, times(1)).startCheck();
+    verify(service, times(1)).check();
     verify(callback, times(1)).accept(true);
   }
 
