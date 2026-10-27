@@ -1,22 +1,28 @@
 package com.webforj.component.desktopnotification;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
 
+import com.google.gson.Gson;
 import com.webforj.Page;
 import com.webforj.component.desktopnotification.event.DesktopNotificationClickEvent;
 import com.webforj.component.desktopnotification.event.DesktopNotificationCloseEvent;
 import com.webforj.component.desktopnotification.event.DesktopNotificationErrorEvent;
 import com.webforj.component.desktopnotification.event.DesktopNotificationOpenEvent;
 import com.webforj.dispatcher.ListenerRegistration;
+import java.util.function.Consumer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 
 class DesktopNotificationTest {
@@ -36,6 +42,7 @@ class DesktopNotificationTest {
 
   @BeforeEach
   void setUp() {
+    mockedPage.reset();
     notification = new DesktopNotification("Test Title", "Test Body");
     Page page = mock(Page.class);
     mockedPage.when(Page::getCurrent).thenReturn(page);
@@ -60,6 +67,32 @@ class DesktopNotificationTest {
     String icon = "icons://new-icon.png";
     notification.setIcon(icon);
     assertEquals(icon, notification.getIcon());
+  }
+
+  @Test
+  void shouldSendTitleBodyAndIconToClientAsJsonStrings() {
+    Page page = mock(Page.class);
+    mockedPage.when(() -> Page.ifPresent(any())).thenAnswer(inv -> {
+      Consumer<Page> consumer = inv.getArgument(0);
+      consumer.accept(page);
+
+      return null;
+    });
+
+    String title = "It's ready";
+    String body = "Total `${total}`";
+    String icon = "images/`logo`.png";
+    notification.setTitle(title);
+    notification.setBody(body);
+    notification.setIcon(icon);
+    notification.open();
+
+    ArgumentCaptor<String> script = ArgumentCaptor.forClass(String.class);
+    verify(page).executeJsVoidAsync(script.capture());
+    Gson gson = new Gson();
+    assertTrue(script.getValue().contains("new Notification(" + gson.toJson(title) + ", {body: "
+        + gson.toJson(body) + ", icon: " + gson.toJson(icon) + ", tag: '"));
+    assertFalse(script.getValue().contains("'" + title + "'"));
   }
 
   @Nested

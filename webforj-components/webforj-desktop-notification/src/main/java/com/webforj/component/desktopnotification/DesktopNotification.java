@@ -1,5 +1,6 @@
 package com.webforj.component.desktopnotification;
 
+import com.google.gson.Gson;
 import com.webforj.Page;
 import com.webforj.annotation.Experimental;
 import com.webforj.component.desktopnotification.event.DesktopNotificationClickEvent;
@@ -41,6 +42,7 @@ import java.util.UUID;
  */
 @Experimental(since = "25.00")
 public class DesktopNotification {
+  private static final Gson GSON = new Gson();
   private final EventDispatcher eventDispatcher = new EventDispatcher();
   private final String id = UUID.randomUUID().toString();
   private boolean openListenerRegistered = false;
@@ -187,7 +189,7 @@ public class DesktopNotification {
       if(('Notification' in window) && !__isMobileOrTablet__) {
         (async () => {
           const show = () => {
-            const n = new Notification('%s', {body: `%s`,icon: `%s`, tag: '%4$s'});
+            const n = new Notification(%s, {body: %s, icon: %s, tag: '%4$s'});
             n.onshow = () => window.dispatchEvent(new CustomEvent('%4$s-opened'));
             n.onclose = () => window.dispatchEvent(new CustomEvent('%4$s-closed'));
             n.onerror = () =>  window.dispatchEvent(new CustomEvent('%4$s-errored'));
@@ -211,8 +213,8 @@ public class DesktopNotification {
     // @formatter:on
 
     Page.ifPresent(page -> {
-      String script = String.format(scriptTemplate, getTitle(), getBody(),
-          Assets.resolveImageSource(getIcon()), id);
+      String script = scriptTemplate.formatted(GSON.toJson(getTitle()), GSON.toJson(getBody()),
+          GSON.toJson(Assets.resolveImageSource(getIcon())), id);
       page.executeJsVoidAsync(script);
     });
 
