@@ -3,6 +3,8 @@ package com.webforj.spring.security;
 import com.webforj.router.security.RouteSecurityContext;
 import java.util.Map;
 import java.util.Optional;
+import org.springframework.security.authentication.AuthenticationTrustResolver;
+import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * @since 25.10
  */
 public class SpringRouteSecurityContext implements RouteSecurityContext {
+  private final AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
 
   /**
    * {@inheritDoc}
@@ -88,6 +91,7 @@ public class SpringRouteSecurityContext implements RouteSecurityContext {
   }
 
   Authentication getAuthentication() {
-    return SecurityContextHolder.getContext().getAuthentication();
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    return trustResolver.isAnonymous(auth) ? null : auth;
   }
 }

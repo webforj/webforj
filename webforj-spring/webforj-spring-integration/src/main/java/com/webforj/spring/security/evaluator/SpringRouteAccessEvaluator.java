@@ -141,7 +141,7 @@ public class SpringRouteAccessEvaluator implements RouteSecurityEvaluator {
     // Get Spring Security authentication
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-    if (authentication != null) {
+    if (authentication != null && !trustResolver.isAnonymous(authentication)) {
       // Create and configure SecurityExpressionRoot
       SecurityExpressionRoot root = new SecurityExpressionRoot(authentication) {};
       root.setTrustResolver(trustResolver);
