@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.typesafe.config.ConfigFactory;
 import com.webforj.bbj.security.model.BBjLoginStatus;
 import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.bbj.security.model.BBjSession;
@@ -47,7 +48,7 @@ public final class SignInFixture implements AutoCloseable {
   public final BBjSessionStore sessionStore = mock(BBjSessionStore.class);
   /** The configuration properties the service reads. */
   public final BBjSecurityConfigurationProperties properties =
-      new BBjSecurityConfigurationProperties();
+      new BBjSecurityConfigurationProperties(ConfigFactory.empty());
   /** The route security configuration of the properties. */
   public final BBjRouteSecurityConfiguration configuration =
       new BBjRouteSecurityConfiguration(properties);
