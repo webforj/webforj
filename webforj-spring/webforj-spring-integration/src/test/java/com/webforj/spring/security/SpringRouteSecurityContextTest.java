@@ -19,8 +19,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -41,6 +43,14 @@ class SpringRouteSecurityContextTest {
   @AfterEach
   void tearDown() {
     SecurityContextHolder.clearContext();
+  }
+
+  private static AnonymousAuthenticationToken setAnonymousAuthentication() {
+    AnonymousAuthenticationToken token = new AnonymousAuthenticationToken("key", "anonymousUser",
+        AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS"));
+    SecurityContextHolder.getContext().setAuthentication(token);
+
+    return token;
   }
 
   @Nested
@@ -66,6 +76,13 @@ class SpringRouteSecurityContextTest {
 
       assertTrue(securityContext.isAuthenticated());
     }
+
+    @Test
+    void shouldReturnFalseForAnonymousAuthentication() {
+      setAnonymousAuthentication();
+
+      assertFalse(securityContext.isAuthenticated());
+    }
   }
 
   @Nested
@@ -86,6 +103,13 @@ class SpringRouteSecurityContextTest {
       Optional<Object> principal = securityContext.getPrincipal();
       assertTrue(principal.isPresent());
       assertEquals(user, principal.get());
+    }
+
+    @Test
+    void shouldReturnEmptyForAnonymousAuthentication() {
+      setAnonymousAuthentication();
+
+      assertFalse(securityContext.getPrincipal().isPresent());
     }
 
     @Test
@@ -139,6 +163,13 @@ class SpringRouteSecurityContextTest {
     }
 
     @Test
+    void shouldReturnFalseForTheAnonymousRole() {
+      setAnonymousAuthentication();
+
+      assertFalse(securityContext.hasRole("ANONYMOUS"));
+    }
+
+    @Test
     void shouldHandleEmptyAuthorities() {
       when(authentication.getAuthorities()).thenReturn(Collections.emptyList());
       SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -175,6 +206,13 @@ class SpringRouteSecurityContextTest {
       SecurityContextHolder.getContext().setAuthentication(authentication);
 
       assertFalse(securityContext.hasAuthority("WRITE_PRIVILEGE"));
+    }
+
+    @Test
+    void shouldReturnFalseForTheAnonymousAuthority() {
+      setAnonymousAuthentication();
+
+      assertFalse(securityContext.hasAuthority("ROLE_ANONYMOUS"));
     }
 
     @Test
@@ -222,6 +260,13 @@ class SpringRouteSecurityContextTest {
       Optional<Object> remoteAddress = securityContext.getAttribute("remoteAddress");
       assertTrue(remoteAddress.isPresent());
       assertEquals("192.168.1.1", remoteAddress.get());
+    }
+
+    @Test
+    void shouldReturnEmptyForAnonymousAuthentication() {
+      setAnonymousAuthentication().setDetails(Map.of("tenant", "acme"));
+
+      assertFalse(securityContext.getAttribute("tenant").isPresent());
     }
 
     @Test
