@@ -2,7 +2,7 @@ package com.webforj.bbj.security.store;
 
 import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.bbj.security.model.BBjSession;
-import com.webforj.webstorage.SessionStorage;
+import com.webforj.webstorage.LocalStorage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -49,12 +49,13 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- * Keeps the session of each signed in tab encrypted in one file per application.
+ * Keeps the session of each signed in browser encrypted in one file per application.
  *
  * <p>
- * The file holds one line per signed in tab with the name of the entry and the encrypted session.
- * The session storage of the tab holds the name of the entry and the key that opens it, so the file
- * never holds the key and the browser never holds the token. A new key and a new name are made on
+ * The file holds one line per signed in browser with the name of the entry and the encrypted
+ * session. The local storage of the browser holds the name of the entry and the key that opens it,
+ * under names that carry the application, so the file never holds the key and the browser never
+ * holds the token. All tabs of one browser share the sign in. A new key and a new name are made on
  * every save.
  * </p>
  *
@@ -69,8 +70,8 @@ import javax.crypto.spec.SecretKeySpec;
  */
 final class BBjFileSessionStore implements BBjSessionStore {
   private static final Logger logger = System.getLogger(BBjFileSessionStore.class.getName());
-  private static final String HANDLE_KEY = "webforj-bbj-handle";
-  private static final String KEY_KEY = "webforj-bbj-key";
+  private static final String HANDLE_KEY_PREFIX = "webforj-bbj-handle.";
+  private static final String KEY_KEY_PREFIX = "webforj-bbj-key.";
   private static final String FOLDER = "webforj-bbj-security";
   private static final String SUFFIX = ".sessions";
   private static final String VERSION = "v1.";
@@ -85,13 +86,14 @@ final class BBjFileSessionStore implements BBjSessionStore {
   private static final ConcurrentMap<Path, ReentrantLock> LOCKS = new ConcurrentHashMap<>();
   private final Supplier<Path> directorySupplier;
   private final Supplier<String> applicationNameSupplier;
-  private final Supplier<SessionStorage> storageSupplier;
+  private final Supplier<LocalStorage> storageSupplier;
   private final Clock clock;
   private final BBjSessionEntryCipher cipher = new BBjSessionEntryCipher();
+  private String applicationKey;
   private Path file;
 
   BBjFileSessionStore(Supplier<Path> directorySupplier, Supplier<String> applicationNameSupplier,
-      Supplier<SessionStorage> storageSupplier, Clock clock) {
+      Supplier<LocalStorage> storageSupplier, Clock clock) {
     this.directorySupplier = directorySupplier;
     this.applicationNameSupplier = applicationNameSupplier;
     this.storageSupplier = storageSupplier;
@@ -99,7 +101,7 @@ final class BBjFileSessionStore implements BBjSessionStore {
   }
 
   BBjFileSessionStore(Supplier<Path> directorySupplier, Supplier<String> applicationNameSupplier,
-      Supplier<SessionStorage> storageSupplier) {
+      Supplier<LocalStorage> storageSupplier) {
     this(directorySupplier, applicationNameSupplier, storageSupplier, Clock.systemUTC());
   }
 
@@ -108,7 +110,7 @@ final class BBjFileSessionStore implements BBjSessionStore {
    */
   @Override
   public void saveSession(BBjSession session) {
-    SessionStorage storage = storageSupplier.get();
+    LocalStorage storage = storageSupplier.get();
     if (storage == null) {
       throw new IllegalStateException(NOT_KEPT);
     }
@@ -121,7 +123,9 @@ final class BBjFileSessionStore implements BBjSessionStore {
       throw new IllegalStateException(NOT_KEPT);
     }
 
-    Map<String, String> previous = storage.get(List.of(HANDLE_KEY, KEY_KEY));
+    String handleKey = resolveStorageKey(HANDLE_KEY_PREFIX);
+    String keyKey = resolveStorageKey(KEY_KEY_PREFIX);
+    Map<String, String> previous = storage.get(List.of(handleKey, keyKey));
     String key = cipher.createKey();
     String name = VERSION + session.getExpiresAt().toEpochMilli() + "." + cipher.createHandle();
     String entry = cipher.formatEntry(name, key, session);
@@ -138,16 +142,16 @@ final class BBjFileSessionStore implements BBjSessionStore {
     }
 
     try {
-      storage.add(Map.of(HANDLE_KEY, name, KEY_KEY, key));
+      storage.add(Map.of(handleKey, name, keyKey, key));
     } catch (RuntimeException e) {
-      logger.log(Level.WARNING, FAILURE, "The sign in could not be written to the tab",
+      logger.log(Level.WARNING, FAILURE, "The sign in could not be written to the browser",
           e.getClass().getName());
       removeEntry(name);
-      resetPair(storage, previous);
+      resetPair(storage, previous, handleKey, keyKey);
       throw new IllegalStateException(NOT_KEPT);
     }
 
-    String previousName = previous.get(HANDLE_KEY);
+    String previousName = previous.get(handleKey);
     if (!name.equals(previousName) && findExpiry(previousName).isPresent()) {
       removeEntry(previousName);
     }
@@ -159,18 +163,20 @@ final class BBjFileSessionStore implements BBjSessionStore {
   @Override
   public Optional<BBjSession> readSession() {
     try {
-      SessionStorage storage = storageSupplier.get();
+      LocalStorage storage = storageSupplier.get();
       if (storage == null) {
         return Optional.empty();
       }
 
-      Map<String, String> pair = storage.get(List.of(HANDLE_KEY, KEY_KEY));
+      String handleKey = resolveStorageKey(HANDLE_KEY_PREFIX);
+      String keyKey = resolveStorageKey(KEY_KEY_PREFIX);
+      Map<String, String> pair = storage.get(List.of(handleKey, keyKey));
       if (pair.isEmpty()) {
         return Optional.empty();
       }
 
-      String name = pair.get(HANDLE_KEY);
-      String key = pair.get(KEY_KEY);
+      String name = pair.get(handleKey);
+      String key = pair.get(keyKey);
       Optional<Instant> expiresAt = findExpiry(name);
       if (key == null || expiresAt.isEmpty() || !expiresAt.get().isAfter(clock.instant())) {
         logger.log(Level.DEBUG, "A stored sign in is not usable and was removed");
@@ -204,11 +210,16 @@ final class BBjFileSessionStore implements BBjSessionStore {
    */
   @Override
   public void clearSession() {
-    SessionStorage storage;
+    LocalStorage storage;
+    String handleKey;
+    String keyKey;
     try {
       storage = storageSupplier.get();
+      handleKey = resolveStorageKey(HANDLE_KEY_PREFIX);
+      keyKey = resolveStorageKey(KEY_KEY_PREFIX);
     } catch (RuntimeException e) {
-      logger.log(Level.WARNING, FAILURE, "The tab could not be read", e.getClass().getName());
+      logger.log(Level.WARNING, FAILURE, "The browser storage could not be read",
+          e.getClass().getName());
       return;
     }
 
@@ -217,32 +228,32 @@ final class BBjFileSessionStore implements BBjSessionStore {
     }
 
     try {
-      String name = storage.get(List.of(HANDLE_KEY, KEY_KEY)).get(HANDLE_KEY);
+      String name = storage.get(List.of(handleKey, keyKey)).get(handleKey);
       findExpiry(name).ifPresent(it -> removeEntry(name));
     } catch (RuntimeException e) {
-      logger.log(Level.WARNING, FAILURE, "The sign in could not be read from the tab",
+      logger.log(Level.WARNING, FAILURE, "The sign in could not be read from the browser",
           e.getClass().getName());
     }
 
     try {
-      storage.remove(HANDLE_KEY, KEY_KEY);
+      storage.remove(handleKey, keyKey);
     } catch (RuntimeException e) {
-      logger.log(Level.WARNING, FAILURE, "The sign in could not be removed from the tab",
+      logger.log(Level.WARNING, FAILURE, "The sign in could not be removed from the browser",
           e.getClass().getName());
     }
   }
 
   /**
-   * Creates the part of the file name that names one application.
+   * Creates the part of the file name and of the browser storage names that names one application.
    *
    * <p>
    * A name that holds a character other than a letter, a digit, an underscore or a hyphen, or that
    * is empty or longer than 64 characters, is replaced by a safe form followed by a short hash of
-   * the original name, so that two applications never share a file.
+   * the original name, so that two applications never share a file or a browser storage name.
    * </p>
    *
    * @param applicationName the registered application name
-   * @return the part of the file name that names the application
+   * @return the part of the file name and of the browser storage names that names the application
    */
   static String createApplicationKey(String applicationName) {
     String safe = UNSAFE_CHARACTERS.matcher(applicationName).replaceAll("_");
@@ -259,11 +270,22 @@ final class BBjFileSessionStore implements BBjSessionStore {
 
   private Path resolveFile() {
     if (file == null) {
-      file = directorySupplier.get().resolve(FOLDER)
-          .resolve(createApplicationKey(applicationNameSupplier.get()) + SUFFIX);
+      file = directorySupplier.get().resolve(FOLDER).resolve(resolveApplicationKey() + SUFFIX);
     }
 
     return file;
+  }
+
+  private String resolveStorageKey(String prefix) {
+    return prefix + resolveApplicationKey();
+  }
+
+  private String resolveApplicationKey() {
+    if (applicationKey == null) {
+      applicationKey = createApplicationKey(applicationNameSupplier.get());
+    }
+
+    return applicationKey;
   }
 
   private Optional<String> findEntry(String name) throws IOException {
@@ -387,12 +409,13 @@ final class BBjFileSessionStore implements BBjSessionStore {
     }
   }
 
-  private void resetPair(SessionStorage storage, Map<String, String> previous) {
+  private void resetPair(LocalStorage storage, Map<String, String> previous, String handleKey,
+      String keyKey) {
     try {
       if (previous.size() == 2) {
         storage.add(previous);
       } else {
-        storage.remove(HANDLE_KEY, KEY_KEY);
+        storage.remove(handleKey, keyKey);
       }
     } catch (RuntimeException e) {
       logger.log(Level.WARNING, FAILURE, "The previous sign in could not be restored",

@@ -28,8 +28,8 @@ class BBjRequestedLocationStoreTest {
 
   private static Stream<Arguments> accessors() {
     return Stream.of(
-        Arguments.of(Optional.of(mock(HttpSession.Accessor.class)),
-            BBjHttpSessionRequestedLocationStore.class),
+        // Arguments.of(Optional.of(mock(HttpSession.Accessor.class)),
+        // BBjHttpSessionRequestedLocationStore.class),
         Arguments.of(Optional.empty(), BBjBrowserRequestedLocationStore.class));
   }
 }

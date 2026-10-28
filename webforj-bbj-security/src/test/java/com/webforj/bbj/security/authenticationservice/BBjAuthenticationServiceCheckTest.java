@@ -77,7 +77,7 @@ class BBjAuthenticationServiceCheckTest {
     fixture.properties.setCheckSeconds(30);
     fixture.properties.setRenewBeforeMinutes(5);
     fixture.whenReadUserName(fixture.session).thenReturn("alice");
-    when(fixture.sessionStore.readSession()).thenReturn(Optional.of(fixture.session));
+    fixture.setStoredSession(fixture.session);
     fixture.setService(fixture.createBuilder().setClock(clock).build());
     fixture.restoreSession();
   }
@@ -104,6 +104,75 @@ class BBjAuthenticationServiceCheckTest {
     fixture.check();
 
     verifyNoInteractions(fixture.gateway);
+  }
+
+  @Test
+  void shouldDropTheSignInWithNoServerCallWhenAnotherTabSignedOut() {
+    fixture.setStoredSession(null);
+
+    fixture.check();
+
+    assertFalse(fixture.currentUser().isPresent());
+    verify(fixture.sessionStore, never()).clearSession();
+    verifyNoInteractions(fixture.gateway, fixture.navigator);
+    assertEquals(List.of("The session store holds no sign in, the sign in was dropped"),
+        fixture.getDebugMessages());
+  }
+
+  @Test
+  void shouldTakeTheSignInOfAnotherTabWhenThisTabHoldsNone() {
+    fixture.setService(fixture.createBuilder().setClock(clock).build());
+
+    fixture.check();
+
+    assertSame(fixture.principal, fixture.currentUser().orElseThrow());
+    fixture.verifyReadUserName(times(1), fixture.session);
+  }
+
+  @Test
+  void shouldTakeAndCheckTheSessionAnotherTabRenewed() {
+    fixture.check();
+    clearInvocations(fixture.gateway);
+    fixture.setStoredSession(renewed);
+    fixture.whenReadUserName(renewed).thenReturn("alice");
+    now.set(START.plusSeconds(1));
+
+    fixture.check();
+
+    assertSame(renewedPrincipal, fixture.currentUser().orElseThrow());
+    fixture.verifyReadUserName(times(1), renewed);
+    verify(fixture.sessionStore, never()).saveSession(any());
+  }
+
+  @Test
+  void shouldTakeTheSessionAnotherTabRenewedWhenTheCheckedTokenWasRejected() {
+    fixture.whenReadUserName(fixture.session).thenAnswer(call -> {
+      fixture.setStoredSession(renewed);
+      throw new BBjAdminFailure(Kind.TOKEN_REJECTED, "ended");
+    });
+
+    fixture.check();
+
+    assertSame(renewedPrincipal, fixture.currentUser().orElseThrow());
+    verify(fixture.sessionStore, never()).clearSession();
+    assertEquals(List.of(), getInfoMessages());
+    assertEquals(List.of("Another sign in in the session store replaced the rejected one"),
+        fixture.getDebugMessages());
+  }
+
+  @Test
+  void shouldSignOutWhenTheTokenWasRejectedAndAnotherTabSignedOutMeanwhile() {
+    fixture.whenReadUserName(fixture.session).thenAnswer(call -> {
+      fixture.setStoredSession(null);
+      throw new BBjAdminFailure(Kind.TOKEN_REJECTED, "ended");
+    });
+
+    fixture.check();
+
+    assertFalse(fixture.currentUser().isPresent());
+    verify(fixture.sessionStore).clearSession();
+    assertEquals(List.of("The server no longer accepts the sign in, the user was signed out"),
+        getInfoMessages());
   }
 
   @ParameterizedTest
