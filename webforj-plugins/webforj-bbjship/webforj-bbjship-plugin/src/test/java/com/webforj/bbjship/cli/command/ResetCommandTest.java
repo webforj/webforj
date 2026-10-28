@@ -399,6 +399,39 @@ class ResetCommandTest {
   }
 
   @Test
+  void shouldRemoveTheUnencryptedSwitchWithTheRuntimeFolder() throws Exception {
+    Files.writeString(backup, BACKED_UP_PROPERTIES);
+    Path unencryptedSwitch =
+        Files.writeString(home.resolve("plugins/.webforj-bbjship-deployments/unencrypted.enabled"),
+            "unencrypted requests from another machine are allowed on this machine");
+    BBjShipCli cli = createCli(home, admin, "");
+
+    int status = cli.run(RESET_COMMAND, YES_OPTION);
+
+    assertEquals(0, status);
+    assertEquals(FACTORY_ACCOUNT_WARNING + "\n" + """
+        This resets BBjShip on this machine:
+          undeploy inventory
+          undeploy proof-app
+          disable development runs
+          refuse unencrypted requests from another machine
+          remove the BBjShip HTTP endpoint and assets
+          restore the Java settings of BBjServices
+        Undeployed inventory
+        Undeployed proof-app
+        Disabled development runs
+        Refused unencrypted requests from another machine
+        Disabled the BBjShip HTTP endpoint
+        Removed the BBjShip assets
+        Restored the Java settings of BBjServices
+        Reset BBjShip
+        Restart BBjServices now to apply the restored Java settings
+        """, output.toString(StandardCharsets.UTF_8));
+    assertFalse(Files.exists(unencryptedSwitch));
+    assertFalse(Files.exists(home.resolve(DEPLOYMENTS_FOLDER)));
+  }
+
+  @Test
   void shouldPlanTheRemovalOfTheRuntimeFolderThatHoldsPreservedInstallation() throws Exception {
     Path emptyHome = Home.createCopy(temporary.resolve("empty-bbx"));
     Path preserved = Files.createDirectories(emptyHome

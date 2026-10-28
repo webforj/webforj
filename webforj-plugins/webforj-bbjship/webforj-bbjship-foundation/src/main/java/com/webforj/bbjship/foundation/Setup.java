@@ -4,8 +4,6 @@ import com.webforj.bbjship.foundation.model.BBjCredentials;
 import com.webforj.bbjship.foundation.model.JavaSettings;
 import com.webforj.bbjship.foundation.model.VersionResponse;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
@@ -147,18 +145,16 @@ public final class Setup {
   }
 
   private void applyEndpointValidation() throws IOException {
-    InetAddress[] addresses;
+    boolean local;
     try {
-      addresses = InetAddress.getAllByName(deploymentUrl.getHost());
+      local = LocalMachine.isHost(deploymentUrl.getHost());
     } catch (UnknownHostException unknown) {
       throw new IOException("BBj setup cannot resolve the deployment URL host "
           + deploymentUrl.getHost() + ". Use localhost or a name of this machine", unknown);
     }
 
-    for (InetAddress address : addresses) {
-      if (!address.isLoopbackAddress() && NetworkInterface.getByInetAddress(address) == null) {
-        throw new IOException("BBj setup is local only. Run setup on the BBj host");
-      }
+    if (!local) {
+      throw new IOException("BBj setup is local only. Run setup on the BBj host");
     }
   }
 

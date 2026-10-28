@@ -39,6 +39,9 @@ public final class BBjDeployMojo extends AbstractMojo {
   @Parameter(property = "webforj.bbj.deployment.url")
   String deploymentUrl;
 
+  @Parameter(property = "webforj.bbj.deployment.allowUnencrypted")
+  Boolean allowUnencrypted;
+
   @Parameter(property = "webforj.bbj.admin.username")
   String username;
 
@@ -56,10 +59,10 @@ public final class BBjDeployMojo extends AbstractMojo {
    */
   @Override
   public void execute() throws MojoExecutionException {
-    DeploymentSettings settings =
-        DeploymentSettings.create(bbj).setUrl(deploymentUrl).setPublishName(publishName)
-            .setDefaultPublishName(project.getBuild().getFinalName()).setUsername(username)
-            .setPassword(password).setToken(token).setVersion(pluginDescriptor.getVersion());
+    DeploymentSettings settings = DeploymentSettings.create(bbj).setUrl(deploymentUrl)
+        .setAllowUnencrypted(allowUnencrypted).setPublishName(publishName)
+        .setDefaultPublishName(project.getBuild().getFinalName()).setUsername(username)
+        .setPassword(password).setToken(token).setVersion(pluginDescriptor.getVersion());
     Deployment deployment =
         ProjectDeployment.create(project, settings.getPublishName(), "bbj-deploy");
     try {

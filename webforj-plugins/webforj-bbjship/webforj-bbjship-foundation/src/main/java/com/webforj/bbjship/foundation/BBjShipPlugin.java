@@ -25,8 +25,9 @@ public final class BBjShipPlugin {
   private static final String STATIC_FILES = "htdocs";
   private static final String ASSETS = "assets";
   private static final String DEVELOPMENT_SWITCH = "development.enabled";
-  static final Set<String> RUNTIME_NAMES =
-      Set.of(DEPLOYMENTS, STATIC_FILES, ASSETS, DEVELOPMENT_SWITCH, RUNTIME_FOLDER);
+  private static final String UNENCRYPTED_SWITCH = "unencrypted.enabled";
+  static final Set<String> RUNTIME_NAMES = Set.of(DEPLOYMENTS, STATIC_FILES, ASSETS,
+      DEVELOPMENT_SWITCH, UNENCRYPTED_SWITCH, RUNTIME_FOLDER);
 
   private final Path home;
   private final Path directory;
@@ -63,6 +64,18 @@ public final class BBjShipPlugin {
    */
   public static Path resolveDevelopmentSwitch(Path deployments) {
     return deployments.resolveSibling(DEVELOPMENT_SWITCH);
+  }
+
+  /**
+   * Resolves the file whose presence allows unencrypted requests from another machine, beside a
+   * deployments folder.
+   *
+   * @param deployments the deployments folder of BBjShip
+   *
+   * @return the unencrypted switch file
+   */
+  public static Path resolveUnencryptedSwitch(Path deployments) {
+    return deployments.resolveSibling(UNENCRYPTED_SWITCH);
   }
 
   /**
@@ -153,6 +166,15 @@ public final class BBjShipPlugin {
    */
   public Path getDevelopmentSwitch() {
     return resolveDevelopmentSwitch(getDeployments());
+  }
+
+  /**
+   * Returns the file whose presence allows unencrypted requests from another machine.
+   *
+   * @return the unencrypted switch file
+   */
+  public Path getUnencryptedSwitch() {
+    return resolveUnencryptedSwitch(getDeployments());
   }
 
   /**

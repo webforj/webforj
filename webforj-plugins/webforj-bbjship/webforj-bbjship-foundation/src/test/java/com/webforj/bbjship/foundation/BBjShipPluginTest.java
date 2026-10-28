@@ -37,6 +37,8 @@ class BBjShipPluginTest {
     assertEquals(home.resolve("plugins/.webforj-bbjship-deployments/assets"), plugin.getAssets());
     assertEquals(home.resolve("plugins/.webforj-bbjship-deployments/development.enabled"),
         plugin.getDevelopmentSwitch());
+    assertEquals(home.resolve("plugins/.webforj-bbjship-deployments/unencrypted.enabled"),
+        plugin.getUnencryptedSwitch());
     assertEquals("26.03", plugin.readVersion());
   }
 

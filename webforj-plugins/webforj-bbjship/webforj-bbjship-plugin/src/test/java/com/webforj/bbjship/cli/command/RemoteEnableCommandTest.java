@@ -7,6 +7,7 @@ import static com.webforj.bbjship.cli.command.Home.DEPLOYMENTS_FOLDER;
 import static com.webforj.bbjship.cli.command.Home.PLUGIN_FOLDER;
 import static com.webforj.bbjship.foundation.model.BBjCredentials.FACTORY_ACCOUNT_WARNING;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -26,6 +27,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
@@ -426,6 +428,41 @@ class RemoteEnableCommandTest {
           ]
         }""".formatted(plugin, home, port, sslPort, runtime));
     verify(services.getServer(), never()).removeContext(anyString());
+  }
+
+  @Test
+  void shouldWriteTheUnencryptedSwitchWithTheFlagAndRemoveItWithout() throws Exception {
+    Path home = Home.createCopy(temporary.resolve("bbx"));
+    BBjServices services = new BBjServices();
+    services.addBBjShipConfiguration(home);
+    ByteArrayOutputStream output = new ByteArrayOutputStream();
+    Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+    BBjShipCli cli = BBjShipCli.create(new BBjShipPlugin(home))
+        .setTerminal(new TerminalLines(stream).setVariables(
+            Map.of("WEBFORJ_BBJ_USERNAME", "administrator", "WEBFORJ_BBJ_PASSWORD", "secret")))
+        .setAnsi(Ansi.OFF).setSessions(login -> services.getAdmin()).build();
+    WebServer web = WebServer.startServingBBjShip();
+    String port = Integer.toString(web.getPort());
+    Path enabled = home.resolve(DEPLOYMENTS_FOLDER).resolve("unencrypted.enabled");
+
+    int allowed;
+    int refused;
+    try (web) {
+      allowed = cli.run(REMOTE_COMMAND, ENABLE_COMMAND, PORT_OPTION, port, "--allow-unencrypted");
+      assertEquals("unencrypted requests from another machine are allowed on this machine",
+          Files.readString(enabled));
+      refused = cli.run(REMOTE_COMMAND, ENABLE_COMMAND, PORT_OPTION, port);
+    }
+
+    assertEquals(0, allowed);
+    assertEquals(0, refused);
+    assertFalse(Files.exists(enabled));
+    assertEquals("""
+        Enabled http://localhost:%1$s/webforj-bbjship
+        Allowed unencrypted requests from another machine
+        Enabled http://localhost:%1$s/webforj-bbjship
+        Refused unencrypted requests from another machine
+        """.formatted(port), output.toString(StandardCharsets.UTF_8));
   }
 
   @Test

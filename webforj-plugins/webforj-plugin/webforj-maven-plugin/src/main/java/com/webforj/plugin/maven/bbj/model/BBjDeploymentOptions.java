@@ -11,6 +11,7 @@ import java.util.Objects;
 public final class BBjDeploymentOptions {
 
   private String url = "";
+  private boolean allowUnencrypted;
 
   /**
    * Gets the base address of BBjShip.
@@ -30,5 +31,25 @@ public final class BBjDeploymentOptions {
    */
   public void setUrl(String url) {
     this.url = Objects.requireNonNull(url);
+  }
+
+  /**
+   * Checks whether the administration credentials may travel over an unencrypted connection to
+   * another machine.
+   *
+   * @return true when an unencrypted connection to another machine is allowed
+   */
+  public boolean isAllowUnencrypted() {
+    return allowUnencrypted;
+  }
+
+  /**
+   * Sets whether the administration credentials may travel over an unencrypted connection to
+   * another machine.
+   *
+   * @param allowUnencrypted true to allow an unencrypted connection to another machine
+   */
+  public void setAllowUnencrypted(boolean allowUnencrypted) {
+    this.allowUnencrypted = allowUnencrypted;
   }
 }

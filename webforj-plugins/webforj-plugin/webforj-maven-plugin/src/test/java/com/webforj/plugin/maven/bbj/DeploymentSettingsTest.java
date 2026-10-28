@@ -212,6 +212,17 @@ class DeploymentSettingsTest {
     assertEquals(ADMIN_PASSWORD, credentials.getPassword());
   }
 
+  @ParameterizedTest
+  @MethodSource("getUnencryptedAllowances")
+  void shouldPreferTheUnencryptedAllowanceOverrideOverTheConfiguration(boolean configured,
+      Boolean override, boolean expected) {
+    BBjOptions options = new BBjOptions();
+    options.getDeployment().setAllowUnencrypted(configured);
+    DeploymentSettings settings = DeploymentSettings.create(options).setAllowUnencrypted(override);
+
+    assertEquals(expected, settings.isAllowUnencrypted());
+  }
+
   @Test
   void shouldRequireOptions() {
     BBjOptions missing = null;
@@ -254,6 +265,11 @@ class DeploymentSettingsTest {
     return Stream.of(Arguments.of(DEFAULT_PUBLISH_NAME, null, DEFAULT_PUBLISH_NAME),
         Arguments.of(null, null, ""),
         Arguments.of(DEFAULT_PUBLISH_NAME, PUBLISH_NAME, PUBLISH_NAME));
+  }
+
+  private static Stream<Arguments> getUnencryptedAllowances() {
+    return Stream.of(Arguments.of(false, null, false), Arguments.of(true, null, true),
+        Arguments.of(false, true, true), Arguments.of(true, false, false));
   }
 
   private static Stream<Arguments> getPorts() {
