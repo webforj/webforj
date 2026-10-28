@@ -1,26 +1,25 @@
-package com.webforj.bbj.security;
+package com.webforj.bbj.security.store;
 
 import com.webforj.Environment;
 import com.webforj.router.history.Location;
 import com.webforj.router.security.AbstractRouteSecurityManager;
-import com.webforj.webstorage.SessionStorage;
+import com.webforj.webstorage.LocalStorage;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.util.Optional;
 
 /**
- * {@link BBjRequestedLocationStore} that keeps the requested location in the browser session
- * storage.
+ * {@link BBjRequestedLocationStore} that keeps the requested location in the browser local storage.
  *
  * <p>
- * Only paths inside the app are read back. Any other stored value is discarded. When the session
+ * Only paths inside the app are read back. Any other stored value is discarded. When the local
  * storage is not available the store stays empty. Failures are logged and never thrown.
  * </p>
  *
  * @author Christian Liebhardt
  * @since 26.03
  */
-public final class BBjBrowserRequestedLocationStore implements BBjRequestedLocationStore {
+final class BBjBrowserRequestedLocationStore implements BBjRequestedLocationStore {
   private static final Logger logger =
       System.getLogger(BBjBrowserRequestedLocationStore.class.getName());
   private static final String KEY = AbstractRouteSecurityManager.PRE_AUTH_LOCATION_KEY;
@@ -61,19 +60,6 @@ public final class BBjBrowserRequestedLocationStore implements BBjRequestedLocat
     }
   }
 
-  private boolean isRelativePath(String path) {
-    if (!path.startsWith("/") || path.startsWith("//") || path.indexOf('\\') >= 0) {
-      return false;
-    }
-
-    try {
-      new Location(path);
-      return true;
-    } catch (IllegalArgumentException e) {
-      return false;
-    }
-  }
-
   /**
    * {@inheritDoc}
    */
@@ -87,9 +73,31 @@ public final class BBjBrowserRequestedLocationStore implements BBjRequestedLocat
     }
   }
 
-  private Optional<SessionStorage> getStorage() {
-    return Optional
-        .ofNullable(Environment.getCurrent() == null ? null : SessionStorage.getCurrent());
+  /**
+   * Tells whether a stored value is a path inside the app.
+   *
+   * <p>
+   * A path inside the app starts with one slash, holds no backslash and is a valid location.
+   * </p>
+   *
+   * @param path the stored value
+   * @return true when the value is a path inside the app
+   */
+  static boolean isRelativePath(String path) {
+    if (!path.startsWith("/") || path.startsWith("//") || path.indexOf('\\') >= 0) {
+      return false;
+    }
+
+    try {
+      new Location(path);
+      return true;
+    } catch (IllegalArgumentException e) {
+      return false;
+    }
+  }
+
+  private Optional<LocalStorage> getStorage() {
+    return Optional.ofNullable(Environment.getCurrent() == null ? null : LocalStorage.getCurrent());
   }
 
 }

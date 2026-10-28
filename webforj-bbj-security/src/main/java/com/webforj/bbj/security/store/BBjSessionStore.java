@@ -1,6 +1,10 @@
-package com.webforj.bbj.security;
+package com.webforj.bbj.security.store;
 
+import com.webforj.App;
+import com.webforj.Environment;
 import com.webforj.bbj.security.model.BBjSession;
+import com.webforj.webstorage.SessionStorage;
+import java.nio.file.Path;
 import java.util.Optional;
 
 /**
@@ -10,6 +14,27 @@ import java.util.Optional;
  * @since 26.03
  */
 public interface BBjSessionStore {
+
+  /**
+   * Creates the session store for an environment.
+   *
+   * <p>
+   * When the environment has an HTTP session, the session is kept in the HTTP session. Otherwise it
+   * is kept encrypted in a file in the temporary directory, opened by a key held in the session
+   * storage of the tab.
+   * </p>
+   *
+   * @param environment the environment of the application
+   * @return the session store
+   */
+  static BBjSessionStore create(Environment environment) {
+    if (environment.getSessionAccessor().isPresent()) {
+      return new BBjHttpSessionStore();
+    }
+
+    return new BBjFileSessionStore(() -> Path.of(System.getProperty("java.io.tmpdir")),
+        App::getApplicationName, SessionStorage::getCurrent);
+  }
 
   /**
    * Saves the session for the current tab and replaces the session saved before.
