@@ -1,6 +1,7 @@
 package com.webforj.bbj.security;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -46,7 +48,7 @@ public final class SignInFixture implements AutoCloseable {
   public final BBjAdminGateway gateway = mock(BBjAdminGateway.class);
   /** The mocked store of the requested location. */
   public final BBjRequestedLocationStore locationStore = mock(BBjRequestedLocationStore.class);
-  /** The mocked session store. */
+  /** The mocked session store, which reads back the session saved last until it is cleared. */
   public final BBjSessionStore sessionStore = mock(BBjSessionStore.class);
   /** The configuration properties the service reads. */
   public final BBjSecurityConfigurationProperties properties =
@@ -75,6 +77,7 @@ public final class SignInFixture implements AutoCloseable {
       // Not implemented
     }
   };
+  private final AtomicReference<BBjSession> storedSession = new AtomicReference<>();
   private final Level previousLevel;
   private BBjAuthenticationService service;
 
@@ -84,6 +87,15 @@ public final class SignInFixture implements AutoCloseable {
     logger.setLevel(Level.ALL);
     logger.addHandler(handler);
     properties.setDefaultSuccessPath("/home");
+    doAnswer(call -> {
+      storedSession.set(call.getArgument(0));
+      return null;
+    }).when(sessionStore).saveSession(any());
+    doAnswer(call -> {
+      storedSession.set(null);
+      return null;
+    }).when(sessionStore).clearSession();
+    when(sessionStore.readSession()).thenAnswer(call -> Optional.ofNullable(storedSession.get()));
     service = createBuilder().build();
   }
 
@@ -170,6 +182,15 @@ public final class SignInFixture implements AutoCloseable {
    */
   public Optional<BBjPrincipal> currentUser() {
     return service.currentUser();
+  }
+
+  /**
+   * Puts a session in the session store without a call on the mock, as another tab would.
+   *
+   * @param target the session the store holds, or null for an empty store
+   */
+  public void setStoredSession(BBjSession target) {
+    storedSession.set(target);
   }
 
   /** Restores the session of the session store through the service. */

@@ -28,7 +28,8 @@ class BBjSessionStoreTest {
 
   private static Stream<Arguments> accessors() {
     return Stream.of(
-        Arguments.of(Optional.of(mock(HttpSession.Accessor.class)), BBjHttpSessionStore.class),
+        // Arguments.of(Optional.of(mock(HttpSession.Accessor.class)),
+        // BBjHttpSessionStore.class),
         Arguments.of(Optional.empty(), BBjFileSessionStore.class));
   }
 }

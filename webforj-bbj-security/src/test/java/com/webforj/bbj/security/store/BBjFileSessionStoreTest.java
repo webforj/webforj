@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
@@ -15,7 +16,7 @@ import static org.mockito.Mockito.when;
 
 import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.bbj.security.model.BBjSession;
-import com.webforj.webstorage.SessionStorage;
+import com.webforj.webstorage.LocalStorage;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -43,8 +44,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class BBjFileSessionStoreTest {
-  private static final String HANDLE_KEY = "webforj-bbj-handle";
-  private static final String KEY_KEY = "webforj-bbj-key";
+  private static final String HANDLE_KEY = "webforj-bbj-handle.shop";
+  private static final String KEY_KEY = "webforj-bbj-key.shop";
   private static final String APP = "shop";
   private static final String TOKEN = "token-secret-123";
   private static final Instant NOW = Instant.parse("2026-01-01T00:00:00Z");
@@ -53,32 +54,33 @@ class BBjFileSessionStoreTest {
   @TempDir
   private Path directory;
 
-  private Map<String, String> tab;
-  private SessionStorage storage;
+  private Map<String, String> browser;
+  private LocalStorage storage;
   private BBjFileSessionStore store;
   private BBjSession session;
   private Path file;
 
   @BeforeEach
   void setUp() {
-    tab = new HashMap<>();
-    storage = createStorage(tab);
+    browser = new HashMap<>();
+    storage = createStorage(browser);
     store = createStore(storage, NOW);
     session = new BBjSession(new BBjPrincipal("alice", Set.of("ADMIN"), Set.of("read")), TOKEN,
         EXPIRES_AT);
     file = directory.resolve("webforj-bbj-security").resolve("shop.sessions");
   }
 
-  private BBjFileSessionStore createStore(SessionStorage target, Instant now) {
+  private BBjFileSessionStore createStore(LocalStorage target, Instant now) {
     return new BBjFileSessionStore(() -> directory, () -> APP, () -> target,
         Clock.fixed(now, ZoneOffset.UTC));
   }
 
-  private static SessionStorage createStorage(Map<String, String> values) {
-    SessionStorage target = mock(SessionStorage.class);
-    when(target.get(List.of(HANDLE_KEY, KEY_KEY))).thenAnswer(call -> {
+  private static LocalStorage createStorage(Map<String, String> values) {
+    LocalStorage target = mock(LocalStorage.class);
+    when(target.get(anyList())).thenAnswer(call -> {
       Map<String, String> pair = new HashMap<>();
-      values.forEach((key, value) -> pair.put(key, value));
+      call.<List<String>>getArgument(0).stream().filter(values::containsKey)
+          .forEach(key -> pair.put(key, values.get(key)));
       return pair;
     });
     when(target.add(anyMap())).thenAnswer(call -> {
@@ -110,16 +112,16 @@ class BBjFileSessionStoreTest {
   class SaveSession {
 
     @Test
-    void shouldKeepTheSessionInTheFileAndThePairInTheTab() throws IOException {
+    void shouldKeepTheSessionInTheFileAndThePairInTheBrowser() throws IOException {
       store.saveSession(session);
 
       List<String> lines = readLines();
       assertEquals(1, lines.size());
-      String name = tab.get(HANDLE_KEY);
+      String name = browser.get(HANDLE_KEY);
       assertTrue(lines.get(0).startsWith(name + "\t"));
       assertEquals("v1." + EXPIRES_AT.toEpochMilli() + ".", name.substring(0, name.length() - 43));
       assertFalse(lines.get(0).contains(TOKEN));
-      assertFalse(tab.get(KEY_KEY).isBlank());
+      assertFalse(browser.get(KEY_KEY).isBlank());
     }
 
     @Test
@@ -134,25 +136,26 @@ class BBjFileSessionStoreTest {
     }
 
     @Test
-    void shouldReplaceThePreviousEntryOfTheTab() throws IOException {
+    void shouldReplaceThePreviousEntryOfTheBrowser() throws IOException {
       store.saveSession(session);
-      String first = tab.get(HANDLE_KEY);
+      String first = browser.get(HANDLE_KEY);
 
       store.saveSession(session);
 
       assertEquals(1, readLines().size());
-      assertNotEquals(first, tab.get(HANDLE_KEY));
-      assertEquals(List.of(tab.get(HANDLE_KEY)), readNames());
+      assertNotEquals(first, browser.get(HANDLE_KEY));
+      assertEquals(List.of(browser.get(HANDLE_KEY)), readNames());
     }
 
     @Test
-    void shouldKeepTheEntryOfAnotherTab() throws IOException {
-      Map<String, String> otherTab = new HashMap<>();
-      createStore(createStorage(otherTab), NOW).saveSession(session);
+    void shouldKeepTheEntryOfAnotherBrowser() throws IOException {
+      Map<String, String> otherBrowser = new HashMap<>();
+      createStore(createStorage(otherBrowser), NOW).saveSession(session);
 
       store.saveSession(session);
 
-      assertEquals(Set.of(tab.get(HANDLE_KEY), otherTab.get(HANDLE_KEY)), Set.copyOf(readNames()));
+      assertEquals(Set.of(browser.get(HANDLE_KEY), otherBrowser.get(HANDLE_KEY)),
+          Set.copyOf(readNames()));
     }
 
     @Test
@@ -165,7 +168,7 @@ class BBjFileSessionStoreTest {
 
       store.saveSession(session);
 
-      assertEquals(Set.of(live, tab.get(HANDLE_KEY)), Set.copyOf(readNames()));
+      assertEquals(Set.of(live, browser.get(HANDLE_KEY)), Set.copyOf(readNames()));
     }
 
     @Test
@@ -191,7 +194,7 @@ class BBjFileSessionStoreTest {
       assertEquals(10000, names.size());
       assertFalse(names.contains(createName(EXPIRES_AT.plusSeconds(1), 0)));
       assertTrue(names.contains(createName(EXPIRES_AT.plusSeconds(2), 1)));
-      assertTrue(names.contains(tab.get(HANDLE_KEY)));
+      assertTrue(names.contains(browser.get(HANDLE_KEY)));
       assertEquals(
           List.of("The session store removed 1 sessions because its limit of 10000 was reached"),
           messages);
@@ -218,7 +221,7 @@ class BBjFileSessionStoreTest {
           assertThrows(IllegalStateException.class, () -> blocked.saveSession(session));
 
       assertEquals("The sign in could not be kept", thrown.getMessage());
-      assertTrue(tab.isEmpty());
+      assertTrue(browser.isEmpty());
     }
 
     @Test
@@ -241,35 +244,36 @@ class BBjFileSessionStoreTest {
           assertThrows(IllegalStateException.class, () -> store.saveSession(large));
 
       assertEquals("The sign in could not be encrypted", thrown.getMessage());
-      assertTrue(tab.isEmpty());
+      assertTrue(browser.isEmpty());
     }
 
     @Test
-    void shouldRestoreThePreviousPairAndEntryWhenTheTabCannotBeWritten() throws IOException {
+    void shouldRestoreThePreviousPairAndEntryWhenTheBrowserCannotBeWritten() throws IOException {
       store.saveSession(session);
-      Map<String, String> previous = Map.copyOf(tab);
-      SessionStorage failing = createStorage(tab);
+      Map<String, String> previous = Map.copyOf(browser);
+      LocalStorage failing = createStorage(browser);
       doThrow(new IllegalStateException("denied")).doAnswer(call -> {
-        tab.putAll(call.<Map<String, String>>getArgument(0));
+        browser.putAll(call.<Map<String, String>>getArgument(0));
         return failing;
       }).when(failing).add(anyMap());
       BBjFileSessionStore failingStore = createStore(failing, NOW);
 
       assertThrows(IllegalStateException.class, () -> failingStore.saveSession(session));
 
-      assertEquals(previous, tab);
+      assertEquals(previous, browser);
       assertEquals(List.of(previous.get(HANDLE_KEY)), readNames());
     }
 
     @Test
-    void shouldLeaveTheTabEmptyWhenItHoldsNoPreviousPairAndCannotBeWritten() throws IOException {
-      SessionStorage failing = createStorage(tab);
+    void shouldLeaveTheBrowserEmptyWhenItHoldsNoPreviousPairAndCannotBeWritten()
+        throws IOException {
+      LocalStorage failing = createStorage(browser);
       doThrow(new IllegalStateException("denied")).when(failing).add(anyMap());
       BBjFileSessionStore failingStore = createStore(failing, NOW);
 
       assertThrows(IllegalStateException.class, () -> failingStore.saveSession(session));
 
-      assertTrue(tab.isEmpty());
+      assertTrue(browser.isEmpty());
       assertTrue(readLines().isEmpty());
     }
 
@@ -290,7 +294,7 @@ class BBjFileSessionStoreTest {
         logger.removeHandler(handler);
       }
 
-      assertEquals(List.of(tab.get(HANDLE_KEY)), readNames());
+      assertEquals(List.of(browser.get(HANDLE_KEY)), readNames());
       assertEquals(
           List.of("Expired sign ins could not be removed (java.lang.IllegalStateException)"),
           messages);
@@ -334,9 +338,22 @@ class BBjFileSessionStoreTest {
     }
 
     @Test
-    void shouldReadNothingAndTouchNothingWhenTheTabHoldsNoPair() {
+    void shouldReadNothingAndTouchNothingWhenTheBrowserHoldsNoPair() {
       assertTrue(store.readSession().isEmpty());
       assertFalse(Files.exists(file));
+    }
+
+    @Test
+    void shouldNeitherReadNorRemoveThePairOfAnotherApplication() {
+      BBjFileSessionStore other = new BBjFileSessionStore(() -> directory, () -> "admin",
+          () -> storage, Clock.fixed(NOW, ZoneOffset.UTC));
+      other.saveSession(session);
+      Map<String, String> saved = Map.copyOf(browser);
+
+      assertTrue(store.readSession().isEmpty());
+
+      assertEquals(saved, browser);
+      assertEquals(TOKEN, other.readSession().orElseThrow().getToken());
     }
 
     @Test
@@ -346,7 +363,7 @@ class BBjFileSessionStoreTest {
 
       assertTrue(later.readSession().isEmpty());
 
-      assertTrue(tab.isEmpty());
+      assertTrue(browser.isEmpty());
       assertTrue(readLines().isEmpty());
     }
 
@@ -357,7 +374,7 @@ class BBjFileSessionStoreTest {
 
       assertTrue(store.readSession().isEmpty());
 
-      assertTrue(tab.isEmpty());
+      assertTrue(browser.isEmpty());
     }
 
     @Test
@@ -367,24 +384,24 @@ class BBjFileSessionStoreTest {
 
       assertTrue(store.readSession().isEmpty());
 
-      assertTrue(tab.isEmpty());
+      assertTrue(browser.isEmpty());
       assertFalse(Files.exists(file));
     }
 
     @ParameterizedTest
     @MethodSource("unusablePairs")
     void shouldRemovePairThatIsNotUsable(Map<String, String> pair) {
-      tab.putAll(pair);
+      browser.putAll(pair);
 
       assertTrue(store.readSession().isEmpty());
 
-      assertTrue(tab.isEmpty());
+      assertTrue(browser.isEmpty());
     }
 
     @Test
-    void shouldRemoveTheEntryAndWarnWhenTheKeyOfTheTabWasChanged() throws IOException {
+    void shouldRemoveTheEntryAndWarnWhenTheKeyOfTheBrowserWasChanged() throws IOException {
       store.saveSession(session);
-      tab.put(KEY_KEY, "A".repeat(43));
+      browser.put(KEY_KEY, "A".repeat(43));
       List<String> messages = new ArrayList<>();
       Logger logger = Logger.getLogger(BBjFileSessionStore.class.getName());
       Handler handler = createHandler(messages);
@@ -396,7 +413,7 @@ class BBjFileSessionStoreTest {
         logger.removeHandler(handler);
       }
 
-      assertTrue(tab.isEmpty());
+      assertTrue(browser.isEmpty());
       assertTrue(readLines().isEmpty());
       assertEquals(List.of("A stored sign in could not be read and was removed"), messages);
     }
@@ -412,13 +429,13 @@ class BBjFileSessionStoreTest {
 
       assertTrue(store.readSession().isEmpty());
 
-      assertTrue(tab.isEmpty());
+      assertTrue(browser.isEmpty());
       assertTrue(readLines().isEmpty());
     }
 
     @Test
-    void shouldLogTheClassNameAndKeepTheTabWhenTheTabCannotBeRead() {
-      SessionStorage failing = mock(SessionStorage.class);
+    void shouldLogTheClassNameAndKeepTheBrowserWhenTheBrowserCannotBeRead() {
+      LocalStorage failing = mock(LocalStorage.class);
       when(failing.get(List.of(HANDLE_KEY, KEY_KEY))).thenThrow(new IllegalStateException(TOKEN));
       BBjFileSessionStore failingStore = createStore(failing, NOW);
       List<String> messages = new ArrayList<>();
@@ -448,36 +465,36 @@ class BBjFileSessionStoreTest {
   class ClearSession {
 
     @Test
-    void shouldRemoveTheEntryOfTheTabAndKeepTheOthers() throws IOException {
-      Map<String, String> otherTab = new HashMap<>();
-      createStore(createStorage(otherTab), NOW).saveSession(session);
+    void shouldRemoveTheEntryOfTheBrowserAndKeepTheOthers() throws IOException {
+      Map<String, String> otherBrowser = new HashMap<>();
+      createStore(createStorage(otherBrowser), NOW).saveSession(session);
       store.saveSession(session);
 
       store.clearSession();
 
-      assertTrue(tab.isEmpty());
-      assertEquals(List.of(otherTab.get(HANDLE_KEY)), readNames());
+      assertTrue(browser.isEmpty());
+      assertEquals(List.of(otherBrowser.get(HANDLE_KEY)), readNames());
     }
 
     @Test
     void shouldNotCreateTheFileWhenThereIsNone() {
-      tab.put(HANDLE_KEY, createName(EXPIRES_AT, 1));
+      browser.put(HANDLE_KEY, createName(EXPIRES_AT, 1));
 
       store.clearSession();
 
-      assertTrue(tab.isEmpty());
+      assertTrue(browser.isEmpty());
       assertFalse(Files.exists(file));
     }
 
     @Test
     void shouldLeaveTheFileAloneForNameThatIsNoEntry() throws IOException {
       store.saveSession(session);
-      tab.put(HANDLE_KEY, "not an entry");
+      browser.put(HANDLE_KEY, "not an entry");
       List<String> before = readLines();
 
       store.clearSession();
 
-      assertTrue(tab.isEmpty());
+      assertTrue(browser.isEmpty());
       assertEquals(before, readLines());
     }
 
@@ -492,7 +509,7 @@ class BBjFileSessionStoreTest {
     @Test
     void shouldLogTheClassNameWhenTheStorageFails() throws IOException {
       store.saveSession(session);
-      SessionStorage failing = createStorage(tab);
+      LocalStorage failing = createStorage(browser);
       doThrow(new IllegalStateException(TOKEN)).when(failing).remove(HANDLE_KEY, KEY_KEY);
       BBjFileSessionStore failingStore = createStore(failing, NOW);
       List<String> messages = new ArrayList<>();
@@ -506,10 +523,8 @@ class BBjFileSessionStoreTest {
         logger.removeHandler(handler);
       }
 
-      assertEquals(
-          List.of(
-              "The sign in could not be removed from the tab (java.lang.IllegalStateException)"),
-          messages);
+      assertEquals(List.of("The sign in could not be removed from the browser "
+          + "(java.lang.IllegalStateException)"), messages);
       assertTrue(readLines().isEmpty());
     }
 
@@ -523,8 +538,8 @@ class BBjFileSessionStoreTest {
     }
 
     @Test
-    void shouldNotThrowWhenTheTabCannotBeRead() {
-      SessionStorage failing = mock(SessionStorage.class);
+    void shouldNotThrowWhenTheBrowserCannotBeRead() {
+      LocalStorage failing = mock(LocalStorage.class);
       when(failing.get(List.of(HANDLE_KEY, KEY_KEY))).thenThrow(new IllegalStateException(TOKEN));
       BBjFileSessionStore failingStore = createStore(failing, NOW);
 
@@ -533,7 +548,7 @@ class BBjFileSessionStoreTest {
 
     @Test
     void shouldLogTheClassNameWhenTheEntryCannotBeRemoved() throws IOException {
-      tab.put(HANDLE_KEY, createName(EXPIRES_AT, 1));
+      browser.put(HANDLE_KEY, createName(EXPIRES_AT, 1));
       Files.createDirectories(file);
       List<String> messages = new ArrayList<>();
       Logger logger = Logger.getLogger(BBjFileSessionStore.class.getName());
@@ -546,7 +561,7 @@ class BBjFileSessionStoreTest {
         logger.removeHandler(handler);
       }
 
-      assertTrue(tab.isEmpty());
+      assertTrue(browser.isEmpty());
       assertEquals(1, messages.size());
       assertTrue(messages.get(0).startsWith("The session entry could not be removed ("));
     }

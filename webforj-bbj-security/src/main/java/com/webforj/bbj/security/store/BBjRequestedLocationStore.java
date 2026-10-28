@@ -24,10 +24,6 @@ public interface BBjRequestedLocationStore {
    * @return the requested location store
    */
   static BBjRequestedLocationStore create(Environment environment) {
-    if (environment.getSessionAccessor().isPresent()) {
-      return new BBjHttpSessionRequestedLocationStore();
-    }
-
     return new BBjBrowserRequestedLocationStore();
   }
 
