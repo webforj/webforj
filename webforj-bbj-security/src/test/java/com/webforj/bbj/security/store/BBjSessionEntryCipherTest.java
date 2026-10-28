@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.bbj.security.model.BBjSession;
-import com.webforj.bbj.security.store.BBjFileSessionStore.BBjSessionEntryCipher;
+import com.webforj.bbj.security.store.BBjBrowserSecurityStore.BBjSessionEntryCipher;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.Set;
@@ -21,7 +21,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-class BBjFileSessionStoreCipherTest {
+class BBjSessionEntryCipherTest {
   private static final Pattern URL_SAFE_43 = Pattern.compile("[A-Za-z0-9_-]{43}");
   private static final String ENTRY_NAME = "v1.1767225600000." + "h".repeat(43);
   private static final String TOKEN = "token-secret-123";
