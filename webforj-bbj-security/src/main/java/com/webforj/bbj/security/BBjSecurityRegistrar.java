@@ -45,8 +45,7 @@ public final class BBjSecurityRegistrar implements AppLifecycleListener {
       return;
     }
 
-    var properties = new BBjSecurityConfigurationProperties();
-    BBjConfigReader.readConfig(properties, config);
+    var properties = new BBjSecurityConfigurationProperties(config);
     var configuration = new BBjRouteSecurityConfiguration(properties);
 
     if (!configuration.isEnabled()) {
