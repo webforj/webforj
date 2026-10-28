@@ -130,30 +130,42 @@ public final class BBjAuthenticationService {
   }
 
   /**
-   * Checks the signed in user against the server.
+   * Checks the signed in user against the session store and the server.
    *
    * <p>
-   * When nobody has signed in, nothing happens. A session that has reached its expiry is cleared at
-   * once without a call to the server. A check that is not due yet does nothing. A check is due
-   * when the session was not checked since the sign in or the restore, when {@code check-seconds}
-   * have passed since the last check, and while the session is inside the last
-   * {@code renew-before-minutes} before its expiry.
+   * The session store is read first, because all tabs of one browser share it. When it holds no
+   * session, the check ends there. A session held by this service is then dropped without a call to
+   * the server, without a change to the session store and without opening a location. When the
+   * store holds a session with another token than this service, or this service holds none, the
+   * stored session takes its place and its check is due at once.
    * </p>
    *
    * <p>
-   * A due check runs on the calling thread. It signs the user out when the server no longer accepts
-   * the token or knows it for another user. Inside the renew window the token is renewed and the
-   * renewed session is saved in the session store. When the renewed session cannot be saved, the
-   * user is signed out and the renewed token is ended. Any other failure keeps the user signed in
-   * until the session expires, and the next check is due after {@code check-seconds} or, inside the
-   * renew window, at the next call.
+   * A session that has reached its expiry is cleared at once without a call to the server. A check
+   * that is not due yet does nothing. A check is due when the session was not checked since the
+   * sign in, the restore or the change in the session store, when {@code check-seconds} have passed
+   * since the last check, and while the session is inside the last {@code renew-before-minutes}
+   * before its expiry.
+   * </p>
+   *
+   * <p>
+   * A due check runs on the calling thread. When the server no longer accepts the token or knows it
+   * for another user, the session store is read again. A session with another token found there
+   * takes the place of the checked one and the session store is kept. Otherwise the user is signed
+   * out. Inside the renew window the token is renewed and the renewed session is saved in the
+   * session store. When the renewed session cannot be saved, the user is signed out and the renewed
+   * token is ended. Any other failure keeps the user signed in until the session expires, and the
+   * next check is due after {@code check-seconds} or, inside the renew window, at the next call.
    * </p>
    */
   void check() {
-    if (session == null) {
+    Optional<BBjSession> stored = sessionStore.readSession();
+    if (stored.isEmpty()) {
+      applyMissingSession();
       return;
     }
 
+    applyStoredSession(stored.get());
     final var checked = session;
     var now = clock.instant();
     if (!now.isBefore(checked.getExpiresAt())) {
@@ -176,10 +188,10 @@ public final class BBjAuthenticationService {
 
       outcome = isInsideRenewalWindow(checked, now) ? gateway.renewSession(checked) : checked;
     } catch (BBjAdminFailure e) {
-      applyCheckFailure(e);
+      applyCheckFailure(checked, e);
       return;
     } catch (RuntimeException e) {
-      applyCheckFailure(createUnavailableFailure());
+      applyCheckFailure(checked, createUnavailableFailure());
       return;
     }
 
@@ -199,8 +211,8 @@ public final class BBjAuthenticationService {
    * Restores the user that signed in before the page was reloaded.
    *
    * <p>
-   * The session saved for the current tab is put in place without calling BBj. When the store holds
-   * no usable session, nobody is signed in.
+   * The session saved in the session store is put in place without calling BBj. When the store
+   * holds no usable session, nobody is signed in.
    * </p>
    */
   void restoreSession() {
@@ -271,15 +283,40 @@ public final class BBjAuthenticationService {
     }
   }
 
-  private void applyCheckFailure(BBjAdminFailure failure) {
+  private void applyMissingSession() {
+    if (session != null) {
+      session = null;
+      logger.log(Level.DEBUG, "The session store holds no sign in, the sign in was dropped");
+    }
+  }
+
+  private void applyStoredSession(BBjSession stored) {
+    if (session == null || !session.getToken().equals(stored.getToken())) {
+      session = stored;
+      lastCheck = null;
+    }
+  }
+
+  private void applyCheckFailure(BBjSession checked, BBjAdminFailure failure) {
     if (failure.getKind() == Kind.TOKEN_REJECTED) {
-      clearSignIn();
-      logger.log(Level.INFO, "The server no longer accepts the sign in, the user was signed out");
+      applyRejection(checked);
     } else {
       lastCheck = clock.instant();
       logger.log(Level.WARNING, "The sign in could not be checked and stays until it expires: {0}",
           failure.getMessage());
     }
+  }
+
+  private void applyRejection(BBjSession checked) {
+    Optional<BBjSession> stored = sessionStore.readSession();
+    if (stored.isPresent() && !stored.get().getToken().equals(checked.getToken())) {
+      applyStoredSession(stored.get());
+      logger.log(Level.DEBUG, "Another sign in in the session store replaced the rejected one");
+      return;
+    }
+
+    clearSignIn();
+    logger.log(Level.INFO, "The server no longer accepts the sign in, the user was signed out");
   }
 
   private void applyRenewal(BBjSession renewed) {
