@@ -10,6 +10,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
+import org.springframework.security.web.csrf.CsrfFilter;
 
 /**
  * Configures Spring Security for webforJ applications.
@@ -230,20 +231,8 @@ public class WebforjSecurityConfigurer
     WebforjFrameworkRequestMatcher frameworkMatcher =
         context.getBean(WebforjFrameworkRequestMatcher.class);
 
-    http.csrf(csrf -> {
-      // Exempt webforJ framework internal requests
-      csrf.ignoringRequestMatchers(frameworkMatcher);
-
-      // Disable CSRF for the login endpoint
-      if (loginProcessingUrl != null) {
-        csrf.ignoringRequestMatchers(loginProcessingUrl);
-      }
-
-      // Disable CSRF for the logout endpoint
-      if (logoutUrl != null) {
-        csrf.ignoringRequestMatchers(logoutUrl);
-      }
-    });
+    http.csrf(csrf -> csrf.ignoringRequestMatchers(frameworkMatcher));
+    http.addFilterAfter(new WebforjCsrfTokenFilter(), CsrfFilter.class);
   }
 
   private void configureAuthorization(HttpSecurity http, ApplicationContext context) {

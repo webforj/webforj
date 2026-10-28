@@ -6,11 +6,16 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import com.webforj.Environment;
 import com.webforj.Page;
 import com.webforj.spring.security.SpringSecurityFormSubmitter.FormType;
 import com.webforj.spring.security.SpringSecurityFormSubmitter.LoginFormBuilder;
 import com.webforj.spring.security.SpringSecurityFormSubmitter.LogoutFormBuilder;
+import jakarta.servlet.http.HttpSession;
+import java.util.Optional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -19,6 +24,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.web.csrf.DefaultCsrfToken;
 
 @ExtendWith(MockitoExtension.class)
 class SpringSecurityFormSubmitterTest {
@@ -220,6 +226,75 @@ class SpringSecurityFormSubmitterTest {
         String js = jsCaptor.getValue();
         assertTrue(js.contains("\"csrf\":\"token\""));
         assertTrue(js.contains("\"redirect\":\"/home\""));
+      }
+    }
+  }
+
+  @Nested
+  class CsrfTokenField {
+
+    @Mock
+    private Environment environment;
+
+    @Mock
+    private HttpSession httpSession;
+
+    private MockedStatic<Environment> environmentMock;
+
+    @BeforeEach
+    void setUp() {
+      environmentMock = mockStatic(Environment.class);
+      environmentMock.when(Environment::getCurrent).thenReturn(environment);
+      HttpSession.Accessor accessor = SessionAccessorStub.create(httpSession);
+      when(environment.getSessionAccessor()).thenReturn(Optional.of(accessor));
+    }
+
+    @AfterEach
+    void tearDown() {
+      environmentMock.close();
+    }
+
+    @Test
+    void shouldSubmitStoredTokenAsField() {
+      when(httpSession.getAttribute(WebforjCsrfTokenFilter.SESSION_ATTRIBUTE_NAME))
+          .thenReturn(new DefaultCsrfToken("X-CSRF-TOKEN", "_csrf", "masked-token"));
+      try (MockedStatic<Page> pageMock = mockStatic(Page.class)) {
+        pageMock.when(Page::getCurrent).thenReturn(page);
+
+        SpringSecurityFormSubmitter.logout("/logout").submit();
+
+        ArgumentCaptor<String> jsCaptor = ArgumentCaptor.forClass(String.class);
+        verify(page).executeJsVoidAsync(jsCaptor.capture());
+        assertTrue(jsCaptor.getValue().contains("\"_csrf\":\"masked-token\""));
+      }
+    }
+
+    @Test
+    void shouldKeepTokenFieldSetOnBuilder() {
+      when(httpSession.getAttribute(WebforjCsrfTokenFilter.SESSION_ATTRIBUTE_NAME))
+          .thenReturn(new DefaultCsrfToken("X-CSRF-TOKEN", "_csrf", "masked-token"));
+      try (MockedStatic<Page> pageMock = mockStatic(Page.class)) {
+        pageMock.when(Page::getCurrent).thenReturn(page);
+
+        SpringSecurityFormSubmitter.logout("/logout").addField("_csrf", "own-token").submit();
+
+        ArgumentCaptor<String> jsCaptor = ArgumentCaptor.forClass(String.class);
+        verify(page).executeJsVoidAsync(jsCaptor.capture());
+        assertTrue(jsCaptor.getValue().contains("\"_csrf\":\"own-token\""));
+        assertFalse(jsCaptor.getValue().contains("masked-token"));
+      }
+    }
+
+    @Test
+    void shouldSubmitWithoutTokenFieldWhenSessionHoldsNone() {
+      try (MockedStatic<Page> pageMock = mockStatic(Page.class)) {
+        pageMock.when(Page::getCurrent).thenReturn(page);
+
+        SpringSecurityFormSubmitter.logout("/logout").submit();
+
+        ArgumentCaptor<String> jsCaptor = ArgumentCaptor.forClass(String.class);
+        verify(page).executeJsVoidAsync(jsCaptor.capture());
+        assertFalse(jsCaptor.getValue().contains("_csrf"));
       }
     }
   }
