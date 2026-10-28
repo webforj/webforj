@@ -18,6 +18,8 @@ import static org.mockito.Mockito.when;
 import com.webforj.Environment;
 import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.bbj.security.model.BBjSession;
+import com.webforj.router.history.Location;
+import com.webforj.router.security.AbstractRouteSecurityManager;
 import jakarta.servlet.http.HttpSession;
 import java.time.Clock;
 import java.time.Instant;
@@ -37,14 +39,15 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockedStatic;
 
-class BBjHttpSessionStoreTest {
-  private static final String KEY = "webforj-bbj-session";
+class BBjHttpSecurityStoreTest {
+  private static final String SESSION_KEY = "webforj-bbj-session";
+  private static final String LOCATION_KEY = AbstractRouteSecurityManager.PRE_AUTH_LOCATION_KEY;
   private static final Instant NOW = Instant.parse("2026-01-01T00:00:00Z");
 
   private MockedStatic<Environment> environmentMock;
   private Environment environment;
   private Map<String, Object> attributes;
-  private BBjHttpSessionStore store;
+  private BBjHttpSecurityStore store;
   private BBjSession session;
 
   @BeforeEach
@@ -67,7 +70,7 @@ class BBjHttpSessionStoreTest {
     when(environment.getSessionAccessor()).thenReturn(Optional.of(accessor));
     environmentMock = mockStatic(Environment.class);
     environmentMock.when(Environment::getCurrent).thenReturn(environment);
-    store = new BBjHttpSessionStore(Clock.fixed(NOW, ZoneOffset.UTC));
+    store = new BBjHttpSecurityStore(Clock.fixed(NOW, ZoneOffset.UTC));
     session = new BBjSession(new BBjPrincipal("alice", Set.of("ADMIN"), Set.of("read")),
         "token-secret-123", NOW.plusSeconds(3600));
   }
@@ -84,7 +87,7 @@ class BBjHttpSessionStoreTest {
     void shouldKeepTheSessionInTheHttpSession() {
       store.saveSession(session);
 
-      assertSame(session, attributes.get(KEY));
+      assertSame(session, attributes.get(SESSION_KEY));
     }
 
     @Test
@@ -95,14 +98,14 @@ class BBjHttpSessionStoreTest {
 
       store.saveSession(later);
 
-      assertSame(later, attributes.get(KEY));
+      assertSame(later, attributes.get(SESSION_KEY));
     }
 
     @Test
     void shouldAcceptTheConstructorWithTheSystemClock() {
       BBjSession later = new BBjSession(session.getPrincipal(), "token-secret-123",
           Instant.now().plusSeconds(3600));
-      BBjHttpSessionStore system = new BBjHttpSessionStore();
+      BBjHttpSecurityStore system = new BBjHttpSecurityStore();
 
       system.saveSession(later);
 
@@ -115,7 +118,7 @@ class BBjHttpSessionStoreTest {
 
     @Test
     void shouldReadTheSavedSession() {
-      attributes.put(KEY, session);
+      attributes.put(SESSION_KEY, session);
 
       assertSame(session, store.readSession().orElseThrow());
     }
@@ -128,20 +131,20 @@ class BBjHttpSessionStoreTest {
     @ParameterizedTest
     @MethodSource("expiries")
     void shouldRemoveAnExpiredSession(Instant expiresAt) {
-      attributes.put(KEY, new BBjSession(session.getPrincipal(), "token-old", expiresAt));
+      attributes.put(SESSION_KEY, new BBjSession(session.getPrincipal(), "token-old", expiresAt));
 
       assertTrue(store.readSession().isEmpty());
 
-      assertFalse(attributes.containsKey(KEY));
+      assertFalse(attributes.containsKey(SESSION_KEY));
     }
 
     @Test
     void shouldRemoveValueThatIsNotSession() {
-      attributes.put(KEY, "not a session");
+      attributes.put(SESSION_KEY, "not a session");
 
       assertTrue(store.readSession().isEmpty());
 
-      assertFalse(attributes.containsKey(KEY));
+      assertFalse(attributes.containsKey(SESSION_KEY));
     }
 
     private static Stream<Arguments> expiries() {
@@ -154,11 +157,70 @@ class BBjHttpSessionStoreTest {
 
     @Test
     void shouldRemoveTheSession() {
-      attributes.put(KEY, session);
+      attributes.put(SESSION_KEY, session);
 
       store.clearSession();
 
-      assertFalse(attributes.containsKey(KEY));
+      assertFalse(attributes.containsKey(SESSION_KEY));
+    }
+  }
+
+  @Nested
+  class SaveLocation {
+
+    @Test
+    void shouldSaveTheFullUriUnderTheRequestedLocationKey() {
+      store.saveLocation(new Location("/protected?x=1#top"));
+
+      assertEquals("/protected?x=1#top", attributes.get(LOCATION_KEY));
+    }
+  }
+
+  @Nested
+  class ReadLocation {
+
+    @Test
+    void shouldReadTheSavedLocation() {
+      attributes.put(LOCATION_KEY, "/protected?x=1");
+
+      Optional<Location> location = store.readLocation();
+
+      assertEquals("/protected?x=1", location.orElseThrow().getFullURI());
+      assertTrue(attributes.containsKey(LOCATION_KEY));
+    }
+
+    @Test
+    void shouldReadNothingWhenNoLocationIsSaved() {
+      assertTrue(store.readLocation().isEmpty());
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidValues")
+    void shouldDiscardValueThatIsNotPathInsideTheApp(Object value) {
+      attributes.put(LOCATION_KEY, value);
+
+      assertTrue(store.readLocation().isEmpty());
+
+      assertFalse(attributes.containsKey(LOCATION_KEY));
+    }
+
+    private static Stream<Arguments> invalidValues() {
+      return Stream.of(Arguments.of("//evil"), Arguments.of("/evil\\path"),
+          Arguments.of("protected"), Arguments.of("https://evil.example"), Arguments.of(""),
+          Arguments.of("/x\u0001"), Arguments.of(42));
+    }
+  }
+
+  @Nested
+  class ClearLocation {
+
+    @Test
+    void shouldClearTheSavedLocation() {
+      attributes.put(LOCATION_KEY, "/protected");
+
+      store.clearLocation();
+
+      assertFalse(attributes.containsKey(LOCATION_KEY));
     }
   }
 
@@ -179,7 +241,7 @@ class BBjHttpSessionStoreTest {
 
     @ParameterizedTest
     @MethodSource("unavailableAccessors")
-    void shouldReadNothing(Optional<HttpSession.Accessor> accessor) {
+    void shouldReadNoSession(Optional<HttpSession.Accessor> accessor) {
       when(environment.getSessionAccessor()).thenReturn(accessor);
 
       assertTrue(store.readSession().isEmpty());
@@ -187,10 +249,35 @@ class BBjHttpSessionStoreTest {
 
     @ParameterizedTest
     @MethodSource("unavailableAccessors")
-    void shouldNotThrowOnClear(Optional<HttpSession.Accessor> accessor) {
+    void shouldNotThrowOnClearSession(Optional<HttpSession.Accessor> accessor) {
       when(environment.getSessionAccessor()).thenReturn(accessor);
 
       assertDoesNotThrow(store::clearSession);
+    }
+
+    @ParameterizedTest
+    @MethodSource("unavailableAccessors")
+    void shouldNotThrowOnSave(Optional<HttpSession.Accessor> accessor) {
+      when(environment.getSessionAccessor()).thenReturn(accessor);
+      Location location = new Location("/protected");
+
+      assertDoesNotThrow(() -> store.saveLocation(location));
+    }
+
+    @ParameterizedTest
+    @MethodSource("unavailableAccessors")
+    void shouldReadNoLocation(Optional<HttpSession.Accessor> accessor) {
+      when(environment.getSessionAccessor()).thenReturn(accessor);
+
+      assertTrue(store.readLocation().isEmpty());
+    }
+
+    @ParameterizedTest
+    @MethodSource("unavailableAccessors")
+    void shouldNotThrowOnClearLocation(Optional<HttpSession.Accessor> accessor) {
+      when(environment.getSessionAccessor()).thenReturn(accessor);
+
+      assertDoesNotThrow(store::clearLocation);
     }
 
     private static Stream<Arguments> unavailableAccessors() {

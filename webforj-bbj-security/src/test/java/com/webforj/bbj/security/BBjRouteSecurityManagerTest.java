@@ -15,7 +15,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.webforj.Environment;
-import com.webforj.bbj.security.store.BBjRequestedLocationStore;
+import com.webforj.bbj.security.store.BBjSecurityStore;
 import com.webforj.component.Component;
 import com.webforj.router.NavigationContext;
 import com.webforj.router.NavigationOptions;
@@ -70,7 +70,7 @@ class BBjRouteSecurityManagerTest {
     when(configuration.getAuthenticationLocation()).thenReturn(Optional.of(new Location("/login")));
     when(configuration.getDenyLocation()).thenReturn(Optional.of(new Location("/denied")));
     manager = new BBjRouteSecurityManager(configuration, securityContext,
-        BBjRequestedLocationStore.create(mockEnviornment));
+        BBjSecurityStore.create(mockEnviornment));
   }
 
   @AfterEach
@@ -85,20 +85,20 @@ class BBjRouteSecurityManagerTest {
 
     @Test
     void shouldRejectNullConfiguration() {
-      var locationStore = mock(BBjRequestedLocationStore.class);
+      var store = mock(BBjSecurityStore.class);
       assertThrows(NullPointerException.class,
-          () -> new BBjRouteSecurityManager(null, securityContext, locationStore));
+          () -> new BBjRouteSecurityManager(null, securityContext, store));
     }
 
     @Test
     void shouldRejectNullSecurityContext() {
-      var locationStore = mock(BBjRequestedLocationStore.class);
+      var store = mock(BBjSecurityStore.class);
       assertThrows(NullPointerException.class,
-          () -> new BBjRouteSecurityManager(configuration, null, locationStore));
+          () -> new BBjRouteSecurityManager(configuration, null, store));
     }
 
     @Test
-    void shouldRejectNullLocationStore() {
+    void shouldRejectNullStore() {
       assertThrows(NullPointerException.class,
           () -> new BBjRouteSecurityManager(configuration, securityContext, null));
     }

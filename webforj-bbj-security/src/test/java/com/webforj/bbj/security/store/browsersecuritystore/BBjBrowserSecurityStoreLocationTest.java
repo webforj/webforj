@@ -1,21 +1,24 @@
-package com.webforj.bbj.security.store;
+package com.webforj.bbj.security.store.browsersecuritystore;
 
+import static com.webforj.bbj.security.store.BrowserStoreFixture.APP;
+import static com.webforj.bbj.security.store.BrowserStoreFixture.LOGGER_NAME;
+import static com.webforj.bbj.security.store.BrowserStoreFixture.createBrowserStore;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.webforj.Environment;
+import com.webforj.bbj.security.store.BBjSecurityStore;
 import com.webforj.router.history.Location;
 import com.webforj.router.security.AbstractRouteSecurityManager;
 import com.webforj.webstorage.LocalStorage;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,34 +33,23 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.MockedStatic;
 
-class BBjBrowserRequestedLocationStoreTest {
+class BBjBrowserSecurityStoreLocationTest {
   private static final String KEY = AbstractRouteSecurityManager.PRE_AUTH_LOCATION_KEY;
 
-  private MockedStatic<Environment> environmentMock;
-  private MockedStatic<LocalStorage> storageMock;
+  @TempDir
+  private Path directory;
   private LocalStorage storage;
-  private BBjBrowserRequestedLocationStore store;
+  private BBjSecurityStore store;
 
   @BeforeEach
   void setUp() {
     storage = mock(LocalStorage.class);
-    environmentMock = mockStatic(Environment.class);
-    var mockEnviornment = mock(Environment.class);
-    environmentMock.when(Environment::getCurrent).thenReturn(mockEnviornment);
-    storageMock = mockStatic(LocalStorage.class);
-    storageMock.when(LocalStorage::getCurrent).thenReturn(storage);
-    store = new BBjBrowserRequestedLocationStore();
-  }
-
-  @AfterEach
-  void tearDown() {
-    storageMock.close();
-    environmentMock.close();
+    store = createBrowserStore(() -> directory, () -> APP, () -> storage);
   }
 
   @Nested
@@ -134,11 +126,11 @@ class BBjBrowserRequestedLocationStoreTest {
   }
 
   @Nested
-  class WithoutEnvironment {
+  class WithoutStorage {
 
     @BeforeEach
     void setUp() {
-      environmentMock.when(Environment::getCurrent).thenReturn(null);
+      store = createBrowserStore(() -> directory, () -> APP, () -> null);
     }
 
     @Test
@@ -168,8 +160,7 @@ class BBjBrowserRequestedLocationStoreTest {
   @Nested
   class StorageFailure {
 
-    private final Logger logger =
-        Logger.getLogger(BBjBrowserRequestedLocationStore.class.getName());
+    private final Logger logger = Logger.getLogger(LOGGER_NAME);
     private final List<LogRecord> records = new ArrayList<>();
     private final Handler handler = new Handler() {
       @Override
@@ -205,7 +196,7 @@ class BBjBrowserRequestedLocationStoreTest {
     @ParameterizedTest
     @MethodSource("failingOperations")
     void shouldLogTheClassNameOnlyWhenTheStorageFails(String expected,
-        Consumer<BBjBrowserRequestedLocationStore> operation) {
+        Consumer<BBjSecurityStore> operation) {
       RuntimeException failure = new IllegalStateException("secret-text");
       when(storage.get(KEY)).thenThrow(failure);
       doThrow(failure).when(storage).setItem(anyString(), anyString());
@@ -220,12 +211,9 @@ class BBjBrowserRequestedLocationStoreTest {
     }
 
     private static Stream<Arguments> failingOperations() {
-      Consumer<BBjBrowserRequestedLocationStore> save =
-          target -> target.saveLocation(new Location("/protected"));
-      Consumer<BBjBrowserRequestedLocationStore> read =
-          BBjBrowserRequestedLocationStore::readLocation;
-      Consumer<BBjBrowserRequestedLocationStore> clear =
-          BBjBrowserRequestedLocationStore::clearLocation;
+      Consumer<BBjSecurityStore> save = target -> target.saveLocation(new Location("/protected"));
+      Consumer<BBjSecurityStore> read = BBjSecurityStore::readLocation;
+      Consumer<BBjSecurityStore> clear = BBjSecurityStore::clearLocation;
 
       return Stream.of(
           Arguments.of(

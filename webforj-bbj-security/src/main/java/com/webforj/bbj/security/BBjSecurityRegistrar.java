@@ -4,8 +4,7 @@ import com.webforj.App;
 import com.webforj.AppLifecycleListener;
 import com.webforj.Environment;
 import com.webforj.annotation.AppListenerPriority;
-import com.webforj.bbj.security.store.BBjRequestedLocationStore;
-import com.webforj.bbj.security.store.BBjSessionStore;
+import com.webforj.bbj.security.store.BBjSecurityStore;
 import com.webforj.environment.ObjectTable;
 import com.webforj.router.Router;
 import com.webforj.router.security.RouteSecurityObserver;
@@ -54,20 +53,19 @@ public final class BBjSecurityRegistrar implements AppLifecycleListener {
     }
 
     var gateway = new BBjAdminGateway(properties);
-    var locationStore = BBjRequestedLocationStore.create(environment);
-    var sessionStore = BBjSessionStore.create(environment);
+    var store = BBjSecurityStore.create(environment);
 
     var router = Router.getCurrent();
     if (router != null) {
-      var service = BBjAuthenticationService.builder().setGateway(gateway)
-          .setLocationStore(locationStore).setSessionStore(sessionStore).setProperties(properties)
-          .setConfiguration(configuration).setNavigator(router::navigate).build();
+      var service = BBjAuthenticationService.builder().setGateway(gateway).setStore(store)
+          .setProperties(properties).setConfiguration(configuration).setNavigator(router::navigate)
+          .build();
       var observer = new BBjSessionObserver(service);
       router.getRenderer().addObserver(observer);
       ObjectTable.put(BBjSecurity.SERVICE_KEY, service);
       service.restoreSession();
       var context = new BBjRouteSecurityContext(service::currentUser);
-      var manager = new BBjRouteSecurityManager(configuration, context, locationStore);
+      var manager = new BBjRouteSecurityManager(configuration, context, store);
       var securityObserver = new RouteSecurityObserver(manager);
       router.getRenderer().addObserver(securityObserver);
       logger.log(Level.INFO, "Route security enabled with {0} evaluators",
