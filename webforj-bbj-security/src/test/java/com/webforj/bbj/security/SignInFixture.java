@@ -10,6 +10,8 @@ import com.typesafe.config.ConfigFactory;
 import com.webforj.bbj.security.model.BBjLoginStatus;
 import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.bbj.security.model.BBjSession;
+import com.webforj.bbj.security.store.BBjRequestedLocationStore;
+import com.webforj.bbj.security.store.BBjSessionStore;
 import com.webforj.router.history.Location;
 import java.time.Instant;
 import java.util.List;

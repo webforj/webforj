@@ -1,4 +1,4 @@
-package com.webforj.bbj.security;
+package com.webforj.bbj.security.store;
 
 import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.bbj.security.model.BBjSession;
@@ -67,7 +67,7 @@ import javax.crypto.spec.SecretKeySpec;
  * @author Christian Liebhardt
  * @since 26.03
  */
-public final class BBjFileSessionStore implements BBjSessionStore {
+final class BBjFileSessionStore implements BBjSessionStore {
   private static final Logger logger = System.getLogger(BBjFileSessionStore.class.getName());
   private static final String HANDLE_KEY = "webforj-bbj-handle";
   private static final String KEY_KEY = "webforj-bbj-key";
