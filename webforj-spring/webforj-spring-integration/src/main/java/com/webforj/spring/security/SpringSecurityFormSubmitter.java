@@ -178,11 +178,15 @@ public final class SpringSecurityFormSubmitter {
      * Submits the form.
      */
     public void submit() {
+      Map<String, String> formFields = new HashMap<>(fields);
+      WebforjCsrfTokenFilter.findToken()
+          .ifPresent(token -> formFields.putIfAbsent(token.getParameterName(), token.getToken()));
+
       // Create a data object with form configuration
       Map<String, Object> data = new HashMap<>();
       data.put("action", action);
       data.put("method", method);
-      data.put("fields", fields);
+      data.put("fields", formFields);
 
       // Convert to JSON using Gson (proper escaping)
       Gson gson = new Gson();

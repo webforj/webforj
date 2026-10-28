@@ -2,20 +2,23 @@ package com.webforj.spring.security;
 
 import com.webforj.App;
 import com.webforj.AppLifecycleListener;
+import com.webforj.Page;
 import com.webforj.annotation.AppListenerPriority;
 import com.webforj.router.Router;
 import com.webforj.router.security.RouteSecurityObserver;
 import com.webforj.spring.ContextHolder;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
+import java.util.Optional;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.web.csrf.CsrfToken;
 
 /**
  * Registers route security components during application startup.
  *
  * <p>
  * Integrates Spring Security with webforJ routing by registering the security manager and
- * evaluators with the router's renderer.
+ * evaluators with the router's renderer, and publishes the session CSRF token to the page.
  * </p>
  *
  * @author Hyyan Abo Fakher
@@ -25,6 +28,8 @@ import org.springframework.context.ApplicationContext;
 public class RouteSecurityObserverRegistrar implements AppLifecycleListener {
   private static final Logger logger =
       System.getLogger(RouteSecurityObserverRegistrar.class.getName());
+  private static final String CSRF_TOKEN_META = "_csrf";
+  private static final String CSRF_PARAMETER_META = "_csrf_parameter";
 
   /**
    * {@inheritDoc}
@@ -42,12 +47,15 @@ public class RouteSecurityObserverRegistrar implements AppLifecycleListener {
     SpringRouteSecurityConfiguration securityConfig;
     try {
       securityConfig = ctx.getBean(SpringRouteSecurityConfiguration.class);
-      if (!securityConfig.isEnabled()) {
-        logger.log(Level.INFO, "Route security disabled by configuration");
-        return;
-      }
     } catch (Exception e) {
       logger.log(Level.DEBUG, "SpringRouteSecurityConfiguration not found, security disabled", e);
+      return;
+    }
+
+    addCsrfMeta();
+
+    if (!securityConfig.isEnabled()) {
+      logger.log(Level.INFO, "Route security disabled by configuration");
       return;
     }
 
@@ -69,6 +77,15 @@ public class RouteSecurityObserverRegistrar implements AppLifecycleListener {
           securityManager.getEvaluators().size());
     } else {
       logger.log(Level.WARNING, "Router not available, security not registered");
+    }
+  }
+
+  private void addCsrfMeta() {
+    Optional<CsrfToken> token = WebforjCsrfTokenFilter.findToken();
+    if (token.isPresent()) {
+      Page page = Page.getCurrent();
+      page.setMeta(CSRF_TOKEN_META, token.get().getToken());
+      page.setMeta(CSRF_PARAMETER_META, token.get().getParameterName());
     }
   }
 }
