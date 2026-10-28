@@ -1,0 +1,6 @@
+# webforJ testbed snapshot v1
+- Navigator [name=pages] [page=1] [pages=10]:
+  - Move "first" [disabled]
+  - Move "previous" [disabled]
+  - Move "next"
+  - Move "last"

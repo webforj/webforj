@@ -8,6 +8,7 @@ import com.webforj.component.window.Window;
 import com.webforj.i18n.LocaleObserver;
 import com.webforj.i18n.LocaleObserverRegistry;
 import java.util.ArrayList;
+import java.util.EventObject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -404,6 +405,21 @@ public abstract class Component {
     this.attached = true;
     this.onAttach();
     whenAttachedResults.forEach(r -> r.complete(this));
+  }
+
+  /**
+   * Delivers the given event to the listeners of this component.
+   *
+   * @param event the event to deliver
+   *
+   * @throws IllegalStateException if the component delivers no events to listeners
+   *
+   * @since 26.03
+   */
+  protected void fireComponentEvent(EventObject event) {
+    throw new IllegalStateException(getClass().getSimpleName()
+        + " delivers no events to listeners. Fire the event on the component its listeners are "
+        + "registered on.");
   }
 
   /**

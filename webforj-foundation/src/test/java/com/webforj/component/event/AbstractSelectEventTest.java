@@ -50,6 +50,19 @@ class AbstractSelectEventTest {
   }
 
   @Test
+  void shouldGetSelectedIndicesFromPlainList() {
+    MultipleSelectableComponentMock component = new MultipleSelectableComponentMock();
+    component.selectIndex(1, 2);
+    Map<String, Object> eventMap = new HashMap<>();
+    eventMap.put("indices", List.of(1, 2));
+    SelectEventMock<MultipleSelectableComponentMock, String> event =
+        new SelectEventMock<>(component, eventMap);
+
+    assertEquals(List.of(1, 2), event.getSelectedIndices());
+    assertEquals(List.of("item2", "item3"), event.getSelectedItems());
+  }
+
+  @Test
   void shouldGetSelectedItems() {
     MultipleSelectableComponentMock component = new MultipleSelectableComponentMock();
     component.selectIndex(1, 2);

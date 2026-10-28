@@ -1,0 +1,6 @@
+# webforJ testbed snapshot v1
+- Dialog [name=export] [opened]:
+  - H3 "Export report" [slot=header]
+  - Paragraph "The export includes every contact." [slot=content]
+  - Button "Cancel" [slot=footer]
+  - Button "Export" [slot=footer]

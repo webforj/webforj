@@ -1,0 +1,3 @@
+# webforJ testbed snapshot v1
+- TextField "Ada" [name=customer] [label=Customer] [placeholder="Full name"] [helperText="As printed on the invoice"] [tooltip="The billing contact"]:
+  - Label "@" [slot=suffix]

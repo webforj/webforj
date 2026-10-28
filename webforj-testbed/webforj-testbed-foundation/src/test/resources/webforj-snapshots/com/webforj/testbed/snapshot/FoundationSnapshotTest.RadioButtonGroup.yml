@@ -1,0 +1,4 @@
+# webforJ testbed snapshot v1
+- RadioButtonGroup [name=size]:
+  - RadioButton "Large"
+  - RadioButton "Small"

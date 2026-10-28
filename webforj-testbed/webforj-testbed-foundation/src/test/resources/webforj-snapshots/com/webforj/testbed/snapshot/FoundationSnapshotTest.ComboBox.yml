@@ -1,0 +1,4 @@
+# webforJ testbed snapshot v1
+- ComboBox "Ad" [name=customer]:
+  - ListItem "Ada" [key=ada]
+  - ListItem "Linus" [key=linus]

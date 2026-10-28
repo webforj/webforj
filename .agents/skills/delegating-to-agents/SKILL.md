@@ -32,6 +32,7 @@ No subagent ever works without the rules. Every brief contains:
 - The main agent reads every line a subagent wrote before it counts. Code that was not read in full is not done.
 - Every new class goes through the `reviewing-java` skill: visibility, member order, data in `model`, verbs, JavaDoc, no comments that explain.
 - What the subagent got wrong is fixed by the main agent or sent back with a precise correction.
+- Findings the IDE reports in the files a subagent touched (checkstyle, static analysis, compiler warnings) are fixed before the work is reported. The brief tells the subagent the rules those findings come from, so it leaves none: no test or method name with two capital letters in a row, JavaDoc on every public type including test support types, no empty block, no unneeded cast or annotation, no unused member, no method above the allowed complexity. After the hand back the main agent reads the IDE diagnostics of the touched files and fixes what is left.
 
 ## Councils
 

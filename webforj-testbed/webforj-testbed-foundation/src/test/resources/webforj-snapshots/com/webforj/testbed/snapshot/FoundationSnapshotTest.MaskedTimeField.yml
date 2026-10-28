@@ -1,0 +1,2 @@
+# webforJ testbed snapshot v1
+- MaskedTimeField "10:30 AM" [value="10:30"] [mask="%h:%mz %a"]

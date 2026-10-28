@@ -1,0 +1,8 @@
+# webforJ testbed snapshot v1
+- FlexLayout [name=login-form] [composite=Element] [node=div]:
+  - Label "Welcome back"
+  - TextField "Ada" [name=username]
+  - PasswordField [name=password]
+  - FlexLayout [composite=Element] [node=div]:
+    - Button "Sign in"
+    - Button "Cancel"

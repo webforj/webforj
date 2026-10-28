@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.webforj.PendingResult;
+import com.webforj.component.ComponentUtil;
 import com.webforj.component.element.Element;
 import com.webforj.component.element.PropertyDescriptorTester;
 import com.webforj.component.table.event.TableSortChangeEvent;
@@ -23,9 +24,11 @@ import com.webforj.component.table.event.column.TableColumnMoveEvent;
 import com.webforj.component.table.event.column.TableColumnResizeEvent;
 import com.webforj.component.table.event.item.TableItemClickEvent;
 import com.webforj.component.table.event.item.TableItemDoubleClickEvent;
+import com.webforj.component.table.event.renderer.RendererClickEvent;
 import com.webforj.component.table.event.selection.TableItemDeselectEvent;
 import com.webforj.component.table.event.selection.TableItemSelectEvent;
 import com.webforj.component.table.event.selection.TableItemSelectionChange;
+import com.webforj.component.table.renderer.ButtonRenderer;
 import com.webforj.component.table.renderer.Renderer;
 import com.webforj.data.HasEntityKey;
 import com.webforj.data.repository.CollectionRepository;
@@ -1017,6 +1020,38 @@ class TableTest {
       assertEquals(2, selectedItems.size());
       assertTrue(selectedItems.contains(entity1));
       assertTrue(selectedItems.contains(entity2));
+    }
+  }
+
+  @Nested
+  class FireComponentEventMethod {
+
+    @Test
+    void shouldDeliverRendererClickToRendererListeners() {
+      List<RendererClickEvent<String>> received = new ArrayList<>();
+      Column<String, ?> column =
+          component.addColumn("action", new ButtonRenderer<String>("Go", received::add));
+      Map<String, Object> data = Map.of("itemKey", "1", "columnKey", column.getId());
+      RendererClickEvent<String> event = new RendererClickEvent<>(component, data);
+
+      ComponentUtil.fireComponentEvent(component, event);
+
+      assertEquals(1, received.size());
+      assertEquals("1", received.get(0).getItemKey());
+      assertEquals(column.getId(), received.get(0).getColumnKey());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"unknown", "name"})
+    void shouldIgnoreRendererClickOfColumnWithoutRenderer(String columnKey) {
+      List<RendererClickEvent<String>> received = new ArrayList<>();
+      component.addColumn("action", new ButtonRenderer<String>("Go", received::add));
+      component.addColumn("name", String::valueOf);
+      Map<String, Object> data = Map.of("itemKey", "1", "columnKey", columnKey);
+      RendererClickEvent<String> event = new RendererClickEvent<>(component, data);
+
+      assertDoesNotThrow(() -> ComponentUtil.fireComponentEvent(component, event));
+      assertTrue(received.isEmpty());
     }
   }
 

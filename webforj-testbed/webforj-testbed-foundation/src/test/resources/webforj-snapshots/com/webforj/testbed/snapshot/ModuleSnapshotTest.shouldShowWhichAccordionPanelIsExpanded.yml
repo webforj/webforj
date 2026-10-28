@@ -1,0 +1,6 @@
+# webforJ testbed snapshot v1
+- Accordion:
+  - AccordionPanel "Design review" [expanded]:
+    - Paragraph "Two items left"
+  - AccordionPanel "Launch" [disabled]:
+    - Paragraph "Blocked"

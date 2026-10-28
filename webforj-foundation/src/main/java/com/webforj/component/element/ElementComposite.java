@@ -1,5 +1,6 @@
 package com.webforj.component.element;
 
+import com.basis.util.common.Util;
 import com.google.gson.Gson;
 import com.webforj.component.Composite;
 import com.webforj.component.element.annotation.ElementAnnotationProcessor;
@@ -20,6 +21,7 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.EventObject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +53,7 @@ public abstract class ElementComposite extends Composite<Element> {
       new HashMap<>();
   private boolean synchronizeAnnotationsRegistered = false;
 
+  private static final String NO_CLIENT_PROPERTY = "webforj.noClient";
   private static final Map<Class<?>, Function<String, Object>> SIMPLE_CONVERTERS =
       Map.ofEntries(Map.entry(String.class, s -> s), Map.entry(Byte.class, Byte::valueOf),
           Map.entry(Short.class, Short::valueOf), Map.entry(Integer.class, Integer::valueOf),
@@ -171,7 +174,8 @@ public abstract class ElementComposite extends Composite<Element> {
    * @param <V> the type of the property
    * @param property the property descriptor
    * @param fromClient true if the property should be read from the client. A component that is not
-   *        attached has no client, so the value held on the server is returned.
+   *        attached has no client, and neither has a runtime that runs without a browser, so the
+   *        value held on the server is returned.
    * @param type the type of the property
    *
    * @return The value of the property or attribute or the default value if the property or
@@ -187,10 +191,11 @@ public abstract class ElementComposite extends Composite<Element> {
       theType = Object.class;
     }
 
+    boolean readClient = fromClient && isClientPresent();
     if (!isAttribute) {
-      return getPropertyValue(property, fromClient, theType);
+      return getPropertyValue(property, readClient, theType);
     } else {
-      return getAttributeValue(property, fromClient, theType);
+      return getAttributeValue(property, readClient, theType);
     }
   }
 
@@ -455,6 +460,29 @@ public abstract class ElementComposite extends Composite<Element> {
   }
 
   /**
+   * {@inheritDoc}
+   *
+   * <p>
+   * A {@link ComponentEvent} whose class or nearest annotated superclass carries an
+   * {@link EventName} is delivered rebuilt from that name and its data, as when the client sends
+   * it. Any other event is delivered to the dispatcher of this composite.
+   * </p>
+   *
+   * @throws WebforjRuntimeException if the event name of the event class is blank
+   */
+  @Override
+  protected void fireComponentEvent(EventObject event) {
+    Optional<Class<?>> namedClass = findEventNameClass(event.getClass());
+
+    if (event instanceof ComponentEvent<?> componentEvent && namedClass.isPresent()) {
+      String eventName = ElementAnnotationProcessor.processEventName(namedClass.get());
+      getElement().handleEvent(eventName, componentEvent.getData());
+    } else {
+      getEventDispatcher().dispatchEvent(event);
+    }
+  }
+
+  /**
    * Gets the value of a property of the element.
    *
    * @param <V> the type of the property
@@ -465,6 +493,10 @@ public abstract class ElementComposite extends Composite<Element> {
    *
    * @return The value of the property, or the default value if not set.
    */
+  private static boolean isClientPresent() {
+    return !"true".equalsIgnoreCase(Util.getProperty(NO_CLIENT_PROPERTY, ""));
+  }
+
   private <V> V getPropertyValue(PropertyDescriptor<V> property, boolean fromClient, Type type) {
     String name = property.getName();
 
@@ -685,6 +717,15 @@ public abstract class ElementComposite extends Composite<Element> {
     }
 
     return gson.fromJson(gson.toJsonTree(raw), type);
+  }
+
+  private static Optional<Class<?>> findEventNameClass(Class<?> eventClass) {
+    Class<?> current = eventClass;
+    while (current != null && !current.isAnnotationPresent(EventName.class)) {
+      current = current.getSuperclass();
+    }
+
+    return Optional.ofNullable(current);
   }
 
   /**

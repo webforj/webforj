@@ -23,6 +23,7 @@ import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRuntimeException;
 import java.util.Collections;
+import java.util.EventObject;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -500,6 +501,14 @@ public final class RadioButtonGroup extends Component implements Iterable<RadioB
   protected void onDestroy() {
     // BBjRadioGroup has no destroy method.
     // TODO : Ask Jim about whether this method should be implemented or not.
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void fireComponentEvent(EventObject event) {
+    dispatcher.dispatchEvent(event);
   }
 
   private Optional<RadioButton> getCheckedOrFirst() {
