@@ -107,13 +107,13 @@ class BBjAuthenticationServiceLoginTest {
 
       fixture.login("alice", PASSWORD);
 
-      verify(fixture.sessionStore).saveSession(fixture.session);
+      verify(fixture.store).saveSession(fixture.session);
     }
 
     @Test
     void shouldGiveUnavailableAndKeepNobodyWhenTheSaveFails() {
       fixture.whenOpenSession("alice", PASSWORD).thenReturn(fixture.session);
-      doThrow(new IllegalStateException("not kept")).when(fixture.sessionStore)
+      doThrow(new IllegalStateException("not kept")).when(fixture.store)
           .saveSession(fixture.session);
 
       BBjLoginStatus status = fixture.login("alice", PASSWORD);
@@ -130,8 +130,7 @@ class BBjAuthenticationServiceLoginTest {
       fixture.whenOpenSession("alice", PASSWORD).thenReturn(fixture.session).thenReturn(replacing);
       fixture.login("alice", PASSWORD);
       clearInvocations(fixture.gateway);
-      doThrow(new IllegalStateException("not kept")).when(fixture.sessionStore)
-          .saveSession(replacing);
+      doThrow(new IllegalStateException("not kept")).when(fixture.store).saveSession(replacing);
 
       BBjLoginStatus status = fixture.login("alice", PASSWORD);
 
@@ -149,7 +148,7 @@ class BBjAuthenticationServiceLoginTest {
       fixture.login("alice", PASSWORD);
 
       verifyNoInteractions(fixture.navigator);
-      verify(fixture.locationStore, never()).clearLocation();
+      verify(fixture.store, never()).clearLocation();
     }
 
     @ParameterizedTest
@@ -157,14 +156,14 @@ class BBjAuthenticationServiceLoginTest {
     void shouldReadClearAndNavigate(boolean returnAfterLogin, Optional<Location> saved,
         Location expected) {
       fixture.properties.setReturnAfterLogin(returnAfterLogin);
-      when(fixture.locationStore.readLocation()).thenReturn(saved);
+      when(fixture.store.readLocation()).thenReturn(saved);
       fixture.whenOpenSession("alice", PASSWORD).thenReturn(fixture.session);
       fixture.login("alice", PASSWORD);
 
       fixture.openTargetLocation();
 
-      verify(fixture.locationStore).readLocation();
-      verify(fixture.locationStore).clearLocation();
+      verify(fixture.store).readLocation();
+      verify(fixture.store).clearLocation();
       verify(fixture.navigator).accept(expected);
     }
   }

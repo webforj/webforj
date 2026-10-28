@@ -4,8 +4,7 @@ import com.webforj.bbj.security.BBjAdminFailure.Kind;
 import com.webforj.bbj.security.model.BBjLoginStatus;
 import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.bbj.security.model.BBjSession;
-import com.webforj.bbj.security.store.BBjRequestedLocationStore;
-import com.webforj.bbj.security.store.BBjSessionStore;
+import com.webforj.bbj.security.store.BBjSecurityStore;
 import com.webforj.router.history.Location;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
@@ -32,8 +31,7 @@ public final class BBjAuthenticationService {
   private static final int MAX_USER_NAME_LENGTH = 256;
   private static final int MAX_PASSWORD_LENGTH = 1024;
   private final BBjAdminGateway gateway;
-  private final BBjRequestedLocationStore locationStore;
-  private final BBjSessionStore sessionStore;
+  private final BBjSecurityStore store;
   private final BBjSecurityConfigurationProperties properties;
   private final BBjRouteSecurityConfiguration configuration;
   private final Consumer<Location> navigator;
@@ -48,8 +46,7 @@ public final class BBjAuthenticationService {
    */
   private BBjAuthenticationService(Builder builder) {
     gateway = builder.gateway;
-    locationStore = builder.locationStore;
-    sessionStore = builder.sessionStore;
+    store = builder.store;
     properties = builder.properties;
     configuration = builder.configuration;
     navigator = builder.navigator;
@@ -123,8 +120,8 @@ public final class BBjAuthenticationService {
 
     final var current = session;
     session = null;
-    sessionStore.clearSession();
-    locationStore.clearLocation();
+    store.clearSession();
+    store.clearLocation();
     openLogoutLocation();
     closeSession(current);
   }
@@ -159,7 +156,7 @@ public final class BBjAuthenticationService {
    * </p>
    */
   void check() {
-    Optional<BBjSession> stored = sessionStore.readSession();
+    Optional<BBjSession> stored = store.readSession();
     if (stored.isEmpty()) {
       applyMissingSession();
       return;
@@ -216,7 +213,7 @@ public final class BBjAuthenticationService {
    * </p>
    */
   void restoreSession() {
-    sessionStore.readSession().ifPresent(it -> session = it);
+    store.readSession().ifPresent(it -> session = it);
   }
 
   /**
@@ -229,8 +226,8 @@ public final class BBjAuthenticationService {
    * </p>
    */
   void openTargetLocation() {
-    Optional<Location> requested = locationStore.readLocation();
-    locationStore.clearLocation();
+    Optional<Location> requested = store.readLocation();
+    store.clearLocation();
     if (Boolean.TRUE.equals(properties.getReturnAfterLogin()) && requested.isPresent()) {
       navigator.accept(requested.get());
     } else {
@@ -240,7 +237,7 @@ public final class BBjAuthenticationService {
 
   private BBjLoginStatus applySession(BBjSession session) {
     try {
-      sessionStore.saveSession(session);
+      store.saveSession(session);
     } catch (IllegalStateException e) {
       closeSession(session);
       return BBjLoginStatus.UNAVAILABLE;
@@ -308,7 +305,7 @@ public final class BBjAuthenticationService {
   }
 
   private void applyRejection(BBjSession checked) {
-    Optional<BBjSession> stored = sessionStore.readSession();
+    Optional<BBjSession> stored = store.readSession();
     if (stored.isPresent() && !stored.get().getToken().equals(checked.getToken())) {
       applyStoredSession(stored.get());
       logger.log(Level.DEBUG, "Another sign in in the session store replaced the rejected one");
@@ -321,7 +318,7 @@ public final class BBjAuthenticationService {
 
   private void applyRenewal(BBjSession renewed) {
     try {
-      sessionStore.saveSession(renewed);
+      store.saveSession(renewed);
     } catch (IllegalStateException e) {
       logger.log(Level.WARNING, "The renewed sign in could not be kept, the user was signed out");
       clearSignIn();
@@ -337,7 +334,7 @@ public final class BBjAuthenticationService {
 
   private void clearSignIn() {
     session = null;
-    sessionStore.clearSession();
+    store.clearSession();
   }
 
   private boolean isCheckDue(BBjSession checked, Instant now) {
@@ -387,8 +384,7 @@ public final class BBjAuthenticationService {
    */
   public static final class Builder {
     private BBjAdminGateway gateway;
-    private BBjRequestedLocationStore locationStore;
-    private BBjSessionStore sessionStore;
+    private BBjSecurityStore store;
     private BBjSecurityConfigurationProperties properties;
     private BBjRouteSecurityConfiguration configuration;
     private Consumer<Location> navigator;
@@ -402,8 +398,7 @@ public final class BBjAuthenticationService {
      */
     public BBjAuthenticationService build() {
       Objects.requireNonNull(gateway, "gateway");
-      Objects.requireNonNull(locationStore, "locationStore");
-      Objects.requireNonNull(sessionStore, "sessionStore");
+      Objects.requireNonNull(store, "store");
       Objects.requireNonNull(properties, "properties");
       Objects.requireNonNull(configuration, "configuration");
       Objects.requireNonNull(navigator, "navigator");
@@ -426,26 +421,14 @@ public final class BBjAuthenticationService {
     }
 
     /**
-     * Sets the location store of the service.
+     * Sets the store of the service.
      *
-     * @param locationStore holds the location the user requested before signing in
-     *
-     * @return this builder
-     */
-    public Builder setLocationStore(BBjRequestedLocationStore locationStore) {
-      this.locationStore = locationStore;
-      return this;
-    }
-
-    /**
-     * Sets the session store of the service.
-     *
-     * @param sessionStore keeps the session of the signed in user across a page reload
+     * @param store keeps the session of the signed in user and the location requested before
      *
      * @return this builder
      */
-    public Builder setSessionStore(BBjSessionStore sessionStore) {
-      this.sessionStore = sessionStore;
+    public Builder setStore(BBjSecurityStore store) {
+      this.store = store;
       return this;
     }
 

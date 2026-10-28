@@ -11,8 +11,7 @@ import com.typesafe.config.ConfigFactory;
 import com.webforj.bbj.security.model.BBjLoginStatus;
 import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.bbj.security.model.BBjSession;
-import com.webforj.bbj.security.store.BBjRequestedLocationStore;
-import com.webforj.bbj.security.store.BBjSessionStore;
+import com.webforj.bbj.security.store.BBjSecurityStore;
 import com.webforj.router.history.Location;
 import java.time.Instant;
 import java.util.List;
@@ -46,10 +45,8 @@ public final class SignInFixture implements AutoCloseable {
       new BBjSession(principal, "tok-abc-123", Instant.parse("2026-01-01T13:00:00Z"));
   /** The mocked gateway. */
   public final BBjAdminGateway gateway = mock(BBjAdminGateway.class);
-  /** The mocked store of the requested location. */
-  public final BBjRequestedLocationStore locationStore = mock(BBjRequestedLocationStore.class);
-  /** The mocked session store, which reads back the session saved last until it is cleared. */
-  public final BBjSessionStore sessionStore = mock(BBjSessionStore.class);
+  /** The mocked store, which reads back the session saved last until it is cleared. */
+  public final BBjSecurityStore store = mock(BBjSecurityStore.class);
   /** The configuration properties the service reads. */
   public final BBjSecurityConfigurationProperties properties =
       new BBjSecurityConfigurationProperties(ConfigFactory.empty());
@@ -90,12 +87,12 @@ public final class SignInFixture implements AutoCloseable {
     doAnswer(call -> {
       storedSession.set(call.getArgument(0));
       return null;
-    }).when(sessionStore).saveSession(any());
+    }).when(store).saveSession(any());
     doAnswer(call -> {
       storedSession.set(null);
       return null;
-    }).when(sessionStore).clearSession();
-    when(sessionStore.readSession()).thenAnswer(call -> Optional.ofNullable(storedSession.get()));
+    }).when(store).clearSession();
+    when(store.readSession()).thenAnswer(call -> Optional.ofNullable(storedSession.get()));
     service = createBuilder().build();
   }
 
@@ -134,9 +131,8 @@ public final class SignInFixture implements AutoCloseable {
 
   /** Creates a builder of the service with all values of the fixture. */
   public BBjAuthenticationService.Builder createBuilder() {
-    return BBjAuthenticationService.builder().setGateway(gateway).setLocationStore(locationStore)
-        .setSessionStore(sessionStore).setProperties(properties).setConfiguration(configuration)
-        .setNavigator(navigator);
+    return BBjAuthenticationService.builder().setGateway(gateway).setStore(store)
+        .setProperties(properties).setConfiguration(configuration).setNavigator(navigator);
   }
 
   /**

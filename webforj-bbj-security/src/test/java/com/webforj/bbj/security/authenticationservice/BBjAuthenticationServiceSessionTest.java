@@ -27,14 +27,12 @@ class BBjAuthenticationServiceSessionTest {
   class Construction {
 
     @ParameterizedTest
-    @ValueSource(strings = {"gateway", "locationStore", "sessionStore", "properties",
-        "configuration", "navigator"})
+    @ValueSource(strings = {"gateway", "store", "properties", "configuration", "navigator"})
     void shouldRefuseMissingValueNamingIt(String name) {
       BBjAuthenticationService.Builder builder = fixture.createBuilder();
       switch (name) {
         case "gateway" -> builder.setGateway(null);
-        case "locationStore" -> builder.setLocationStore(null);
-        case "sessionStore" -> builder.setSessionStore(null);
+        case "store" -> builder.setStore(null);
         case "properties" -> builder.setProperties(null);
         case "configuration" -> builder.setConfiguration(null);
         default -> builder.setNavigator(null);
@@ -60,7 +58,7 @@ class BBjAuthenticationServiceSessionTest {
 
     @Test
     void shouldPutTheStoredSessionInPlace() {
-      when(fixture.sessionStore.readSession()).thenReturn(Optional.of(fixture.session));
+      when(fixture.store.readSession()).thenReturn(Optional.of(fixture.session));
 
       fixture.restoreSession();
 
@@ -69,7 +67,7 @@ class BBjAuthenticationServiceSessionTest {
 
     @Test
     void shouldLeaveNobodySignedInWhenTheStoreIsEmpty() {
-      when(fixture.sessionStore.readSession()).thenReturn(Optional.empty());
+      when(fixture.store.readSession()).thenReturn(Optional.empty());
 
       fixture.restoreSession();
 

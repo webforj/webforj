@@ -2,6 +2,8 @@ package com.webforj.bbj.security.store;
 
 import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.bbj.security.model.BBjSession;
+import com.webforj.router.history.Location;
+import com.webforj.router.security.AbstractRouteSecurityManager;
 import com.webforj.webstorage.LocalStorage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -49,14 +51,15 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- * Keeps the session of each signed in browser encrypted in one file per application.
+ * {@link BBjSecurityStore} that keeps the session of each signed in browser encrypted in one file
+ * per application and the requested location in the local storage of the browser.
  *
  * <p>
  * The file holds one line per signed in browser with the name of the entry and the encrypted
  * session. The local storage of the browser holds the name of the entry and the key that opens it,
  * under names that carry the application, so the file never holds the key and the browser never
- * holds the token. All tabs of one browser share the sign in. A new key and a new name are made on
- * every save.
+ * holds the token. All tabs of one browser share the sign in and the requested location. A new key
+ * and a new name are made on every save.
  * </p>
  *
  * <p>
@@ -65,11 +68,18 @@ import javax.crypto.spec.SecretKeySpec;
  * failure is logged by its class name only.
  * </p>
  *
+ * <p>
+ * Only paths inside the app are read back as the requested location. Any other stored value is
+ * discarded. When the local storage is not available no location is kept. Failures of the location
+ * are logged and never thrown.
+ * </p>
+ *
  * @author Christian Liebhardt
  * @since 26.03
  */
-final class BBjFileSessionStore implements BBjSessionStore {
-  private static final Logger logger = System.getLogger(BBjFileSessionStore.class.getName());
+final class BBjBrowserSecurityStore implements BBjSecurityStore {
+  private static final Logger logger = System.getLogger(BBjBrowserSecurityStore.class.getName());
+  private static final String LOCATION_KEY = AbstractRouteSecurityManager.PRE_AUTH_LOCATION_KEY;
   private static final String HANDLE_KEY_PREFIX = "webforj-bbj-handle.";
   private static final String KEY_KEY_PREFIX = "webforj-bbj-key.";
   private static final String FOLDER = "webforj-bbj-security";
@@ -92,16 +102,17 @@ final class BBjFileSessionStore implements BBjSessionStore {
   private String applicationKey;
   private Path file;
 
-  BBjFileSessionStore(Supplier<Path> directorySupplier, Supplier<String> applicationNameSupplier,
-      Supplier<LocalStorage> storageSupplier, Clock clock) {
+  BBjBrowserSecurityStore(Supplier<Path> directorySupplier,
+      Supplier<String> applicationNameSupplier, Supplier<LocalStorage> storageSupplier,
+      Clock clock) {
     this.directorySupplier = directorySupplier;
     this.applicationNameSupplier = applicationNameSupplier;
     this.storageSupplier = storageSupplier;
     this.clock = clock;
   }
 
-  BBjFileSessionStore(Supplier<Path> directorySupplier, Supplier<String> applicationNameSupplier,
-      Supplier<LocalStorage> storageSupplier) {
+  BBjBrowserSecurityStore(Supplier<Path> directorySupplier,
+      Supplier<String> applicationNameSupplier, Supplier<LocalStorage> storageSupplier) {
     this(directorySupplier, applicationNameSupplier, storageSupplier, Clock.systemUTC());
   }
 
@@ -244,6 +255,56 @@ final class BBjFileSessionStore implements BBjSessionStore {
   }
 
   /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void saveLocation(Location location) {
+    try {
+      Optional.ofNullable(storageSupplier.get())
+          .ifPresent(it -> it.setItem(LOCATION_KEY, location.getFullURI()));
+    } catch (Exception e) {
+      logger.log(Level.WARNING, "The requested location could not be saved ({0})",
+          e.getClass().getName());
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Optional<Location> readLocation() {
+    try {
+      return Optional.ofNullable(storageSupplier.get()).map(it -> it.get(LOCATION_KEY))
+          .filter(it -> {
+            if (!isRelativePath(it)) {
+              clearLocation();
+              logger.log(Level.WARNING,
+                  "Discarded a requested location that is not a path inside the app");
+              return false;
+            }
+            return true;
+          }).map(Location::new);
+    } catch (Exception e) {
+      logger.log(Level.WARNING, "The requested location could not be read ({0})",
+          e.getClass().getName());
+      return Optional.empty();
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void clearLocation() {
+    try {
+      Optional.ofNullable(storageSupplier.get()).ifPresent(it -> it.remove(LOCATION_KEY));
+    } catch (Exception e) {
+      logger.log(Level.WARNING, "The requested location could not be cleared ({0})",
+          e.getClass().getName());
+    }
+  }
+
+  /**
    * Creates the part of the file name and of the browser storage names that names one application.
    *
    * <p>
@@ -266,6 +327,29 @@ final class BBjFileSessionStore implements BBjSessionStore {
         : safe.substring(0, Math.min(safe.length(), MAX_APPLICATION_NAME_LENGTH));
 
     return base + "-" + createHash(applicationName);
+  }
+
+  /**
+   * Tells whether a stored value is a path inside the app.
+   *
+   * <p>
+   * A path inside the app starts with one slash, holds no backslash and is a valid location.
+   * </p>
+   *
+   * @param path the stored value
+   * @return true when the value is a path inside the app
+   */
+  static boolean isRelativePath(String path) {
+    if (!path.startsWith("/") || path.startsWith("//") || path.indexOf('\\') >= 0) {
+      return false;
+    }
+
+    try {
+      new Location(path);
+      return true;
+    } catch (IllegalArgumentException e) {
+      return false;
+    }
   }
 
   private Path resolveFile() {

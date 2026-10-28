@@ -202,7 +202,7 @@ class BBjSecurityRegistrarTest {
   }
 
   @Test
-  void shouldShareOneLocationStoreBetweenTheServiceAndTheSecurityManager() {
+  void shouldShareOneStoreBetweenTheServiceAndTheSecurityManager() {
     List<Object> serviceStores = new ArrayList<>();
     List<Object> managerStores = new ArrayList<>();
     when(environment.getConfig()).thenReturn(ConfigFactory.empty());
@@ -210,7 +210,7 @@ class BBjSecurityRegistrarTest {
     try (MockedConstruction<BBjAuthenticationService.Builder> builders =
         mockConstruction(BBjAuthenticationService.Builder.class,
             withSettings().defaultAnswer(RETURNS_SELF), (builder, context) -> {
-              when(builder.setLocationStore(any())).thenAnswer(invocation -> {
+              when(builder.setStore(any())).thenAnswer(invocation -> {
                 serviceStores.add(invocation.getArgument(0));
 
                 return builder;

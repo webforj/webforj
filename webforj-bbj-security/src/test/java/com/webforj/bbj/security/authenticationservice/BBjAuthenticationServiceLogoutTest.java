@@ -31,14 +31,14 @@ class BBjAuthenticationServiceLogoutTest {
   private void startSignedInSession() {
     fixture.whenOpenSession("alice", PASSWORD).thenReturn(fixture.session);
     fixture.login("alice", PASSWORD);
-    clearInvocations(fixture.navigator, fixture.locationStore, fixture.gateway);
+    clearInvocations(fixture.navigator, fixture.store, fixture.gateway);
   }
 
   @Test
   void shouldCallNoOneWhenNobodySignedIn() {
     fixture.logout();
 
-    verifyNoInteractions(fixture.navigator, fixture.gateway, fixture.locationStore);
+    verifyNoInteractions(fixture.navigator, fixture.gateway, fixture.store);
   }
 
   @Test
@@ -56,7 +56,7 @@ class BBjAuthenticationServiceLogoutTest {
 
     fixture.logout();
 
-    verify(fixture.sessionStore).clearSession();
+    verify(fixture.store).clearSession();
   }
 
   @Test
@@ -65,7 +65,7 @@ class BBjAuthenticationServiceLogoutTest {
 
     fixture.logout();
 
-    verify(fixture.locationStore).clearLocation();
+    verify(fixture.store).clearLocation();
   }
 
   @ParameterizedTest
@@ -129,10 +129,10 @@ class BBjAuthenticationServiceLogoutTest {
   void shouldActLikeNobodySignedInOnSecondLogout() {
     startSignedInSession();
     fixture.logout();
-    clearInvocations(fixture.navigator, fixture.locationStore, fixture.gateway);
+    clearInvocations(fixture.navigator, fixture.store, fixture.gateway);
 
     fixture.logout();
 
-    verifyNoInteractions(fixture.navigator, fixture.gateway, fixture.locationStore);
+    verifyNoInteractions(fixture.navigator, fixture.gateway, fixture.store);
   }
 }

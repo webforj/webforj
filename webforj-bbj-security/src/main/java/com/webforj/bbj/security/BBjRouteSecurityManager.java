@@ -1,6 +1,6 @@
 package com.webforj.bbj.security;
 
-import com.webforj.bbj.security.store.BBjRequestedLocationStore;
+import com.webforj.bbj.security.store.BBjSecurityStore;
 import com.webforj.component.Component;
 import com.webforj.router.NavigationContext;
 import com.webforj.router.NavigationOptions;
@@ -36,7 +36,7 @@ import java.util.Optional;
 public final class BBjRouteSecurityManager extends AbstractRouteSecurityManager {
   private static final Logger logger = System.getLogger(BBjRouteSecurityManager.class.getName());
   private final BBjRouteSecurityConfiguration configuration;
-  private final BBjRequestedLocationStore locationStore;
+  private final BBjSecurityStore store;
   private final BBjRouteSecurityContext securityContext;
 
   /**
@@ -44,16 +44,16 @@ public final class BBjRouteSecurityManager extends AbstractRouteSecurityManager 
    *
    * @param configuration the route security configuration
    * @param securityContext the route security context
-   * @param locationStore the store of the location requested before authentication
+   * @param store the store of the location requested before authentication
    *
-   * @throws NullPointerException if {@code configuration}, {@code securityContext} or
-   *         {@code locationStore} is null
+   * @throws NullPointerException if {@code configuration}, {@code securityContext} or {@code store}
+   *         is null
    */
   BBjRouteSecurityManager(BBjRouteSecurityConfiguration configuration,
-      BBjRouteSecurityContext securityContext, BBjRequestedLocationStore locationStore) {
+      BBjRouteSecurityContext securityContext, BBjSecurityStore store) {
     this.configuration = Objects.requireNonNull(configuration, "configuration");
     this.securityContext = Objects.requireNonNull(securityContext, "securityContext");
-    this.locationStore = Objects.requireNonNull(locationStore, "locationStore");
+    this.store = Objects.requireNonNull(store, "store");
 
     registerEvaluator(new DenyAllEvaluator(), 1);
     registerEvaluator(new AnonymousAccessEvaluator(), 2);
@@ -67,7 +67,7 @@ public final class BBjRouteSecurityManager extends AbstractRouteSecurityManager 
    */
   @Override
   public void clearPreAuthenticationLocation() {
-    locationStore.clearLocation();
+    store.clearLocation();
   }
 
   /**
@@ -75,7 +75,7 @@ public final class BBjRouteSecurityManager extends AbstractRouteSecurityManager 
    */
   @Override
   public Optional<Location> getPreAuthenticationLocation() {
-    return locationStore.readLocation();
+    return store.readLocation();
   }
 
   /**
@@ -91,7 +91,7 @@ public final class BBjRouteSecurityManager extends AbstractRouteSecurityManager 
         decision.getReason());
 
     if (context != null && context.getLocation() != null) {
-      locationStore.saveLocation(context.getLocation());
+      store.saveLocation(context.getLocation());
     }
 
     onPostAccessDenied(decision, context);

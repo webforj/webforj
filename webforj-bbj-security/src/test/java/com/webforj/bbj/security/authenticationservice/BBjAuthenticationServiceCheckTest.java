@@ -20,7 +20,7 @@ import com.webforj.bbj.security.BBjAdminFailure.Kind;
 import com.webforj.bbj.security.SignInFixture;
 import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.bbj.security.model.BBjSession;
-import com.webforj.bbj.security.store.BBjSessionStore;
+import com.webforj.bbj.security.store.BBjSecurityStore;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -96,9 +96,9 @@ class BBjAuthenticationServiceCheckTest {
 
   @Test
   void shouldCallNoOneWhenNobodySignedIn() {
-    BBjSessionStore emptyStore = mock(BBjSessionStore.class);
+    BBjSecurityStore emptyStore = mock(BBjSecurityStore.class);
     when(emptyStore.readSession()).thenReturn(Optional.empty());
-    fixture.setService(fixture.createBuilder().setSessionStore(emptyStore).setClock(clock).build());
+    fixture.setService(fixture.createBuilder().setStore(emptyStore).setClock(clock).build());
     fixture.restoreSession();
 
     fixture.check();
@@ -113,7 +113,7 @@ class BBjAuthenticationServiceCheckTest {
     fixture.check();
 
     assertFalse(fixture.currentUser().isPresent());
-    verify(fixture.sessionStore, never()).clearSession();
+    verify(fixture.store, never()).clearSession();
     verifyNoInteractions(fixture.gateway, fixture.navigator);
     assertEquals(List.of("The session store holds no sign in, the sign in was dropped"),
         fixture.getDebugMessages());
@@ -141,7 +141,7 @@ class BBjAuthenticationServiceCheckTest {
 
     assertSame(renewedPrincipal, fixture.currentUser().orElseThrow());
     fixture.verifyReadUserName(times(1), renewed);
-    verify(fixture.sessionStore, never()).saveSession(any());
+    verify(fixture.store, never()).saveSession(any());
   }
 
   @Test
@@ -154,7 +154,7 @@ class BBjAuthenticationServiceCheckTest {
     fixture.check();
 
     assertSame(renewedPrincipal, fixture.currentUser().orElseThrow());
-    verify(fixture.sessionStore, never()).clearSession();
+    verify(fixture.store, never()).clearSession();
     assertEquals(List.of(), getInfoMessages());
     assertEquals(List.of("Another sign in in the session store replaced the rejected one"),
         fixture.getDebugMessages());
@@ -170,7 +170,7 @@ class BBjAuthenticationServiceCheckTest {
     fixture.check();
 
     assertFalse(fixture.currentUser().isPresent());
-    verify(fixture.sessionStore).clearSession();
+    verify(fixture.store).clearSession();
     assertEquals(List.of("The server no longer accepts the sign in, the user was signed out"),
         getInfoMessages());
   }
@@ -183,7 +183,7 @@ class BBjAuthenticationServiceCheckTest {
     fixture.check();
 
     assertFalse(fixture.currentUser().isPresent());
-    verify(fixture.sessionStore).clearSession();
+    verify(fixture.store).clearSession();
     verifyNoInteractions(fixture.gateway);
     assertEquals(List.of("The sign in expired and was cleared"), fixture.getDebugMessages());
   }
@@ -201,7 +201,7 @@ class BBjAuthenticationServiceCheckTest {
 
     fixture.verifyReadUserName(times(1), fixture.session);
     fixture.verifyRenewSessionOfAny(never());
-    verify(fixture.sessionStore, never()).saveSession(any());
+    verify(fixture.store, never()).saveSession(any());
     assertSame(fixture.principal, fixture.currentUser().orElseThrow());
   }
 
@@ -212,7 +212,7 @@ class BBjAuthenticationServiceCheckTest {
     fixture.check();
 
     assertFalse(fixture.currentUser().isPresent());
-    verify(fixture.sessionStore).clearSession();
+    verify(fixture.store).clearSession();
     fixture.verifyRenewSessionOfAny(never());
   }
 
@@ -301,7 +301,7 @@ class BBjAuthenticationServiceCheckTest {
     fixture.check();
 
     assertSame(fixture.principal, fixture.currentUser().orElseThrow());
-    verify(fixture.sessionStore, never()).saveSession(any());
+    verify(fixture.store, never()).saveSession(any());
     assertEquals(List.of("The sign in was checked and stays"), fixture.getDebugMessages());
   }
 
@@ -312,7 +312,7 @@ class BBjAuthenticationServiceCheckTest {
 
     fixture.check();
 
-    verify(fixture.sessionStore).saveSession(renewed);
+    verify(fixture.store).saveSession(renewed);
     assertSame(renewedPrincipal, fixture.currentUser().orElseThrow());
     assertEquals(List.of("The sign in was renewed"), getInfoMessages());
   }
@@ -335,12 +335,12 @@ class BBjAuthenticationServiceCheckTest {
   void shouldSignOutAndCloseTheRenewedTokenWhenItCannotBeSaved() {
     now.set(Instant.parse("2026-01-01T12:55:00Z"));
     fixture.whenRenewSession(fixture.session).thenReturn(renewed);
-    doThrow(new IllegalStateException("not kept")).when(fixture.sessionStore).saveSession(renewed);
+    doThrow(new IllegalStateException("not kept")).when(fixture.store).saveSession(renewed);
 
     fixture.check();
 
     assertFalse(fixture.currentUser().isPresent());
-    verify(fixture.sessionStore).clearSession();
+    verify(fixture.store).clearSession();
     fixture.verifyCloseSession(times(1), renewed);
     assertEquals(List.of("The renewed sign in could not be kept, the user was signed out"),
         fixture.getWarnings());
@@ -354,7 +354,7 @@ class BBjAuthenticationServiceCheckTest {
     fixture.check();
 
     assertFalse(fixture.currentUser().isPresent());
-    verify(fixture.sessionStore).clearSession();
+    verify(fixture.store).clearSession();
     assertEquals(List.of("The server no longer accepts the sign in, the user was signed out"),
         getInfoMessages());
     assertEquals(List.of(), fixture.getWarnings());
@@ -368,7 +368,7 @@ class BBjAuthenticationServiceCheckTest {
     fixture.check();
 
     assertSame(fixture.principal, fixture.currentUser().orElseThrow());
-    verify(fixture.sessionStore, never()).clearSession();
+    verify(fixture.store, never()).clearSession();
     assertEquals(
         List.of("The sign in could not be checked and stays until it expires: " + "not served"),
         fixture.getWarnings());
@@ -381,7 +381,7 @@ class BBjAuthenticationServiceCheckTest {
     fixture.check();
 
     assertSame(fixture.principal, fixture.currentUser().orElseThrow());
-    verify(fixture.sessionStore, never()).clearSession();
+    verify(fixture.store, never()).clearSession();
     assertEquals(List.of("The sign in could not be checked and stays until it expires: "
         + "The Admin API call could not be completed"), fixture.getWarnings());
   }
