@@ -37,7 +37,7 @@
     <webforj.junit.version>5.10.3</webforj.junit.version>
     <webforj.kotlin.version>2.4.21</webforj.kotlin.version>
     <!-- The SDK version Spring AI 2.0.0 resolves -->
-    <webforj.mcp-sdk.version>2.0.1</webforj.mcp-sdk.version>
+    <webforj.mcp-sdk.version>2.1.0</webforj.mcp-sdk.version>
     <webforj.mockito.version>5.24.0</webforj.mockito.version>
     <webforj.picocli.version>4.7.7</webforj.picocli.version>
     <webforj.spring-boot.version>4.1.2</webforj.spring-boot.version>
