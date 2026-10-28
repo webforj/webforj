@@ -17,10 +17,10 @@ import static org.mockito.Mockito.when;
 
 import com.webforj.bbj.security.BBjAdminFailure;
 import com.webforj.bbj.security.BBjAdminFailure.Kind;
-import com.webforj.bbj.security.BBjSessionStore;
 import com.webforj.bbj.security.SignInFixture;
 import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.bbj.security.model.BBjSession;
+import com.webforj.bbj.security.store.BBjSessionStore;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;

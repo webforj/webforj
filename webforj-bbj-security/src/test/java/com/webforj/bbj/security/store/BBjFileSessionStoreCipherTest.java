@@ -1,4 +1,4 @@
-package com.webforj.bbj.security;
+package com.webforj.bbj.security.store;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -7,9 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.webforj.bbj.security.BBjFileSessionStore.BBjSessionEntryCipher;
 import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.bbj.security.model.BBjSession;
+import com.webforj.bbj.security.store.BBjFileSessionStore.BBjSessionEntryCipher;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.Set;

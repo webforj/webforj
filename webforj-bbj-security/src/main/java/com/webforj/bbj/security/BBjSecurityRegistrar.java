@@ -4,13 +4,13 @@ import com.webforj.App;
 import com.webforj.AppLifecycleListener;
 import com.webforj.Environment;
 import com.webforj.annotation.AppListenerPriority;
+import com.webforj.bbj.security.store.BBjRequestedLocationStore;
+import com.webforj.bbj.security.store.BBjSessionStore;
 import com.webforj.environment.ObjectTable;
 import com.webforj.router.Router;
 import com.webforj.router.security.RouteSecurityObserver;
-import com.webforj.webstorage.SessionStorage;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
-import java.nio.file.Path;
 
 /**
  * Registers route security for a BBj application when it starts.
@@ -54,9 +54,8 @@ public final class BBjSecurityRegistrar implements AppLifecycleListener {
     }
 
     var gateway = new BBjAdminGateway(properties);
-    var locationStore = new BBjBrowserRequestedLocationStore();
-    var sessionStore = new BBjFileSessionStore(() -> Path.of(System.getProperty("java.io.tmpdir")),
-        App::getApplicationName, SessionStorage::getCurrent);
+    var locationStore = BBjRequestedLocationStore.create(environment);
+    var sessionStore = BBjSessionStore.create(environment);
 
     var router = Router.getCurrent();
     if (router != null) {

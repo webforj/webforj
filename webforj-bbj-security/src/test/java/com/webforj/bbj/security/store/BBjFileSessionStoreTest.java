@@ -1,4 +1,4 @@
-package com.webforj.bbj.security;
+package com.webforj.bbj.security.store;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;

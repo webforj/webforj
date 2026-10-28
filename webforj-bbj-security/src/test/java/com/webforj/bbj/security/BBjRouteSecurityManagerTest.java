@@ -15,6 +15,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.webforj.Environment;
+import com.webforj.bbj.security.store.BBjRequestedLocationStore;
 import com.webforj.component.Component;
 import com.webforj.router.NavigationContext;
 import com.webforj.router.NavigationOptions;
@@ -31,7 +32,7 @@ import com.webforj.router.security.evaluator.AuthenticationRequiredEvaluator;
 import com.webforj.router.security.evaluator.DenyAllEvaluator;
 import com.webforj.router.security.evaluator.PermitAllEvaluator;
 import com.webforj.router.security.evaluator.RolesAllowedEvaluator;
-import com.webforj.webstorage.SessionStorage;
+import com.webforj.webstorage.LocalStorage;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
@@ -45,9 +46,9 @@ class BBjRouteSecurityManagerTest {
   private static final String KEY = AbstractRouteSecurityManager.PRE_AUTH_LOCATION_KEY;
 
   private MockedStatic<Environment> environmentMock;
-  private MockedStatic<SessionStorage> storageMock;
+  private MockedStatic<LocalStorage> storageMock;
   private MockedStatic<Router> routerMock;
-  private SessionStorage storage;
+  private LocalStorage storage;
   private Router router;
   private BBjRouteSecurityConfiguration configuration;
   private BBjRouteSecurityContext securityContext;
@@ -55,21 +56,21 @@ class BBjRouteSecurityManagerTest {
 
   @BeforeEach
   void setUp() {
-    storage = mock(SessionStorage.class);
+    storage = mock(LocalStorage.class);
     router = mock(Router.class);
     configuration = mock(BBjRouteSecurityConfiguration.class);
     securityContext = mock(BBjRouteSecurityContext.class);
     environmentMock = mockStatic(Environment.class);
     var mockEnviornment = mock(Environment.class);
     environmentMock.when(Environment::getCurrent).thenReturn(mockEnviornment);
-    storageMock = mockStatic(SessionStorage.class);
-    storageMock.when(SessionStorage::getCurrent).thenReturn(storage);
+    storageMock = mockStatic(LocalStorage.class);
+    storageMock.when(LocalStorage::getCurrent).thenReturn(storage);
     routerMock = mockStatic(Router.class);
     routerMock.when(Router::getCurrent).thenReturn(router);
     when(configuration.getAuthenticationLocation()).thenReturn(Optional.of(new Location("/login")));
     when(configuration.getDenyLocation()).thenReturn(Optional.of(new Location("/denied")));
     manager = new BBjRouteSecurityManager(configuration, securityContext,
-        new BBjBrowserRequestedLocationStore());
+        BBjRequestedLocationStore.create(mockEnviornment));
   }
 
   @AfterEach
@@ -84,14 +85,14 @@ class BBjRouteSecurityManagerTest {
 
     @Test
     void shouldRejectNullConfiguration() {
-      var locationStore = new BBjBrowserRequestedLocationStore();
+      var locationStore = mock(BBjRequestedLocationStore.class);
       assertThrows(NullPointerException.class,
           () -> new BBjRouteSecurityManager(null, securityContext, locationStore));
     }
 
     @Test
     void shouldRejectNullSecurityContext() {
-      var locationStore = new BBjBrowserRequestedLocationStore();
+      var locationStore = mock(BBjRequestedLocationStore.class);
       assertThrows(NullPointerException.class,
           () -> new BBjRouteSecurityManager(configuration, null, locationStore));
     }
@@ -160,13 +161,13 @@ class BBjRouteSecurityManagerTest {
     }
 
     @Test
-    void shouldNotSaveTheRequestedLocationWhenAccessIsDenied() {
+    void shouldSaveTheRequestedLocationWhenAccessIsDenied() {
       NavigationContext navigationContext = mock(NavigationContext.class);
       when(navigationContext.getLocation()).thenReturn(new Location("/admin"));
 
       manager.onAccessDenied(RouteAccessDecision.deny("insufficient_roles"), navigationContext);
 
-      verify(storage, never()).setItem(any(), any());
+      verify(storage).setItem(KEY, "/admin");
     }
 
     @Test
@@ -175,6 +176,16 @@ class BBjRouteSecurityManagerTest {
       RouteAccessDecision decision = RouteAccessDecision.denyAuthentication();
 
       assertDoesNotThrow(() -> manager.onAccessDenied(decision, missing));
+
+      verify(storage, never()).setItem(any(), any());
+    }
+
+    @Test
+    void shouldNotSaveWithoutLocation() {
+      NavigationContext navigationContext = mock(NavigationContext.class);
+      RouteAccessDecision decision = RouteAccessDecision.deny("insufficient_roles");
+
+      manager.onAccessDenied(decision, navigationContext);
 
       verify(storage, never()).setItem(any(), any());
     }

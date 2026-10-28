@@ -1,5 +1,6 @@
 package com.webforj.bbj.security;
 
+import com.webforj.bbj.security.store.BBjRequestedLocationStore;
 import com.webforj.component.Component;
 import com.webforj.router.NavigationContext;
 import com.webforj.router.NavigationOptions;
@@ -24,9 +25,9 @@ import java.util.Optional;
  * {@link AbstractRouteSecurityManager} of a BBj application.
  *
  * <p>
- * Registers the core evaluators. Users who need to authenticate are sent to the authentication
- * location and the location they requested is saved. Users who are denied access are sent to the
- * deny location with the reason.
+ * Registers the core evaluators. The location a user requested is saved on every denial. Users who
+ * need to authenticate are sent to the authentication location. Users who are denied access are
+ * sent to the deny location with the reason.
  * </p>
  *
  * @author Christian Liebhardt
@@ -81,7 +82,7 @@ public final class BBjRouteSecurityManager extends AbstractRouteSecurityManager 
    * {@inheritDoc}
    *
    * <p>
-   * When authentication is required, the requested location is saved before the user is sent on.
+   * The requested location is saved on every denial before the user is sent on.
    * </p>
    */
   @Override
@@ -89,7 +90,7 @@ public final class BBjRouteSecurityManager extends AbstractRouteSecurityManager 
     logger.log(Level.DEBUG, "Access denied: type={0}, reason={1}", decision.getDenialType(),
         decision.getReason());
 
-    if (decision.isAuthenticationRequired() && context != null && context.getLocation() != null) {
+    if (context != null && context.getLocation() != null) {
       locationStore.saveLocation(context.getLocation());
     }
 

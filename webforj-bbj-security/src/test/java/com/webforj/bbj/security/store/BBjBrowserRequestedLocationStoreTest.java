@@ -1,4 +1,4 @@
-package com.webforj.bbj.security;
+package com.webforj.bbj.security.store;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -15,7 +15,7 @@ import static org.mockito.Mockito.when;
 import com.webforj.Environment;
 import com.webforj.router.history.Location;
 import com.webforj.router.security.AbstractRouteSecurityManager;
-import com.webforj.webstorage.SessionStorage;
+import com.webforj.webstorage.LocalStorage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -39,18 +39,18 @@ class BBjBrowserRequestedLocationStoreTest {
   private static final String KEY = AbstractRouteSecurityManager.PRE_AUTH_LOCATION_KEY;
 
   private MockedStatic<Environment> environmentMock;
-  private MockedStatic<SessionStorage> storageMock;
-  private SessionStorage storage;
+  private MockedStatic<LocalStorage> storageMock;
+  private LocalStorage storage;
   private BBjBrowserRequestedLocationStore store;
 
   @BeforeEach
   void setUp() {
-    storage = mock(SessionStorage.class);
+    storage = mock(LocalStorage.class);
     environmentMock = mockStatic(Environment.class);
     var mockEnviornment = mock(Environment.class);
     environmentMock.when(Environment::getCurrent).thenReturn(mockEnviornment);
-    storageMock = mockStatic(SessionStorage.class);
-    storageMock.when(SessionStorage::getCurrent).thenReturn(storage);
+    storageMock = mockStatic(LocalStorage.class);
+    storageMock.when(LocalStorage::getCurrent).thenReturn(storage);
     store = new BBjBrowserRequestedLocationStore();
   }
 
