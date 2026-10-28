@@ -1,6 +1,7 @@
 package com.webforj.bbjship;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -15,10 +16,14 @@ import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.BBjAdminException;
 import com.google.gson.JsonParser;
 import jakarta.servlet.ServletInputStream;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -49,6 +54,14 @@ final class BBjShipServletAccessTest extends AdministratorRequest {
         "status": 403,
         "detail": "The BBj user has no permission to perform administrative tasks. Use the \
       credentials of a BBj administrator"
+      }""";
+  private static final String UNENCRYPTED_PROBLEM = """
+      {
+        "type": "about:blank",
+        "title": "Forbidden",
+        "status": 403,
+        "detail": "BBjShip refuses the administration credentials over an unencrypted connection \
+      from another machine. Use the SSL port of the BBjServices web server"
       }""";
 
   @ParameterizedTest
@@ -171,6 +184,105 @@ final class BBjShipServletAccessTest extends AdministratorRequest {
     try (Stream<Path> staged = Files.list(runtime)) {
       assertEquals(List.of(), staged.toList());
     }
+  }
+
+  @ParameterizedTest
+  @MethodSource("getUnencryptedRequestsFromAnotherMachine")
+  void shouldRefuseUnencryptedRequestFromAnotherMachineBeforeReadingTheCredentials(String address,
+      String method, String path) throws Exception {
+    Files.writeString(plugin.getDirectory().resolve("version.properties"),
+        "version=26.03-SNAPSHOT\n");
+    when(request.getRemoteAddr()).thenReturn(address);
+    when(request.getMethod()).thenReturn(method);
+    when(request.getPathInfo()).thenReturn(path);
+    when(request.getInputStream()).thenReturn(mock(ServletInputStream.class));
+
+    BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
+
+    verify(response).setStatus(403);
+    verify(response).setContentType("application/problem+json");
+    verify(response, never()).setHeader(anyString(), anyString());
+    verify(request, never()).getHeader(anyString());
+    verify(request, never()).getInputStream();
+    verify(sessions, never()).create(any());
+    assertEquals(UNENCRYPTED_PROBLEM,
+        JSON.toJson(JsonParser.parseString(body.toString(StandardCharsets.UTF_8))));
+    try (Stream<Path> staged = Files.list(runtime)) {
+      assertEquals(List.of(), staged.toList());
+    }
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"127.0.0.1", "127.0.0.2", "0:0:0:0:0:0:0:1", "[0:0:0:0:0:0:0:1]", "::1",
+      "[::1]", "::ffff:127.0.0.1"})
+  void shouldAnswerUnencryptedRequestFromThisMachine(String address) throws Exception {
+    Files.writeString(plugin.getDirectory().resolve("version.properties"),
+        "version=26.03-SNAPSHOT\n");
+    when(request.getRemoteAddr()).thenReturn(address);
+    when(request.getMethod()).thenReturn("GET");
+    when(request.getPathInfo()).thenReturn(VERSION_PATH);
+
+    BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
+
+    verify(response).setStatus(200);
+    verify(admin).release();
+  }
+
+  @Test
+  void shouldAnswerUnencryptedRequestFromAnAddressOfThisMachine() throws Exception {
+    Optional<InetAddress> address = Collections.list(NetworkInterface.getNetworkInterfaces())
+        .stream().flatMap(network -> Collections.list(network.getInetAddresses()).stream())
+        .filter(candidate -> !candidate.isLoopbackAddress()).findFirst();
+    assumeTrue(address.isPresent(), "This machine has no network interface address");
+    Files.writeString(plugin.getDirectory().resolve("version.properties"),
+        "version=26.03-SNAPSHOT\n");
+    when(request.getRemoteAddr()).thenReturn(address.get().getHostAddress());
+    when(request.getMethod()).thenReturn("GET");
+    when(request.getPathInfo()).thenReturn(VERSION_PATH);
+
+    BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
+
+    verify(response).setStatus(200);
+    verify(admin).release();
+  }
+
+  @Test
+  void shouldAnswerEncryptedRequestFromAnotherMachine() throws Exception {
+    Files.writeString(plugin.getDirectory().resolve("version.properties"),
+        "version=26.03-SNAPSHOT\n");
+    when(request.isSecure()).thenReturn(true);
+    when(request.getRemoteAddr()).thenReturn("192.168.1.20");
+    when(request.getMethod()).thenReturn("GET");
+    when(request.getPathInfo()).thenReturn(VERSION_PATH);
+
+    BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
+
+    verify(response).setStatus(200);
+    verify(admin).release();
+  }
+
+  @Test
+  void shouldAnswerUnencryptedRequestFromAnotherMachineWhenTheHostAllowsIt() throws Exception {
+    Files.writeString(plugin.getDirectory().resolve("version.properties"),
+        "version=26.03-SNAPSHOT\n");
+    Files.writeString(runtime.resolve("unencrypted.enabled"),
+        "unencrypted requests from another machine are allowed on this machine");
+    when(request.getRemoteAddr()).thenReturn("192.168.1.20");
+    when(request.getMethod()).thenReturn("GET");
+    when(request.getPathInfo()).thenReturn(VERSION_PATH);
+
+    BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);
+
+    verify(response).setStatus(200);
+    verify(admin).release();
+  }
+
+  private static Stream<Arguments> getUnencryptedRequestsFromAnotherMachine() {
+    return Stream.of(Arguments.of("192.168.1.20", "GET", VERSION_PATH),
+        Arguments.of("2001:db8::10", "PUT", "/applications/hello-app"),
+        Arguments.of("[2001:db8::10]", "PUT", "/applications/hello-app"),
+        Arguments.of("build.example", "DELETE", "/applications/hello-app"),
+        Arguments.of(null, "GET", VERSION_PATH));
   }
 
   private static Stream<Arguments> getRequestsOfUserWithoutAdministratorPermission() {

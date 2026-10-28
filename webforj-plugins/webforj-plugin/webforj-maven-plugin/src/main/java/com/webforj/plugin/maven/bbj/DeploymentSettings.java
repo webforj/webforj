@@ -26,6 +26,7 @@ public final class DeploymentSettings {
 
   private final BBjOptions options;
   private String url;
+  private Boolean allowUnencrypted;
   private String publishName;
   private String defaultPublishName = "";
   private String username;
@@ -60,6 +61,18 @@ public final class DeploymentSettings {
    */
   public DeploymentSettings setUrl(String url) {
     this.url = url;
+    return this;
+  }
+
+  /**
+   * Sets the override of whether an unencrypted connection to another machine is allowed.
+   *
+   * @param allowUnencrypted the allowance, null keeps the configured value
+   *
+   * @return these settings
+   */
+  public DeploymentSettings setAllowUnencrypted(Boolean allowUnencrypted) {
+    this.allowUnencrypted = allowUnencrypted;
     return this;
   }
 
@@ -169,6 +182,16 @@ public final class DeploymentSettings {
   }
 
   /**
+   * Checks whether the administration credentials may travel over an unencrypted connection to
+   * another machine.
+   *
+   * @return true when an unencrypted connection to another machine is allowed
+   */
+  public boolean isAllowUnencrypted() {
+    return resolve(allowUnencrypted, options.getDeployment().isAllowUnencrypted());
+  }
+
+  /**
    * Resolves the effective BBjShip base address.
    *
    * @return the base address
@@ -205,7 +228,7 @@ public final class DeploymentSettings {
     BBjCredentials credentials = getCredentials(log::warn);
 
     return BBjShipClient.create(effective).setCredentials(credentials).setVersion(version)
-        .setLog(log::info).setWarn(log::warn).build();
+        .setLog(log::info).setWarn(log::warn).setAllowUnencrypted(isAllowUnencrypted()).build();
   }
 
   /**

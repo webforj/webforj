@@ -78,9 +78,13 @@ class BBjShipCliTest {
 
     assertEquals(0, status);
     assertEquals("""
-        Usage: bbjship remote enable [-hV] [--password-stdin] [--password=PASSWORD]
-                                     [--port=PORT] [--ssl-port=PORT] [--username=USER]
+        Usage: bbjship remote enable [-hV] [--allow-unencrypted] [--password-stdin]
+                                     [--password=PASSWORD] [--port=PORT]
+                                     [--ssl-port=PORT] [--username=USER]
         Enable the BBjShip HTTP endpoint.
+              --allow-unencrypted   Accept the administration credentials over plain
+                                      HTTP from another machine. Without it, a request
+                                      from another machine must use the SSL port.
           -h, --help                Show this help message and exit.
               --password=PASSWORD   BBj administrator password.
               --password-stdin      Read the password from the first line of standard

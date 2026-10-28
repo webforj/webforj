@@ -1,7 +1,9 @@
 package com.webforj.plugin.maven.bbj.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -23,6 +25,17 @@ class BBjDeploymentOptionsTest {
     options.setUrl(DEPLOYMENT_URL);
 
     assertEquals(DEPLOYMENT_URL, options.getUrl());
+  }
+
+  @Test
+  void shouldRequireEncryptionUntilUnencryptedTransportIsAllowed() {
+    BBjDeploymentOptions options = new BBjDeploymentOptions();
+
+    assertFalse(options.isAllowUnencrypted());
+
+    options.setAllowUnencrypted(true);
+
+    assertTrue(options.isAllowUnencrypted());
   }
 
   @Test

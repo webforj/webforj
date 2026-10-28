@@ -7,7 +7,10 @@ import com.webforj.bbjship.cli.admin.BBjShipSession;
 import com.webforj.bbjship.cli.option.CredentialOptions;
 import com.webforj.bbjship.cli.option.PortOption;
 import com.webforj.bbjship.foundation.BBjShipCommandLine;
+import com.webforj.bbjship.foundation.FileTree;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.OptionalInt;
 import java.util.concurrent.Callable;
@@ -15,6 +18,7 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Help.Ansi.Style;
 import picocli.CommandLine.Mixin;
+import picocli.CommandLine.Option;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Spec;
 
@@ -28,6 +32,10 @@ import picocli.CommandLine.Spec;
     description = "Enable the BBjShip HTTP endpoint.")
 public final class RemoteEnableCommand implements Callable<Integer> {
 
+  private static final String UNENCRYPTED_CONTENT =
+      "unencrypted requests from another machine are allowed on this machine";
+  private static final String UNENCRYPTED_SUBJECT = " unencrypted requests from another machine";
+
   private final BBjShipSession session;
 
   @Spec
@@ -38,6 +46,11 @@ public final class RemoteEnableCommand implements Callable<Integer> {
 
   @Mixin
   private PortOption port;
+
+  @Option(names = BBjShipCommandLine.ALLOW_UNENCRYPTED_OPTION,
+      description = "Accept the administration credentials over plain HTTP from another machine. "
+          + "Without it, a request from another machine must use the SSL port.")
+  private boolean allowUnencrypted;
 
   /**
    * Creates the command.
@@ -56,11 +69,18 @@ public final class RemoteEnableCommand implements Callable<Integer> {
     BBjAdminBase admin =
         session.openAdmin(credentials, OptionalInt.of(port.getPort()), port.getSslPort());
     List<URI> addresses;
+    boolean refused = false;
     try {
       new BBjShipClasspaths(admin, session.getPlugin()).resetServlet();
       BBjShipContexts contexts = session.createContexts(admin);
       contexts.applyEndpoint(port.getPort(), port.getSslPort(), session.isAssetsStarted());
       addresses = contexts.getAddresses();
+      Path unencryptedSwitch = session.getPlugin().getUnencryptedSwitch();
+      if (allowUnencrypted) {
+        FileTree.writePrivateFile(unencryptedSwitch, UNENCRYPTED_CONTENT);
+      } else {
+        refused = Files.deleteIfExists(unencryptedSwitch);
+      }
     } finally {
       admin.release();
     }
@@ -68,6 +88,13 @@ public final class RemoteEnableCommand implements Callable<Integer> {
     CommandLine line = spec.commandLine();
     addresses.forEach(address -> line.getOut().println(
         line.getColorScheme().apply("Enabled", List.of(Style.fg_green)).concat(" " + address)));
+    if (allowUnencrypted) {
+      line.getOut().println(line.getColorScheme().apply("Allowed", List.of(Style.fg_green))
+          .concat(UNENCRYPTED_SUBJECT));
+    } else if (refused) {
+      line.getOut().println(line.getColorScheme().apply("Refused", List.of(Style.fg_green))
+          .concat(UNENCRYPTED_SUBJECT));
+    }
 
     return 0;
   }

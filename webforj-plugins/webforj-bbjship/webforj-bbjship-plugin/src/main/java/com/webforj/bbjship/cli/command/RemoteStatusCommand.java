@@ -69,6 +69,11 @@ public final class RemoteStatusCommand implements Callable<Integer> {
         .println(line.getColorScheme().text("Development runs  ")
             .concat(development ? line.getColorScheme().apply("enabled", List.of(Style.fg_green))
                 : line.getColorScheme().text("disabled")));
+    boolean unencrypted = Files.isRegularFile(session.getPlugin().getUnencryptedSwitch());
+    line.getOut()
+        .println(line.getColorScheme().text("Unencrypted requests  ")
+            .concat(unencrypted ? line.getColorScheme().apply("allowed", List.of(Style.fg_green))
+                : line.getColorScheme().text("refused")));
 
     return 0;
   }

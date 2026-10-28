@@ -124,6 +124,11 @@ public final class BBjShipCommandLine {
   public static final String SSL_PORT_OPTION = "--ssl-port";
 
   /**
+   * The option that allows unencrypted requests from another machine.
+   */
+  public static final String ALLOW_UNENCRYPTED_OPTION = "--allow-unencrypted";
+
+  /**
    * The environment variable naming the BBj administrator.
    */
   public static final String USERNAME_VARIABLE = "WEBFORJ_BBJ_USERNAME";

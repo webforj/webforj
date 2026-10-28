@@ -80,6 +80,7 @@ public final class ResetCommand implements Callable<Integer> {
     BBjShipPlugin plugin = session.getPlugin();
     String root = plugin.getDeployments().toString();
     Path developmentSwitch = plugin.getDevelopmentSwitch();
+    Path unencryptedSwitch = plugin.getUnencryptedSwitch();
     Path properties = propertiesFile != null ? propertiesFile
         : ServicesProperties.resolveDefaultFile(plugin.getHome());
     applyConfirmationValidation();
@@ -93,6 +94,11 @@ public final class ResetCommand implements Callable<Integer> {
       boolean development = Files.exists(developmentSwitch);
       if (development) {
         plan.add("disable development runs");
+      }
+
+      boolean unencrypted = Files.exists(unencryptedSwitch);
+      if (unencrypted) {
+        plan.add("refuse unencrypted requests from another machine");
       }
 
       boolean bbjShip = !contexts.getAddresses().isEmpty();
@@ -137,6 +143,11 @@ public final class ResetCommand implements Callable<Integer> {
       if (development) {
         Files.deleteIfExists(developmentSwitch);
         showStep("Disabled", "development runs");
+      }
+
+      if (unencrypted) {
+        Files.deleteIfExists(unencryptedSwitch);
+        showStep("Refused", "unencrypted requests from another machine");
       }
 
       removeBBjShipConfiguration(admin, contexts, assets);
@@ -184,7 +195,8 @@ public final class ResetCommand implements Callable<Integer> {
       throws IOException {
     Path runtime = plugin.getRuntime();
     Set<Path> planned = Set.of(plugin.getDeployments(), plugin.getStaticFiles(), plugin.getAssets(),
-        plugin.getDevelopmentSwitch(), ServicesProperties.resolveBackup(properties, runtime));
+        plugin.getDevelopmentSwitch(), plugin.getUnencryptedSwitch(),
+        ServicesProperties.resolveBackup(properties, runtime));
     try (Stream<Path> entries = Files.list(runtime)) {
       return entries.anyMatch(entry -> !planned.contains(entry));
     }

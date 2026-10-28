@@ -140,6 +140,24 @@ class BBjUndeployMojoTest {
     verify(bbjShip).undeploy("hello-app-staging");
   }
 
+  @ParameterizedTest
+  @MethodSource("getUnencryptedAllowances")
+  void shouldPassTheUnencryptedAllowanceOfTheCommandLineOverTheConfiguration(boolean configured,
+      Boolean override, boolean expected) throws Exception {
+    mojo.bbj.getDeployment().setAllowUnencrypted(configured);
+    mojo.allowUnencrypted = override;
+
+    try (var bbjShips = mockStatic(BBjShipClient.class)) {
+      bbjShips.when(() -> BBjShipClient.create(URI.create(DEPLOYMENT_URL)))
+          .thenReturn(bbjShipBuilder);
+
+      mojo.execute();
+    }
+
+    verify(bbjShipBuilder).setAllowUnencrypted(expected);
+    verify(bbjShip).undeploy(APPLICATION_NAME);
+  }
+
   @Test
   void shouldReportTheFailureOfTheBbjShip() throws Exception {
     IOException requestFailure = new IOException("BBj undeployment request failed");
@@ -215,6 +233,11 @@ class BBjUndeployMojoTest {
     return Stream.of(
         Arguments.of(null, ADMIN_PASSWORD, "The BBj administration user name is missing"),
         Arguments.of(DEPLOYER_USERNAME, null, "The BBj administration password is missing"));
+  }
+
+  private static Stream<Arguments> getUnencryptedAllowances() {
+    return Stream.of(Arguments.of(false, null, false), Arguments.of(true, null, true),
+        Arguments.of(false, true, true), Arguments.of(true, false, false));
   }
 
   private static Stream<Arguments> getIncompleteSettings() {

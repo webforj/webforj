@@ -3,9 +3,11 @@ package com.webforj.bbjship;
 import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.BBjAdminException;
 import com.google.common.net.HttpHeaders;
+import com.google.common.net.InetAddresses;
 import com.google.gson.Gson;
 import com.webforj.bbjship.Deployer.DeploymentResult;
 import com.webforj.bbjship.foundation.BBjShipPlugin;
+import com.webforj.bbjship.foundation.LocalMachine;
 import com.webforj.bbjship.foundation.PublishNamePolicy;
 import com.webforj.bbjship.foundation.model.BBjCredentials;
 import com.webforj.bbjship.model.BBjShipDeployment;
@@ -18,6 +20,7 @@ import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.lang.management.ManagementFactory;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Base64;
 import java.util.Optional;
 
@@ -27,7 +30,9 @@ import java.util.Optional;
  * <p>
  * The API answers {@code GET /version}, {@code PUT /applications/{name}} and
  * {@code DELETE /applications/{name}} below the BBjShip context. Every request carries the Basic
- * credentials or the Bearer authorization token of a BBj administrator. Successful answers carry a
+ * credentials or the Bearer authorization token of a BBj administrator. An unencrypted request from
+ * another machine is refused before its credentials are read, unless the host allows it. A request
+ * from a loopback address or an address of this machine counts as local. Successful answers carry a
  * JSON object, refusals carry problem details.
  * </p>
  *
@@ -75,6 +80,9 @@ public final class BBjShipServlet {
   private static final String BASIC = "Basic";
   private static final String BEARER = "Bearer";
   private static final String REALM = " realm=\"webforj-bbjship\"";
+  private static final String UNENCRYPTED_REFUSAL = "BBjShip refuses the administration "
+      + "credentials over an unencrypted connection from another machine. Use the SSL port of the "
+      + "BBjServices web server";
 
   /**
    * The Basic challenge BBjShip answers a request without valid credentials with.
@@ -100,6 +108,12 @@ public final class BBjShipServlet {
 
   static void handle(HttpServletRequest request, HttpServletResponse response, BBjShipPlugin plugin,
       ClasspathRelease release, AdminSessionFactory sessions) throws IOException {
+    if (!request.isSecure() && !isThisMachine(request.getRemoteAddr())
+        && !Files.isRegularFile(plugin.getUnencryptedSwitch())) {
+      writeProblem(response, Problem.FORBIDDEN, UNENCRYPTED_REFUSAL);
+      return;
+    }
+
     Optional<BBjAdminBase> session = readCredentials(request.getHeader(HttpHeaders.AUTHORIZATION))
         .flatMap(credentials -> openSession(credentials, sessions));
     if (session.isEmpty()) {
@@ -233,6 +247,19 @@ public final class BBjShipServlet {
     }
 
     return Optional.of(name);
+  }
+
+  private static boolean isThisMachine(String address) {
+    if (address == null) {
+      return false;
+    }
+
+    if (InetAddresses.isUriInetAddress(address)) {
+      return LocalMachine.isAddress(InetAddresses.forUriString(address));
+    }
+
+    return InetAddresses.isInetAddress(address)
+        && LocalMachine.isAddress(InetAddresses.forString(address));
   }
 
   private static Problem toProblem(DeploymentException refused) {

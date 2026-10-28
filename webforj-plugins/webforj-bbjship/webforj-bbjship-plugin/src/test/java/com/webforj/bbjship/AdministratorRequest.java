@@ -86,6 +86,7 @@ abstract class AdministratorRequest {
     admin = mock(BBjAdminBase.class);
     configuration = mock(BBjAdminAppDeploymentConfiguration.class);
     when(request.getHeader("Authorization")).thenReturn("Basic YWRtaW5pc3RyYXRvcjpzZWNyZXQ=");
+    when(request.getRemoteAddr()).thenReturn("127.0.0.1");
     ServletOutputStream output = mock(ServletOutputStream.class, delegatesTo(body));
     when(response.getOutputStream()).thenReturn(output);
     when(sessions.create(argThat(login -> "administrator".equals(login.getUsername())

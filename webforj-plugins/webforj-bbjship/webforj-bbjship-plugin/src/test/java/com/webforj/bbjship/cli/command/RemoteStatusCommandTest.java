@@ -51,8 +51,10 @@ class RemoteStatusCommandTest {
     int exitCode = cli.run(REMOTE_COMMAND, STATUS_COMMAND);
 
     assertEquals(0, exitCode);
-    assertEquals(FACTORY_ACCOUNT_WARNING + "\n" + "Enabled http://localhost:8890/webforj-bbjship\n"
-        + "Development runs  disabled\n", output.toString(StandardCharsets.UTF_8));
+    assertEquals(
+        FACTORY_ACCOUNT_WARNING + "\n" + "Enabled http://localhost:8890/webforj-bbjship\n"
+            + "Development runs  disabled\n" + "Unencrypted requests  refused\n",
+        output.toString(StandardCharsets.UTF_8));
     verify(services.getContext(BBJSHIP_CONTEXT), never()).setString(anyString(), anyString());
     verify(services.getAdmin()).release();
   }
@@ -82,6 +84,7 @@ class RemoteStatusCommandTest {
         Enabled http://localhost:8888/webforj-bbjship
         Enabled https://localhost:8443/webforj-bbjship
         Development runs  disabled
+        Unencrypted requests  refused
         """, output.toString(StandardCharsets.UTF_8));
   }
 
@@ -99,10 +102,35 @@ class RemoteStatusCommandTest {
     int exitCode = cli.run(REMOTE_COMMAND, STATUS_COMMAND);
 
     assertEquals(0, exitCode);
-    assertEquals(FACTORY_ACCOUNT_WARNING + "\n" + "The BBjShip HTTP endpoint is not enabled\n"
-        + "Development runs  disabled\n", output.toString(StandardCharsets.UTF_8));
+    assertEquals(
+        FACTORY_ACCOUNT_WARNING + "\n" + "The BBjShip HTTP endpoint is not enabled\n"
+            + "Development runs  disabled\n" + "Unencrypted requests  refused\n",
+        output.toString(StandardCharsets.UTF_8));
     verify(services.getServer(), never()).createContext(anyString());
     verify(services.getAdmin()).release();
+  }
+
+  @Test
+  void shouldSayWhenUnencryptedRequestsAreAllowed() throws Exception {
+    Path home = Home.createCopy(temporary.resolve("bbx"));
+    Path runtime = Files.createDirectories(home.resolve(DEPLOYMENTS_FOLDER));
+    Files.writeString(runtime.resolve("unencrypted.enabled"),
+        "unencrypted requests from another machine are allowed on this machine");
+    BBjServices services = new BBjServices();
+    services.addBBjShipConfiguration(home);
+    ByteArrayOutputStream output = new ByteArrayOutputStream();
+    Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+    BBjShipCli cli =
+        BBjShipCli.create(new BBjShipPlugin(home)).setTerminal(new TerminalLines(stream))
+            .setAnsi(Ansi.OFF).setSessions(login -> services.getAdmin()).build();
+
+    int exitCode = cli.run(REMOTE_COMMAND, STATUS_COMMAND);
+
+    assertEquals(0, exitCode);
+    assertEquals(
+        FACTORY_ACCOUNT_WARNING + "\n" + "The BBjShip HTTP endpoint is not enabled\n"
+            + "Development runs  disabled\n" + "Unencrypted requests  allowed\n",
+        output.toString(StandardCharsets.UTF_8));
   }
 
   @Test
@@ -122,7 +150,9 @@ class RemoteStatusCommandTest {
     int exitCode = cli.run(REMOTE_COMMAND, STATUS_COMMAND);
 
     assertEquals(0, exitCode);
-    assertEquals(FACTORY_ACCOUNT_WARNING + "\n" + "The BBjShip HTTP endpoint is not enabled\n"
-        + "Development runs  enabled\n", output.toString(StandardCharsets.UTF_8));
+    assertEquals(
+        FACTORY_ACCOUNT_WARNING + "\n" + "The BBjShip HTTP endpoint is not enabled\n"
+            + "Development runs  enabled\n" + "Unencrypted requests  refused\n",
+        output.toString(StandardCharsets.UTF_8));
   }
 }

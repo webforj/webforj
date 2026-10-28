@@ -13,12 +13,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Locale;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Consumer;
 import javax.net.ssl.SSLException;
 import org.apache.hc.client5.http.auth.AuthScheme;
@@ -71,12 +70,16 @@ public final class BBjShipClient {
       "did not confirm the requested application. Check the BBjShip version and BBjServices log";
   private static final String UPLOAD_PROGRESS =
       "Uploading " + DEPLOYMENT + ", %d of %d bytes (%d%%)";
+  private static final String UNENCRYPTED = " sends the administration credentials over an "
+      + "unencrypted connection to another machine. Use an https:// URL with the SSL port of the "
+      + "BBjServices web server";
 
   private final URI endpoint;
   private final BBjCredentials credentials;
   private final String version;
   private final Consumer<String> log;
   private final Consumer<String> warn;
+  private final boolean allowUnencrypted;
   private final Gson gson = new Gson();
 
   private BBjShipClient(Builder builder) {
@@ -85,6 +88,7 @@ public final class BBjShipClient {
     this.version = builder.version;
     this.log = builder.log;
     this.warn = builder.warn;
+    this.allowUnencrypted = builder.allowUnencrypted;
   }
 
   /**
@@ -132,14 +136,15 @@ public final class BBjShipClient {
    *
    * @return the address of the published application
    * @throws NullPointerException if an argument is null
-   * @throws IOException if the archive is missing, the BBjShip version differs, BBjShip refuses the
+   * @throws IOException if the endpoint names another machine without encryption and that is not
+   *         allowed, the archive is missing, the BBjShip version differs, BBjShip refuses the
    *         request or publication is not confirmed
    */
   public URI deploy(Path archive, String publishName) throws IOException {
     Objects.requireNonNull(archive);
     Objects.requireNonNull(publishName);
-    getPlainTextWarning().ifPresent(warn);
     try {
+      applyEndpointValidation(DEPLOYMENT);
       if (!Files.isRegularFile(archive)) {
         throw new BBjShipRequestException("archive is missing. Package the application first");
       }
@@ -165,12 +170,13 @@ public final class BBjShipClient {
    * @param publishName the name the application is published under
    *
    * @throws NullPointerException if publishName is null
-   * @throws IOException if the BBjShip version differs or BBjShip refuses the request
+   * @throws IOException if the endpoint names another machine without encryption and that is not
+   *         allowed, the BBjShip version differs or BBjShip refuses the request
    */
   public void undeploy(String publishName) throws IOException {
     Objects.requireNonNull(publishName);
-    getPlainTextWarning().ifPresent(warn);
     try {
+      applyEndpointValidation(UNDEPLOYMENT);
       send(new HttpDelete(resolve("applications", publishName)), response -> {
         readSuccess(response);
         return publishName;
@@ -184,27 +190,36 @@ public final class BBjShipClient {
    * Reads the version and the Java runtime BBjShip answers with.
    *
    * @return the version answer of BBjShip
-   * @throws IOException if BBjShip refuses the request or does not answer with a version
+   * @throws IOException if the endpoint names another machine without encryption and that is not
+   *         allowed, BBjShip refuses the request or does not answer with a version
    */
   public VersionResponse getVersion() throws IOException {
     try {
+      applyEndpointValidation(VERSION_CHECK);
       return send((client, context) -> fetchVersion(client, context, this::readVersionResponse));
     } catch (BBjShipRequestException failure) {
       throw new IOException(VERSION_CHECK + " " + failure.getMessage(), failure.getCause());
     }
   }
 
-  private Optional<String> getPlainTextWarning() {
-    String host = endpoint.getHost().toLowerCase(Locale.ROOT);
-    boolean loopback = host.equals("localhost") || host.startsWith("127.") || host.equals("[::1]")
-        || host.equals("::1");
-    if (!HTTP.equalsIgnoreCase(endpoint.getScheme()) || loopback) {
-      return Optional.empty();
+  private void applyEndpointValidation(String operation) throws BBjShipRequestException {
+    if (!HTTP.equalsIgnoreCase(endpoint.getScheme()) || isLocalHost()) {
+      return;
     }
 
-    return Optional.of(DEPLOYMENT + " URL " + endpoint
-        + " sends the administration credentials readable over the network. "
-        + "Use an https:// URL for a host that is not this machine");
+    if (!allowUnencrypted) {
+      throw new BBjShipRequestException("URL " + endpoint + UNENCRYPTED);
+    }
+
+    warn.accept(operation + " URL " + endpoint + UNENCRYPTED);
+  }
+
+  private boolean isLocalHost() {
+    try {
+      return LocalMachine.isHost(endpoint.getHost());
+    } catch (UnknownHostException unknown) {
+      return false;
+    }
   }
 
   private <T> T send(ClassicHttpRequest request, HttpClientResponseHandler<T> handler)
@@ -363,6 +378,7 @@ public final class BBjShipClient {
     };
     private Consumer<String> warn = line -> {
     };
+    private boolean allowUnencrypted;
 
     private Builder(URI endpoint) {
       this.endpoint = endpoint;
@@ -417,6 +433,19 @@ public final class BBjShipClient {
      */
     public Builder setWarn(Consumer<String> warn) {
       this.warn = Objects.requireNonNull(warn);
+      return this;
+    }
+
+    /**
+     * Sets whether the administration credentials may travel over an unencrypted connection to
+     * another machine. When allowed, the client reports a warning in place of refusing the request.
+     *
+     * @param allowUnencrypted true to allow an unencrypted connection to another machine
+     *
+     * @return this builder
+     */
+    public Builder setAllowUnencrypted(boolean allowUnencrypted) {
+      this.allowUnencrypted = allowUnencrypted;
       return this;
     }
 

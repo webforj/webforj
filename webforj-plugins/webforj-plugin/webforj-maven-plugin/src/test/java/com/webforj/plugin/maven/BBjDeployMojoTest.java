@@ -271,6 +271,24 @@ class BBjDeployMojoTest {
     verify(bbjShip).deploy(app.resolve("target/bbj/hello-app-staging.zip"), "hello-app-staging");
   }
 
+  @ParameterizedTest
+  @MethodSource("getUnencryptedAllowances")
+  void shouldPassTheUnencryptedAllowanceOfTheCommandLineOverTheConfiguration(boolean configured,
+      Boolean override, boolean expected) throws Exception {
+    mojo.bbj.getDeployment().setAllowUnencrypted(configured);
+    mojo.allowUnencrypted = override;
+
+    try (var bbjShips = mockStatic(BBjShipClient.class)) {
+      bbjShips.when(() -> BBjShipClient.create(URI.create(DEPLOYMENT_URL)))
+          .thenReturn(bbjShipBuilder);
+
+      mojo.execute();
+    }
+
+    verify(bbjShipBuilder).setAllowUnencrypted(expected);
+    verify(bbjShip).deploy(app.resolve(ARCHIVE_PATH), APPLICATION_NAME);
+  }
+
   @Test
   void shouldRefuseProjectThatIsNotPackagedAsJar() {
     mojo.project.setPackaging("war");
@@ -380,6 +398,11 @@ class BBjDeployMojoTest {
                 + "pass -Dwebforj.bbj.deployment.url=<URL>"),
         Arguments.of(DEPLOYMENT_URL, "",
             "BBj deployment requires bbj.publishName or a final name of the build"));
+  }
+
+  private static Stream<Arguments> getUnencryptedAllowances() {
+    return Stream.of(Arguments.of(false, null, false), Arguments.of(true, null, true),
+        Arguments.of(false, true, true), Arguments.of(true, false, false));
   }
 
   private static Stream<Arguments> getRefusedPublishNames() {
