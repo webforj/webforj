@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.typesafe.config.ConfigFactory;
 import com.webforj.router.history.Location;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -21,7 +22,7 @@ class BBjRouteSecurityConfigurationTest {
 
   @BeforeEach
   void setUp() {
-    properties = new BBjSecurityConfigurationProperties();
+    properties = new BBjSecurityConfigurationProperties(ConfigFactory.empty());
     configuration = new BBjRouteSecurityConfiguration(properties);
   }
 

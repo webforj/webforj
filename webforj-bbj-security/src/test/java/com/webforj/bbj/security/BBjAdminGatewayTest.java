@@ -17,6 +17,7 @@ import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.BBjAdminException;
 import com.basis.api.admin.BBjAdminFactory;
 import com.basis.api.admin.BBjAdminSecurityException;
+import com.typesafe.config.ConfigFactory;
 import com.webforj.bbj.security.BBjAdminFailure.Kind;
 import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.bbj.security.model.BBjSession;
@@ -60,7 +61,8 @@ class BBjAdminGatewayTest {
     factory = mockStatic(BBjAdminFactory.class);
     admin = mock(BBjAdminBase.class);
     loopback = InetAddress.getByName("127.0.0.1");
-    gateway = new BBjAdminGateway(new BBjSecurityConfigurationProperties(), clock);
+    gateway =
+        new BBjAdminGateway(new BBjSecurityConfigurationProperties(ConfigFactory.empty()), clock);
   }
 
   @AfterEach
@@ -145,7 +147,8 @@ class BBjAdminGatewayTest {
 
     @Test
     void shouldCallTheFactoryWithTheConfiguredValues() throws Exception {
-      BBjSecurityConfigurationProperties properties = new BBjSecurityConfigurationProperties();
+      BBjSecurityConfigurationProperties properties =
+          new BBjSecurityConfigurationProperties(ConfigFactory.empty());
       properties.setAdminPort(2003);
       properties.setAdminTimeoutSeconds(7);
       properties.setTokenMinutes(45);
@@ -167,7 +170,8 @@ class BBjAdminGatewayTest {
 
     @Test
     void shouldCreateTheGatewayWithTheSystemClock() {
-      assertDoesNotThrow(() -> new BBjAdminGateway(new BBjSecurityConfigurationProperties()));
+      assertDoesNotThrow(
+          () -> new BBjAdminGateway(new BBjSecurityConfigurationProperties(ConfigFactory.empty())));
     }
 
     @Test
@@ -234,7 +238,8 @@ class BBjAdminGatewayTest {
 
     @Test
     void shouldClassifyAnUnresolvableHostAsUnavailable() {
-      BBjSecurityConfigurationProperties properties = new BBjSecurityConfigurationProperties();
+      BBjSecurityConfigurationProperties properties =
+          new BBjSecurityConfigurationProperties(ConfigFactory.empty());
       properties.setAdminHost("no such host.invalid");
       BBjAdminGateway unresolved = new BBjAdminGateway(properties, clock);
 
@@ -279,7 +284,8 @@ class BBjAdminGatewayTest {
 
     @Test
     void shouldRefuseNullClock() {
-      BBjSecurityConfigurationProperties properties = new BBjSecurityConfigurationProperties();
+      BBjSecurityConfigurationProperties properties =
+          new BBjSecurityConfigurationProperties(ConfigFactory.empty());
 
       assertThrows(NullPointerException.class, () -> new BBjAdminGateway(properties, null));
     }
@@ -357,7 +363,8 @@ class BBjAdminGatewayTest {
 
     @Test
     void shouldClassifyAnUnresolvableHostAsUnavailable() {
-      BBjSecurityConfigurationProperties properties = new BBjSecurityConfigurationProperties();
+      BBjSecurityConfigurationProperties properties =
+          new BBjSecurityConfigurationProperties(ConfigFactory.empty());
       properties.setAdminHost("no such host.invalid");
       BBjAdminGateway unresolved = new BBjAdminGateway(properties, clock);
 
