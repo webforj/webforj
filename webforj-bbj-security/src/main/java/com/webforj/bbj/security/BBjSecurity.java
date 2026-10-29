@@ -122,6 +122,23 @@ public final class BBjSecurity {
   }
 
   /**
+   * Checks whether the user that signed in holds a role.
+   *
+   * <p>
+   * The roles of a user are the names of the BBj security groups the user is a member of. The name
+   * is compared exactly, case sensitive.
+   * </p>
+   *
+   * @param role the name of the role
+   *
+   * @return {@code true} if the signed in user holds the role, {@code false} if nobody has signed
+   *         in, BBj security is not set up, or the role is {@code null}
+   */
+  public static boolean hasRole(String role) {
+    return role != null && currentUser().filter(user -> user.getRoles().contains(role)).isPresent();
+  }
+
+  /**
    * Gets the user that signed in.
    *
    * @return the signed in user, or empty if nobody has signed in or BBj security is not set up
