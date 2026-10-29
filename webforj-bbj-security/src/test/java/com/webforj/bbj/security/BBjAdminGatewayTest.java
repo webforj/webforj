@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
@@ -210,14 +211,14 @@ class BBjAdminGatewayTest {
     void shouldCloseTheTokenAndReleaseTheConnection() throws Exception {
       gateway.closeSession(session);
 
-      verify(admin, times(1)).renewToken(1, true);
+      verify(admin, times(1)).invalidateToken(TOKEN);
       verify(admin, times(1)).release();
     }
 
     @Test
     void shouldClassifyRefusedTokenAsTokenRejected() throws Exception {
-      when(admin.renewToken(1, true))
-          .thenThrow(new BBjAdminException("Server failed login: Authentication token is expired"));
+      doThrow(new BBjAdminException("Server failed login: Authentication token is expired"))
+          .when(admin).invalidateToken(TOKEN);
 
       BBjAdminFailure failure = closeFailingSession();
 
@@ -227,7 +228,7 @@ class BBjAdminGatewayTest {
 
     @Test
     void shouldClassifyRuntimeFailureAsUnavailable() throws Exception {
-      when(admin.renewToken(1, true)).thenThrow(new IllegalStateException("boom"));
+      doThrow(new IllegalStateException("boom")).when(admin).invalidateToken(TOKEN);
 
       BBjAdminFailure failure = closeFailingSession();
 
@@ -251,7 +252,7 @@ class BBjAdminGatewayTest {
 
     @Test
     void shouldHideTheTokenInTheMessage() throws Exception {
-      when(admin.renewToken(1, true)).thenThrow(new BBjAdminException("bad " + TOKEN + " again"));
+      doThrow(new BBjAdminException("bad " + TOKEN + " again")).when(admin).invalidateToken(TOKEN);
 
       BBjAdminFailure failure = closeFailingSession();
 
