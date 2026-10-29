@@ -88,10 +88,10 @@ public final class BBjAdminGateway {
    *
    * <p>
    * The call blocks until the Admin API answers or the time limit passes. The principal of the
-   * session carries the user name the Admin API reports and no roles and no authorities. The
-   * session expires after the configured token lifetime, counted from the start of the call. When
-   * the user name cannot be read after the token was issued, the token is not revoked and expires
-   * on its own.
+   * session carries the user name the Admin API reports, the names of the BBj security groups of
+   * the user as roles, and no authorities. The session expires after the configured token lifetime,
+   * counted from the start of the call. When the user name or the group names cannot be read after
+   * the token was issued, the token is not revoked and expires on its own.
    * </p>
    *
    * @param userName the user name
@@ -117,8 +117,7 @@ public final class BBjAdminGateway {
     }
 
     try {
-      String name = sendCall(token, BBjAdminBase::getUser);
-      BBjPrincipal principal = new BBjPrincipal(name, Set.of(), Set.of());
+      var principal = sendCall(token, this::readPrincipal);
 
       return new BBjSession(principal, token, start.plus(tokenLifetime));
     } catch (BBjAdminException | UnknownHostException | RuntimeException e) {
@@ -175,13 +174,16 @@ public final class BBjAdminGateway {
       return null;
     }
     var oldToken = session.getToken();
+    String newToken = null;
     try {
       var minutes = tokenLifetime.getSeconds() / 60;
-      var newToken = sendCall(oldToken, admin -> admin.renewToken(minutes, true));
+      newToken = sendCall(oldToken, admin -> admin.renewToken(minutes, true));
       var expiry = clock.instant().plus(tokenLifetime);
-      return new BBjSession(session.getPrincipal(), newToken, expiry);
+      var principal = sendCall(newToken, this::readPrincipal);
+
+      return new BBjSession(principal, newToken, expiry);
     } catch (Exception e) {
-      throw toFailure(e, oldToken);
+      throw toFailure(e, oldToken, newToken);
     }
   }
 
@@ -198,6 +200,13 @@ public final class BBjAdminGateway {
     } finally {
       admin.release();
     }
+  }
+
+  private BBjPrincipal readPrincipal(BBjAdminBase admin) throws BBjAdminException {
+    var name = admin.getUser();
+    var groups = admin.getSecurityGroupNames();
+
+    return new BBjPrincipal(name, Set.copyOf(groups), Set.of());
   }
 
   private static BBjAdminFailure toFailure(Throwable cause, String... secrets) {
