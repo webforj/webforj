@@ -27,10 +27,11 @@ import java.util.ServiceLoader;
  * {@link AbstractRouteSecurityManager} of a BBj application.
  *
  * <p>
- * Registers the core evaluators, then each {@link BBjRouteSecurityEvaluator} listed in a provider
- * file at its own priority. The location a user requested is saved on every denial. Users who need
- * to authenticate are sent to the authentication location. Users who are denied access are sent to
- * the deny location with the reason.
+ * Registers the core evaluators and the {@link BBjPermissionEvaluator}, then each
+ * {@link BBjRouteSecurityEvaluator} listed in a provider file at its own priority. The location a
+ * user requested is saved on every denial. Users who need to authenticate are sent to the
+ * authentication location. Users who are denied access are sent to the deny location with the
+ * reason.
  * </p>
  *
  * @author Christian Liebhardt
@@ -43,8 +44,8 @@ public final class BBjRouteSecurityManager extends AbstractRouteSecurityManager 
   private final BBjRouteSecurityContext securityContext;
 
   /**
-   * Creates a manager with the core evaluators and the listed {@link BBjRouteSecurityEvaluator}
-   * instances registered.
+   * Creates a manager with the core evaluators, the {@link BBjPermissionEvaluator} and the listed
+   * {@link BBjRouteSecurityEvaluator} instances registered.
    *
    * @param configuration the route security configuration
    * @param securityContext the route security context
@@ -65,6 +66,7 @@ public final class BBjRouteSecurityManager extends AbstractRouteSecurityManager 
     registerEvaluator(new AuthenticationRequiredEvaluator(), 3);
     registerEvaluator(new PermitAllEvaluator(), 4);
     registerEvaluator(new RolesAllowedEvaluator(), 5);
+    registerEvaluator(new BBjPermissionEvaluator(), 6);
     loadEvaluators();
   }
 

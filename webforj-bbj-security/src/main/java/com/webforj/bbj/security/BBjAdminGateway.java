@@ -3,6 +3,7 @@ package com.webforj.bbj.security;
 import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.BBjAdminException;
 import com.basis.api.admin.BBjAdminFactory;
+import com.webforj.bbj.security.model.BBjPermissions;
 import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.bbj.security.model.BBjSession;
 import java.lang.System.Logger;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -89,9 +91,10 @@ public final class BBjAdminGateway {
    * <p>
    * The call blocks until the Admin API answers or the time limit passes. The principal of the
    * session carries the user name the Admin API reports, the names of the BBj security groups of
-   * the user as roles, and no authorities. The session expires after the configured token lifetime,
-   * counted from the start of the call. When the user name or the group names cannot be read after
-   * the token was issued, the token is not revoked and expires on its own.
+   * the user as roles, and the names of the {@link BBjPermissions} the user holds as authorities.
+   * The session expires after the configured token lifetime, counted from the start of the call.
+   * When the user name, the group names or the permissions cannot be read after the token was
+   * issued, the token is not revoked and expires on its own.
    * </p>
    *
    * @param userName the user name
@@ -117,7 +120,7 @@ public final class BBjAdminGateway {
     }
 
     try {
-      var principal = sendCall(token, this::readPrincipal);
+      var principal = sendCall(token, admin -> readPrincipal(admin, token));
 
       return new BBjSession(principal, token, start.plus(tokenLifetime));
     } catch (BBjAdminException | UnknownHostException | RuntimeException e) {
@@ -179,7 +182,8 @@ public final class BBjAdminGateway {
       var minutes = tokenLifetime.getSeconds() / 60;
       newToken = sendCall(oldToken, admin -> admin.renewToken(minutes, true));
       var expiry = clock.instant().plus(tokenLifetime);
-      var principal = sendCall(newToken, this::readPrincipal);
+      var token = newToken;
+      var principal = sendCall(newToken, admin -> readPrincipal(admin, token));
 
       return new BBjSession(principal, newToken, expiry);
     } catch (Exception e) {
@@ -202,11 +206,19 @@ public final class BBjAdminGateway {
     }
   }
 
-  private BBjPrincipal readPrincipal(BBjAdminBase admin) throws BBjAdminException {
+  private BBjPrincipal readPrincipal(BBjAdminBase admin, String token) throws BBjAdminException {
     var name = admin.getUser();
     var groups = admin.getSecurityGroupNames();
 
-    return new BBjPrincipal(name, Set.copyOf(groups), Set.of());
+    var permissions = admin.getSingleUserPermissions(token);
+    Set<String> authorities = new HashSet<>();
+    for (BBjPermissions permission : BBjPermissions.values()) {
+      if (permissions.contains(permission.toString())) {
+        authorities.add(permission.toString());
+      }
+    }
+
+    return new BBjPrincipal(name, Set.copyOf(groups), Set.copyOf(authorities));
   }
 
   private static BBjAdminFailure toFailure(Throwable cause, String... secrets) {
