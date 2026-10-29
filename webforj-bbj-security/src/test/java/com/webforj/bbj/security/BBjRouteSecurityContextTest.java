@@ -2,32 +2,46 @@ package com.webforj.bbj.security;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 import com.webforj.bbj.security.model.BBjPrincipal;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Supplier;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 class BBjRouteSecurityContextTest {
 
   private final BBjPrincipal principal =
       new BBjPrincipal("alice", Set.of("Admins"), Set.of("READ_PRIVILEGE"));
+  private MockedStatic<BBjSecurity> securityMock;
 
-  @Test
-  void shouldRejectNullSupplier() {
-    Supplier<Optional<BBjPrincipal>> missing = null;
+  @BeforeEach
+  void setUp() {
+    securityMock = mockStatic(BBjSecurity.class);
+  }
 
-    assertThrows(NullPointerException.class, () -> new BBjRouteSecurityContext(missing));
+  @AfterEach
+  void tearDown() {
+    securityMock.close();
   }
 
   @Nested
   class WithoutPrincipal {
 
-    private final BBjRouteSecurityContext context = new BBjRouteSecurityContext(Optional::empty);
+    private final BBjRouteSecurityContext context = new BBjRouteSecurityContext();
+
+    @BeforeEach
+    void setUp() {
+      securityMock.when(BBjSecurity::currentUser).thenReturn(Optional.empty());
+      securityMock.when(() -> BBjSecurity.hasRole("Admins")).thenReturn(false);
+      securityMock.when(() -> BBjSecurity.hasAuthority("READ_PRIVILEGE")).thenReturn(false);
+    }
 
     @Test
     void shouldNotBeAuthenticated() {
@@ -58,8 +72,16 @@ class BBjRouteSecurityContextTest {
   @Nested
   class WithPrincipal {
 
-    private final BBjRouteSecurityContext context =
-        new BBjRouteSecurityContext(() -> Optional.of(principal));
+    private final BBjRouteSecurityContext context = new BBjRouteSecurityContext();
+
+    @BeforeEach
+    void setUp() {
+      securityMock.when(BBjSecurity::currentUser).thenReturn(Optional.of(principal));
+      securityMock.when(() -> BBjSecurity.hasRole("Admins")).thenReturn(true);
+      securityMock.when(() -> BBjSecurity.hasRole("Sales EU")).thenReturn(false);
+      securityMock.when(() -> BBjSecurity.hasAuthority("READ_PRIVILEGE")).thenReturn(true);
+      securityMock.when(() -> BBjSecurity.hasAuthority("WRITE_PRIVILEGE")).thenReturn(false);
+    }
 
     @Test
     void shouldBeAuthenticated() {
