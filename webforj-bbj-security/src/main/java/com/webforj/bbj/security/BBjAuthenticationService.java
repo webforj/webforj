@@ -30,8 +30,6 @@ import java.util.function.Supplier;
  */
 public final class BBjAuthenticationService {
   private static final Logger logger = System.getLogger(BBjAuthenticationService.class.getName());
-  private static final int MAX_USER_NAME_LENGTH = 64;
-  private static final int MAX_PASSWORD_LENGTH = 1024;
   private final BBjAdminGateway gateway;
   private final BBjSecurityStore store;
   private final BBjThrottleStore throttleStore;
@@ -72,10 +70,8 @@ public final class BBjAuthenticationService {
    * Signs a user in.
    *
    * <p>
-   * An empty or blank user name or password, a user name longer than 64 characters and a password
-   * longer than 1024 characters are refused at once as invalid credentials. Otherwise the sign in
-   * runs on the calling thread. After a successful sign in the session is saved in the session
-   * store. The sign in opens no location.
+   * The sign in runs on the calling thread. The credentials are passed to BBj as given. After a
+   * successful sign in the session is saved in the session store. The sign in opens no location.
    * </p>
    *
    * <p>
@@ -101,10 +97,6 @@ public final class BBjAuthenticationService {
   BBjLoginStatus login(String userName, String password) {
     Objects.requireNonNull(userName, "userName");
     Objects.requireNonNull(password, "password");
-    if (userName.isBlank() || password.isBlank() || userName.length() > MAX_USER_NAME_LENGTH
-        || password.length() > MAX_PASSWORD_LENGTH) {
-      return BBjLoginStatus.INVALID_CREDENTIALS;
-    }
 
     String address = readAddress().orElse(null);
     try {
