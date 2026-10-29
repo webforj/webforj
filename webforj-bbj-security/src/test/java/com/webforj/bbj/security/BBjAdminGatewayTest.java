@@ -3,9 +3,12 @@ package com.webforj.bbj.security;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.AdditionalAnswers.delegatesTo;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -17,6 +20,7 @@ import static org.mockito.Mockito.when;
 import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.BBjAdminException;
 import com.basis.api.admin.BBjAdminFactory;
+import com.basis.api.admin.BBjAdminList;
 import com.basis.api.admin.BBjAdminSecurityException;
 import com.typesafe.config.ConfigFactory;
 import com.webforj.bbj.security.BBjAdminFailure.Kind;
@@ -27,6 +31,7 @@ import java.net.InetAddress;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -50,6 +55,7 @@ class BBjAdminGatewayTest {
   private static final Instant NOW = Instant.parse("2026-01-01T00:00:00Z");
   private static final String PASSWORD = "pw-secret-1";
   private static final String TOKEN = "tokenvalue1234";
+  private static final String RENEWED_TOKEN = "renewedtoken5678";
   private static final String UNAVAILABLE = "BBj Admin API is unavailable: ";
   private final Clock clock = Clock.fixed(NOW, ZoneOffset.UTC);
   private MockedStatic<BBjAdminFactory> factory;
@@ -86,10 +92,35 @@ class BBjAdminGatewayTest {
         Locale.ENGLISH, null, null)).thenReturn(admin);
   }
 
+  private void setRenewedAdmin(BBjAdminBase renewedAdmin) throws BBjAdminException {
+    when(admin.renewToken(30L, true)).thenReturn(RENEWED_TOKEN);
+    factory.when(() -> BBjAdminFactory.getBBjAdmin(loopback, 2002, false, 10000, RENEWED_TOKEN,
+        null, Locale.ENGLISH, null, null)).thenReturn(renewedAdmin);
+  }
+
   private BBjAdminFailure openFailingSession(Throwable failure) {
     setTokenFailure(failure);
 
     return assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD));
+  }
+
+  private static BBjAdminList<String> createGroupNames(List<String> names) {
+    return mock(delegatesTo(new ArrayList<>(names)));
+  }
+
+  private static Stream<Arguments> getGroupNames() {
+    return Stream.of(Arguments.of(List.of(), Set.of()),
+        Arguments.of(List.of("Admins"), Set.of("Admins")), Arguments
+            .of(List.of("Admins", "admins", "Sales EU"), Set.of("Admins", "admins", "Sales EU")));
+  }
+
+  private static Stream<Arguments> getGroupNameFailures() {
+    return Stream.of(
+        Arguments.of(new BBjAdminException("Server failed login: Authentication token is expired"),
+            Kind.TOKEN_REJECTED),
+        Arguments.of(new BBjAdminException("Server did not accept the connection"),
+            Kind.UNAVAILABLE),
+        Arguments.of(new IllegalStateException("boom"), Kind.UNAVAILABLE));
   }
 
   private static Stream<Arguments> getKnownTexts() {
@@ -137,6 +168,7 @@ class BBjAdminGatewayTest {
       setToken(TOKEN);
       setAdmin(TOKEN);
       when(admin.getUser()).thenReturn("Alice");
+      when(admin.getSecurityGroupNames()).thenReturn(createGroupNames(List.of()));
 
       BBjSession session = gateway.openSession("alice", PASSWORD);
 
@@ -159,6 +191,7 @@ class BBjAdminGatewayTest {
       factory.when(() -> BBjAdminFactory.getBBjAdmin(loopback, 2003, false, 7000, TOKEN, null,
           Locale.ENGLISH, null, null)).thenReturn(admin);
       when(admin.getUser()).thenReturn("alice");
+      when(admin.getSecurityGroupNames()).thenReturn(createGroupNames(List.of()));
 
       BBjSession session = configured.openSession("alice", PASSWORD);
 
@@ -167,6 +200,22 @@ class BBjAdminGatewayTest {
           PASSWORD, Locale.ENGLISH, null, null, 45L, Map.of()));
       factory.verify(() -> BBjAdminFactory.getBBjAdmin(loopback, 2003, false, 7000, TOKEN, null,
           Locale.ENGLISH, null, null));
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.webforj.bbj.security.BBjAdminGatewayTest#getGroupNames")
+    void shouldTakeTheRolesFromTheSecurityGroupNames(List<String> groups, Set<String> roles)
+        throws Exception {
+      setToken(TOKEN);
+      setAdmin(TOKEN);
+      when(admin.getUser()).thenReturn("alice");
+      when(admin.getSecurityGroupNames()).thenReturn(createGroupNames(groups));
+
+      BBjPrincipal principal = gateway.openSession("alice", PASSWORD).getPrincipal();
+
+      assertEquals(roles, principal.getRoles());
+      assertTrue(principal.getAuthorities().isEmpty());
+      verify(admin, times(1)).release();
     }
 
     @Test
@@ -258,6 +307,36 @@ class BBjAdminGatewayTest {
 
       assertEquals(UNAVAILABLE + "BBjAdminException: bad *** again", failure.getMessage());
       assertFalse(failure.toString().contains(TOKEN));
+    }
+  }
+
+  @Nested
+  class RenewSession {
+    private final BBjPrincipal principal =
+        new BBjPrincipal("alice", Set.of("Admins", "Sales EU"), Set.of());
+    private final BBjSession session = new BBjSession(principal, TOKEN, NOW.plusSeconds(60));
+
+    private final BBjAdminBase renewedAdmin = mock(BBjAdminBase.class);
+
+    @Test
+    void shouldReadThePrincipalAndItsRolesThroughTheNewToken() throws Exception {
+      setAdmin(TOKEN);
+      setRenewedAdmin(renewedAdmin);
+      when(renewedAdmin.getUser()).thenReturn("Alice");
+      when(renewedAdmin.getSecurityGroupNames())
+          .thenReturn(createGroupNames(List.of("Admins", "Support")));
+
+      BBjSession renewed = gateway.renewSession(session);
+
+      assertNotSame(principal, renewed.getPrincipal());
+      assertEquals("Alice", renewed.getPrincipal().getUserName());
+      assertEquals(Set.of("Admins", "Support"), renewed.getPrincipal().getRoles());
+      assertTrue(renewed.getPrincipal().getAuthorities().isEmpty());
+      assertEquals(RENEWED_TOKEN, renewed.getToken());
+      assertEquals(NOW.plusSeconds(30 * 60), renewed.getExpiresAt());
+      verify(admin, never()).getSecurityGroupNames();
+      verify(admin, times(1)).release();
+      verify(renewedAdmin, times(1)).release();
     }
   }
 
@@ -505,6 +584,9 @@ class BBjAdminGatewayTest {
         // Not implemented
       }
     };
+    private final BBjSession session =
+        new BBjSession(new BBjPrincipal("alice", Set.of(), Set.of()), TOKEN, NOW.plusSeconds(60));
+    private final BBjAdminBase renewedAdmin = mock(BBjAdminBase.class);
     private Level previousLevel;
 
     @BeforeEach
@@ -565,6 +647,35 @@ class BBjAdminGatewayTest {
       verify(admin, times(1)).release();
     }
 
+    @ParameterizedTest
+    @MethodSource("com.webforj.bbj.security.BBjAdminGatewayTest#getGroupNameFailures")
+    void shouldClassifyFailureOfTheGroupNamesLikeFailureOfTheUserName(Throwable cause, Kind kind)
+        throws Exception {
+      when(admin.getUser()).thenReturn("alice");
+      when(admin.getSecurityGroupNames()).thenThrow(cause);
+
+      BBjAdminFailure failure =
+          assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD));
+
+      assertEquals(kind, failure.getKind());
+      verify(admin, times(1)).release();
+      assertEquals(1, records.stream().filter(it -> it.getLevel() == Level.WARNING).count());
+    }
+
+    @Test
+    void shouldHideTheTokenAndThePasswordWhenTheGroupNamesCannotBeRead() throws Exception {
+      when(admin.getUser()).thenReturn("alice");
+      when(admin.getSecurityGroupNames())
+          .thenThrow(new BBjAdminException("bad " + TOKEN + " and " + PASSWORD));
+
+      BBjAdminFailure failure =
+          assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD));
+
+      assertEquals(UNAVAILABLE + "BBjAdminException: bad *** and ***", failure.getMessage());
+      assertTrue(records.stream().noneMatch(it -> String.valueOf(it.getMessage()).contains(TOKEN)
+          || String.valueOf(it.getMessage()).contains(PASSWORD)));
+    }
+
     @Test
     void shouldHideTheTokenWhenTheConnectionCannotBeOpened() {
       factory.when(() -> BBjAdminFactory.getBBjAdmin(loopback, 2002, false, 10000, TOKEN, null,
@@ -575,6 +686,52 @@ class BBjAdminGatewayTest {
 
       assertEquals(Kind.UNAVAILABLE, failure.getKind());
       assertEquals(UNAVAILABLE + "BBjAdminException: host ***", failure.getMessage());
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.webforj.bbj.security.BBjAdminGatewayTest#getGroupNameFailures")
+    void shouldClassifyFailureOfTheRenewedUserNameLikeOtherFailures(Throwable cause, Kind kind)
+        throws Exception {
+      setRenewedAdmin(renewedAdmin);
+      when(renewedAdmin.getUser()).thenThrow(cause);
+
+      BBjAdminFailure failure =
+          assertThrows(BBjAdminFailure.class, () -> gateway.renewSession(session));
+
+      assertEquals(kind, failure.getKind());
+      verify(admin, times(1)).release();
+      verify(renewedAdmin, times(1)).release();
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.webforj.bbj.security.BBjAdminGatewayTest#getGroupNameFailures")
+    void shouldClassifyFailureOfTheRenewedGroupNamesLikeOtherFailures(Throwable cause, Kind kind)
+        throws Exception {
+      setRenewedAdmin(renewedAdmin);
+      when(renewedAdmin.getUser()).thenReturn("alice");
+      when(renewedAdmin.getSecurityGroupNames()).thenThrow(cause);
+
+      BBjAdminFailure failure =
+          assertThrows(BBjAdminFailure.class, () -> gateway.renewSession(session));
+
+      assertEquals(kind, failure.getKind());
+      verify(admin, times(1)).release();
+      verify(renewedAdmin, times(1)).release();
+    }
+
+    @Test
+    void shouldHideTheOldAndTheNewTokenWhenTheRenewedGroupNamesCannotBeRead() throws Exception {
+      setRenewedAdmin(renewedAdmin);
+      when(renewedAdmin.getUser()).thenReturn("alice");
+      when(renewedAdmin.getSecurityGroupNames())
+          .thenThrow(new BBjAdminException("bad " + TOKEN + " and " + RENEWED_TOKEN));
+
+      BBjAdminFailure failure =
+          assertThrows(BBjAdminFailure.class, () -> gateway.renewSession(session));
+
+      assertEquals(UNAVAILABLE + "BBjAdminException: bad *** and ***", failure.getMessage());
+      assertTrue(records.stream().noneMatch(it -> String.valueOf(it.getMessage()).contains(TOKEN)
+          || String.valueOf(it.getMessage()).contains(RENEWED_TOKEN)));
     }
   }
 }
