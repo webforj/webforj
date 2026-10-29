@@ -28,6 +28,7 @@ public final class BBjSecurity {
    */
   public static final String SERVICE_KEY = BBjAuthenticationService.class.getName();
   private static final String UNAVAILABLE_TEXT = "Cannot sign in right now.";
+  private static final String THROTTLED_TEXT = "Too many sign in attempts. Try again later.";
 
   private BBjSecurity() {}
 
@@ -63,10 +64,10 @@ public final class BBjSecurity {
    *
    * <p>
    * The component shows no error while the sign in runs. When the credentials are invalid the
-   * component shows its error state. When the sign in is unavailable a warning toast is shown.
-   * After a successful sign in the component is closed and then the app navigates to the location
-   * the user requested before signing in, or to the default success path. Otherwise the component
-   * is enabled again.
+   * component shows its error state. When the sign in is unavailable or refused after too many
+   * failed attempts a warning toast is shown. After a successful sign in the component is closed
+   * and then the app navigates to the location the user requested before signing in, or to the
+   * default success path. Otherwise the component is enabled again.
    * </p>
    *
    * @param event the submit event of the component
@@ -92,6 +93,8 @@ public final class BBjSecurity {
       login.setError(true);
     } else if (status == BBjLoginStatus.UNAVAILABLE) {
       Toast.show(UNAVAILABLE_TEXT, Theme.WARNING);
+    } else if (status == BBjLoginStatus.THROTTLED) {
+      Toast.show(THROTTLED_TEXT, Theme.WARNING);
     }
 
     if (status == BBjLoginStatus.AUTHENTICATED) {

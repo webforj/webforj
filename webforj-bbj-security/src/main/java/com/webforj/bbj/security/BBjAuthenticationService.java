@@ -5,6 +5,7 @@ import com.webforj.bbj.security.model.BBjLoginStatus;
 import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.bbj.security.model.BBjSession;
 import com.webforj.bbj.security.store.BBjSecurityStore;
+import com.webforj.bbj.security.store.BBjThrottleStore;
 import com.webforj.router.history.Location;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
@@ -14,6 +15,7 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Signs users in against BBj and keeps the user that signed in.
@@ -32,10 +34,12 @@ public final class BBjAuthenticationService {
   private static final int MAX_PASSWORD_LENGTH = 1024;
   private final BBjAdminGateway gateway;
   private final BBjSecurityStore store;
+  private final BBjThrottleStore throttleStore;
   private final BBjSecurityConfigurationProperties properties;
   private final BBjRouteSecurityConfiguration configuration;
   private final Consumer<Location> navigator;
   private final Clock clock;
+  private final Supplier<String> addressSupplier;
   private BBjSession session;
   private Instant lastCheck;
 
@@ -47,10 +51,12 @@ public final class BBjAuthenticationService {
   private BBjAuthenticationService(Builder builder) {
     gateway = builder.gateway;
     store = builder.store;
+    throttleStore = builder.throttleStore;
     properties = builder.properties;
     configuration = builder.configuration;
     navigator = builder.navigator;
     clock = builder.clock;
+    addressSupplier = builder.addressSupplier;
   }
 
   /**
@@ -77,6 +83,15 @@ public final class BBjAuthenticationService {
    * and the user that was signed in before stays signed in.
    * </p>
    *
+   * <p>
+   * A user name or a client address that reached its limit of failed sign ins inside the throttle
+   * window is refused as throttled without asking BBj. With an address limit of 0, or when the
+   * client address cannot be read, only the user name limit applies. Refused credentials count one
+   * failed sign in for the user name and for the address. A successful sign in clears the count of
+   * the user name and keeps the count of the address. When the counts cannot be read, the sign in
+   * fails as unavailable.
+   * </p>
+   *
    * @param userName the user name
    * @param password the password
    *
@@ -91,16 +106,36 @@ public final class BBjAuthenticationService {
       return BBjLoginStatus.INVALID_CREDENTIALS;
     }
 
+    String address = readAddress().orElse(null);
+    try {
+      if (isThrottled(userName, address)) {
+        logger.log(Level.DEBUG, "A sign in was refused after too many failed attempts");
+        return BBjLoginStatus.THROTTLED;
+      }
+    } catch (IllegalStateException e) {
+      logger.log(Level.WARNING, "A sign in was refused because the failed attempts are unknown");
+      return BBjLoginStatus.UNAVAILABLE;
+    }
+
     BBjSession opened;
     try {
       opened = gateway.openSession(userName, password);
     } catch (BBjAdminFailure e) {
+      if (e.getKind() == Kind.INVALID_CREDENTIALS) {
+        addFailure(userName, address);
+      }
+
       return applyFailure(e);
     } catch (RuntimeException e) {
       return applyFailure(createUnavailableFailure());
     }
 
-    return applySession(opened);
+    BBjLoginStatus status = applySession(opened);
+    if (status == BBjLoginStatus.AUTHENTICATED) {
+      clearUserAttempts(userName);
+    }
+
+    return status;
   }
 
   /**
@@ -232,6 +267,70 @@ public final class BBjAuthenticationService {
       navigator.accept(requested.get());
     } else {
       navigator.accept(new Location(properties.getDefaultSuccessPath()));
+    }
+  }
+
+  private Optional<String> readAddress() {
+    if (properties.getThrottleAddressMaxAttempts() == 0) {
+      return Optional.empty();
+    }
+
+    String address;
+    try {
+      address = addressSupplier.get();
+    } catch (RuntimeException e) {
+      logger.log(Level.WARNING,
+          "The client address could not be read, the address limit is not applied ({0})",
+          e.getClass().getName());
+      return Optional.empty();
+    }
+
+    if (address == null || address.isBlank()) {
+      logger.log(Level.WARNING, "The client address is blank, the address limit is not applied");
+      return Optional.empty();
+    }
+
+    return Optional.of(address);
+  }
+
+  private boolean isThrottled(String userName, String address) {
+    int userAttempts = throttleStore.readAttempts(BBjThrottleStore.Kind.USER_NAME, userName);
+    if (userAttempts >= properties.getThrottleMaxAttempts()) {
+      return true;
+    }
+
+    return address != null && throttleStore.readAttempts(BBjThrottleStore.Kind.ADDRESS,
+        address) >= properties.getThrottleAddressMaxAttempts();
+  }
+
+  private void addFailure(String userName, String address) {
+    try {
+      int userAttempts = throttleStore.addFailure(BBjThrottleStore.Kind.USER_NAME, userName);
+      if (userAttempts == properties.getThrottleMaxAttempts()) {
+        logger.log(Level.WARNING,
+            "A user name reached {0} failed sign ins and is refused for {1} seconds",
+            String.valueOf(userAttempts), String.valueOf(properties.getThrottleWindowSeconds()));
+      }
+
+      if (address != null) {
+        int addressAttempts = throttleStore.addFailure(BBjThrottleStore.Kind.ADDRESS, address);
+        if (addressAttempts == properties.getThrottleAddressMaxAttempts()) {
+          logger.log(Level.WARNING,
+              "The address {0} reached {1} failed sign ins and is refused for {2} seconds", address,
+              String.valueOf(addressAttempts),
+              String.valueOf(properties.getThrottleWindowSeconds()));
+        }
+      }
+    } catch (IllegalStateException e) {
+      logger.log(Level.WARNING, "A failed sign in could not be counted");
+    }
+  }
+
+  private void clearUserAttempts(String userName) {
+    try {
+      throttleStore.clearAttempts(BBjThrottleStore.Kind.USER_NAME, userName);
+    } catch (IllegalStateException e) {
+      logger.log(Level.WARNING, "The failed sign ins of a user name could not be cleared");
     }
   }
 
@@ -385,9 +484,11 @@ public final class BBjAuthenticationService {
   public static final class Builder {
     private BBjAdminGateway gateway;
     private BBjSecurityStore store;
+    private BBjThrottleStore throttleStore;
     private BBjSecurityConfigurationProperties properties;
     private BBjRouteSecurityConfiguration configuration;
     private Consumer<Location> navigator;
+    private Supplier<String> addressSupplier;
     private Clock clock;
 
     /**
@@ -399,9 +500,11 @@ public final class BBjAuthenticationService {
     public BBjAuthenticationService build() {
       Objects.requireNonNull(gateway, "gateway");
       Objects.requireNonNull(store, "store");
+      Objects.requireNonNull(throttleStore, "throttleStore");
       Objects.requireNonNull(properties, "properties");
       Objects.requireNonNull(configuration, "configuration");
       Objects.requireNonNull(navigator, "navigator");
+      Objects.requireNonNull(addressSupplier, "addressSupplier");
       if (clock == null) {
         clock = Clock.systemUTC();
       }
@@ -477,6 +580,30 @@ public final class BBjAuthenticationService {
      */
     public Builder setClock(Clock clock) {
       this.clock = clock;
+      return this;
+    }
+
+    /**
+     * Sets the throttle store of the service.
+     *
+     * @param throttleStore counts the failed sign in attempts per user name and per address
+     *
+     * @return this builder
+     */
+    public Builder setThrottleStore(BBjThrottleStore throttleStore) {
+      this.throttleStore = throttleStore;
+      return this;
+    }
+
+    /**
+     * Sets the address supplier of the service.
+     *
+     * @param addressSupplier gives the address of the client that signs in
+     *
+     * @return this builder
+     */
+    public Builder setAddressSupplier(Supplier<String> addressSupplier) {
+      this.addressSupplier = addressSupplier;
       return this;
     }
   }
