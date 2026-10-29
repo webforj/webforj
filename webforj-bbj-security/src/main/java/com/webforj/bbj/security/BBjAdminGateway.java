@@ -213,7 +213,7 @@ public final class BBjAdminGateway {
     var permissions = admin.getSingleUserPermissions(token);
     Set<String> authorities = new HashSet<>();
     for (BBjPermissions permission : BBjPermissions.values()) {
-      if (permissions.contains(permission.toString())) {
+      if (permissions.getBoolean(permission.toString())) {
         authorities.add(permission.toString());
       }
     }
