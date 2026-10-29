@@ -27,10 +27,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 class BBjEntryFileTest {
   private static final Instant NOW = Instant.parse("2026-01-01T00:00:00Z");
-  private static final String LIVE =
-      "t1." + NOW.plusSeconds(60).toEpochMilli() + ".u." + "a".repeat(32);
-  private static final String OTHER =
-      "t1." + NOW.plusSeconds(120).toEpochMilli() + ".a." + "b".repeat(32);
+  private static final String LIVE = "t2." + NOW.plusSeconds(60).toEpochMilli() + "."
+      + NOW.minusSeconds(60).toEpochMilli() + ".u." + "a".repeat(32);
+  private static final String OTHER = "t2." + NOW.plusSeconds(120).toEpochMilli() + "."
+      + NOW.toEpochMilli() + ".a." + "b".repeat(32);
 
   @TempDir
   private Path directory;
@@ -90,7 +90,8 @@ class BBjEntryFileTest {
       return Stream.of(Arguments.of(LIVE, Optional.of(NOW.plusSeconds(60))),
           Arguments.of(null, Optional.empty()),
           Arguments.of("v1." + NOW.toEpochMilli() + "." + "h".repeat(43), Optional.empty()),
-          Arguments.of("t1.1.x." + "a".repeat(32), Optional.empty()));
+          Arguments.of("t2.1.1.x." + "a".repeat(32), Optional.empty()),
+          Arguments.of("t1." + NOW.toEpochMilli() + ".u." + "a".repeat(32), Optional.empty()));
     }
   }
 
@@ -106,30 +107,29 @@ class BBjEntryFileTest {
     @Test
     void shouldWriteTheChangedEntriesAndReadThemBack() throws IOException {
       entryFile.updateEntries(entries -> {
-        entries.put(LIVE, "1." + NOW.toEpochMilli());
-        entries.put(OTHER, "2." + NOW.toEpochMilli());
+        entries.put(LIVE, "1");
+        entries.put(OTHER, "2");
       });
 
-      assertEquals(Map.of(LIVE, "1." + NOW.toEpochMilli(), OTHER, "2." + NOW.toEpochMilli()),
-          entryFile.readEntries());
-      assertEquals(Optional.of("2." + NOW.toEpochMilli()), entryFile.findEntry(OTHER));
-      assertEquals(List.of(LIVE + "\t1." + NOW.toEpochMilli(), OTHER + "\t2." + NOW.toEpochMilli()),
-          Files.readAllLines(file));
+      assertEquals(Map.of(LIVE, "1", OTHER, "2"), entryFile.readEntries());
+      assertEquals(Optional.of("2"), entryFile.findEntry(OTHER));
+      assertEquals(List.of(LIVE + "\t1", OTHER + "\t2"), Files.readAllLines(file));
     }
 
     @Test
     void shouldSkipLinesThatDoNotFitTheContent() throws IOException {
       Files.createDirectories(file.getParent());
       Files.write(file,
-          List.of(LIVE + "\t1.5", "v1." + NOW.toEpochMilli() + "." + "h".repeat(43) + "\tAAAA",
-              OTHER + "\tAAAA", "no entry"));
+          List.of(LIVE + "\t1", "v1." + NOW.toEpochMilli() + "." + "h".repeat(43) + "\tAAAA",
+              OTHER + "\tAAAA", "no entry", "t1." + NOW.plusSeconds(60).toEpochMilli() + ".u."
+                  + "c".repeat(32) + "\t1." + NOW.toEpochMilli()));
 
-      assertEquals(Map.of(LIVE, "1.5"), entryFile.readEntries());
+      assertEquals(Map.of(LIVE, "1"), entryFile.readEntries());
     }
 
     @Test
     void shouldKeepTheFileWhenTheChangeFails() throws IOException {
-      entryFile.updateEntries(entries -> entries.put(LIVE, "1.5"));
+      entryFile.updateEntries(entries -> entries.put(LIVE, "1"));
       Consumer<Map<String, String>> failing = entries -> {
         entries.clear();
         throw new IllegalStateException("change failed");
@@ -137,7 +137,7 @@ class BBjEntryFileTest {
 
       assertThrows(IllegalStateException.class, () -> entryFile.updateEntries(failing));
 
-      assertEquals(List.of(LIVE + "\t1.5"), Files.readAllLines(file));
+      assertEquals(List.of(LIVE + "\t1"), Files.readAllLines(file));
       try (Stream<Path> files = Files.list(file.getParent())) {
         assertEquals(List.of(file), files.toList());
       }
@@ -146,13 +146,13 @@ class BBjEntryFileTest {
     @Test
     void shouldRemoveOneEntry() throws IOException {
       entryFile.updateEntries(entries -> {
-        entries.put(LIVE, "1.5");
-        entries.put(OTHER, "2.5");
+        entries.put(LIVE, "1");
+        entries.put(OTHER, "2");
       });
 
       entryFile.removeEntry(LIVE);
 
-      assertEquals(Map.of(OTHER, "2.5"), entryFile.readEntries());
+      assertEquals(Map.of(OTHER, "2"), entryFile.readEntries());
     }
 
     @Test
@@ -166,9 +166,9 @@ class BBjEntryFileTest {
     void shouldShareTheFileBetweenInstancesOfOneApplication() throws IOException {
       BBjEntryFile other = new BBjEntryFile(() -> directory, () -> "shop", Content.COUNTERS);
 
-      entryFile.updateEntries(entries -> entries.put(LIVE, "1.5"));
+      entryFile.updateEntries(entries -> entries.put(LIVE, "1"));
 
-      assertEquals(Map.of(LIVE, "1.5"), other.readEntries());
+      assertEquals(Map.of(LIVE, "1"), other.readEntries());
     }
   }
 
@@ -177,30 +177,30 @@ class BBjEntryFileTest {
 
     @Test
     void shouldRemoveTheExpiredEntriesAndKeepTheOthers() {
-      String expired = "t1." + NOW.toEpochMilli() + ".u." + "c".repeat(32);
-      Map<String, String> entries = new HashMap<>(Map.of(LIVE, "1.5", expired, "1.5"));
+      String expired = "t2." + NOW.toEpochMilli() + "." + NOW.minusSeconds(120).toEpochMilli()
+          + ".u." + "c".repeat(32);
+      Map<String, String> entries = new HashMap<>(Map.of(LIVE, "1", expired, "1"));
 
       int removed = entryFile.removeStaleEntries(entries, NOW);
 
       assertEquals(0, removed);
-      assertEquals(Map.of(LIVE, "1.5"), entries);
+      assertEquals(Map.of(LIVE, "1"), entries);
     }
 
     @Test
     void shouldRemoveTheEarliestExpiryToMakeRoomAtTheLimit() {
       Map<String, String> entries = new HashMap<>();
       for (int index = 0; index < entryFile.getMaxEntries(); index++) {
-        entries.put(
-            "t1." + NOW.plusSeconds(index + 1L).toEpochMilli() + ".u." + "%032x".formatted(index),
-            "1.5");
+        entries.put("t2." + NOW.plusSeconds(index + 1L).toEpochMilli() + "." + NOW.toEpochMilli()
+            + ".u." + "%032x".formatted(index), "1");
       }
 
       int removed = entryFile.removeStaleEntries(entries, NOW);
 
       assertEquals(1, removed);
       assertEquals(9999, entries.size());
-      assertFalse(entries
-          .containsKey("t1." + NOW.plusSeconds(1).toEpochMilli() + ".u." + "%032x".formatted(0)));
+      assertFalse(entries.containsKey("t2." + NOW.plusSeconds(1).toEpochMilli() + "."
+          + NOW.toEpochMilli() + ".u." + "%032x".formatted(0)));
     }
   }
 }
