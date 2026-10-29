@@ -3,6 +3,7 @@ package com.webforj.bbj.security.store;
 import com.webforj.App;
 import com.webforj.Environment;
 import com.webforj.bbj.security.model.BBjSession;
+import com.webforj.bbj.security.store.BBjEntryFile.Content;
 import com.webforj.router.history.Location;
 import com.webforj.webstorage.LocalStorage;
 import java.nio.file.Path;
@@ -33,8 +34,9 @@ public interface BBjSecurityStore {
    * @return the security store
    */
   static BBjSecurityStore create(Environment environment) {
-    return new BBjBrowserSecurityStore(() -> Path.of(System.getProperty("java.io.tmpdir")),
-        App::getApplicationName, LocalStorage::getCurrent);
+    var file = new BBjEntryFile(() -> Path.of(System.getProperty("java.io.tmpdir")),
+        App::getApplicationName, Content.SESSIONS);
+    return new BBjBrowserSecurityStore(file, LocalStorage::getCurrent);
   }
 
   /**
