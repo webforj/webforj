@@ -232,6 +232,19 @@ class BBjSecurityTest {
     }
 
     @Test
+    void shouldShowTheThrottledToastAndEnableTheFormOnThrottled() {
+      when(service.login("alice", "pw")).thenReturn(BBjLoginStatus.THROTTLED);
+
+      BBjSecurity.login(event);
+
+      toastMock
+          .verify(() -> Toast.show("Too many sign in attempts. Try again later.", Theme.WARNING));
+      verify(login, never()).setError(true);
+      verify(login).setEnabled(true);
+      verify(service, never()).openTargetLocation();
+    }
+
+    @Test
     void shouldCloseTheFormWithoutEnablingItOnAuthenticated() {
       BBjSecurity.login(event);
 
