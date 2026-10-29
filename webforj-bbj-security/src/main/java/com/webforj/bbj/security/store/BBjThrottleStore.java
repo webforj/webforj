@@ -18,15 +18,17 @@ import java.util.Optional;
  * Counts the failed sign in attempts per user name and per client address in a file on the server.
  *
  * <p>
- * A counter starts at the first failed attempt and counts for one window. A counter whose window
- * has ended counts as 0, and the next failed attempt starts a new window. The file holds a hash of
- * the user name or the address, never the text itself. The counters of one application are shared
- * by every browser and every page load on the server.
+ * Time is split into periods of the window length, counted from the epoch. A failed attempt counts
+ * in the period it happened in. The failed attempts of a user name or an address are those of the
+ * current period plus those of the previous period, weighted by the share of the previous period
+ * that is still inside the window that ends now. A period counts as 0 once two windows have passed
+ * since its start. The file holds a hash of the user name or the address, never the text itself.
+ * The counters of one application are shared by every browser and every page load on the server.
  * </p>
  *
  * <p>
- * Every write removes the counters whose window has ended and, at the limit of 10000 counters, the
- * counters whose window ends first. A failure is logged by its class name only.
+ * Every write removes the counters of the periods that no longer count and, at the limit of 10000
+ * counters, the counters that expire first. A failure is logged by its class name only.
  * </p>
  *
  * @author Christian Liebhardt
@@ -34,24 +36,24 @@ import java.util.Optional;
  */
 public final class BBjThrottleStore {
   private static final Logger logger = System.getLogger(BBjThrottleStore.class.getName());
-  private static final String VERSION = "t1.";
+  private static final String VERSION = "t2.";
   private static final int HASH_BYTES = 16;
   private static final String NOT_USABLE = "The sign in counters could not be used";
   private static final String FAILURE = "{0} ({1})";
   private final BBjEntryFile file;
-  private final Duration window;
+  private final long periodMillis;
   private final Clock clock;
 
   BBjThrottleStore(BBjEntryFile file, Duration window, Clock clock) {
     this.file = file;
-    this.window = window;
+    this.periodMillis = window.toMillis();
     this.clock = clock;
   }
 
   /**
    * Creates the throttle store of the current application.
    *
-   * @param window the time a counter counts from its first failed attempt
+   * @param window the time the failed attempts are counted in
    * @return the throttle store
    */
   public static BBjThrottleStore create(Duration window) {
@@ -61,20 +63,22 @@ public final class BBjThrottleStore {
   }
 
   /**
-   * Reads the failed attempts of a user name or an address inside the current window.
+   * Reads the failed attempts of a user name or an address inside the window that ends now.
    *
    * @param kind whether the value is a user name or an address
    * @param value the user name or the address
-   * @return the failed attempts, 0 when there is no counter or its window has ended
+   * @return the failed attempts, 0 when there is no counter inside the window
    *
    * @throws IllegalStateException if the counters cannot be read
    */
   public int readAttempts(Kind kind, String value) {
     String key = createKey(kind, value);
     try {
-      Instant now = clock.instant();
-      return findCounter(file.readEntries(), key, now).map(BBjThrottleCounter::getCounter)
-          .orElse(0);
+      long now = clock.instant().toEpochMilli();
+      long periodStart = toPeriodStart(now);
+      Map<String, String> entries = file.readEntries();
+      return findCount(entries, key, periodStart)
+          + findPreviousWeight(entries, key, periodStart, now);
     } catch (IOException | RuntimeException e) {
       logger.log(Level.WARNING, FAILURE, "The sign in counters could not be read",
           e.getClass().getName());
@@ -87,7 +91,7 @@ public final class BBjThrottleStore {
    *
    * @param kind whether the value is a user name or an address
    * @param value the user name or the address
-   * @return the failed attempts inside the current window, this one included
+   * @return the failed attempts inside the window that ends now, this one included
    *
    * @throws IllegalStateException if the counters cannot be written
    */
@@ -96,20 +100,12 @@ public final class BBjThrottleStore {
     int[] result = {0};
     try {
       Instant now = clock.instant();
+      long periodStart = toPeriodStart(now.toEpochMilli());
       file.updateEntries(entries -> {
         removeStaleEntries(entries, now);
-        Optional<String> name = findName(entries, key);
-        Optional<BBjThrottleCounter> counter = findCounter(entries, key, now);
-        if (counter.isPresent()) {
-          result[0] = counter.get().getCounter() + 1;
-          entries.put(name.orElseThrow(),
-              result[0] + "." + counter.get().getWindowStart().toEpochMilli());
-        } else {
-          name.ifPresent(entries::remove);
-          result[0] = 1;
-          entries.put(VERSION + now.plus(window).toEpochMilli() + "." + key,
-              "1." + now.toEpochMilli());
-        }
+        int current = findCount(entries, key, periodStart) + 1;
+        entries.put(createName(key, periodStart), String.valueOf(current));
+        result[0] = current + findPreviousWeight(entries, key, periodStart, now.toEpochMilli());
       });
     } catch (IOException | RuntimeException e) {
       logger.log(Level.WARNING, FAILURE, "A failed sign in could not be counted",
@@ -121,7 +117,7 @@ public final class BBjThrottleStore {
   }
 
   /**
-   * Removes the counter of a user name or an address.
+   * Removes the counters of a user name or an address.
    *
    * @param kind whether the value is a user name or an address
    * @param value the user name or the address
@@ -132,9 +128,11 @@ public final class BBjThrottleStore {
     String key = createKey(kind, value);
     try {
       Instant now = clock.instant();
+      long periodStart = toPeriodStart(now.toEpochMilli());
       file.updateEntries(entries -> {
         removeStaleEntries(entries, now);
-        findName(entries, key).ifPresent(entries::remove);
+        entries.remove(createName(key, periodStart));
+        entries.remove(createName(key, periodStart - periodMillis));
       });
     } catch (IOException | RuntimeException e) {
       logger.log(Level.WARNING, FAILURE, "The failed sign ins could not be cleared",
@@ -147,26 +145,28 @@ public final class BBjThrottleStore {
     int removed = file.removeStaleEntries(entries, now);
     if (removed > 0) {
       logger.log(Level.WARNING,
-          "The throttle store removed {0} counters because its limit of {1} was reached", removed,
-          String.valueOf(file.getMaxEntries()));
-      // must be wrapped in String.valueOf or else the String gets localized
+          "The throttle store removed {0} counters because its limit of {1} was reached",
+          String.valueOf(removed), String.valueOf(file.getMaxEntries()));
     }
   }
 
-  private Optional<String> findName(Map<String, String> entries, String key) {
-    return entries.keySet().stream().filter(name -> name.endsWith("." + key)).findFirst();
+  private int findCount(Map<String, String> entries, String key, long periodStart) {
+    return Optional.ofNullable(entries.get(createName(key, periodStart))).map(Integer::parseInt)
+        .orElse(0);
   }
 
-  private Optional<BBjThrottleCounter> findCounter(Map<String, String> entries, String key,
-      Instant now) {
-    return findName(entries, key).map(entries::get).map(BBjThrottleStore::parseCounter)
-        .filter(counter -> now.isBefore(counter.getWindowStart().plus(window)));
+  private int findPreviousWeight(Map<String, String> entries, String key, long periodStart,
+      long now) {
+    long previous = findCount(entries, key, periodStart - periodMillis);
+    return (int) Math.ceilDiv(previous * (periodMillis - (now - periodStart)), periodMillis);
   }
 
-  private static BBjThrottleCounter parseCounter(String value) {
-    int split = value.indexOf('.');
-    return new BBjThrottleCounter(Integer.parseInt(value.substring(0, split)),
-        Instant.ofEpochMilli(Long.parseLong(value.substring(split + 1))));
+  private long toPeriodStart(long now) {
+    return Math.floorDiv(now, periodMillis) * periodMillis;
+  }
+
+  private String createName(String key, long periodStart) {
+    return VERSION + (periodStart + 2 * periodMillis) + "." + periodStart + "." + key;
   }
 
   private static String createKey(Kind kind, String value) {
@@ -200,30 +200,6 @@ public final class BBjThrottleStore {
 
     String getPrefix() {
       return prefix;
-    }
-  }
-
-  /**
-   * The failed attempts of one counter and the start of its window.
-   *
-   * @author Christian Liebhardt
-   * @since 26.03
-   */
-  private static final class BBjThrottleCounter {
-    private final int counter;
-    private final Instant windowStart;
-
-    BBjThrottleCounter(int counter, Instant windowStart) {
-      this.counter = counter;
-      this.windowStart = windowStart;
-    }
-
-    int getCounter() {
-      return counter;
-    }
-
-    Instant getWindowStart() {
-      return windowStart;
     }
   }
 }
