@@ -1,6 +1,7 @@
 package com.webforj.bbj.security;
 
 import com.webforj.bbj.security.model.BBjLoginStatus;
+import com.webforj.bbj.security.model.BBjPermissions;
 import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.component.Theme;
 import com.webforj.component.login.Login;
@@ -137,17 +138,39 @@ public final class BBjSecurity {
    *         in, BBj security is not set up, or the role is {@code null}
    */
   public static boolean hasRole(String role) {
-    return role != null
-        && currentUser().map(BBjPrincipal::getRoles).filter(containsPredicate(role)).isPresent();
+    return role != null && currentUser().map(BBjPrincipal::getRoles)
+        .filter(createContainsPredicate(role)).isPresent();
   }
 
+  /**
+   * Checks whether the user that signed in holds an authority.
+   *
+   * <p>
+   * The authorities of a user are the names of the {@link BBjPermissions} the user holds. The name
+   * is compared exactly, case sensitive.
+   * </p>
+   *
+   * @param authority the name of the authority
+   *
+   * @return {@code true} if the signed in user holds the authority, {@code false} if nobody has
+   *         signed in, BBj security is not set up, or the authority is {@code null}
+   */
   public static boolean hasAuthority(String authority) {
     return authority != null && currentUser().map(BBjPrincipal::getAuthorities)
-        .filter(containsPredicate(authority)).isPresent();
+        .filter(createContainsPredicate(authority)).isPresent();
   }
 
-  private static Predicate<Set<String>> containsPredicate(String value) {
-    return set -> set.contains(value);
+  /**
+   * Checks whether the user that signed in holds a {@link BBjPermissions} permission.
+   *
+   * @param permission the permission
+   *
+   * @return {@code true} if the signed in user holds the permission, {@code false} if nobody has
+   *         signed in or BBj security is not set up
+   * @throws NullPointerException if {@code permission} is {@code null}
+   */
+  public static boolean hasAuthority(BBjPermissions permission) {
+    return permission != null && hasAuthority(permission.toString());
   }
 
   /**
@@ -157,6 +180,10 @@ public final class BBjSecurity {
    */
   public static Optional<BBjPrincipal> currentUser() {
     return getService().flatMap(BBjAuthenticationService::currentUser);
+  }
+
+  private static Predicate<Set<String>> createContainsPredicate(String value) {
+    return set -> set.contains(value);
   }
 
   private static BBjLoginStatus getStatus(String userName, String password) {

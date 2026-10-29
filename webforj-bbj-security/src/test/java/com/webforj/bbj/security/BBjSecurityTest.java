@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.webforj.bbj.security.model.BBjLoginStatus;
+import com.webforj.bbj.security.model.BBjPermissions;
 import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.component.Theme;
 import com.webforj.component.login.Login;
@@ -35,7 +36,8 @@ import org.mockito.MockedStatic;
 
 class BBjSecurityTest {
   private static final String KEY = BBjAuthenticationService.class.getName();
-  private final BBjPrincipal principal = new BBjPrincipal("alice", Set.of("ROLE_USER"), Set.of());
+  private final BBjPrincipal principal =
+      new BBjPrincipal("alice", Set.of("ROLE_USER"), Set.of("admin-access"));
   private MockedStatic<ObjectTable> tableMock;
   private MockedStatic<Toast> toastMock;
   private BBjAuthenticationService service;
@@ -90,6 +92,11 @@ class BBjSecurityTest {
     @Test
     void shouldNotHaveRole() {
       assertFalse(BBjSecurity.hasRole("ROLE_USER"));
+    }
+
+    @Test
+    void shouldNotHaveAuthority() {
+      assertFalse(BBjSecurity.hasAuthority("admin-access"));
     }
 
     @Test
@@ -200,6 +207,50 @@ class BBjSecurityTest {
       when(service.currentUser()).thenReturn(Optional.empty());
 
       assertFalse(BBjSecurity.hasRole("ROLE_USER"));
+    }
+
+    @Test
+    void shouldHaveTheAuthorityOfTheCurrentUser() {
+      when(service.currentUser()).thenReturn(Optional.of(principal));
+
+      assertTrue(BBjSecurity.hasAuthority("admin-access"));
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {"server-config", "ADMIN-ACCESS", "admin-access "})
+    void shouldNotHaveAuthorityTheCurrentUserDoesNotHold(String authority) {
+      when(service.currentUser()).thenReturn(Optional.of(principal));
+
+      assertFalse(BBjSecurity.hasAuthority(authority));
+    }
+
+    @Test
+    void shouldHaveThePermissionOfTheCurrentUser() {
+      when(service.currentUser()).thenReturn(Optional.of(principal));
+
+      assertTrue(BBjSecurity.hasAuthority(BBjPermissions.ADMIN_ACCESS));
+    }
+
+    @Test
+    void shouldNotHavePermissionTheCurrentUserDoesNotHold() {
+      when(service.currentUser()).thenReturn(Optional.of(principal));
+
+      assertFalse(BBjSecurity.hasAuthority(BBjPermissions.SERVER_CONFIG));
+    }
+
+    @Test
+    void shouldRejectNullPermission() {
+      BBjPermissions permission = null;
+
+      assertFalse(BBjSecurity.hasAuthority(permission));
+    }
+
+    @Test
+    void shouldNotHaveAuthorityWhenNobodyIsSignedIn() {
+      when(service.currentUser()).thenReturn(Optional.empty());
+
+      assertFalse(BBjSecurity.hasAuthority("admin-access"));
     }
 
     @Test
