@@ -21,7 +21,7 @@ public class BBjPrincipal {
    * @param roles the roles of the user
    * @param authorities the authorities granted to the user
    * @throws NullPointerException if any parameter is {@code null}.
-   * @throws IllegalArgumentException if {@code}userName} is blank.
+   * @throws IllegalArgumentException if {@code userName} is blank.
    */
   public BBjPrincipal(String userName, Set<String> roles, Set<String> authorities) {
     Objects.requireNonNull(userName, "userName");

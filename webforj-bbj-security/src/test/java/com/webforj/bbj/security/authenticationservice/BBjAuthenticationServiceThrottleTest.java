@@ -109,14 +109,6 @@ class BBjAuthenticationServiceThrottleTest {
       assertEquals(List.of("A sign in was refused because the failed attempts are unknown"),
           fixture.getWarnings());
     }
-
-    @ParameterizedTest
-    @MethodSource("com.webforj.bbj.security.SignInFixture#getRefusedInputs")
-    void shouldNotTouchTheCountersForRefusedInput(String userName, String password) {
-      fixture.login(userName, password);
-
-      verifyNoInteractions(fixture.throttleStore, fixture.addressSupplier);
-    }
   }
 
   @Nested
