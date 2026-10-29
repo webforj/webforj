@@ -30,7 +30,7 @@ import java.util.function.Supplier;
  */
 public final class BBjAuthenticationService {
   private static final Logger logger = System.getLogger(BBjAuthenticationService.class.getName());
-  private static final int MAX_USER_NAME_LENGTH = 256;
+  private static final int MAX_USER_NAME_LENGTH = 64;
   private static final int MAX_PASSWORD_LENGTH = 1024;
   private final BBjAdminGateway gateway;
   private final BBjSecurityStore store;
@@ -72,7 +72,7 @@ public final class BBjAuthenticationService {
    * Signs a user in.
    *
    * <p>
-   * An empty or blank user name or password, a user name longer than 256 characters and a password
+   * An empty or blank user name or password, a user name longer than 64 characters and a password
    * longer than 1024 characters are refused at once as invalid credentials. Otherwise the sign in
    * runs on the calling thread. After a successful sign in the session is saved in the session
    * store. The sign in opens no location.
