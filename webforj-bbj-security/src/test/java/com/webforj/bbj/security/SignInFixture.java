@@ -115,12 +115,12 @@ public final class SignInFixture implements AutoCloseable {
   public static Stream<Arguments> getRefusedInputs() {
     return Stream.of(Arguments.of("", PASSWORD), Arguments.of("  ", PASSWORD),
         Arguments.of("alice", ""), Arguments.of("alice", "  "),
-        Arguments.of("a".repeat(257), PASSWORD), Arguments.of("alice", "p".repeat(1025)));
+        Arguments.of("a".repeat(65), PASSWORD), Arguments.of("alice", "p".repeat(1025)));
   }
 
   /** Gives the user names and passwords at the limit that the service accepts. */
   public static Stream<Arguments> getAcceptedInputs() {
-    return Stream.of(Arguments.of("a".repeat(256), PASSWORD),
+    return Stream.of(Arguments.of("a".repeat(64), PASSWORD),
         Arguments.of("alice", "p".repeat(1024)));
   }
 
