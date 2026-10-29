@@ -118,12 +118,27 @@ class BBjRouteSecurityManagerTest {
     void shouldRegisterBuiltInEvaluatorsWithCorrectPriorities() {
       List<RouteSecurityEvaluator> evaluators = manager.getEvaluators();
 
-      assertEquals(7, evaluators.size());
+      assertEquals(8, evaluators.size());
       assertInstanceOf(DenyAllEvaluator.class, evaluators.get(0));
       assertInstanceOf(AnonymousAccessEvaluator.class, evaluators.get(1));
       assertInstanceOf(AuthenticationRequiredEvaluator.class, evaluators.get(2));
       assertInstanceOf(PermitAllEvaluator.class, evaluators.get(3));
       assertInstanceOf(RolesAllowedEvaluator.class, evaluators.get(4));
+      assertInstanceOf(BBjPermissionEvaluator.class, evaluators.get(5));
+    }
+
+    @Test
+    void shouldRegisterThePermissionEvaluatorAtPrioritySix() {
+      RouteSecurityEvaluator atFive = mock(RouteSecurityEvaluator.class);
+      RouteSecurityEvaluator atSix = mock(RouteSecurityEvaluator.class);
+
+      manager.registerEvaluator(atFive, 5);
+      manager.registerEvaluator(atSix, 6);
+
+      List<RouteSecurityEvaluator> evaluators = manager.getEvaluators();
+      assertSame(atFive, evaluators.get(5));
+      assertInstanceOf(BBjPermissionEvaluator.class, evaluators.get(6));
+      assertSame(atSix, evaluators.get(7));
     }
   }
 
@@ -325,8 +340,8 @@ class BBjRouteSecurityManagerTest {
       List<RouteSecurityEvaluator> evaluators = manager.getEvaluators();
 
       assertInstanceOf(RolesAllowedEvaluator.class, evaluators.get(4));
-      assertInstanceOf(CorePriorityEvaluator.class, evaluators.get(5));
-      assertInstanceOf(DefaultPriorityEvaluator.class, evaluators.get(6));
+      assertInstanceOf(CorePriorityEvaluator.class, evaluators.get(6));
+      assertInstanceOf(DefaultPriorityEvaluator.class, evaluators.get(7));
     }
 
     @Test
