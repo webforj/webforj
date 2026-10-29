@@ -12,40 +12,19 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileLock;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
-import java.nio.file.attribute.FileAttribute;
-import java.nio.file.attribute.PosixFilePermissions;
 import java.security.GeneralSecurityException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.Clock;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HexFormat;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -82,38 +61,22 @@ final class BBjBrowserSecurityStore implements BBjSecurityStore {
   private static final String LOCATION_KEY = AbstractRouteSecurityManager.PRE_AUTH_LOCATION_KEY;
   private static final String HANDLE_KEY_PREFIX = "webforj-bbj-handle.";
   private static final String KEY_KEY_PREFIX = "webforj-bbj-key.";
-  private static final String FOLDER = "webforj-bbj-security";
-  private static final String SUFFIX = ".sessions";
   private static final String VERSION = "v1.";
   private static final String NOT_KEPT = "The sign in could not be kept";
   private static final String FAILURE = "{0} ({1})";
-  private static final char SEPARATOR = '\t';
-  private static final Pattern ENTRY_NAME = Pattern.compile("v1\\.(\\d{1,15})\\.[A-Za-z0-9_-]{43}");
-  private static final Pattern ENTRY_VALUE = Pattern.compile("[A-Za-z0-9_-]+");
-  private static final Pattern UNSAFE_CHARACTERS = Pattern.compile("[^A-Za-z0-9_-]");
-  private static final int MAX_APPLICATION_NAME_LENGTH = 64;
-  private static final int MAX_ENTRIES = 10000;
-  private static final ConcurrentMap<Path, ReentrantLock> LOCKS = new ConcurrentHashMap<>();
-  private final Supplier<Path> directorySupplier;
-  private final Supplier<String> applicationNameSupplier;
+  private final BBjEntryFile file;
   private final Supplier<LocalStorage> storageSupplier;
   private final Clock clock;
   private final BBjSessionEntryCipher cipher = new BBjSessionEntryCipher();
-  private String applicationKey;
-  private Path file;
 
-  BBjBrowserSecurityStore(Supplier<Path> directorySupplier,
-      Supplier<String> applicationNameSupplier, Supplier<LocalStorage> storageSupplier,
-      Clock clock) {
-    this.directorySupplier = directorySupplier;
-    this.applicationNameSupplier = applicationNameSupplier;
+  BBjBrowserSecurityStore(BBjEntryFile file, Supplier<LocalStorage> storageSupplier, Clock clock) {
+    this.file = file;
     this.storageSupplier = storageSupplier;
     this.clock = clock;
   }
 
-  BBjBrowserSecurityStore(Supplier<Path> directorySupplier,
-      Supplier<String> applicationNameSupplier, Supplier<LocalStorage> storageSupplier) {
-    this(directorySupplier, applicationNameSupplier, storageSupplier, Clock.systemUTC());
+  BBjBrowserSecurityStore(BBjEntryFile file, Supplier<LocalStorage> storageSupplier) {
+    this(file, storageSupplier, Clock.systemUTC());
   }
 
   /**
@@ -127,7 +90,7 @@ final class BBjBrowserSecurityStore implements BBjSecurityStore {
     }
 
     try {
-      resolveFile();
+      file.resolveFile();
     } catch (RuntimeException e) {
       logger.log(Level.WARNING, FAILURE, "The session file could not be opened",
           e.getClass().getName());
@@ -142,7 +105,7 @@ final class BBjBrowserSecurityStore implements BBjSecurityStore {
     String entry = cipher.formatEntry(name, key, session);
 
     try {
-      updateEntries(entries -> {
+      file.updateEntries(entries -> {
         removeStaleEntries(entries);
         entries.put(name, entry);
       });
@@ -163,7 +126,7 @@ final class BBjBrowserSecurityStore implements BBjSecurityStore {
     }
 
     String previousName = previous.get(handleKey);
-    if (!name.equals(previousName) && findExpiry(previousName).isPresent()) {
+    if (!name.equals(previousName) && file.findExpiry(previousName).isPresent()) {
       removeEntry(previousName);
     }
   }
@@ -188,14 +151,14 @@ final class BBjBrowserSecurityStore implements BBjSecurityStore {
 
       String name = pair.get(handleKey);
       String key = pair.get(keyKey);
-      Optional<Instant> expiresAt = findExpiry(name);
+      Optional<Instant> expiresAt = file.findExpiry(name);
       if (key == null || expiresAt.isEmpty() || !expiresAt.get().isAfter(clock.instant())) {
         logger.log(Level.DEBUG, "A stored sign in is not usable and was removed");
         clearSession();
         return Optional.empty();
       }
 
-      Optional<String> value = findEntry(name);
+      Optional<String> value = file.findEntry(name);
       if (value.isEmpty()) {
         logger.log(Level.DEBUG, "A stored sign in has no entry and was removed");
         clearSession();
@@ -240,7 +203,7 @@ final class BBjBrowserSecurityStore implements BBjSecurityStore {
 
     try {
       String name = storage.get(List.of(handleKey, keyKey)).get(handleKey);
-      findExpiry(name).ifPresent(it -> removeEntry(name));
+      file.findExpiry(name).ifPresent(it -> removeEntry(name));
     } catch (RuntimeException e) {
       logger.log(Level.WARNING, FAILURE, "The sign in could not be read from the browser",
           e.getClass().getName());
@@ -305,31 +268,6 @@ final class BBjBrowserSecurityStore implements BBjSecurityStore {
   }
 
   /**
-   * Creates the part of the file name and of the browser storage names that names one application.
-   *
-   * <p>
-   * A name that holds a character other than a letter, a digit, an underscore or a hyphen, or that
-   * is empty or longer than 64 characters, is replaced by a safe form followed by a short hash of
-   * the original name, so that two applications never share a file or a browser storage name.
-   * </p>
-   *
-   * @param applicationName the registered application name
-   * @return the part of the file name and of the browser storage names that names the application
-   */
-  static String createApplicationKey(String applicationName) {
-    String safe = UNSAFE_CHARACTERS.matcher(applicationName).replaceAll("_");
-    if (safe.equals(applicationName) && !safe.isEmpty()
-        && safe.length() <= MAX_APPLICATION_NAME_LENGTH) {
-      return safe;
-    }
-
-    String base = safe.isEmpty() ? "app"
-        : safe.substring(0, Math.min(safe.length(), MAX_APPLICATION_NAME_LENGTH));
-
-    return base + "-" + createHash(applicationName);
-  }
-
-  /**
    * Tells whether a stored value is a path inside the app.
    *
    * <p>
@@ -352,140 +290,26 @@ final class BBjBrowserSecurityStore implements BBjSecurityStore {
     }
   }
 
-  private Path resolveFile() {
-    if (file == null) {
-      file = directorySupplier.get().resolve(FOLDER).resolve(resolveApplicationKey() + SUFFIX);
-    }
-
-    return file;
-  }
-
   private String resolveStorageKey(String prefix) {
-    return prefix + resolveApplicationKey();
-  }
-
-  private String resolveApplicationKey() {
-    if (applicationKey == null) {
-      applicationKey = createApplicationKey(applicationNameSupplier.get());
-    }
-
-    return applicationKey;
-  }
-
-  private Optional<String> findEntry(String name) throws IOException {
-    Path target = resolveFile();
-    ReentrantLock lock = LOCKS.computeIfAbsent(target, key -> new ReentrantLock());
-    lock.lock();
-    try {
-      if (Files.notExists(target)) {
-        return Optional.empty();
-      }
-
-      try (FileChannel channel = FileChannel.open(target, StandardOpenOption.READ);
-          FileLock ignored = channel.lock(0, Long.MAX_VALUE, true)) {
-        return Optional.ofNullable(readEntries(target).get(name));
-      }
-    } finally {
-      lock.unlock();
-    }
-  }
-
-  private void updateEntries(Consumer<Map<String, String>> change) throws IOException {
-    Path target = resolveFile();
-    ReentrantLock lock = LOCKS.computeIfAbsent(target, key -> new ReentrantLock());
-    lock.lock();
-    try {
-      Files.createDirectories(target.getParent(), createAttributes(target, "rwx------"));
-      Files.newByteChannel(target, Set.of(StandardOpenOption.CREATE, StandardOpenOption.WRITE),
-          createAttributes(target, "rw-------")).close();
-      try (
-          FileChannel channel =
-              FileChannel.open(target, StandardOpenOption.READ, StandardOpenOption.WRITE);
-          FileLock ignored = channel.lock()) {
-        Map<String, String> entries = readEntries(target);
-        change.accept(entries);
-        writeEntries(target, entries);
-      }
-    } finally {
-      lock.unlock();
-    }
+    return prefix + file.resolveApplicationKey();
   }
 
   private void removeEntry(String name) {
     try {
-      if (Files.exists(resolveFile())) {
-        updateEntries(entries -> entries.remove(name));
-      }
+      file.removeEntry(name);
     } catch (IOException | RuntimeException e) {
       logger.log(Level.WARNING, FAILURE, "The session entry could not be removed",
           e.getClass().getName());
     }
   }
 
-  private Map<String, String> readEntries(Path file) throws IOException {
-    Map<String, String> entries = new LinkedHashMap<>();
-    String content = new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
-    content.lines().forEach(line -> {
-      int split = line.indexOf(SEPARATOR);
-      if (split > 0) {
-        String name = line.substring(0, split);
-        String value = line.substring(split + 1);
-        if (findExpiry(name).isPresent() && ENTRY_VALUE.matcher(value).matches()) {
-          entries.put(name, value);
-        }
-      }
-    });
-
-    return entries;
-  }
-
-  private void writeEntries(Path file, Map<String, String> entries) throws IOException {
-    Path temporary = Files.createTempFile(file.getParent(), "sessions", ".tmp");
-    try {
-      List<String> lines = new ArrayList<>();
-      entries.forEach((name, value) -> lines.add(name + SEPARATOR + value));
-      Files.write(temporary, lines, StandardCharsets.UTF_8);
-      Files.move(temporary, file, StandardCopyOption.ATOMIC_MOVE);
-    } finally {
-      Files.deleteIfExists(temporary);
-    }
-  }
-
-  private Optional<Instant> findExpiry(String name) {
-    if (name == null) {
-      return Optional.empty();
-    }
-
-    Matcher matcher = ENTRY_NAME.matcher(name);
-    if (!matcher.matches()) {
-      return Optional.empty();
-    }
-
-    return Optional.of(Instant.ofEpochMilli(Long.parseLong(matcher.group(1))));
-  }
-
   private void removeStaleEntries(Map<String, String> entries) {
     try {
-      Instant now = clock.instant();
-      Map<String, Instant> expiries = new HashMap<>();
-      entries.keySet()
-          .forEach(name -> findExpiry(name).ifPresent(expiry -> expiries.put(name, expiry)));
-      List<String> live = new ArrayList<>();
-      expiries.forEach((name, expiresAt) -> {
-        if (expiresAt.isAfter(now)) {
-          live.add(name);
-        } else {
-          entries.remove(name);
-        }
-      });
-      live.sort(Comparator.comparing(expiries::get));
-
-      int surplus = live.size() - MAX_ENTRIES + 1;
-      if (surplus > 0) {
-        live.subList(0, surplus).forEach(entries::remove);
+      int removed = file.removeStaleEntries(entries, clock.instant());
+      if (removed > 0) {
         logger.log(Level.WARNING,
             "The session store removed {0} sessions because its limit of {1} was reached",
-            String.valueOf(surplus), String.valueOf(MAX_ENTRIES));
+            String.valueOf(removed), String.valueOf(file.getMaxEntries()));
       }
     } catch (RuntimeException e) {
       logger.log(Level.WARNING, FAILURE, "Expired sign ins could not be removed",
@@ -504,25 +328,6 @@ final class BBjBrowserSecurityStore implements BBjSecurityStore {
     } catch (RuntimeException e) {
       logger.log(Level.WARNING, FAILURE, "The previous sign in could not be restored",
           e.getClass().getName());
-    }
-  }
-
-  private static FileAttribute<?>[] createAttributes(Path target, String permissions) {
-    if (!target.getFileSystem().supportedFileAttributeViews().contains("posix")) {
-      return new FileAttribute<?>[0];
-    }
-
-    return new FileAttribute<?>[] {
-        PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString(permissions))};
-  }
-
-  private static String createHash(String text) {
-    try {
-      byte[] digest =
-          MessageDigest.getInstance("SHA-256").digest(text.getBytes(StandardCharsets.UTF_8));
-      return HexFormat.of().formatHex(digest, 0, 4);
-    } catch (NoSuchAlgorithmException e) {
-      throw new IllegalStateException("The JVM has no SHA-256", e);
     }
   }
 
