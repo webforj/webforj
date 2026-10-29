@@ -42,6 +42,11 @@ public final class BBjSecurityConfigurationProperties {
   private static final String ADMIN_TIMEOUT_SECONDS = ADMIN_PREFIX + "timeout-seconds";
   private static final String ADMIN_HOST = ADMIN_PREFIX + "host";
   private static final String ADMIN_PORT = ADMIN_PREFIX + "port";
+  private static final String THROTTLE_PREFIX = BBJ_PREFIX + "throttle.";
+  private static final String THROTTLE_MAX_ATTEMPTS = THROTTLE_PREFIX + "max-attempts";
+  private static final String THROTTLE_ADDRESS_MAX_ATTEMPTS =
+      THROTTLE_PREFIX + "address-max-attempts";
+  private static final String THROTTLE_WINDOW_SECONDS = THROTTLE_PREFIX + "window-seconds";
 
   private Boolean enabled = true;
   private Boolean secureByDefault = true;
@@ -56,12 +61,16 @@ public final class BBjSecurityConfigurationProperties {
   private String defaultSuccessPath = "/";
   private Boolean returnAfterLogin = true;
   private String logoutSuccessPath;
+  private Integer throttleMaxAttempts = 5;
+  private Integer throttleAddressMaxAttempts = 20;
+  private Integer throttleWindowSeconds = 300;
 
   BBjSecurityConfigurationProperties(Config config) {
     readSecurityKeys(this, config);
     readBBjKeys(this, config);
     readTokenKeys(this, config);
     readAdminKeys(this, config);
+    readThrottleKeys(this, config);
   }
 
   private static void readSecurityKeys(BBjSecurityConfigurationProperties properties,
@@ -104,6 +113,21 @@ public final class BBjSecurityConfigurationProperties {
     }
     if (config.hasPath(RENEW_BEFORE_MINUTES)) {
       readInt(config, RENEW_BEFORE_MINUTES, 0, 480).ifPresent(properties::setRenewBeforeMinutes);
+    }
+  }
+
+  private static void readThrottleKeys(BBjSecurityConfigurationProperties properties,
+      Config config) {
+    if (config.hasPath(THROTTLE_MAX_ATTEMPTS)) {
+      readInt(config, THROTTLE_MAX_ATTEMPTS, 1, 1000).ifPresent(properties::setThrottleMaxAttempts);
+    }
+    if (config.hasPath(THROTTLE_ADDRESS_MAX_ATTEMPTS)) {
+      readInt(config, THROTTLE_ADDRESS_MAX_ATTEMPTS, 0, 10000)
+          .ifPresent(properties::setThrottleAddressMaxAttempts);
+    }
+    if (config.hasPath(THROTTLE_WINDOW_SECONDS)) {
+      readInt(config, THROTTLE_WINDOW_SECONDS, 10, 86400)
+          .ifPresent(properties::setThrottleWindowSeconds);
     }
   }
 
@@ -404,4 +428,57 @@ public final class BBjSecurityConfigurationProperties {
     this.logoutSuccessPath = logoutSuccessPath;
   }
 
+  /**
+   * Gets the failed sign ins of one user name after which the user name is refused.
+   *
+   * @return the failed sign ins inside one window, 1 to 1000
+   */
+  public Integer getThrottleMaxAttempts() {
+    return throttleMaxAttempts;
+  }
+
+  /**
+   * Sets the failed sign ins of one user name after which the user name is refused.
+   *
+   * @param throttleMaxAttempts the failed sign ins inside one window
+   */
+  public void setThrottleMaxAttempts(Integer throttleMaxAttempts) {
+    this.throttleMaxAttempts = throttleMaxAttempts;
+  }
+
+  /**
+   * Gets the failed sign ins from one client address after which the address is refused.
+   *
+   * @return the failed sign ins inside one window, 0 to 10000, 0 for no address limit
+   */
+  public Integer getThrottleAddressMaxAttempts() {
+    return throttleAddressMaxAttempts;
+  }
+
+  /**
+   * Sets the failed sign ins from one client address after which the address is refused.
+   *
+   * @param throttleAddressMaxAttempts the failed sign ins inside one window, 0 for no address limit
+   */
+  public void setThrottleAddressMaxAttempts(Integer throttleAddressMaxAttempts) {
+    this.throttleAddressMaxAttempts = throttleAddressMaxAttempts;
+  }
+
+  /**
+   * Gets the seconds a counter of failed sign ins counts from its first failed sign in.
+   *
+   * @return the seconds of one window, 10 to 86400
+   */
+  public Integer getThrottleWindowSeconds() {
+    return throttleWindowSeconds;
+  }
+
+  /**
+   * Sets the seconds a counter of failed sign ins counts from its first failed sign in.
+   *
+   * @param throttleWindowSeconds the seconds of one window
+   */
+  public void setThrottleWindowSeconds(Integer throttleWindowSeconds) {
+    this.throttleWindowSeconds = throttleWindowSeconds;
+  }
 }
