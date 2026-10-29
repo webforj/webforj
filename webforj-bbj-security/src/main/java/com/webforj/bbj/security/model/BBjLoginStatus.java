@@ -14,5 +14,8 @@ public enum BBjLoginStatus {
   INVALID_CREDENTIALS,
 
   /** The sign in could not be completed, for example because BBj cannot be reached. */
-  UNAVAILABLE
+  UNAVAILABLE,
+
+  /** The sign in was refused without asking BBj, because of too many failed attempts. */
+  THROTTLED
 }
