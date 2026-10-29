@@ -6,6 +6,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.webforj.bbj.security.store.BBjEntryFile.Content;
 import com.webforj.webstorage.LocalStorage;
 import java.nio.file.Path;
 import java.time.Clock;
@@ -48,7 +49,9 @@ public final class BrowserStoreFixture {
    */
   public static BBjSecurityStore createBrowserStore(Supplier<Path> directorySupplier,
       Supplier<String> applicationNameSupplier, Supplier<LocalStorage> storageSupplier) {
-    return new BBjBrowserSecurityStore(directorySupplier, applicationNameSupplier, storageSupplier);
+    return new BBjBrowserSecurityStore(
+        new BBjEntryFile(directorySupplier, applicationNameSupplier, Content.SESSIONS),
+        storageSupplier);
   }
 
   /**
@@ -64,8 +67,9 @@ public final class BrowserStoreFixture {
   public static BBjSecurityStore createBrowserStore(Supplier<Path> directorySupplier,
       Supplier<String> applicationNameSupplier, Supplier<LocalStorage> storageSupplier,
       Clock clock) {
-    return new BBjBrowserSecurityStore(directorySupplier, applicationNameSupplier, storageSupplier,
-        clock);
+    return new BBjBrowserSecurityStore(
+        new BBjEntryFile(directorySupplier, applicationNameSupplier, Content.SESSIONS),
+        storageSupplier, clock);
   }
 
   /**
@@ -76,7 +80,7 @@ public final class BrowserStoreFixture {
    * @return the part that names the application
    */
   public static String createApplicationKey(String applicationName) {
-    return BBjBrowserSecurityStore.createApplicationKey(applicationName);
+    return BBjEntryFile.createApplicationKey(applicationName);
   }
 
   /**
