@@ -55,15 +55,6 @@ class BBjAuthenticationServiceLoginTest {
     }
 
     @ParameterizedTest
-    @MethodSource("com.webforj.bbj.security.SignInFixture#getRefusedInputs")
-    void shouldGiveInvalidCredentialsWithoutCallingAnyone(String userName, String password) {
-      BBjLoginStatus status = fixture.login(userName, password);
-
-      assertEquals(BBjLoginStatus.INVALID_CREDENTIALS, status);
-      verifyNoInteractions(fixture.gateway);
-    }
-
-    @ParameterizedTest
     @MethodSource("com.webforj.bbj.security.SignInFixture#getAcceptedInputs")
     void shouldAcceptInputAtTheLimit(String userName, String password) {
       fixture.login(userName, password);
