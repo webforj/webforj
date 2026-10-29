@@ -35,6 +35,11 @@ import com.webforj.router.security.evaluator.RolesAllowedEvaluator;
 import com.webforj.webstorage.LocalStorage;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -113,7 +118,7 @@ class BBjRouteSecurityManagerTest {
     void shouldRegisterBuiltInEvaluatorsWithCorrectPriorities() {
       List<RouteSecurityEvaluator> evaluators = manager.getEvaluators();
 
-      assertEquals(5, evaluators.size());
+      assertEquals(7, evaluators.size());
       assertInstanceOf(DenyAllEvaluator.class, evaluators.get(0));
       assertInstanceOf(AnonymousAccessEvaluator.class, evaluators.get(1));
       assertInstanceOf(AuthenticationRequiredEvaluator.class, evaluators.get(2));
@@ -281,6 +286,72 @@ class BBjRouteSecurityManagerTest {
       ArgumentCaptor<NavigationOptions> options = ArgumentCaptor.forClass(NavigationOptions.class);
       verify(router).navigate(any(Location.class), options.capture());
       assertEquals(Component.class, options.getValue().getRecreateFrom());
+    }
+  }
+
+  @Nested
+  class LoadedEvaluators {
+    private final List<LogRecord> records = new CopyOnWriteArrayList<>();
+    private final Logger logger = Logger.getLogger(BBjRouteSecurityManager.class.getName());
+    private final Handler handler = new Handler() {
+      @Override
+      public void publish(LogRecord logRecord) {
+        records.add(logRecord);
+      }
+
+      @Override
+      public void flush() {
+        // Not implemented
+      }
+
+      @Override
+      public void close() {
+        // Not implemented
+      }
+    };
+
+    @BeforeEach
+    void setUp() {
+      logger.addHandler(handler);
+    }
+
+    @AfterEach
+    void tearDown() {
+      logger.removeHandler(handler);
+    }
+
+    @Test
+    void shouldRegisterListedEvaluatorsAtTheirPriorityAfterTheCoreEvaluators() {
+      List<RouteSecurityEvaluator> evaluators = manager.getEvaluators();
+
+      assertInstanceOf(RolesAllowedEvaluator.class, evaluators.get(4));
+      assertInstanceOf(CorePriorityEvaluator.class, evaluators.get(5));
+      assertInstanceOf(DefaultPriorityEvaluator.class, evaluators.get(6));
+    }
+
+    @Test
+    void shouldWarnAboutPriorityInTheCoreRange() {
+      var store = mock(BBjSecurityStore.class);
+
+      new BBjRouteSecurityManager(configuration, securityContext, store);
+
+      List<LogRecord> warnings =
+          records.stream().filter(it -> it.getLevel() == Level.WARNING).toList();
+      assertEquals(1, warnings.size());
+      assertEquals(List.of(CorePriorityEvaluator.class.getName(), "9"),
+          List.of(warnings.getFirst().getParameters()));
+    }
+
+    @Test
+    void shouldLogEachRegisteredEvaluatorWithItsPriority() {
+      var store = mock(BBjSecurityStore.class);
+
+      new BBjRouteSecurityManager(configuration, securityContext, store);
+
+      List<List<Object>> registered = records.stream().filter(it -> it.getLevel() == Level.INFO)
+          .map(it -> List.of(it.getParameters())).toList();
+      assertEquals(List.of(List.of(DefaultPriorityEvaluator.class.getName(), "10"),
+          List.of(CorePriorityEvaluator.class.getName(), "9")), registered);
     }
   }
 }
