@@ -71,6 +71,7 @@ class BBjAdminGatewayTest {
     factory = mockStatic(BBjAdminFactory.class);
     admin = mock(BBjAdminBase.class);
     permissions = mock(BBjAdminUserPermissions.class);
+    when(permissions.contains(anyString())).thenReturn(true);
     when(admin.getSingleUserPermissions(TOKEN)).thenReturn(permissions);
     loopback = InetAddress.getByName("127.0.0.1");
     gateway =
@@ -230,13 +231,26 @@ class BBjAdminGatewayTest {
       setAdmin(TOKEN);
       when(admin.getUser()).thenReturn("alice");
       when(admin.getSecurityGroupNames()).thenReturn(createGroupNames(List.of()));
-      when(permissions.contains("admin-access")).thenReturn(true);
-      when(permissions.contains("server-config")).thenReturn(true);
+      when(permissions.getBoolean("admin-access")).thenReturn(true);
+      when(permissions.getBoolean("server-config")).thenReturn(true);
 
       BBjPrincipal principal = gateway.openSession("alice", PASSWORD).getPrincipal();
 
       assertEquals(Set.of("admin-access", "server-config"), principal.getAuthorities());
       verify(admin, times(1)).getSingleUserPermissions(TOKEN);
+    }
+
+    @Test
+    void shouldGiveNoAuthoritiesToAUserWithoutPermissions() throws Exception {
+      setToken(TOKEN);
+      setAdmin(TOKEN);
+      when(admin.getUser()).thenReturn("alice");
+      when(admin.getSecurityGroupNames()).thenReturn(createGroupNames(List.of()));
+      when(permissions.getBoolean(anyString())).thenReturn(false);
+
+      BBjPrincipal principal = gateway.openSession("alice", PASSWORD).getPrincipal();
+
+      assertEquals(Set.of(), principal.getAuthorities());
     }
 
     @Test
@@ -365,10 +379,11 @@ class BBjAdminGatewayTest {
       setAdmin(TOKEN);
       setRenewedAdmin(renewedAdmin);
       BBjAdminUserPermissions renewedPermissions = mock(BBjAdminUserPermissions.class);
+      when(renewedPermissions.contains(anyString())).thenReturn(true);
       when(renewedAdmin.getUser()).thenReturn("alice");
       when(renewedAdmin.getSecurityGroupNames()).thenReturn(createGroupNames(List.of()));
       when(renewedAdmin.getSingleUserPermissions(RENEWED_TOKEN)).thenReturn(renewedPermissions);
-      when(renewedPermissions.contains("metrics")).thenReturn(true);
+      when(renewedPermissions.getBoolean("metrics")).thenReturn(true);
 
       BBjSession renewed = gateway.renewSession(session);
 
@@ -719,7 +734,7 @@ class BBjAdminGatewayTest {
         throws Exception {
       when(admin.getUser()).thenReturn("alice");
       when(admin.getSecurityGroupNames()).thenReturn(createGroupNames(List.of()));
-      when(permissions.contains(anyString())).thenThrow(cause);
+      when(permissions.getBoolean(anyString())).thenThrow(cause);
 
       BBjAdminFailure failure =
           assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD));
@@ -733,7 +748,7 @@ class BBjAdminGatewayTest {
     void shouldHideTheTokenAndThePasswordWhenThePermissionsCannotBeRead() throws Exception {
       when(admin.getUser()).thenReturn("alice");
       when(admin.getSecurityGroupNames()).thenReturn(createGroupNames(List.of()));
-      when(permissions.contains(anyString()))
+      when(permissions.getBoolean(anyString()))
           .thenThrow(new BBjAdminException("bad " + TOKEN + " and " + PASSWORD));
 
       BBjAdminFailure failure =
@@ -794,7 +809,7 @@ class BBjAdminGatewayTest {
       setRenewedAdmin(renewedAdmin);
       when(renewedAdmin.getUser()).thenReturn("alice");
       when(renewedAdmin.getSecurityGroupNames()).thenReturn(createGroupNames(List.of()));
-      when(permissions.contains(anyString())).thenThrow(cause);
+      when(permissions.getBoolean(anyString())).thenThrow(cause);
 
       BBjAdminFailure failure =
           assertThrows(BBjAdminFailure.class, () -> gateway.renewSession(session));
