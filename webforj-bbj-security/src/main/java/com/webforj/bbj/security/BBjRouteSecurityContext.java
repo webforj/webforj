@@ -17,26 +17,15 @@ import java.util.function.Supplier;
  * @since 26.03
  */
 public final class BBjRouteSecurityContext implements RouteSecurityContext {
-  private final Supplier<Optional<BBjPrincipal>> principalSupplier;
 
-  /**
-   * Creates a context that reads the principal from the given supplier.
-   *
-   * @param principalSupplier the supplier of the current principal, empty when no user is
-   *        authenticated
-   *
-   * @throws NullPointerException if {@code principalSupplier} is null
-   */
-  BBjRouteSecurityContext(Supplier<Optional<BBjPrincipal>> principalSupplier) {
-    this.principalSupplier = Objects.requireNonNull(principalSupplier, "principalSupplier");
-  }
+  BBjRouteSecurityContext() {}
 
   /**
    * {@inheritDoc}
    */
   @Override
   public boolean isAuthenticated() {
-    return principalSupplier.get().isPresent();
+    return BBjSecurity.currentUser().isPresent();
   }
 
   /**
@@ -44,7 +33,7 @@ public final class BBjRouteSecurityContext implements RouteSecurityContext {
    */
   @Override
   public Optional<Object> getPrincipal() {
-    return principalSupplier.get().map(Object.class::cast);
+    return BBjSecurity.currentUser().map(Object.class::cast);
   }
 
   /**
@@ -52,8 +41,7 @@ public final class BBjRouteSecurityContext implements RouteSecurityContext {
    */
   @Override
   public boolean hasRole(String role) {
-    return role != null && principalSupplier.get().map(BBjPrincipal::getRoles)
-        .filter(roles -> roles.contains(role)).isPresent();
+    return BBjSecurity.hasRole(role);
   }
 
   /**
@@ -61,7 +49,7 @@ public final class BBjRouteSecurityContext implements RouteSecurityContext {
    */
   @Override
   public boolean hasAuthority(String authority) {
-    return principalSupplier.get().map(it -> it.getAuthorities().contains(authority)).orElse(false);
+    return BBjSecurity.hasAuthority(authority);
   }
 
   /**

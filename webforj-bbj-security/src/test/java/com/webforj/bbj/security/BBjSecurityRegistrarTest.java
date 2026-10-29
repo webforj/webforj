@@ -192,6 +192,9 @@ class BBjSecurityRegistrarTest {
             mockConstruction(BBjRouteSecurityManager.class, (manager, context) -> contexts
                 .add((BBjRouteSecurityContext) context.arguments().get(1)))) {
       registrar.onWillRun(app);
+      tableMock.when(() -> ObjectTable.contains(BBjSecurity.SERVICE_KEY)).thenReturn(true);
+      tableMock.when(() -> ObjectTable.get(BBjSecurity.SERVICE_KEY))
+          .thenAnswer(invocation -> services.constructed().get(0));
 
       assertEquals(1, contexts.size());
       assertTrue(contexts.get(0).isAuthenticated());
