@@ -355,6 +355,94 @@ class BBjSecurityConfigurationPropertiesTest {
   }
 
   @Nested
+  class ThrottleKeys {
+
+    @Test
+    void shouldHaveTheThrottleDefaults() {
+      assertEquals(5, properties.getThrottleMaxAttempts());
+      assertEquals(20, properties.getThrottleAddressMaxAttempts());
+      assertEquals(300, properties.getThrottleWindowSeconds());
+    }
+
+    @Test
+    void shouldSetTheThrottleValues() {
+      properties.setThrottleMaxAttempts(3);
+      properties.setThrottleAddressMaxAttempts(0);
+      properties.setThrottleWindowSeconds(60);
+
+      assertEquals(3, properties.getThrottleMaxAttempts());
+      assertEquals(0, properties.getThrottleAddressMaxAttempts());
+      assertEquals(60, properties.getThrottleWindowSeconds());
+    }
+
+    @Test
+    void shouldReadEveryThrottleKey() {
+      Config config = ConfigFactory.parseString("""
+          webforj.security.bbj.throttle {
+            max-attempts = 3
+            address-max-attempts = 6
+            window-seconds = 60
+          }
+          """);
+
+      properties = new BBjSecurityConfigurationProperties(config);
+
+      assertEquals(3, properties.getThrottleMaxAttempts());
+      assertEquals(6, properties.getThrottleAddressMaxAttempts());
+      assertEquals(60, properties.getThrottleWindowSeconds());
+    }
+
+    @ParameterizedTest
+    @MethodSource("throttleBoundCases")
+    void shouldReadTheThrottleKeyAtTheBoundsOfItsRange(String key, int value,
+        ToIntFunction<BBjSecurityConfigurationProperties> getter) {
+      Config config =
+          ConfigFactory.parseString("webforj.security.bbj.throttle.%s = %d".formatted(key, value));
+
+      properties = new BBjSecurityConfigurationProperties(config);
+
+      assertEquals(value, getter.applyAsInt(properties));
+    }
+
+    private static Stream<Arguments> throttleBoundCases() {
+      ToIntFunction<BBjSecurityConfigurationProperties> user =
+          BBjSecurityConfigurationProperties::getThrottleMaxAttempts;
+      ToIntFunction<BBjSecurityConfigurationProperties> address =
+          BBjSecurityConfigurationProperties::getThrottleAddressMaxAttempts;
+      ToIntFunction<BBjSecurityConfigurationProperties> window =
+          BBjSecurityConfigurationProperties::getThrottleWindowSeconds;
+
+      return Stream.of(Arguments.of("max-attempts", 1, user),
+          Arguments.of("max-attempts", 1000, user),
+          Arguments.of("address-max-attempts", 0, address),
+          Arguments.of("address-max-attempts", 10000, address),
+          Arguments.of("window-seconds", 10, window),
+          Arguments.of("window-seconds", 86400, window));
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidThrottleValues")
+    void shouldKeepTheThrottleDefaultsForInvalidValues(String key, String value) {
+      Config config =
+          ConfigFactory.parseString("webforj.security.bbj.throttle.%s = %s".formatted(key, value));
+
+      properties = new BBjSecurityConfigurationProperties(config);
+
+      assertEquals(5, properties.getThrottleMaxAttempts());
+      assertEquals(20, properties.getThrottleAddressMaxAttempts());
+      assertEquals(300, properties.getThrottleWindowSeconds());
+    }
+
+    private static Stream<Arguments> invalidThrottleValues() {
+      return Stream.of(Arguments.of("max-attempts", "0"), Arguments.of("max-attempts", "1001"),
+          Arguments.of("address-max-attempts", "-1"), Arguments.of("address-max-attempts", "10001"),
+          Arguments.of("window-seconds", "9"), Arguments.of("window-seconds", "86401"),
+          Arguments.of("max-attempts", "\"abc\""), Arguments.of("address-max-attempts", "2.5"),
+          Arguments.of("window-seconds", "true"));
+    }
+  }
+
+  @Nested
   class InvalidValues {
     private final Logger logger =
         Logger.getLogger(BBjSecurityConfigurationProperties.class.getName());
