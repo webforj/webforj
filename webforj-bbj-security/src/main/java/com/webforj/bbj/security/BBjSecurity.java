@@ -9,6 +9,8 @@ import com.webforj.component.toast.Toast;
 import com.webforj.environment.ObjectTable;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Predicate;
 
 /**
  * Entry point of an app to sign users in and out against BBj and to read the user that signed in.
@@ -135,7 +137,17 @@ public final class BBjSecurity {
    *         in, BBj security is not set up, or the role is {@code null}
    */
   public static boolean hasRole(String role) {
-    return role != null && currentUser().filter(user -> user.getRoles().contains(role)).isPresent();
+    return role != null
+        && currentUser().map(BBjPrincipal::getRoles).filter(containsPredicate(role)).isPresent();
+  }
+
+  public static boolean hasAuthority(String authority) {
+    return authority != null && currentUser().map(BBjPrincipal::getAuthorities)
+        .filter(containsPredicate(authority)).isPresent();
+  }
+
+  private static Predicate<Set<String>> containsPredicate(String value) {
+    return set -> set.contains(value);
   }
 
   /**
