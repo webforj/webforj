@@ -2,6 +2,7 @@ package com.webforj.bbj.security;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -27,6 +28,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InOrder;
 import org.mockito.MockedStatic;
 
@@ -82,6 +85,11 @@ class BBjSecurityTest {
     @Test
     void shouldReturnEmptyCurrentUser() {
       assertTrue(BBjSecurity.currentUser().isEmpty());
+    }
+
+    @Test
+    void shouldNotHaveRole() {
+      assertFalse(BBjSecurity.hasRole("ROLE_USER"));
     }
 
     @Test
@@ -169,6 +177,29 @@ class BBjSecurityTest {
       when(service.currentUser()).thenReturn(Optional.empty());
 
       assertTrue(BBjSecurity.currentUser().isEmpty());
+    }
+
+    @Test
+    void shouldHaveTheRoleOfTheCurrentUser() {
+      when(service.currentUser()).thenReturn(Optional.of(principal));
+
+      assertTrue(BBjSecurity.hasRole("ROLE_USER"));
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {"ROLE_ADMIN", "role_user", "ROLE_USER "})
+    void shouldNotHaveRoleTheCurrentUserDoesNotHold(String role) {
+      when(service.currentUser()).thenReturn(Optional.of(principal));
+
+      assertFalse(BBjSecurity.hasRole(role));
+    }
+
+    @Test
+    void shouldNotHaveRoleWhenNobodyIsSignedIn() {
+      when(service.currentUser()).thenReturn(Optional.empty());
+
+      assertFalse(BBjSecurity.hasRole("ROLE_USER"));
     }
 
     @Test

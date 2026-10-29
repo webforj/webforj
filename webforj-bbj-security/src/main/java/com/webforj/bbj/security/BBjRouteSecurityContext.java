@@ -52,7 +52,8 @@ public final class BBjRouteSecurityContext implements RouteSecurityContext {
    */
   @Override
   public boolean hasRole(String role) {
-    return principalSupplier.get().map(it -> it.getRoles().contains(role)).orElse(false);
+    return role != null && principalSupplier.get().map(BBjPrincipal::getRoles)
+        .filter(roles -> roles.contains(role)).isPresent();
   }
 
   /**
