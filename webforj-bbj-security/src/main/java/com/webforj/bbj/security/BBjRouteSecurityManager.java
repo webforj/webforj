@@ -20,14 +20,17 @@ import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.ServiceConfigurationError;
+import java.util.ServiceLoader;
 
 /**
  * {@link AbstractRouteSecurityManager} of a BBj application.
  *
  * <p>
- * Registers the core evaluators. The location a user requested is saved on every denial. Users who
- * need to authenticate are sent to the authentication location. Users who are denied access are
- * sent to the deny location with the reason.
+ * Registers the core evaluators, then each {@link BBjRouteSecurityEvaluator} listed in a provider
+ * file at its own priority. The location a user requested is saved on every denial. Users who need
+ * to authenticate are sent to the authentication location. Users who are denied access are sent to
+ * the deny location with the reason.
  * </p>
  *
  * @author Christian Liebhardt
@@ -40,7 +43,8 @@ public final class BBjRouteSecurityManager extends AbstractRouteSecurityManager 
   private final BBjRouteSecurityContext securityContext;
 
   /**
-   * Creates a manager with the core evaluators registered.
+   * Creates a manager with the core evaluators and the listed {@link BBjRouteSecurityEvaluator}
+   * instances registered.
    *
    * @param configuration the route security configuration
    * @param securityContext the route security context
@@ -48,6 +52,7 @@ public final class BBjRouteSecurityManager extends AbstractRouteSecurityManager 
    *
    * @throws NullPointerException if {@code configuration}, {@code securityContext} or {@code store}
    *         is null
+   * @throws ServiceConfigurationError if a listed evaluator cannot be loaded
    */
   BBjRouteSecurityManager(BBjRouteSecurityConfiguration configuration,
       BBjRouteSecurityContext securityContext, BBjSecurityStore store) {
@@ -60,6 +65,7 @@ public final class BBjRouteSecurityManager extends AbstractRouteSecurityManager 
     registerEvaluator(new AuthenticationRequiredEvaluator(), 3);
     registerEvaluator(new PermitAllEvaluator(), 4);
     registerEvaluator(new RolesAllowedEvaluator(), 5);
+    loadEvaluators();
   }
 
   /**
@@ -99,6 +105,22 @@ public final class BBjRouteSecurityManager extends AbstractRouteSecurityManager 
 
   /**
    * {@inheritDoc}
+   */
+  @Override
+  public RouteSecurityContext getSecurityContext() {
+    return securityContext;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public RouteSecurityConfiguration getConfiguration() {
+    return configuration;
+  }
+
+  /**
+   * {@inheritDoc}
    *
    * <p>
    * A denial that requires authentication sends the user to the authentication location. A denial
@@ -121,20 +143,23 @@ public final class BBjRouteSecurityManager extends AbstractRouteSecurityManager 
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public RouteSecurityContext getSecurityContext() {
-    return securityContext;
-  }
+  private void loadEvaluators() {
+    ServiceLoader<BBjRouteSecurityEvaluator> loader = ServiceLoader
+        .load(BBjRouteSecurityEvaluator.class, BBjRouteSecurityManager.class.getClassLoader());
+    loader.forEach(evaluator -> {
+      String name = evaluator.getClass().getName();
+      int priority = evaluator.getPriority();
+      if (priority < 10) {
+        logger.log(Level.WARNING,
+            "Custom evaluator {0} uses priority {1} in core range (0 to 9). "
+                + "Consider using priority >= 10 for custom evaluators",
+            name, String.valueOf(priority));
+      }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public RouteSecurityConfiguration getConfiguration() {
-    return configuration;
+      registerEvaluator(evaluator, priority);
+      logger.log(Level.INFO, "Registered custom evaluator: {0} with priority {1}", name,
+          String.valueOf(priority));
+    });
   }
 
   private void navigateRecreating(Location location) {
