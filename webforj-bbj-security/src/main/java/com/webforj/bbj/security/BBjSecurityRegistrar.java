@@ -23,6 +23,11 @@ import java.time.Duration;
  * available.
  * </p>
  *
+ * <p>
+ * When the connection settings of the BBj Admin API are refused, the error is logged and route
+ * security is registered without the sign in service, so every sign in is unavailable.
+ * </p>
+ *
  * @author Christian Liebhardt
  * @since 26.03
  */
@@ -55,26 +60,18 @@ public final class BBjSecurityRegistrar implements AppLifecycleListener {
       return;
     }
 
-    var gateway = new BBjAdminGateway(properties);
-    var store = BBjSecurityStore.create(environment);
-    var throttleWindow = Duration.ofSeconds(properties.getThrottleWindowSeconds());
-    var throttleStore = BBjThrottleStore.create(throttleWindow);
-    logger.log(Level.INFO,
-        "Sign in throttle with user name limit {0}, address limit {1}, window {2} seconds",
-        properties.getThrottleMaxAttempts(), properties.getThrottleAddressMaxAttempts() == 0 ? "off"
-            : properties.getThrottleAddressMaxAttempts(),
-        throttleWindow.toSeconds());
+    var problem = properties.findAdminConnectionProblem();
+    if (problem.isPresent()) {
+      logger.log(Level.ERROR, "Sign in is unavailable because {0}", problem.get());
+    }
 
+    var store = BBjSecurityStore.create(environment);
     var router = Router.getCurrent();
     if (router != null) {
-      var service = BBjAuthenticationService.builder().setGateway(gateway).setStore(store)
-          .setProperties(properties).setConfiguration(configuration).setNavigator(router::navigate)
-          .setThrottleStore(throttleStore)
-          .setAddressSupplier(() -> Request.getCurrent().getIPAddress()).build();
-      var observer = new BBjSessionObserver(service);
-      router.getRenderer().addObserver(observer);
-      ObjectTable.put(BBjSecurity.SERVICE_KEY, service);
-      service.restoreSession();
+      if (problem.isEmpty()) {
+        addService(router, properties, configuration, store);
+      }
+
       var context = new BBjRouteSecurityContext();
       var manager = new BBjRouteSecurityManager(configuration, context, store);
       var securityObserver = new RouteSecurityObserver(manager);
@@ -86,4 +83,27 @@ public final class BBjSecurityRegistrar implements AppLifecycleListener {
     }
   }
 
+  private static void addService(Router router, BBjSecurityConfigurationProperties properties,
+      BBjRouteSecurityConfiguration configuration, BBjSecurityStore store) {
+    var gateway = new BBjAdminGateway(properties);
+    var throttleWindow = Duration.ofSeconds(properties.getThrottleWindowSeconds());
+    var throttleStore = BBjThrottleStore.create(throttleWindow);
+    logger.log(Level.INFO,
+        "Sign in throttle with user name limit {0}, address limit {1}, window {2} seconds",
+        properties.getThrottleMaxAttempts(), properties.getThrottleAddressMaxAttempts() == 0 ? "off"
+            : properties.getThrottleAddressMaxAttempts(),
+        throttleWindow.toSeconds());
+    logger.log(Level.INFO, "BBj Admin API at {0}:{1} with ssl {2} and truststore {3}",
+        properties.getAdminHost(), String.valueOf(properties.getAdminPort()),
+        properties.getAdminSsl(), properties.getAdminTruststore() == null ? "none" : "set");
+
+    var service = BBjAuthenticationService.builder().setGateway(gateway).setStore(store)
+        .setProperties(properties).setConfiguration(configuration).setNavigator(router::navigate)
+        .setThrottleStore(throttleStore)
+        .setAddressSupplier(() -> Request.getCurrent().getIPAddress()).build();
+    var observer = new BBjSessionObserver(service);
+    router.getRenderer().addObserver(observer);
+    ObjectTable.put(BBjSecurity.SERVICE_KEY, service);
+    service.restoreSession();
+  }
 }
