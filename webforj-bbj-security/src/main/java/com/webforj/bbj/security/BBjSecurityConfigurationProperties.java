@@ -63,8 +63,8 @@ public final class BBjSecurityConfigurationProperties {
   private static final String THROTTLE_ADDRESS_MAX_ATTEMPTS =
       THROTTLE_PREFIX + "address-max-attempts";
   private static final String THROTTLE_WINDOW_SECONDS = THROTTLE_PREFIX + "window-seconds";
-  private boolean configResolved;
 
+  private final boolean configResolved;
   private Boolean enabled = true;
   private Boolean secureByDefault = true;
   private String authenticationPath;
@@ -86,19 +86,22 @@ public final class BBjSecurityConfigurationProperties {
   private String adminTruststorePassword;
 
   BBjSecurityConfigurationProperties(Config config) {
-    Config resolved;
+    configResolved = readKeys(this, config);
+  }
+
+  private static boolean readKeys(BBjSecurityConfigurationProperties properties, Config config) {
     try {
-      resolved = config.resolve(ConfigResolveOptions.defaults().setAllowUnresolved(true));
-      configResolved = true;
+      Config resolved = config.resolve(ConfigResolveOptions.defaults().setAllowUnresolved(true));
+      readSecurityKeys(properties, resolved);
+      readBBjKeys(properties, resolved);
+      readTokenKeys(properties, resolved);
+      readAdminKeys(properties, resolved);
+      readThrottleKeys(properties, resolved);
+
+      return true;
     } catch (RuntimeException e) {
-      configResolved = false;
-      return;
+      return false;
     }
-    readSecurityKeys(this, resolved);
-    readBBjKeys(this, resolved);
-    readTokenKeys(this, resolved);
-    readAdminKeys(this, resolved);
-    readThrottleKeys(this, resolved);
   }
 
   private static void readSecurityKeys(BBjSecurityConfigurationProperties properties,
@@ -579,9 +582,10 @@ public final class BBjSecurityConfigurationProperties {
    * Finds the first setting of the Admin API connection that is refused.
    *
    * <p>
-   * A host other than {@code localhost} or a loopback address needs SSL and a truststore. A
-   * truststore used with SSL must be a file that loads with its password. The text names the keys
-   * and never a value.
+   * A configuration that cannot be resolved is refused. A host other than {@code localhost} or a
+   * loopback address needs SSL and a truststore. A truststore used with SSL must be a file that
+   * loads with its password and holds at least one certificate. The text names the keys and never a
+   * value.
    * </p>
    *
    * @return the text of the refused setting, or an empty optional when the connection is allowed
@@ -636,7 +640,6 @@ public final class BBjSecurityConfigurationProperties {
 
     try {
       var keyStore = KeyStore.getInstance(file, password == null ? null : password.toCharArray());
-
       if (keyStore.size() == 0) {
         return Optional.of("%s holds no certificates".formatted(ADMIN_TRUSTSTORE));
       }
