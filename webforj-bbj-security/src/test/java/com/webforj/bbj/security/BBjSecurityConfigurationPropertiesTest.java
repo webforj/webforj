@@ -91,6 +91,21 @@ class BBjSecurityConfigurationPropertiesTest {
     void shouldHaveDefaultReturnAfterLogin() {
       assertTrue(properties.getReturnAfterLogin());
     }
+
+    @Test
+    void shouldHaveNoAdminSsl() {
+      assertFalse(properties.getAdminSsl());
+    }
+
+    @Test
+    void shouldHaveNoAdminTruststore() {
+      assertNull(properties.getAdminTruststore());
+    }
+
+    @Test
+    void shouldHaveNoAdminTruststorePassword() {
+      assertNull(properties.getAdminTruststorePassword());
+    }
   }
 
   @Nested
@@ -161,6 +176,24 @@ class BBjSecurityConfigurationPropertiesTest {
       properties.setReturnAfterLogin(false);
       assertFalse(properties.getReturnAfterLogin());
     }
+
+    @Test
+    void shouldSetAdminSsl() {
+      properties.setAdminSsl(true);
+      assertTrue(properties.getAdminSsl());
+    }
+
+    @Test
+    void shouldSetAdminTruststore() {
+      properties.setAdminTruststore("/etc/bbj/admin.p12");
+      assertEquals("/etc/bbj/admin.p12", properties.getAdminTruststore());
+    }
+
+    @Test
+    void shouldSetAdminTruststorePassword() {
+      properties.setAdminTruststorePassword("store-secret");
+      assertEquals("store-secret", properties.getAdminTruststorePassword());
+    }
   }
 
   @Nested
@@ -210,6 +243,74 @@ class BBjSecurityConfigurationPropertiesTest {
       assertEquals("/home", properties.getDefaultSuccessPath());
       assertFalse(properties.getReturnAfterLogin());
       assertEquals("/goodbye", properties.getLogoutSuccessPath());
+    }
+
+    @Test
+    void shouldReadTheAdminConnectionKeys() {
+      Config config = ConfigFactory.parseString("""
+          webforj.security.bbj.admin {
+            ssl = true
+            truststore = "/etc/bbj/admin.p12"
+            truststore-password = "store-secret"
+          }
+          """);
+
+      properties = new BBjSecurityConfigurationProperties(config);
+
+      assertTrue(properties.getAdminSsl());
+      assertEquals("/etc/bbj/admin.p12", properties.getAdminTruststore());
+      assertEquals("store-secret", properties.getAdminTruststorePassword());
+    }
+
+    @Test
+    void shouldReadTheAdminConnectionKeysFromOptionalSubstitutions() {
+      Config environment = ConfigFactory.parseString("""
+          BBJ_ADMIN_SSL = true
+          BBJ_ADMIN_TRUSTSTORE = "/etc/bbj/admin.p12"
+          BBJ_ADMIN_TRUSTSTORE_PASSWORD = "store-secret"
+          """);
+      Config config = ConfigFactory.parseString("""
+          webforj.security.bbj.admin {
+            ssl = ${?BBJ_ADMIN_SSL}
+            truststore = ${?BBJ_ADMIN_TRUSTSTORE}
+            truststore-password = ${?BBJ_ADMIN_TRUSTSTORE_PASSWORD}
+          }
+          """).withFallback(environment);
+
+      properties = new BBjSecurityConfigurationProperties(config);
+
+      assertTrue(properties.getAdminSsl());
+      assertEquals("/etc/bbj/admin.p12", properties.getAdminTruststore());
+      assertEquals("store-secret", properties.getAdminTruststorePassword());
+    }
+
+    @Test
+    void shouldKeepTheDefaultsForOptionalSubstitutionsWithoutValue() {
+      Config config = ConfigFactory.parseString("""
+          webforj.security.bbj.admin {
+            ssl = ${?BBJ_SECURITY_TEST_UNSET_SSL}
+            truststore = ${?BBJ_SECURITY_TEST_UNSET_TRUSTSTORE}
+            truststore-password = ${?BBJ_SECURITY_TEST_UNSET_PASSWORD}
+          }
+          """);
+
+      properties = new BBjSecurityConfigurationProperties(config);
+
+      assertFalse(properties.getAdminSsl());
+      assertNull(properties.getAdminTruststore());
+      assertNull(properties.getAdminTruststorePassword());
+    }
+
+    @Test
+    void shouldReadTheKeysBesideAnUnresolvedSubstitution() {
+      Config config = ConfigFactory.parseString("""
+          webforj.security.bbj.admin.port = 2020
+          webforj.other = ${BBJ_SECURITY_TEST_UNSET_VALUE}
+          """);
+
+      properties = new BBjSecurityConfigurationProperties(config);
+
+      assertEquals(2020, properties.getAdminPort());
     }
   }
 
@@ -604,6 +705,44 @@ class BBjSecurityConfigurationPropertiesTest {
       assertTrue(properties.getReturnAfterLogin());
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"\"maybe\"", "\"\"", "5", "[false]"})
+    void shouldTreatAnInvalidAdminSslValueAsTrue(String value) {
+      Config config = ConfigFactory.parseString("webforj.security.bbj.admin.ssl = " + value);
+
+      properties = new BBjSecurityConfigurationProperties(config);
+
+      assertTrue(properties.getAdminSsl());
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidTruststoreValues")
+    void shouldKeepNoTruststoreValueWhenItIsNotString(String key, String value) {
+      Config config =
+          ConfigFactory.parseString("webforj.security.bbj.%s = %s".formatted(key, value));
+
+      properties = new BBjSecurityConfigurationProperties(config);
+
+      assertNull(properties.getAdminTruststore());
+      assertNull(properties.getAdminTruststorePassword());
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidTruststoreValues")
+    void shouldLogTheKeyWhenTheTruststoreValueIsNotString(String key, String value) {
+      Config config =
+          ConfigFactory.parseString("webforj.security.bbj.%s = %s".formatted(key, value));
+
+      properties = new BBjSecurityConfigurationProperties(config);
+
+      List<LogRecord> warnings = getWarnings();
+      assertEquals(1, warnings.size());
+      assertEquals(
+          "The configuration key webforj.security.bbj.%s is not a string and keeps its default"
+              .formatted(key),
+          new SimpleFormatter().formatMessage(warnings.get(0)));
+    }
+
     @Test
     void shouldLogTheKeyWhenReturnAfterLoginIsNotBoolean() {
       Config config = ConfigFactory.parseString("webforj.security.bbj.return-after-login = 5");
@@ -676,7 +815,13 @@ class BBjSecurityConfigurationPropertiesTest {
     }
 
     private static Stream<Arguments> invalidBooleanKeys() {
-      return Stream.of(Arguments.of("enabled"), Arguments.of("secure-by-default"));
+      return Stream.of(Arguments.of("enabled"), Arguments.of("secure-by-default"),
+          Arguments.of("bbj.admin.ssl"));
+    }
+
+    private static Stream<Arguments> invalidTruststoreValues() {
+      return Stream.of("admin.truststore", "admin.truststore-password").flatMap(key -> Stream
+          .of("[\"a\"]", "{a = 1}", "5", "true").map(value -> Arguments.of(key, value)));
     }
 
     private static Stream<Arguments> invalidIntegerValues() {
@@ -690,7 +835,8 @@ class BBjSecurityConfigurationPropertiesTest {
           Arguments.of("admin.port", 65536, 1, 65535), Arguments.of("admin.port", -1, 1, 65535),
           Arguments.of("admin.timeout-seconds", 0, 1, 9999),
           Arguments.of("admin.timeout-seconds", 10000, 1, 9999),
-          Arguments.of("token.minutes", 0, 1, 480), Arguments.of("token.minutes", 481, 1, 480));
+          Arguments.of("token.minutes", 0, 1, Integer.MAX_VALUE),
+          Arguments.of("token.minutes", -1, 1, Integer.MAX_VALUE));
     }
 
     private static Stream<Arguments> invalidAdminStringValues() {
