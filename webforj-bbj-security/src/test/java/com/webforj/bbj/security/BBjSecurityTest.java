@@ -6,11 +6,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.webforj.bbj.security.model.BBjLoginStatus;
@@ -23,12 +26,18 @@ import com.webforj.component.toast.Toast;
 import com.webforj.environment.ObjectTable;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InOrder;
@@ -58,6 +67,25 @@ class BBjSecurityTest {
   private void registerService() {
     tableMock.when(() -> ObjectTable.contains(KEY)).thenReturn(true);
     tableMock.when(() -> ObjectTable.get(KEY)).thenReturn(service);
+  }
+
+  private static Stream<Arguments> getSignInsWithProvider() {
+    BiFunction<LoginSubmitEvent, Function<Boolean, String>, BBjLoginStatus> credentials =
+        (event, provider) -> BBjSecurity.login("alice", "pw", provider);
+    BiFunction<LoginSubmitEvent, Function<Boolean, String>, BBjLoginStatus> submitEvent =
+        BBjSecurity::login;
+
+    return Stream.of(Arguments.of(Named.of("user name and password", credentials)),
+        Arguments.of(Named.of("submit event", submitEvent)));
+  }
+
+  private static Stream<Arguments> getSignInsWithoutProvider() {
+    Function<LoginSubmitEvent, BBjLoginStatus> credentials =
+        event -> BBjSecurity.login("alice", "pw");
+    Function<LoginSubmitEvent, BBjLoginStatus> submitEvent = BBjSecurity::login;
+
+    return Stream.of(Arguments.of(Named.of("user name and password", credentials)),
+        Arguments.of(Named.of("submit event", submitEvent)));
   }
 
   @Nested
@@ -107,6 +135,18 @@ class BBjSecurityTest {
       assertThrows(NullPointerException.class, () -> BBjSecurity.login("alice", null));
       assertThrows(NullPointerException.class, () -> BBjSecurity.login(event));
     }
+
+    @Test
+    void shouldRejectNullCodeProvider() {
+      LoginSubmitEvent event = mock(LoginSubmitEvent.class);
+      when(event.getUsername()).thenReturn("alice");
+      when(event.getPassword()).thenReturn("pw");
+      when(event.getComponent()).thenReturn(mock(Login.class));
+      Function<Boolean, String> provider = null;
+
+      assertThrows(NullPointerException.class, () -> BBjSecurity.login("alice", "pw", provider));
+      assertThrows(NullPointerException.class, () -> BBjSecurity.login(event, provider));
+    }
   }
 
   @Nested
@@ -127,7 +167,7 @@ class BBjSecurityTest {
 
     @Test
     void shouldReturnTheStatusOfTheServiceForUserNameAndPassword() {
-      when(service.login("alice", "pw")).thenReturn(BBjLoginStatus.AUTHENTICATED);
+      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.AUTHENTICATED);
 
       assertEquals(BBjLoginStatus.AUTHENTICATED, BBjSecurity.login("alice", "pw"));
     }
@@ -139,26 +179,26 @@ class BBjSecurityTest {
       when(event.getPassword()).thenReturn("pw");
       var mockLogin = mock(Login.class);
       when(event.getComponent()).thenReturn(mockLogin);
-      when(service.login("alice", "pw")).thenReturn(BBjLoginStatus.INVALID_CREDENTIALS);
+      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.INVALID_CREDENTIALS);
 
       assertEquals(BBjLoginStatus.INVALID_CREDENTIALS, BBjSecurity.login(event));
     }
 
     @Test
     void shouldOpenTheTargetLocationOnAuthenticatedForUserNameAndPassword() {
-      when(service.login("alice", "pw")).thenReturn(BBjLoginStatus.AUTHENTICATED);
+      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.AUTHENTICATED);
 
       BBjSecurity.login("alice", "pw");
 
       InOrder order = inOrder(service);
-      order.verify(service).login("alice", "pw");
+      order.verify(service).login("alice", "pw", null);
       order.verify(service).openTargetLocation();
     }
 
     @ParameterizedTest
     @EnumSource(value = BBjLoginStatus.class, names = {"INVALID_CREDENTIALS", "UNAVAILABLE"})
     void shouldNotOpenTheTargetLocationOtherwiseForUserNameAndPassword(BBjLoginStatus status) {
-      when(service.login("alice", "pw")).thenReturn(status);
+      when(service.login("alice", "pw", null)).thenReturn(status);
 
       BBjSecurity.login("alice", "pw");
 
@@ -276,7 +316,7 @@ class BBjSecurityTest {
       when(event.getComponent()).thenReturn(login);
       when(event.getUsername()).thenReturn("alice");
       when(event.getPassword()).thenReturn("pw");
-      when(service.login("alice", "pw")).thenReturn(BBjLoginStatus.AUTHENTICATED);
+      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.AUTHENTICATED);
     }
 
     @Test
@@ -285,7 +325,7 @@ class BBjSecurityTest {
 
       InOrder order = inOrder(login, service);
       order.verify(login).setError(false);
-      order.verify(service).login("alice", "pw");
+      order.verify(service).login("alice", "pw", null);
     }
 
     @Test
@@ -295,7 +335,7 @@ class BBjSecurityTest {
 
     @Test
     void shouldSetTheErrorAndEnableTheFormOnInvalidCredentials() {
-      when(service.login("alice", "pw")).thenReturn(BBjLoginStatus.INVALID_CREDENTIALS);
+      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.INVALID_CREDENTIALS);
 
       BBjSecurity.login(event);
 
@@ -305,7 +345,7 @@ class BBjSecurityTest {
 
     @Test
     void shouldShowTheToastAndEnableTheFormOnUnavailable() {
-      when(service.login("alice", "pw")).thenReturn(BBjLoginStatus.UNAVAILABLE);
+      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.UNAVAILABLE);
 
       BBjSecurity.login(event);
 
@@ -315,7 +355,7 @@ class BBjSecurityTest {
 
     @Test
     void shouldShowTheThrottledToastAndEnableTheFormOnThrottled() {
-      when(service.login("alice", "pw")).thenReturn(BBjLoginStatus.THROTTLED);
+      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.THROTTLED);
 
       BBjSecurity.login(event);
 
@@ -346,7 +386,7 @@ class BBjSecurityTest {
     @ParameterizedTest
     @EnumSource(value = BBjLoginStatus.class, names = {"INVALID_CREDENTIALS", "UNAVAILABLE"})
     void shouldNotOpenTheTargetLocationOtherwise(BBjLoginStatus status) {
-      when(service.login("alice", "pw")).thenReturn(status);
+      when(service.login("alice", "pw", null)).thenReturn(status);
 
       BBjSecurity.login(event);
 
@@ -356,10 +396,194 @@ class BBjSecurityTest {
     @Test
     void shouldEnableTheFormAndRethrowWhenTheServiceThrows() {
       IllegalStateException failure = new IllegalStateException("not available");
-      when(service.login("alice", "pw")).thenThrow(failure);
+      when(service.login("alice", "pw", null)).thenThrow(failure);
 
       IllegalStateException thrown =
           assertThrows(IllegalStateException.class, () -> BBjSecurity.login(event));
+
+      assertSame(failure, thrown);
+      verify(login).setEnabled(true);
+    }
+  }
+
+  @Nested
+  class TwoFactor {
+    private Login login;
+    private LoginSubmitEvent event;
+    private Function<Boolean, String> provider;
+
+    @BeforeEach
+    @SuppressWarnings("unchecked")
+    void setUp() {
+      registerService();
+      login = mock(Login.class);
+      event = mock(LoginSubmitEvent.class);
+      when(event.getComponent()).thenReturn(login);
+      when(event.getUsername()).thenReturn("alice");
+      when(event.getPassword()).thenReturn("pw");
+      provider = mock(Function.class);
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.webforj.bbj.security.BBjSecurityTest#getSignInsWithProvider")
+    void shouldNotAskForCodeWhenNoneIsRequired(
+        BiFunction<LoginSubmitEvent, Function<Boolean, String>, BBjLoginStatus> signIn) {
+      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.AUTHENTICATED);
+
+      BBjLoginStatus status = signIn.apply(event, provider);
+
+      assertEquals(BBjLoginStatus.AUTHENTICATED, status);
+      verifyNoInteractions(provider);
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.webforj.bbj.security.BBjSecurityTest#getSignInsWithProvider")
+    void shouldSignInWithTheCodeOfTheFirstAsk(
+        BiFunction<LoginSubmitEvent, Function<Boolean, String>, BBjLoginStatus> signIn) {
+      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.TWO_FACTOR_REQUIRED);
+      when(service.login("alice", "pw", "111111")).thenReturn(BBjLoginStatus.AUTHENTICATED);
+      when(provider.apply(false)).thenReturn("111111");
+
+      BBjLoginStatus status = signIn.apply(event, provider);
+
+      assertEquals(BBjLoginStatus.AUTHENTICATED, status);
+      verify(provider, times(1)).apply(false);
+      verify(provider, never()).apply(true);
+      verify(service).openTargetLocation();
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.webforj.bbj.security.BBjSecurityTest#getSignInsWithProvider")
+    void shouldAskAgainAfterRefusedCode(
+        BiFunction<LoginSubmitEvent, Function<Boolean, String>, BBjLoginStatus> signIn) {
+      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.TWO_FACTOR_REQUIRED);
+      when(service.login("alice", "pw", "111111")).thenReturn(BBjLoginStatus.TWO_FACTOR_REQUIRED);
+      when(service.login("alice", "pw", "222222")).thenReturn(BBjLoginStatus.AUTHENTICATED);
+      when(provider.apply(false)).thenReturn("111111");
+      when(provider.apply(true)).thenReturn("222222");
+
+      BBjLoginStatus status = signIn.apply(event, provider);
+
+      assertEquals(BBjLoginStatus.AUTHENTICATED, status);
+      InOrder order = inOrder(provider, service);
+      order.verify(service).login("alice", "pw", null);
+      order.verify(provider).apply(false);
+      order.verify(service).login("alice", "pw", "111111");
+      order.verify(provider).apply(true);
+      order.verify(service).login("alice", "pw", "222222");
+      order.verify(service).openTargetLocation();
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.webforj.bbj.security.BBjSecurityTest#getSignInsWithProvider")
+    void shouldStopWhenTheProviderGivesNoCode(
+        BiFunction<LoginSubmitEvent, Function<Boolean, String>, BBjLoginStatus> signIn) {
+      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.TWO_FACTOR_REQUIRED);
+
+      BBjLoginStatus status = signIn.apply(event, provider);
+
+      assertEquals(BBjLoginStatus.TWO_FACTOR_REQUIRED, status);
+      verify(provider, times(1)).apply(false);
+      verify(service, times(1)).login(any(), any(), any());
+      verify(service, never()).openTargetLocation();
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.webforj.bbj.security.BBjSecurityTest#getSignInsWithProvider")
+    void shouldStopAskingWhenTheSignInIsThrottled(
+        BiFunction<LoginSubmitEvent, Function<Boolean, String>, BBjLoginStatus> signIn) {
+      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.TWO_FACTOR_REQUIRED);
+      when(service.login("alice", "pw", "111111")).thenReturn(BBjLoginStatus.TWO_FACTOR_REQUIRED)
+          .thenReturn(BBjLoginStatus.THROTTLED);
+      when(provider.apply(false)).thenReturn("111111");
+      when(provider.apply(true)).thenReturn("111111");
+
+      BBjLoginStatus status = signIn.apply(event, provider);
+
+      assertEquals(BBjLoginStatus.THROTTLED, status);
+      verify(provider, times(1)).apply(false);
+      verify(provider, times(1)).apply(true);
+      verify(service, times(3)).login(any(), any(), any());
+      verify(service, never()).openTargetLocation();
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.webforj.bbj.security.BBjSecurityTest#getSignInsWithoutProvider")
+    void shouldEndAsTwoFactorRequiredWithoutProvider(
+        Function<LoginSubmitEvent, BBjLoginStatus> signIn) {
+      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.TWO_FACTOR_REQUIRED);
+
+      BBjLoginStatus status = signIn.apply(event);
+
+      assertEquals(BBjLoginStatus.TWO_FACTOR_REQUIRED, status);
+      verify(service, times(1)).login(any(), any(), any());
+      verify(service, never()).openTargetLocation();
+    }
+
+    @Test
+    void shouldEnableTheFormWithoutErrorOrToastWhenNoCodeIsGiven() {
+      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.TWO_FACTOR_REQUIRED);
+
+      BBjSecurity.login(event, provider);
+
+      verify(login, never()).setError(true);
+      verify(login).setEnabled(true);
+      verify(login, never()).close();
+      toastMock.verifyNoInteractions();
+    }
+
+    @Test
+    void shouldCloseTheFormWithoutEnablingItAfterCorrectCode() {
+      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.TWO_FACTOR_REQUIRED);
+      when(service.login("alice", "pw", "111111")).thenReturn(BBjLoginStatus.AUTHENTICATED);
+      when(provider.apply(false)).thenReturn("111111");
+
+      BBjSecurity.login(event, provider);
+
+      InOrder order = inOrder(login, service);
+      order.verify(login).close();
+      order.verify(service).openTargetLocation();
+      verify(login, never()).setEnabled(true);
+      verify(login, never()).setError(true);
+    }
+
+    @Test
+    void shouldShowTheThrottledToastAndEnableTheFormAfterRefusedCodes() {
+      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.TWO_FACTOR_REQUIRED);
+      when(service.login("alice", "pw", "111111")).thenReturn(BBjLoginStatus.THROTTLED);
+      when(provider.apply(false)).thenReturn("111111");
+
+      BBjSecurity.login(event, provider);
+
+      toastMock
+          .verify(() -> Toast.show("Too many sign in attempts. Try again later.", Theme.WARNING));
+      verify(login, never()).setError(true);
+      verify(login).setEnabled(true);
+      verify(login, never()).close();
+    }
+
+    @Test
+    void shouldEnableTheFormAndRethrowWhenTheProviderThrows() {
+      IllegalStateException failure = new IllegalStateException("dialog closed");
+      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.TWO_FACTOR_REQUIRED);
+      when(provider.apply(false)).thenThrow(failure);
+
+      IllegalStateException thrown =
+          assertThrows(IllegalStateException.class, () -> BBjSecurity.login(event, provider));
+
+      assertSame(failure, thrown);
+      verify(login).setEnabled(true);
+    }
+
+    @Test
+    void shouldEnableTheFormAndRethrowWhenTheSignInWithTheCodeThrows() {
+      IllegalStateException failure = new IllegalStateException("not available");
+      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.TWO_FACTOR_REQUIRED);
+      when(service.login("alice", "pw", "111111")).thenThrow(failure);
+      when(provider.apply(false)).thenReturn("111111");
+
+      IllegalStateException thrown =
+          assertThrows(IllegalStateException.class, () -> BBjSecurity.login(event, provider));
 
       assertSame(failure, thrown);
       verify(login).setEnabled(true);

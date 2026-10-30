@@ -11,6 +11,7 @@ import com.webforj.environment.ObjectTable;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -41,7 +42,8 @@ public final class BBjSecurity {
    * <p>
    * The sign in runs on the calling thread. After a successful sign in the app navigates to the
    * location the user requested before signing in, or to the default success path. When this method
-   * returns, the navigation has happened.
+   * returns, the navigation has happened. When the account needs a 2 factor code, the sign in ends
+   * as {@link BBjLoginStatus#TWO_FACTOR_REQUIRED}.
    * </p>
    *
    * @param userName the user name
@@ -51,10 +53,37 @@ public final class BBjSecurity {
    * @throws NullPointerException if any parameter is {@code null}
    */
   public static BBjLoginStatus login(String userName, String password) {
+    return login(userName, password, retry -> null);
+  }
+
+  /**
+   * Signs a user in and asks for a 2 factor code when the account needs one.
+   *
+   * <p>
+   * The sign in runs on the calling thread. It sends the password first. While BBj asks for a 2
+   * factor code or refuses the given one, the code provider is asked for a code and the sign in is
+   * repeated with it. The provider receives {@code false} on the first ask and {@code true} on each
+   * ask after a refused code. When the provider returns {@code null}, the sign in stops and ends as
+   * {@link BBjLoginStatus#TWO_FACTOR_REQUIRED}. A refused code counts as a failed sign in, so the
+   * sign in can end as {@link BBjLoginStatus#THROTTLED}. After a successful sign in the app
+   * navigates to the location the user requested before signing in, or to the default success path.
+   * When this method returns, the navigation has happened.
+   * </p>
+   *
+   * @param userName the user name
+   * @param password the password
+   * @param codeProvider gives the 2 factor code, or {@code null} to stop the sign in
+   *
+   * @return the status of the sign in
+   * @throws NullPointerException if any parameter is {@code null}
+   */
+  public static BBjLoginStatus login(String userName, String password,
+      Function<Boolean, String> codeProvider) {
     Objects.requireNonNull(userName, "userName");
     Objects.requireNonNull(password, "password");
+    Objects.requireNonNull(codeProvider, "codeProvider");
 
-    var status = getStatus(userName, password);
+    var status = getStatus(userName, password, codeProvider);
     if (status == BBjLoginStatus.AUTHENTICATED) {
       getService().ifPresent(BBjAuthenticationService::openTargetLocation);
     }
@@ -68,9 +97,11 @@ public final class BBjSecurity {
    * <p>
    * The component shows no error while the sign in runs. When the credentials are invalid the
    * component shows its error state. When the sign in is unavailable or refused after too many
-   * failed attempts a warning toast is shown. After a successful sign in the component is closed
-   * and then the app navigates to the location the user requested before signing in, or to the
-   * default success path. Otherwise the component is enabled again.
+   * failed attempts a warning toast is shown. When the account needs a 2 factor code, the sign in
+   * ends as {@link BBjLoginStatus#TWO_FACTOR_REQUIRED} with no error and no toast. After a
+   * successful sign in the component is closed and then the app navigates to the location the user
+   * requested before signing in, or to the default success path. Otherwise the component is enabled
+   * again.
    * </p>
    *
    * @param event the submit event of the component
@@ -80,13 +111,47 @@ public final class BBjSecurity {
    * @throws ClassCastException if the source of the event is not a {@link Login}
    */
   public static BBjLoginStatus login(LoginSubmitEvent event) {
+    return login(event, retry -> null);
+  }
+
+  /**
+   * Signs in the user whose credentials a {@link Login} component submitted and asks for a 2 factor
+   * code when the account needs one.
+   *
+   * <p>
+   * The component shows no error while the sign in runs. The sign in sends the password first.
+   * While BBj asks for a 2 factor code or refuses the given one, the code provider is asked for a
+   * code and the sign in is repeated with it. The provider receives {@code false} on the first ask
+   * and {@code true} on each ask after a refused code. When the provider returns {@code null}, the
+   * sign in stops and ends as {@link BBjLoginStatus#TWO_FACTOR_REQUIRED} with no error and no
+   * toast. A refused code counts as a failed sign in.
+   * </p>
+   *
+   * <p>
+   * When the credentials are invalid the component shows its error state. When the sign in is
+   * unavailable or refused after too many failed attempts a warning toast is shown. After a
+   * successful sign in the component is closed and then the app navigates to the location the user
+   * requested before signing in, or to the default success path. Otherwise the component is enabled
+   * again, also when the sign in or the code provider throws.
+   * </p>
+   *
+   * @param event the submit event of the component
+   * @param codeProvider gives the 2 factor code, or {@code null} to stop the sign in
+   *
+   * @return the status of the sign in
+   * @throws NullPointerException if any parameter is {@code null}
+   * @throws ClassCastException if the source of the event is not a {@link Login}
+   */
+  public static BBjLoginStatus login(LoginSubmitEvent event,
+      Function<Boolean, String> codeProvider) {
     Objects.requireNonNull(event, "event");
+    Objects.requireNonNull(codeProvider, "codeProvider");
 
     Login login = (Login) event.getComponent();
     login.setError(false);
     BBjLoginStatus status;
     try {
-      status = getStatus(event.getUsername(), event.getPassword());
+      status = getStatus(event.getUsername(), event.getPassword(), codeProvider);
     } catch (RuntimeException e) {
       login.setEnabled(true);
       throw e;
@@ -186,8 +251,26 @@ public final class BBjSecurity {
     return set -> set.contains(value);
   }
 
-  private static BBjLoginStatus getStatus(String userName, String password) {
-    return getService().map(it -> it.login(userName, password)).orElse(BBjLoginStatus.UNAVAILABLE);
+  private static BBjLoginStatus getStatus(String userName, String password,
+      Function<Boolean, String> codeProvider) {
+    var status = sendLogin(userName, password, null);
+    var retry = false;
+    while (status == BBjLoginStatus.TWO_FACTOR_REQUIRED) {
+      var code = codeProvider.apply(retry);
+      if (code == null || code.isBlank()) {
+        break;
+      }
+
+      retry = true;
+      status = sendLogin(userName, password, code);
+    }
+
+    return status;
+  }
+
+  private static BBjLoginStatus sendLogin(String userName, String password, String code) {
+    return getService().map(it -> it.login(userName, password, code))
+        .orElse(BBjLoginStatus.UNAVAILABLE);
   }
 
   private static Optional<BBjAuthenticationService> getService() {
