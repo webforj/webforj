@@ -2,6 +2,7 @@ package com.webforj.bbj.security;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,19 +27,58 @@ import com.webforj.router.RouteRenderer;
 import com.webforj.router.Router;
 import com.webforj.router.history.Location;
 import com.webforj.router.security.RouteSecurityObserver;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
 class BBjSecurityRegistrarTest {
+  private static final String TRUSTSTORE_PASSWORD = "truststore-pass";
+  private static final String ADMIN_KEYS = """
+      webforj.security.bbj.admin {
+        host = "%s"
+        ssl = %s
+        truststore = "%s"
+        truststore-password = "%s"
+      }
+      """;
+  private final Logger logger = Logger.getLogger("com.webforj.bbj.security");
+  private final List<LogRecord> records = new ArrayList<>();
+  private final Handler handler = new Handler() {
+    @Override
+    public void publish(LogRecord logRecord) {
+      records.add(logRecord);
+    }
 
+    @Override
+    public void flush() {
+      // Not implemented
+    }
+
+    @Override
+    public void close() {
+      // Not implemented
+    }
+  };
+  private Level previousLevel;
   private MockedStatic<Environment> environmentMock;
   private MockedStatic<Router> routerMock;
   private MockedStatic<ObjectTable> tableMock;
@@ -61,10 +101,15 @@ class BBjSecurityRegistrarTest {
     tableMock = mockStatic(ObjectTable.class);
     when(router.getRenderer()).thenReturn(renderer);
     registrar = new BBjSecurityRegistrar();
+    previousLevel = logger.getLevel();
+    logger.setLevel(Level.ALL);
+    logger.addHandler(handler);
   }
 
   @AfterEach
   void tearDown() {
+    logger.removeHandler(handler);
+    logger.setLevel(previousLevel);
     tableMock.close();
     routerMock.close();
     environmentMock.close();
@@ -287,5 +332,172 @@ class BBjSecurityRegistrarTest {
       assertEquals(List.of("BBjSessionObserver", "put", "restore", "RouteSecurityObserver"),
           events);
     }
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"localhost", "LOCALHOST", "127.0.0.1", "127.10.20.30", "127.255.255.254",
+      "::1", "0:0:0:0:0:0:0:1"})
+  void shouldRegisterTheServiceForLoopbackHostWithoutSsl(String host) {
+    when(environment.getConfig()).thenReturn(
+        ConfigFactory.parseString("webforj.security.bbj.admin.host = \"%s\"".formatted(host)));
+
+    registrar.onWillRun(app);
+
+    tableMock.verify(
+        () -> ObjectTable.put(eq(BBjSecurity.SERVICE_KEY), any(BBjAuthenticationService.class)));
+    assertTrue(getRecords(Level.SEVERE).isEmpty());
+  }
+
+  @Test
+  void shouldRegisterTheServiceForLoopbackHostWithSslAndWithoutTruststore() {
+    when(environment.getConfig()).thenReturn(ConfigFactory.parseString("""
+        webforj.security.bbj.admin {
+          host = "localhost"
+          ssl = true
+        }
+        """));
+
+    registrar.onWillRun(app);
+
+    tableMock.verify(
+        () -> ObjectTable.put(eq(BBjSecurity.SERVICE_KEY), any(BBjAuthenticationService.class)));
+    assertTrue(getRecords(Level.SEVERE).isEmpty());
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"10.0.0.7", "128.0.0.1", "127.1", "::2", "bbj.example.com"})
+  void shouldRegisterNoServiceForRemoteHostWithoutSsl(String host) {
+    when(environment.getConfig()).thenReturn(
+        ConfigFactory.parseString("webforj.security.bbj.admin.host = \"%s\"".formatted(host)));
+
+    registrar.onWillRun(app);
+
+    tableMock.verify(() -> ObjectTable.put(any(String.class), any()), never());
+    verify(renderer).addObserver(any(RouteSecurityObserver.class));
+    assertEquals(
+        List.of("Sign in is unavailable because webforj.security.bbj.admin.host is not a "
+            + "loopback address, so webforj.security.bbj.admin.ssl must be true"),
+        getRecords(Level.SEVERE));
+  }
+
+  @Test
+  void shouldRegisterNoServiceForRemoteHostWithoutTruststore() {
+    when(environment.getConfig()).thenReturn(ConfigFactory.parseString("""
+        webforj.security.bbj.admin {
+          host = "bbj.example.com"
+          ssl = true
+        }
+        """));
+
+    registrar.onWillRun(app);
+
+    tableMock.verify(() -> ObjectTable.put(any(String.class), any()), never());
+    verify(renderer).addObserver(any(RouteSecurityObserver.class));
+    assertEquals(
+        List.of("Sign in is unavailable because webforj.security.bbj.admin.host is not a "
+            + "loopback address, so webforj.security.bbj.admin.truststore must be set"),
+        getRecords(Level.SEVERE));
+  }
+
+  @Test
+  void shouldRegisterTheServiceForRemoteHostWithSslAndLoadableTruststore() throws Exception {
+    String truststore = getFixturePath("truststore.p12");
+    when(environment.getConfig()).thenReturn(ConfigFactory.parseString(
+        ADMIN_KEYS.formatted("bbj.example.com", "true", truststore, TRUSTSTORE_PASSWORD)));
+
+    registrar.onWillRun(app);
+
+    tableMock.verify(
+        () -> ObjectTable.put(eq(BBjSecurity.SERVICE_KEY), any(BBjAuthenticationService.class)));
+    assertTrue(getRecords(Level.SEVERE).isEmpty());
+    assertTrue(getRecords(Level.INFO)
+        .contains("BBj Admin API at bbj.example.com:2002 with ssl true and truststore set"));
+  }
+
+  @ParameterizedTest
+  @MethodSource("unreadableTruststores")
+  void shouldRegisterNoServiceWhenTheTruststoreCannotBeRead(String host, String fixture,
+      String password) throws Exception {
+    String truststore = getFixturePath(fixture);
+    when(environment.getConfig()).thenReturn(
+        ConfigFactory.parseString(ADMIN_KEYS.formatted(host, "true", truststore, password)));
+
+    registrar.onWillRun(app);
+
+    tableMock.verify(() -> ObjectTable.put(any(String.class), any()), never());
+    verify(renderer).addObserver(any(RouteSecurityObserver.class));
+    assertEquals(
+        List.of("Sign in is unavailable because webforj.security.bbj.admin.truststore "
+            + "cannot be read with webforj.security.bbj.admin.truststore-password"),
+        getRecords(Level.SEVERE));
+  }
+
+  @ParameterizedTest
+  @MethodSource("missingTruststores")
+  void shouldRegisterNoServiceWhenTheTruststoreIsNoReadableFile(String host, String fixture)
+      throws Exception {
+    String truststore = getFixturePath("truststore.p12").replace("truststore.p12", fixture);
+    when(environment.getConfig()).thenReturn(ConfigFactory
+        .parseString(ADMIN_KEYS.formatted(host, "true", truststore, TRUSTSTORE_PASSWORD)));
+
+    registrar.onWillRun(app);
+
+    tableMock.verify(() -> ObjectTable.put(any(String.class), any()), never());
+    verify(renderer).addObserver(any(RouteSecurityObserver.class));
+    assertEquals(List.of("Sign in is unavailable because webforj.security.bbj.admin.truststore "
+        + "must name a readable file"), getRecords(Level.SEVERE));
+  }
+
+  @Test
+  void shouldLogNeitherTheTruststoreNorItsPasswordWhenTheTruststoreCannotBeRead() throws Exception {
+    String truststore = getFixturePath("truststore.p12");
+    when(environment.getConfig()).thenReturn(ConfigFactory.parseString(
+        ADMIN_KEYS.formatted("bbj.example.com", "true", truststore, "wrong-store-secret")));
+
+    registrar.onWillRun(app);
+
+    List<String> messages = records.stream().map(new SimpleFormatter()::formatMessage).toList();
+    assertFalse(messages.isEmpty());
+    assertTrue(messages.stream().noneMatch(
+        message -> message.contains("wrong-store-secret") || message.contains(truststore)));
+  }
+
+  @Test
+  void shouldWarnThatTheTruststoreIsIgnoredWithoutSsl() throws Exception {
+    String truststore = getFixturePath("truststore.p12");
+    when(environment.getConfig()).thenReturn(ConfigFactory
+        .parseString(ADMIN_KEYS.formatted("localhost", "false", truststore, TRUSTSTORE_PASSWORD)));
+
+    registrar.onWillRun(app);
+
+    tableMock.verify(
+        () -> ObjectTable.put(eq(BBjSecurity.SERVICE_KEY), any(BBjAuthenticationService.class)));
+    assertTrue(getRecords(Level.WARNING)
+        .contains("The configuration key webforj.security.bbj.admin.truststore is ignored while "
+            + "webforj.security.bbj.admin.ssl is false"));
+  }
+
+  private List<String> getRecords(Level level) {
+    SimpleFormatter formatter = new SimpleFormatter();
+
+    return records.stream().filter(it -> it.getLevel() == level).map(formatter::formatMessage)
+        .toList();
+  }
+
+  private static String getFixturePath(String name) throws URISyntaxException {
+    return Path.of(
+        BBjSecurityRegistrarTest.class.getResource("/fixtures/admin-truststore/" + name).toURI())
+        .toString();
+  }
+
+  private static Stream<Arguments> unreadableTruststores() {
+    return Stream.of(Arguments.of("bbj.example.com", "truststore.p12", "wrong-store-secret"),
+        Arguments.of("localhost", "truststore.p12", "wrong-store-secret"),
+        Arguments.of("bbj.example.com", "not-a-truststore.txt", TRUSTSTORE_PASSWORD));
+  }
+
+  private static Stream<Arguments> missingTruststores() {
+    return Stream.of(Arguments.of("bbj.example.com", "absent.p12"),
+        Arguments.of("localhost", "absent.p12"), Arguments.of("bbj.example.com", ""));
   }
 }
