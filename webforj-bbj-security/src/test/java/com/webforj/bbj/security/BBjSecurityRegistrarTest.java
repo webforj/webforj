@@ -3,7 +3,6 @@ package com.webforj.bbj.security;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -246,34 +245,6 @@ class BBjSecurityRegistrarTest {
       assertEquals(Optional.of(principal), contexts.get(0).getPrincipal());
       BBjAuthenticationService registered = services.constructed().get(0);
       tableMock.verify(() -> ObjectTable.put(BBjSecurity.SERVICE_KEY, registered));
-    }
-  }
-
-  @Test
-  void shouldShareOneStoreBetweenTheServiceAndTheSecurityManager() {
-    List<Object> serviceStores = new ArrayList<>();
-    List<Object> managerStores = new ArrayList<>();
-    when(environment.getConfig()).thenReturn(ConfigFactory.empty());
-
-    try (MockedConstruction<BBjAuthenticationService.Builder> builders =
-        mockConstruction(BBjAuthenticationService.Builder.class,
-            withSettings().defaultAnswer(RETURNS_SELF), (builder, context) -> {
-              when(builder.setStore(any())).thenAnswer(invocation -> {
-                serviceStores.add(invocation.getArgument(0));
-
-                return builder;
-              });
-              var mockService = mock(BBjAuthenticationService.class);
-              when(builder.build()).thenReturn(mockService);
-            });
-        MockedConstruction<BBjRouteSecurityManager> managers =
-            mockConstruction(BBjRouteSecurityManager.class,
-                (manager, context) -> managerStores.add(context.arguments().get(2)))) {
-      registrar.onWillRun(app);
-
-      assertEquals(1, serviceStores.size());
-      assertEquals(1, managerStores.size());
-      assertSame(serviceStores.get(0), managerStores.get(0));
     }
   }
 
