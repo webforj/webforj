@@ -17,5 +17,8 @@ public enum BBjLoginStatus {
   UNAVAILABLE,
 
   /** The sign in was refused without asking BBj, because of too many failed attempts. */
-  THROTTLED
+  THROTTLED,
+
+  /** The account needs a 2 factor code and no accepted code was given. */
+  TWO_FACTOR_REQUIRED
 }
