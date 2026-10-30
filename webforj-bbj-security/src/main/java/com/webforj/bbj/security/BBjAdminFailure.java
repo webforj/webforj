@@ -39,8 +39,11 @@ public final class BBjAdminFailure extends RuntimeException {
    * @since 26.03
    */
   public enum Kind {
-    /** The user name, the password or the 2 factor code was refused. */
+    /** The user name or the password was refused. */
     INVALID_CREDENTIALS,
+
+    /** The 2 factor code was refused. */
+    INVALID_CODE,
 
     /** The account needs a 2 factor code that was not given. */
     TWO_FACTOR_REQUIRED,
