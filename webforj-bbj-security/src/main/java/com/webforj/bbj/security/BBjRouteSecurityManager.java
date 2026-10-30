@@ -1,6 +1,5 @@
 package com.webforj.bbj.security;
 
-import com.webforj.bbj.security.store.BBjSecurityStore;
 import com.webforj.component.Component;
 import com.webforj.router.NavigationContext;
 import com.webforj.router.NavigationOptions;
@@ -40,7 +39,6 @@ import java.util.ServiceLoader;
 public final class BBjRouteSecurityManager extends AbstractRouteSecurityManager {
   private static final Logger logger = System.getLogger(BBjRouteSecurityManager.class.getName());
   private final BBjRouteSecurityConfiguration configuration;
-  private final BBjSecurityStore store;
   private final BBjRouteSecurityContext securityContext;
 
   /**
@@ -49,17 +47,14 @@ public final class BBjRouteSecurityManager extends AbstractRouteSecurityManager 
    *
    * @param configuration the route security configuration
    * @param securityContext the route security context
-   * @param store the store of the location requested before authentication
    *
-   * @throws NullPointerException if {@code configuration}, {@code securityContext} or {@code store}
-   *         is null
+   * @throws NullPointerException if {@code configuration} or {@code securityContext} is null
    * @throws ServiceConfigurationError if a listed evaluator cannot be loaded
    */
   BBjRouteSecurityManager(BBjRouteSecurityConfiguration configuration,
-      BBjRouteSecurityContext securityContext, BBjSecurityStore store) {
+      BBjRouteSecurityContext securityContext) {
     this.configuration = Objects.requireNonNull(configuration, "configuration");
     this.securityContext = Objects.requireNonNull(securityContext, "securityContext");
-    this.store = Objects.requireNonNull(store, "store");
 
     registerEvaluator(new DenyAllEvaluator(), 1);
     registerEvaluator(new AnonymousAccessEvaluator(), 2);
@@ -68,41 +63,6 @@ public final class BBjRouteSecurityManager extends AbstractRouteSecurityManager 
     registerEvaluator(new RolesAllowedEvaluator(), 5);
     registerEvaluator(new BBjPermissionEvaluator(), 6);
     loadEvaluators();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void clearPreAuthenticationLocation() {
-    store.clearLocation();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Optional<Location> getPreAuthenticationLocation() {
-    return store.readLocation();
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * <p>
-   * The requested location is saved on every denial before the user is sent on.
-   * </p>
-   */
-  @Override
-  public void onAccessDenied(RouteAccessDecision decision, NavigationContext context) {
-    logger.log(Level.DEBUG, "Access denied: type={0}, reason={1}", decision.getDenialType(),
-        decision.getReason());
-
-    if (context != null && context.getLocation() != null) {
-      store.saveLocation(context.getLocation());
-    }
-
-    onPostAccessDenied(decision, context);
   }
 
   /**

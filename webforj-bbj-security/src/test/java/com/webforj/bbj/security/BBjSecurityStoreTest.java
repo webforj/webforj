@@ -1,4 +1,4 @@
-package com.webforj.bbj.security.store;
+package com.webforj.bbj.security;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,7 +39,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockedStatic;
 
-class BBjHttpSecurityStoreTest {
+class BBjSecurityStoreTest {
   private static final String SESSION_KEY = "webforj-bbj-session";
   private static final String LOCATION_KEY = AbstractRouteSecurityManager.PRE_AUTH_LOCATION_KEY;
   private static final Instant NOW = Instant.parse("2026-01-01T00:00:00Z");
@@ -47,7 +47,7 @@ class BBjHttpSecurityStoreTest {
   private MockedStatic<Environment> environmentMock;
   private Environment environment;
   private Map<String, Object> attributes;
-  private BBjHttpSecurityStore store;
+  private BBjSecurityStore store;
   private BBjSession session;
 
   @BeforeEach
@@ -70,7 +70,7 @@ class BBjHttpSecurityStoreTest {
     when(environment.getSessionAccessor()).thenReturn(Optional.of(accessor));
     environmentMock = mockStatic(Environment.class);
     environmentMock.when(Environment::getCurrent).thenReturn(environment);
-    store = new BBjHttpSecurityStore(Clock.fixed(NOW, ZoneOffset.UTC));
+    store = new BBjSecurityStore(Clock.fixed(NOW, ZoneOffset.UTC));
     session = new BBjSession(new BBjPrincipal("alice", Set.of("ADMIN"), Set.of("read")),
         "token-secret-123", NOW.plusSeconds(3600));
   }
@@ -105,7 +105,7 @@ class BBjHttpSecurityStoreTest {
     void shouldAcceptTheConstructorWithTheSystemClock() {
       BBjSession later = new BBjSession(session.getPrincipal(), "token-secret-123",
           Instant.now().plusSeconds(3600));
-      BBjHttpSecurityStore system = new BBjHttpSecurityStore();
+      BBjSecurityStore system = new BBjSecurityStore();
 
       system.saveSession(later);
 
@@ -162,17 +162,6 @@ class BBjHttpSecurityStoreTest {
       store.clearSession();
 
       assertFalse(attributes.containsKey(SESSION_KEY));
-    }
-  }
-
-  @Nested
-  class SaveLocation {
-
-    @Test
-    void shouldSaveTheFullUriUnderTheRequestedLocationKey() {
-      store.saveLocation(new Location("/protected?x=1#top"));
-
-      assertEquals("/protected?x=1#top", attributes.get(LOCATION_KEY));
     }
   }
 
@@ -253,15 +242,6 @@ class BBjHttpSecurityStoreTest {
       when(environment.getSessionAccessor()).thenReturn(accessor);
 
       assertDoesNotThrow(store::clearSession);
-    }
-
-    @ParameterizedTest
-    @MethodSource("unavailableAccessors")
-    void shouldNotThrowOnSave(Optional<HttpSession.Accessor> accessor) {
-      when(environment.getSessionAccessor()).thenReturn(accessor);
-      Location location = new Location("/protected");
-
-      assertDoesNotThrow(() -> store.saveLocation(location));
     }
 
     @ParameterizedTest
