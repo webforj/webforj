@@ -437,19 +437,6 @@ class BBjSecurityConfigurationPropertiesTest {
       assertNull(properties.getDenyPath());
     }
 
-    @Test
-    void shouldKeepTheAdminDefaultsWhenTheSubtreeIsAbsent() {
-      Config config = ConfigFactory.empty();
-
-      properties = new BBjSecurityConfigurationProperties(config);
-
-      assertEquals("127.0.0.1", properties.getAdminHost());
-      assertEquals(2002, properties.getAdminPort());
-      assertEquals(10, properties.getAdminTimeoutSeconds());
-      assertEquals(30, properties.getTokenMinutes());
-      assertEquals("/", properties.getDefaultSuccessPath());
-      assertTrue(properties.getReturnAfterLogin());
-    }
 
     @Test
     void shouldKeepTheAdminDefaultsForEveryKeyThatIsAbsent() {
