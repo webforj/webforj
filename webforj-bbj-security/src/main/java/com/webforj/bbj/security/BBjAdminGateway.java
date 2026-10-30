@@ -89,42 +89,40 @@ public final class BBjAdminGateway {
    * Signs a user in and opens a session for them.
    *
    * <p>
-   * The call blocks until the Admin API answers or the time limit passes. The principal of the
-   * session carries the user name the Admin API reports, the names of the BBj security groups of
-   * the user as roles, and the names of the {@link BBjPermissions} the user holds as authorities.
-   * The session expires after the configured token lifetime, counted from the start of the call.
-   * When the user name, the group names or the permissions cannot be read after the token was
-   * issued, the token is not revoked and expires on its own.
+   * The call blocks until the Admin API answers or the time limit passes. The time limit does not
+   * apply to the sign in with a 2 factor code, which waits until the Admin API answers. The
+   * principal of the session carries the user name the Admin API reports, the names of the BBj
+   * security groups of the user as roles, and the names of the {@link BBjPermissions} the user
+   * holds as authorities. The session expires after the configured token lifetime, counted from the
+   * start of the call. When the user name, the group names or the permissions cannot be read after
+   * the token was issued, the token is not revoked and expires on its own.
    * </p>
    *
    * @param userName the user name
    * @param password the password
+   * @param code the 2 factor code, or {@code null} to sign in with the password only
    *
    * @return the opened session
-   * @throws NullPointerException if any parameter is {@code null}
-   * @throws BBjAdminFailure with the kind {@code INVALID_CREDENTIALS} when the credentials are
-   *         refused, {@code TWO_FACTOR_REQUIRED} when the account needs a 2 factor code,
+   * @throws NullPointerException if {@code userName} or {@code password} is {@code null}
+   * @throws BBjAdminFailure with the kind {@code INVALID_CREDENTIALS} when the user name or the
+   *         password is refused, {@code INVALID_CODE} when the 2 factor code is refused,
+   *         {@code TWO_FACTOR_REQUIRED} when the account needs a 2 factor code,
    *         {@code TOKEN_REJECTED} when the server refuses the issued token, and
    *         {@code UNAVAILABLE} when the Admin API cannot be reached or fails otherwise
    */
-  BBjSession openSession(String userName, String password) {
+  BBjSession openSession(String userName, String password, String code) {
     Objects.requireNonNull(userName, "userName");
     Objects.requireNonNull(password, "password");
     Instant start = clock.instant();
-    String token;
-    try {
-      token = BBjAdminFactory.getAuthToken(getAddress(), port, false, timeoutMillis, userName,
-          password, Locale.ENGLISH, null, null, tokenLifetime.toMinutes(), Map.of());
-    } catch (BBjAdminException | UnknownHostException | RuntimeException e) {
-      throw toFailure(e, password);
-    }
+    String token =
+        code == null ? fetchToken(userName, password) : fetchToken(userName, password, code);
 
     try {
       var principal = sendCall(token, admin -> readPrincipal(admin, token));
 
       return new BBjSession(principal, token, start.plus(tokenLifetime));
     } catch (BBjAdminException | UnknownHostException | RuntimeException e) {
-      BBjAdminFailure failure = toFailure(e, password, token);
+      BBjAdminFailure failure = toFailure(CallKind.TOKEN, e, password, code, token);
       logger.log(Level.WARNING, CLOSED_TOKEN_NOTE);
 
       throw failure;
@@ -156,7 +154,7 @@ public final class BBjAdminGateway {
         return null;
       });
     } catch (BBjAdminException | UnknownHostException | RuntimeException e) {
-      throw toFailure(e, token);
+      throw toFailure(CallKind.TOKEN, e, token);
     }
   }
 
@@ -168,7 +166,7 @@ public final class BBjAdminGateway {
     try {
       return sendCall(token, BBjAdminBase::getUser);
     } catch (BBjAdminException | UnknownHostException | RuntimeException e) {
-      throw toFailure(e, token);
+      throw toFailure(CallKind.TOKEN, e, token);
     }
   }
 
@@ -187,12 +185,41 @@ public final class BBjAdminGateway {
 
       return new BBjSession(principal, newToken, expiry);
     } catch (Exception e) {
-      throw toFailure(e, oldToken, newToken);
+      throw toFailure(CallKind.TOKEN, e, oldToken, newToken);
     }
   }
 
   private InetAddress getAddress() throws UnknownHostException {
     return InetAddress.getByName(host);
+  }
+
+  private String fetchToken(String userName, String password) {
+    try {
+      return BBjAdminFactory.getAuthToken(getAddress(), port, false, timeoutMillis, userName,
+          password, Locale.ENGLISH, null, null, tokenLifetime.toMinutes(), Map.of());
+    } catch (BBjAdminException | UnknownHostException | RuntimeException e) {
+      throw toFailure(CallKind.SIGN_IN, e, password);
+    }
+  }
+
+  private String fetchToken(String userName, String password, String code) {
+    BBjAdminBase admin;
+    try {
+      admin =
+          BBjAdminFactory.getBBjAdminWith2FA(getAddress(), port, false, userName, password, code);
+    } catch (BBjAdminException | UnknownHostException | RuntimeException e) {
+      throw toFailure(CallKind.SIGN_IN, e, password, code);
+    }
+
+    String codeToken = null;
+    try {
+      codeToken = admin.getTokenValue();
+      return admin.renewToken(codeToken, tokenLifetime.toMinutes());
+    } catch (BBjAdminException | RuntimeException e) {
+      throw toFailure(CallKind.SIGN_IN, e, password, code, codeToken);
+    } finally {
+      admin.release();
+    }
   }
 
   private <T> T sendCall(String token, AdminCall<? extends T> call)
@@ -221,10 +248,10 @@ public final class BBjAdminGateway {
     return new BBjPrincipal(name, Set.copyOf(groups), Set.copyOf(authorities));
   }
 
-  private static BBjAdminFailure toFailure(Throwable cause, String... secrets) {
+  private static BBjAdminFailure toFailure(CallKind callKind, Throwable cause, String... secrets) {
     List<Throwable> causes = readCauses(Objects.requireNonNull(cause, "cause"));
-    BBjAdminFailure.Kind kind =
-        cause instanceof BBjAdminException ? findKind(causes) : BBjAdminFailure.Kind.UNAVAILABLE;
+    BBjAdminFailure.Kind kind = cause instanceof BBjAdminException ? findKind(callKind, causes)
+        : BBjAdminFailure.Kind.UNAVAILABLE;
 
     return new BBjAdminFailure(kind, getPrefix(kind) + ": " + createDetail(causes, secrets));
   }
@@ -241,12 +268,12 @@ public final class BBjAdminGateway {
     return causes;
   }
 
-  private static BBjAdminFailure.Kind findKind(List<Throwable> causes) {
+  private static BBjAdminFailure.Kind findKind(CallKind callKind, List<Throwable> causes) {
     List<String> messages = causes.stream().map(Throwable::getMessage).filter(Objects::nonNull)
         .map(message -> message.toLowerCase(Locale.ROOT)).toList();
     boolean refusedLogin = messages.stream()
         .anyMatch(message -> message.stripLeading().startsWith(REFUSED_LOGIN_PREFIX));
-    if (refusedLogin) {
+    if (refusedLogin && callKind == CallKind.TOKEN) {
       return BBjAdminFailure.Kind.TOKEN_REJECTED;
     }
 
@@ -257,12 +284,13 @@ public final class BBjAdminGateway {
       }
     }
 
-    return BBjAdminFailure.Kind.UNAVAILABLE;
+    return refusedLogin ? BBjAdminFailure.Kind.TOKEN_REJECTED : BBjAdminFailure.Kind.UNAVAILABLE;
   }
 
   private static String getPrefix(BBjAdminFailure.Kind kind) {
     return switch (kind) {
       case INVALID_CREDENTIALS -> "BBj Admin API refused the credentials";
+      case INVALID_CODE -> "BBj Admin API refused the 2-factor code";
       case TWO_FACTOR_REQUIRED -> "BBj Admin API requires a 2-factor code";
       case TOKEN_REJECTED -> "BBj Admin API refused the token";
       case UNAVAILABLE -> "BBj Admin API is unavailable";
@@ -322,11 +350,15 @@ public final class BBjAdminGateway {
     T apply(BBjAdminBase admin) throws BBjAdminException;
   }
 
+  private enum CallKind {
+    SIGN_IN, TOKEN
+  }
+
   private enum KnownMessage {
     INVALID_PASSWORD("invalid username/password",
         BBjAdminFailure.Kind.INVALID_CREDENTIALS), INVALID_CODE(
             "invalid 2-factor authentication code",
-            BBjAdminFailure.Kind.INVALID_CREDENTIALS), CODE_REQUIRED(
+            BBjAdminFailure.Kind.INVALID_CODE), CODE_REQUIRED(
                 "2-factor authentication code required",
                 BBjAdminFailure.Kind.TWO_FACTOR_REQUIRED), TOKEN_EXPIRED(
                     "authentication token is expired",

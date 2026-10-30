@@ -56,6 +56,16 @@ class BBjAuthenticationServiceThrottleTest {
     }
 
     @Test
+    void shouldRefuseCodeAtTheUserNameLimitWithoutCallingBBj() {
+      when(fixture.throttleStore.readAttempts(Kind.USER_NAME, "alice")).thenReturn(5);
+
+      BBjLoginStatus status = fixture.login("alice", PASSWORD, "123456");
+
+      assertEquals(BBjLoginStatus.THROTTLED, status);
+      verifyNoInteractions(fixture.gateway);
+    }
+
+    @Test
     void shouldLetUserNameBelowItsLimitThrough() {
       when(fixture.throttleStore.readAttempts(Kind.USER_NAME, "alice")).thenReturn(4);
       when(fixture.throttleStore.readAttempts(Kind.ADDRESS, ADDRESS)).thenReturn(19);
@@ -179,9 +189,20 @@ class BBjAuthenticationServiceThrottleTest {
       verify(fixture.throttleStore).addFailure(Kind.ADDRESS, ADDRESS);
     }
 
+    @Test
+    void shouldCountRefusedCodeForTheUserNameAndTheAddress() {
+      fixture.whenOpenSession("alice", PASSWORD, "123456")
+          .thenThrow(new BBjAdminFailure(BBjAdminFailure.Kind.INVALID_CODE, "refused"));
+
+      fixture.login("alice", PASSWORD, "123456");
+
+      verify(fixture.throttleStore).addFailure(Kind.USER_NAME, "alice");
+      verify(fixture.throttleStore).addFailure(Kind.ADDRESS, ADDRESS);
+    }
+
     @ParameterizedTest
     @EnumSource(value = BBjAdminFailure.Kind.class, mode = Mode.EXCLUDE,
-        names = "INVALID_CREDENTIALS")
+        names = {"INVALID_CREDENTIALS", "INVALID_CODE"})
     void shouldNotCountOtherFailures(BBjAdminFailure.Kind kind) {
       fixture.whenOpenSession("alice", PASSWORD).thenThrow(new BBjAdminFailure(kind, "not served"));
 

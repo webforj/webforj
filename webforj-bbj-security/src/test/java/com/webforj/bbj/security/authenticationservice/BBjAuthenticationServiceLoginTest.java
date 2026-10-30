@@ -77,6 +77,16 @@ class BBjAuthenticationServiceLoginTest {
     }
 
     @Test
+    void shouldAuthenticateWithTheCode() {
+      fixture.whenOpenSession("alice", PASSWORD, "123456").thenReturn(fixture.session);
+
+      BBjLoginStatus status = fixture.login("alice", PASSWORD, "123456");
+
+      assertEquals(BBjLoginStatus.AUTHENTICATED, status);
+      assertSame(fixture.principal, fixture.currentUser().orElseThrow());
+    }
+
+    @Test
     void shouldCloseTheTokenOfTheSessionItReplaces() {
       BBjSession replacing =
           new BBjSession(fixture.principal, "tok-def-456", Instant.parse("2026-01-01T14:00:00Z"));
@@ -174,7 +184,8 @@ class BBjAuthenticationServiceLoginTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Kind.class, mode = Mode.EXCLUDE, names = "INVALID_CREDENTIALS")
+    @EnumSource(value = Kind.class, mode = Mode.EXCLUDE,
+        names = {"INVALID_CREDENTIALS", "INVALID_CODE", "TWO_FACTOR_REQUIRED"})
     void shouldGiveUnavailableWithOneWarning(Kind kind) {
       fixture.whenOpenSession("alice", PASSWORD).thenThrow(new BBjAdminFailure(kind, "not served"));
 
@@ -182,6 +193,18 @@ class BBjAuthenticationServiceLoginTest {
 
       assertEquals(BBjLoginStatus.UNAVAILABLE, status);
       assertEquals(1, fixture.getWarnings().size());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Kind.class, names = {"TWO_FACTOR_REQUIRED", "INVALID_CODE"})
+    void shouldGiveTwoFactorRequiredWithoutWarning(Kind kind) {
+      fixture.whenOpenSession("alice", PASSWORD, "123456")
+          .thenThrow(new BBjAdminFailure(kind, "code refused"));
+
+      BBjLoginStatus status = fixture.login("alice", PASSWORD, "123456");
+
+      assertEquals(BBjLoginStatus.TWO_FACTOR_REQUIRED, status);
+      assertEquals(List.of(), fixture.getWarnings());
     }
 
     @ParameterizedTest

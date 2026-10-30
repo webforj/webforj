@@ -162,7 +162,20 @@ public final class SignInFixture implements AutoCloseable {
    * @return the status of the sign in
    */
   public BBjLoginStatus login(String userName, String password) {
-    return service.login(userName, password);
+    return service.login(userName, password, null);
+  }
+
+  /**
+   * Signs in through the service with a 2 factor code.
+   *
+   * @param userName the user name
+   * @param password the password
+   * @param code the 2 factor code
+   *
+   * @return the status of the sign in
+   */
+  public BBjLoginStatus login(String userName, String password, String code) {
+    return service.login(userName, password, code);
   }
 
   /** Opens the target location through the service. */
@@ -212,7 +225,21 @@ public final class SignInFixture implements AutoCloseable {
    * @return the stubbing
    */
   public OngoingStubbing<BBjSession> whenOpenSession(String userName, String password) {
-    return when(gateway.openSession(userName, password));
+    return when(gateway.openSession(userName, password, null));
+  }
+
+  /**
+   * Stubs the opening of a session with a 2 factor code on the gateway.
+   *
+   * @param userName the user name
+   * @param password the password
+   * @param code the 2 factor code
+   *
+   * @return the stubbing
+   */
+  public OngoingStubbing<BBjSession> whenOpenSession(String userName, String password,
+      String code) {
+    return when(gateway.openSession(userName, password, code));
   }
 
   /**
@@ -265,7 +292,7 @@ public final class SignInFixture implements AutoCloseable {
    * @param password the password
    */
   public void verifyOpenSession(VerificationMode mode, String userName, String password) {
-    verify(gateway, mode).openSession(userName, password);
+    verify(gateway, mode).openSession(userName, password, null);
   }
 
   /**
