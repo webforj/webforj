@@ -32,7 +32,6 @@ public final class BBjSecurity {
    */
   public static final String SERVICE_KEY = BBjAuthenticationService.class.getName();
   private static final String UNAVAILABLE_TEXT = "Cannot sign in right now.";
-  private static final String THROTTLED_TEXT = "Too many sign in attempts. Try again later.";
 
   private BBjSecurity() {}
 
@@ -64,10 +63,9 @@ public final class BBjSecurity {
    * factor code or refuses the given one, the code provider is asked for a code and the sign in is
    * repeated with it. The provider receives {@code false} on the first ask and {@code true} on each
    * ask after a refused code. When the provider returns {@code null}, the sign in stops and ends as
-   * {@link BBjLoginStatus#TWO_FACTOR_REQUIRED}. A refused code counts as a failed sign in, so the
-   * sign in can end as {@link BBjLoginStatus#THROTTLED}. After a successful sign in the app
-   * navigates to the location the user requested before signing in, or to the default success path.
-   * When this method returns, the navigation has happened.
+   * {@link BBjLoginStatus#TWO_FACTOR_REQUIRED}. After a successful sign in the app navigates to the
+   * location the user requested before signing in, or to the default success path. When this method
+   * returns, the navigation has happened.
    * </p>
    *
    * @param userName the user name
@@ -96,12 +94,11 @@ public final class BBjSecurity {
    *
    * <p>
    * The component shows no error while the sign in runs. When the credentials are invalid the
-   * component shows its error state. When the sign in is unavailable or refused after too many
-   * failed attempts a warning toast is shown. When the account needs a 2 factor code, the sign in
-   * ends as {@link BBjLoginStatus#TWO_FACTOR_REQUIRED} with no error and no toast. After a
-   * successful sign in the component is closed and then the app navigates to the location the user
-   * requested before signing in, or to the default success path. Otherwise the component is enabled
-   * again.
+   * component shows its error state. When the sign in is unavailable a warning toast is shown. When
+   * the account needs a 2 factor code, the sign in ends as
+   * {@link BBjLoginStatus#TWO_FACTOR_REQUIRED} with no error and no toast. After a successful sign
+   * in the component is closed and then the app navigates to the location the user requested before
+   * signing in, or to the default success path. Otherwise the component is enabled again.
    * </p>
    *
    * @param event the submit event of the component
@@ -124,15 +121,15 @@ public final class BBjSecurity {
    * code and the sign in is repeated with it. The provider receives {@code false} on the first ask
    * and {@code true} on each ask after a refused code. When the provider returns {@code null}, the
    * sign in stops and ends as {@link BBjLoginStatus#TWO_FACTOR_REQUIRED} with no error and no
-   * toast. A refused code counts as a failed sign in.
+   * toast.
    * </p>
    *
    * <p>
    * When the credentials are invalid the component shows its error state. When the sign in is
-   * unavailable or refused after too many failed attempts a warning toast is shown. After a
-   * successful sign in the component is closed and then the app navigates to the location the user
-   * requested before signing in, or to the default success path. Otherwise the component is enabled
-   * again, also when the sign in or the code provider throws.
+   * unavailable a warning toast is shown. After a successful sign in the component is closed and
+   * then the app navigates to the location the user requested before signing in, or to the default
+   * success path. Otherwise the component is enabled again, also when the sign in or the code
+   * provider throws.
    * </p>
    *
    * @param event the submit event of the component
@@ -161,8 +158,6 @@ public final class BBjSecurity {
       login.setError(true);
     } else if (status == BBjLoginStatus.UNAVAILABLE) {
       Toast.show(UNAVAILABLE_TEXT, Theme.WARNING);
-    } else if (status == BBjLoginStatus.THROTTLED) {
-      Toast.show(THROTTLED_TEXT, Theme.WARNING);
     }
 
     if (status == BBjLoginStatus.AUTHENTICATED) {

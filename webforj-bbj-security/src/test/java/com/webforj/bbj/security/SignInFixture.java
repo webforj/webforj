@@ -12,7 +12,6 @@ import com.webforj.bbj.security.model.BBjLoginStatus;
 import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.bbj.security.model.BBjSession;
 import com.webforj.bbj.security.store.BBjSecurityStore;
-import com.webforj.bbj.security.store.BBjThrottleStore;
 import com.webforj.router.history.Location;
 import java.time.Instant;
 import java.util.List;
@@ -21,7 +20,6 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -36,8 +34,6 @@ import org.mockito.verification.VerificationMode;
 public final class SignInFixture implements AutoCloseable {
   /** The password the tests sign in with. */
   public static final String PASSWORD = "s3cret-pw";
-  /** The client address the address supplier gives unless a test changes it. */
-  public static final String ADDRESS = "10.0.0.7";
   /** The location opened after a sign in when nothing was requested. */
   public static final Location DEFAULT_LOCATION = new Location("/home");
   /** The location a user requested before the sign in. */
@@ -51,10 +47,6 @@ public final class SignInFixture implements AutoCloseable {
   public final BBjAdminGateway gateway = mock(BBjAdminGateway.class);
   /** The mocked store, which reads back the session saved last until it is cleared. */
   public final BBjSecurityStore store = mock(BBjSecurityStore.class);
-  /** The mocked throttle store, which reads no failed attempts unless a test stubs it. */
-  public final BBjThrottleStore throttleStore = mock(BBjThrottleStore.class);
-  /** The mocked supplier of the client address, which gives {@link #ADDRESS}. */
-  public final Supplier<String> addressSupplier = createAddressSupplier();
   /** The configuration properties the service reads. */
   public final BBjSecurityConfigurationProperties properties =
       new BBjSecurityConfigurationProperties(ConfigFactory.empty());
@@ -140,8 +132,7 @@ public final class SignInFixture implements AutoCloseable {
   /** Creates a builder of the service with all values of the fixture. */
   public BBjAuthenticationService.Builder createBuilder() {
     return BBjAuthenticationService.builder().setGateway(gateway).setStore(store)
-        .setProperties(properties).setConfiguration(configuration).setNavigator(navigator)
-        .setThrottleStore(throttleStore).setAddressSupplier(addressSupplier);
+        .setProperties(properties).setConfiguration(configuration).setNavigator(navigator);
   }
 
   /**
@@ -353,13 +344,5 @@ public final class SignInFixture implements AutoCloseable {
   @SuppressWarnings("unchecked")
   private static Consumer<Location> createNavigator() {
     return mock(Consumer.class);
-  }
-
-  @SuppressWarnings("unchecked")
-  private static Supplier<String> createAddressSupplier() {
-    Supplier<String> target = mock(Supplier.class);
-    when(target.get()).thenReturn(ADDRESS);
-
-    return target;
   }
 }
