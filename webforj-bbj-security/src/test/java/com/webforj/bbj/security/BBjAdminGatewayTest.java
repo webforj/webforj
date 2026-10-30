@@ -59,6 +59,11 @@ class BBjAdminGatewayTest {
   private static final String TOKEN = "tokenvalue1234";
   private static final String RENEWED_TOKEN = "renewedtoken5678";
   private static final String UNAVAILABLE = "BBj Admin API is unavailable: ";
+  private static final String CODE = "654321";
+  private static final String CODE_TOKEN = "codetoken9012";
+  private static final String WRONG_CODE_TEXT =
+      "Server failed login: Authentication failed for user "
+          + "'alice'. Authentication failed. Invalid 2-factor authentication code.";
   private final Clock clock = Clock.fixed(NOW, ZoneOffset.UTC);
   private MockedStatic<BBjAdminFactory> factory;
   private BBjAdminBase admin;
@@ -105,10 +110,33 @@ class BBjAdminGatewayTest {
         null, Locale.ENGLISH, null, null)).thenReturn(renewedAdmin);
   }
 
+  private void setCodeAdmin(BBjAdminBase codeAdmin) throws BBjAdminException {
+    when(codeAdmin.getTokenValue()).thenReturn(CODE_TOKEN);
+    when(codeAdmin.renewToken(CODE_TOKEN, 30L)).thenReturn(TOKEN);
+    factory.when(
+        () -> BBjAdminFactory.getBBjAdminWith2FA(loopback, 2002, false, "alice", PASSWORD, CODE))
+        .thenReturn(codeAdmin);
+  }
+
+  private void setCodeAdminFailure(Throwable failure) {
+    factory.when(
+        () -> BBjAdminFactory.getBBjAdminWith2FA(loopback, 2002, false, "alice", PASSWORD, CODE))
+        .thenThrow(failure);
+  }
+
   private BBjAdminFailure openFailingSession(Throwable failure) {
     setTokenFailure(failure);
 
-    return assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD));
+    return assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD, null));
+  }
+
+  private BBjAdminFailure readFailingUserName(Throwable failure) throws BBjAdminException {
+    setAdmin(TOKEN);
+    when(admin.getUser()).thenThrow(failure);
+    BBjSession session =
+        new BBjSession(new BBjPrincipal("alice", Set.of(), Set.of()), TOKEN, NOW.plusSeconds(60));
+
+    return assertThrows(BBjAdminFailure.class, () -> gateway.readUserName(session));
   }
 
   private static BBjAdminList<String> createGroupNames(List<String> names) {
@@ -130,12 +158,22 @@ class BBjAdminGatewayTest {
         Arguments.of(new IllegalStateException("boom"), Kind.UNAVAILABLE));
   }
 
+  private static Stream<Arguments> getCodeSignInFailures() {
+    return Stream.of(Arguments.of(new BBjAdminException(WRONG_CODE_TEXT), Kind.INVALID_CODE),
+        Arguments.of(
+            new BBjAdminException("Unable to authenticate user. Invalid username/password."),
+            Kind.INVALID_CREDENTIALS),
+        Arguments.of(new BBjAdminException("Server did not accept the connection"),
+            Kind.UNAVAILABLE),
+        Arguments.of(new IllegalStateException("boom"), Kind.UNAVAILABLE));
+  }
+
   private static Stream<Arguments> getKnownTexts() {
     return Stream.of(
         Arguments.of("Unable to authenticate user. Invalid username/password.",
             Kind.INVALID_CREDENTIALS),
         Arguments.of("Unable to authenticate user. Authentication failed. "
-            + "Invalid 2-factor authentication code.", Kind.INVALID_CREDENTIALS),
+            + "Invalid 2-factor authentication code.", Kind.INVALID_CODE),
         Arguments.of("Unable to authenticate user. Authentication failed. "
             + "2-factor authentication code required.", Kind.TWO_FACTOR_REQUIRED),
         Arguments.of("Server failed login: Authentication token is expired", Kind.TOKEN_REJECTED),
@@ -144,6 +182,7 @@ class BBjAdminGatewayTest {
         Arguments.of("Authentication token is expired", Kind.TOKEN_REJECTED),
         Arguments.of("Unable to verify authentication token", Kind.TOKEN_REJECTED),
         Arguments.of("Server failed login: some reason nobody knows", Kind.TOKEN_REJECTED),
+        Arguments.of(WRONG_CODE_TEXT, Kind.INVALID_CODE),
         Arguments.of("Unable to communicate with server.  Server may have gone down.",
             Kind.UNAVAILABLE),
         Arguments.of("Server did not accept the connection", Kind.UNAVAILABLE),
@@ -161,6 +200,9 @@ class BBjAdminGatewayTest {
         Arguments.of("2-factor authentication code required",
             "BBj Admin API requires a 2-factor "
                 + "code: BBjAdminException: 2-factor authentication code required"),
+        Arguments.of("Invalid 2-factor authentication code",
+            "BBj Admin API refused the 2-factor code: "
+                + "BBjAdminException: Invalid 2-factor authentication code"),
         Arguments.of("Server failed login: Authentication token is expired",
             "BBj Admin API refused the token: BBjAdminException: "
                 + "Server failed login: Authentication token is expired"),
@@ -177,7 +219,7 @@ class BBjAdminGatewayTest {
       when(admin.getUser()).thenReturn("Alice");
       when(admin.getSecurityGroupNames()).thenReturn(createGroupNames(List.of()));
 
-      BBjSession session = gateway.openSession("alice", PASSWORD);
+      BBjSession session = gateway.openSession("alice", PASSWORD, null);
 
       assertEquals("Alice", session.getPrincipal().getUserName());
       assertEquals(TOKEN, session.getToken());
@@ -200,7 +242,7 @@ class BBjAdminGatewayTest {
       when(admin.getUser()).thenReturn("alice");
       when(admin.getSecurityGroupNames()).thenReturn(createGroupNames(List.of()));
 
-      BBjSession session = configured.openSession("alice", PASSWORD);
+      BBjSession session = configured.openSession("alice", PASSWORD, null);
 
       assertEquals(NOW.plusSeconds(45 * 60), session.getExpiresAt());
       factory.verify(() -> BBjAdminFactory.getAuthToken(loopback, 2003, false, 7000, "alice",
@@ -218,7 +260,7 @@ class BBjAdminGatewayTest {
       when(admin.getUser()).thenReturn("alice");
       when(admin.getSecurityGroupNames()).thenReturn(createGroupNames(groups));
 
-      BBjPrincipal principal = gateway.openSession("alice", PASSWORD).getPrincipal();
+      BBjPrincipal principal = gateway.openSession("alice", PASSWORD, null).getPrincipal();
 
       assertEquals(roles, principal.getRoles());
       assertTrue(principal.getAuthorities().isEmpty());
@@ -234,7 +276,7 @@ class BBjAdminGatewayTest {
       when(permissions.getBoolean("admin-access")).thenReturn(true);
       when(permissions.getBoolean("server-config")).thenReturn(true);
 
-      BBjPrincipal principal = gateway.openSession("alice", PASSWORD).getPrincipal();
+      BBjPrincipal principal = gateway.openSession("alice", PASSWORD, null).getPrincipal();
 
       assertEquals(Set.of("admin-access", "server-config"), principal.getAuthorities());
       verify(admin, times(1)).getSingleUserPermissions(TOKEN);
@@ -248,9 +290,120 @@ class BBjAdminGatewayTest {
       when(admin.getSecurityGroupNames()).thenReturn(createGroupNames(List.of()));
       when(permissions.getBoolean(anyString())).thenReturn(false);
 
-      BBjPrincipal principal = gateway.openSession("alice", PASSWORD).getPrincipal();
+      BBjPrincipal principal = gateway.openSession("alice", PASSWORD, null).getPrincipal();
 
       assertEquals(Set.of(), principal.getAuthorities());
+    }
+
+    @Test
+    void shouldSendThePlainPasswordWithoutCode() throws Exception {
+      setToken(TOKEN);
+      setAdmin(TOKEN);
+      when(admin.getUser()).thenReturn("alice");
+      when(admin.getSecurityGroupNames()).thenReturn(createGroupNames(List.of()));
+
+      gateway.openSession("alice", PASSWORD, null);
+
+      factory.verify(() -> BBjAdminFactory.getAuthToken(loopback, 2002, false, 10000, "alice",
+          PASSWORD, Locale.ENGLISH, null, null, 30L, Map.of()));
+      factory.verify(() -> BBjAdminFactory.getBBjAdmin(loopback, 2002, false, 10000, TOKEN, null,
+          Locale.ENGLISH, null, null));
+      factory.verifyNoMoreInteractions();
+    }
+
+    @Test
+    void shouldSignInWithTheCodeAndKeepTheRenewedToken() throws Exception {
+      BBjAdminBase codeAdmin = mock(BBjAdminBase.class);
+      setCodeAdmin(codeAdmin);
+      setAdmin(TOKEN);
+      when(admin.getUser()).thenReturn("Alice");
+      when(admin.getSecurityGroupNames()).thenReturn(createGroupNames(List.of("Admins")));
+
+      BBjSession session = gateway.openSession("alice", PASSWORD, CODE);
+
+      assertEquals(TOKEN, session.getToken());
+      assertEquals(NOW.plusSeconds(30 * 60), session.getExpiresAt());
+      assertEquals("Alice", session.getPrincipal().getUserName());
+      assertEquals(Set.of("Admins"), session.getPrincipal().getRoles());
+      verify(codeAdmin, times(1)).renewToken(CODE_TOKEN, 30L);
+      verify(codeAdmin, times(1)).release();
+      verify(codeAdmin, never()).getUser();
+      verify(admin, times(1)).getSingleUserPermissions(TOKEN);
+      verify(admin, times(1)).release();
+      factory.verify(
+          () -> BBjAdminFactory.getBBjAdminWith2FA(loopback, 2002, false, "alice", PASSWORD, CODE));
+      factory.verify(() -> BBjAdminFactory.getBBjAdmin(loopback, 2002, false, 10000, TOKEN, null,
+          Locale.ENGLISH, null, null));
+      factory.verifyNoMoreInteractions();
+    }
+
+    @Test
+    void shouldSignInWithTheCodeWithTheConfiguredValues() throws Exception {
+      BBjSecurityConfigurationProperties properties =
+          new BBjSecurityConfigurationProperties(ConfigFactory.empty());
+      properties.setAdminPort(2003);
+      properties.setTokenMinutes(45);
+      BBjAdminGateway configured = new BBjAdminGateway(properties, clock);
+      BBjAdminBase codeAdmin = mock(BBjAdminBase.class);
+      when(codeAdmin.getTokenValue()).thenReturn(CODE_TOKEN);
+      when(codeAdmin.renewToken(CODE_TOKEN, 45L)).thenReturn(TOKEN);
+      factory.when(
+          () -> BBjAdminFactory.getBBjAdminWith2FA(loopback, 2003, false, "alice", PASSWORD, CODE))
+          .thenReturn(codeAdmin);
+      factory.when(() -> BBjAdminFactory.getBBjAdmin(loopback, 2003, false, 10000, TOKEN, null,
+          Locale.ENGLISH, null, null)).thenReturn(admin);
+      when(admin.getUser()).thenReturn("alice");
+      when(admin.getSecurityGroupNames()).thenReturn(createGroupNames(List.of()));
+
+      BBjSession session = configured.openSession("alice", PASSWORD, CODE);
+
+      assertEquals(TOKEN, session.getToken());
+      assertEquals(NOW.plusSeconds(45 * 60), session.getExpiresAt());
+      verify(codeAdmin, times(1)).release();
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.webforj.bbj.security.BBjAdminGatewayTest#getCodeSignInFailures")
+    void shouldClassifyFailureOfTheSignInWithCode(Throwable cause, Kind kind) {
+      setCodeAdminFailure(cause);
+
+      BBjAdminFailure failure =
+          assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD, CODE));
+
+      assertEquals(kind, failure.getKind());
+      factory.verify(() -> BBjAdminFactory.getBBjAdmin(loopback, 2002, false, 10000, TOKEN, null,
+          Locale.ENGLISH, null, null), never());
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.webforj.bbj.security.BBjAdminGatewayTest#getGroupNameFailures")
+    void shouldReleaseTheCodeConnectionWhenTheTokenCannotBeRenewed(Throwable cause, Kind kind)
+        throws Exception {
+      BBjAdminBase codeAdmin = mock(BBjAdminBase.class);
+      setCodeAdmin(codeAdmin);
+      when(codeAdmin.renewToken(CODE_TOKEN, 30L)).thenThrow(cause);
+
+      BBjAdminFailure failure =
+          assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD, CODE));
+
+      assertEquals(kind, failure.getKind());
+      verify(codeAdmin, times(1)).release();
+      factory.verify(() -> BBjAdminFactory.getBBjAdmin(loopback, 2002, false, 10000, TOKEN, null,
+          Locale.ENGLISH, null, null), never());
+    }
+
+    @Test
+    void shouldHideThePasswordTheCodeAndTheTokenWhenTheTokenCannotBeRenewed() throws Exception {
+      BBjAdminBase codeAdmin = mock(BBjAdminBase.class);
+      setCodeAdmin(codeAdmin);
+      when(codeAdmin.renewToken(CODE_TOKEN, 30L)).thenThrow(
+          new BBjAdminException("bad " + PASSWORD + " and " + CODE + " and " + CODE_TOKEN));
+
+      BBjAdminFailure failure =
+          assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD, CODE));
+
+      assertEquals(UNAVAILABLE + "BBjAdminException: bad *** and *** and ***",
+          failure.getMessage());
     }
 
     @Test
@@ -399,14 +552,14 @@ class BBjAdminGatewayTest {
     void shouldRefuseNullUserName() {
       String password = PASSWORD;
 
-      assertThrows(NullPointerException.class, () -> gateway.openSession(null, password));
+      assertThrows(NullPointerException.class, () -> gateway.openSession(null, password, null));
     }
 
     @Test
     void shouldRefuseNullPassword() {
       String userName = "alice";
 
-      assertThrows(NullPointerException.class, () -> gateway.openSession(userName, null));
+      assertThrows(NullPointerException.class, () -> gateway.openSession(userName, null, null));
     }
 
     @Test
@@ -455,19 +608,41 @@ class BBjAdminGatewayTest {
     }
 
     @Test
-    void shouldPreferTheRefusedLoginPrefixToKnownText() {
+    void shouldPreferTheKnownTextToTheRefusedLoginPrefix() {
       BBjAdminException exception = new BBjAdminException(
           "Server failed login: Authentication failed. Invalid username/password.");
 
-      assertEquals(Kind.TOKEN_REJECTED, openFailingSession(exception).getKind());
+      assertEquals(Kind.INVALID_CREDENTIALS, openFailingSession(exception).getKind());
     }
 
     @Test
-    void shouldPreferTheRefusedLoginPrefixOfCause() {
+    void shouldPreferTheKnownTextToTheRefusedLoginPrefixOfCause() {
       BBjAdminException exception = new BBjAdminException("Invalid username/password",
           new IOException("Server failed login: nothing known"));
 
-      assertEquals(Kind.TOKEN_REJECTED, openFailingSession(exception).getKind());
+      assertEquals(Kind.INVALID_CREDENTIALS, openFailingSession(exception).getKind());
+    }
+
+    @Test
+    void shouldPreferTheRefusedLoginPrefixToKnownText() throws Exception {
+      BBjAdminException exception = new BBjAdminException(
+          "Server failed login: Authentication failed. Invalid username/password.");
+
+      assertEquals(Kind.TOKEN_REJECTED, readFailingUserName(exception).getKind());
+    }
+
+    @Test
+    void shouldPreferTheRefusedLoginPrefixOfCause() throws Exception {
+      BBjAdminException exception = new BBjAdminException("Invalid username/password",
+          new IOException("Server failed login: nothing known"));
+
+      assertEquals(Kind.TOKEN_REJECTED, readFailingUserName(exception).getKind());
+    }
+
+    @Test
+    void shouldPreferTheRefusedLoginPrefixToTheCodeTextOfTokenCall() throws Exception {
+      assertEquals(Kind.TOKEN_REJECTED,
+          readFailingUserName(new BBjAdminException(WRONG_CODE_TEXT)).getKind());
     }
 
     @Test
@@ -500,8 +675,8 @@ class BBjAdminGatewayTest {
       properties.setAdminHost("no such host.invalid");
       BBjAdminGateway unresolved = new BBjAdminGateway(properties, clock);
 
-      BBjAdminFailure failure =
-          assertThrows(BBjAdminFailure.class, () -> unresolved.openSession("alice", PASSWORD));
+      BBjAdminFailure failure = assertThrows(BBjAdminFailure.class,
+          () -> unresolved.openSession("alice", PASSWORD, null));
 
       assertEquals(Kind.UNAVAILABLE, failure.getKind());
     }
@@ -546,6 +721,18 @@ class BBjAdminGatewayTest {
 
       assertEquals(UNAVAILABLE + "BBjAdminException: bad *** again ***", failure.getMessage());
       assertFalse(failure.toString().contains(PASSWORD));
+    }
+
+    @Test
+    void shouldReplaceThePasswordAndTheCodeOfRefusedCode() {
+      setCodeAdminFailure(new BBjAdminException(WRONG_CODE_TEXT + " " + PASSWORD + " " + CODE));
+
+      BBjAdminFailure failure =
+          assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD, CODE));
+
+      assertEquals(Kind.INVALID_CODE, failure.getKind());
+      assertEquals("BBj Admin API refused the 2-factor code: BBjAdminException: " + WRONG_CODE_TEXT
+          + " *** ***", failure.getMessage());
     }
 
     @Test
@@ -662,7 +849,7 @@ class BBjAdminGatewayTest {
           .thenThrow(new BBjAdminException("Server failed login: Authentication token is expired"));
 
       BBjAdminFailure failure =
-          assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD));
+          assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD, null));
 
       assertEquals(Kind.TOKEN_REJECTED, failure.getKind());
       verify(admin, times(1)).release();
@@ -677,7 +864,7 @@ class BBjAdminGatewayTest {
       when(admin.getUser()).thenThrow(new BBjAdminException("bad " + TOKEN + " and " + PASSWORD));
 
       BBjAdminFailure failure =
-          assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD));
+          assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD, null));
 
       assertEquals(UNAVAILABLE + "BBjAdminException: bad *** and ***", failure.getMessage());
       assertTrue(records.stream().noneMatch(it -> String.valueOf(it.getMessage()).contains(TOKEN)
@@ -693,7 +880,7 @@ class BBjAdminGatewayTest {
       when(admin.getUser()).thenThrow(new IllegalStateException("boom"));
 
       BBjAdminFailure failure =
-          assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD));
+          assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD, null));
 
       assertEquals(Kind.UNAVAILABLE, failure.getKind());
       verify(admin, times(1)).release();
@@ -707,7 +894,7 @@ class BBjAdminGatewayTest {
       when(admin.getSecurityGroupNames()).thenThrow(cause);
 
       BBjAdminFailure failure =
-          assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD));
+          assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD, null));
 
       assertEquals(kind, failure.getKind());
       verify(admin, times(1)).release();
@@ -721,7 +908,7 @@ class BBjAdminGatewayTest {
           .thenThrow(new BBjAdminException("bad " + TOKEN + " and " + PASSWORD));
 
       BBjAdminFailure failure =
-          assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD));
+          assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD, null));
 
       assertEquals(UNAVAILABLE + "BBjAdminException: bad *** and ***", failure.getMessage());
       assertTrue(records.stream().noneMatch(it -> String.valueOf(it.getMessage()).contains(TOKEN)
@@ -737,7 +924,7 @@ class BBjAdminGatewayTest {
       when(permissions.getBoolean(anyString())).thenThrow(cause);
 
       BBjAdminFailure failure =
-          assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD));
+          assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD, null));
 
       assertEquals(kind, failure.getKind());
       verify(admin, times(1)).release();
@@ -752,7 +939,7 @@ class BBjAdminGatewayTest {
           .thenThrow(new BBjAdminException("bad " + TOKEN + " and " + PASSWORD));
 
       BBjAdminFailure failure =
-          assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD));
+          assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD, null));
 
       assertEquals(UNAVAILABLE + "BBjAdminException: bad *** and ***", failure.getMessage());
       assertTrue(records.stream().noneMatch(it -> String.valueOf(it.getMessage()).contains(TOKEN)
@@ -765,10 +952,58 @@ class BBjAdminGatewayTest {
           Locale.ENGLISH, null, null)).thenThrow(new BBjAdminException("host " + TOKEN));
 
       BBjAdminFailure failure =
-          assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD));
+          assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD, null));
 
       assertEquals(Kind.UNAVAILABLE, failure.getKind());
       assertEquals(UNAVAILABLE + "BBjAdminException: host ***", failure.getMessage());
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.webforj.bbj.security.BBjAdminGatewayTest#getGroupNameFailures")
+    void shouldReleaseBothConnectionsAndWarnOnceWhenTheCodeTokenCannotBeRead(Throwable cause,
+        Kind kind) throws Exception {
+      BBjAdminBase codeAdmin = mock(BBjAdminBase.class);
+      setCodeAdmin(codeAdmin);
+      when(admin.getUser()).thenThrow(cause);
+
+      BBjAdminFailure failure =
+          assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD, CODE));
+
+      assertEquals(kind, failure.getKind());
+      verify(codeAdmin, times(1)).release();
+      verify(admin, times(1)).release();
+      assertEquals(1, records.stream().filter(it -> it.getLevel() == Level.WARNING).count());
+    }
+
+    @Test
+    void shouldPreferTheRefusedLoginPrefixWhenTheCodeTokenCannotBeRead() throws Exception {
+      BBjAdminBase codeAdmin = mock(BBjAdminBase.class);
+      setCodeAdmin(codeAdmin);
+      when(admin.getUser()).thenThrow(new BBjAdminException(
+          "Server failed login: Authentication failed. Invalid username/password."));
+
+      BBjAdminFailure failure =
+          assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD, CODE));
+
+      assertEquals(Kind.TOKEN_REJECTED, failure.getKind());
+    }
+
+    @Test
+    void shouldHideThePasswordTheCodeAndTheTokenWhenTheCodeTokenCannotBeRead() throws Exception {
+      BBjAdminBase codeAdmin = mock(BBjAdminBase.class);
+      setCodeAdmin(codeAdmin);
+      when(admin.getUser())
+          .thenThrow(new BBjAdminException("bad " + TOKEN + " and " + PASSWORD + " and " + CODE));
+
+      BBjAdminFailure failure =
+          assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD, CODE));
+
+      assertEquals(UNAVAILABLE + "BBjAdminException: bad *** and *** and ***",
+          failure.getMessage());
+      assertTrue(records.stream()
+          .noneMatch(it -> String.valueOf(it.getMessage()).contains(TOKEN)
+              || String.valueOf(it.getMessage()).contains(PASSWORD)
+              || String.valueOf(it.getMessage()).contains(CODE)));
     }
 
     @ParameterizedTest

@@ -82,19 +82,25 @@ public final class BBjAuthenticationService {
    * <p>
    * A user name or a client address that reached its limit of failed sign ins inside the throttle
    * window is refused as throttled without asking BBj. With an address limit of 0, or when the
-   * client address cannot be read, only the user name limit applies. Refused credentials count one
-   * failed sign in for the user name and for the address. A successful sign in clears the count of
-   * the user name and keeps the count of the address. When the counts cannot be read, the sign in
-   * fails as unavailable.
+   * client address cannot be read, only the user name limit applies. Refused credentials and a
+   * refused 2 factor code count one failed sign in for the user name and for the address. A
+   * successful sign in clears the count of the user name and keeps the count of the address. When
+   * the counts cannot be read, the sign in fails as unavailable.
+   * </p>
+   *
+   * <p>
+   * When the account needs a 2 factor code that was not given, or the given code is refused, the
+   * sign in ends as {@link BBjLoginStatus#TWO_FACTOR_REQUIRED}.
    * </p>
    *
    * @param userName the user name
    * @param password the password
+   * @param code the 2 factor code, or {@code null} to sign in with the password only
    *
    * @return the status of the sign in
-   * @throws NullPointerException if any parameter is {@code null}
+   * @throws NullPointerException if {@code userName} or {@code password} is {@code null}
    */
-  BBjLoginStatus login(String userName, String password) {
+  BBjLoginStatus login(String userName, String password, String code) {
     Objects.requireNonNull(userName, "userName");
     Objects.requireNonNull(password, "password");
 
@@ -111,9 +117,10 @@ public final class BBjAuthenticationService {
 
     BBjSession opened;
     try {
-      opened = gateway.openSession(userName, password);
+      opened = gateway.openSession(userName, password, code);
     } catch (BBjAdminFailure e) {
-      if (e.getKind() == Kind.INVALID_CREDENTIALS) {
+      var kind = e.getKind();
+      if (kind == Kind.INVALID_CREDENTIALS || kind == Kind.INVALID_CODE) {
         addFailure(userName, address);
       }
 
@@ -347,12 +354,7 @@ public final class BBjAuthenticationService {
   private BBjLoginStatus applyFailure(BBjAdminFailure failure) {
     return switch (failure.getKind()) {
       case INVALID_CREDENTIALS -> BBjLoginStatus.INVALID_CREDENTIALS;
-      case TWO_FACTOR_REQUIRED -> {
-        logger.log(Level.WARNING,
-            "Two factor authentication is required for this account and is not supported yet");
-
-        yield BBjLoginStatus.UNAVAILABLE;
-      }
+      case TWO_FACTOR_REQUIRED, INVALID_CODE -> BBjLoginStatus.TWO_FACTOR_REQUIRED;
       case TOKEN_REJECTED, UNAVAILABLE -> {
         logger.log(Level.WARNING, "The BBj Admin API could not complete the sign in: {0}",
             failure.getMessage());
