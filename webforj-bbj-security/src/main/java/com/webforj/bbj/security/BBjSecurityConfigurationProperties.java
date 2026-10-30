@@ -57,12 +57,6 @@ public final class BBjSecurityConfigurationProperties {
   private static final String ADMIN_SSL = ADMIN_PREFIX + "ssl";
   private static final String ADMIN_TRUSTSTORE = ADMIN_PREFIX + "truststore";
   private static final String ADMIN_TRUSTSTORE_PASSWORD = ADMIN_PREFIX + "truststore-password";
-  // Throttle Keys
-  private static final String THROTTLE_PREFIX = BBJ_PREFIX + "throttle.";
-  private static final String THROTTLE_MAX_ATTEMPTS = THROTTLE_PREFIX + "max-attempts";
-  private static final String THROTTLE_ADDRESS_MAX_ATTEMPTS =
-      THROTTLE_PREFIX + "address-max-attempts";
-  private static final String THROTTLE_WINDOW_SECONDS = THROTTLE_PREFIX + "window-seconds";
 
   private final boolean configResolved;
   private Boolean enabled = true;
@@ -78,9 +72,6 @@ public final class BBjSecurityConfigurationProperties {
   private String defaultSuccessPath = "/";
   private Boolean returnAfterLogin = true;
   private String logoutSuccessPath;
-  private Integer throttleMaxAttempts = 5;
-  private Integer throttleAddressMaxAttempts = 20;
-  private Integer throttleWindowSeconds = 300;
   private Boolean adminSsl = false;
   private String adminTruststore;
   private String adminTruststorePassword;
@@ -96,7 +87,6 @@ public final class BBjSecurityConfigurationProperties {
       readBBjKeys(properties, resolved);
       readTokenKeys(properties, resolved);
       readAdminKeys(properties, resolved);
-      readThrottleKeys(properties, resolved);
 
       return true;
     } catch (RuntimeException e) {
@@ -145,21 +135,6 @@ public final class BBjSecurityConfigurationProperties {
     if (config.hasPath(RENEW_BEFORE_MINUTES)) {
       readInt(config, RENEW_BEFORE_MINUTES, 0, properties.getTokenMinutes())
           .ifPresent(properties::setRenewBeforeMinutes);
-    }
-  }
-
-  private static void readThrottleKeys(BBjSecurityConfigurationProperties properties,
-      Config config) {
-    if (config.hasPath(THROTTLE_MAX_ATTEMPTS)) {
-      readInt(config, THROTTLE_MAX_ATTEMPTS, 1, 1000).ifPresent(properties::setThrottleMaxAttempts);
-    }
-    if (config.hasPath(THROTTLE_ADDRESS_MAX_ATTEMPTS)) {
-      readInt(config, THROTTLE_ADDRESS_MAX_ATTEMPTS, 0, 10000)
-          .ifPresent(properties::setThrottleAddressMaxAttempts);
-    }
-    if (config.hasPath(THROTTLE_WINDOW_SECONDS)) {
-      readInt(config, THROTTLE_WINDOW_SECONDS, 10, 86400)
-          .ifPresent(properties::setThrottleWindowSeconds);
     }
   }
 
@@ -468,60 +443,6 @@ public final class BBjSecurityConfigurationProperties {
    */
   public void setLogoutSuccessPath(String logoutSuccessPath) {
     this.logoutSuccessPath = logoutSuccessPath;
-  }
-
-  /**
-   * Gets the failed sign ins of one user name after which the user name is refused.
-   *
-   * @return the failed sign ins inside one window, 1 to 1000
-   */
-  public Integer getThrottleMaxAttempts() {
-    return throttleMaxAttempts;
-  }
-
-  /**
-   * Sets the failed sign ins of one user name after which the user name is refused.
-   *
-   * @param throttleMaxAttempts the failed sign ins inside one window
-   */
-  public void setThrottleMaxAttempts(Integer throttleMaxAttempts) {
-    this.throttleMaxAttempts = throttleMaxAttempts;
-  }
-
-  /**
-   * Gets the failed sign ins from one client address after which the address is refused.
-   *
-   * @return the failed sign ins inside one window, 0 to 10000, 0 for no address limit
-   */
-  public Integer getThrottleAddressMaxAttempts() {
-    return throttleAddressMaxAttempts;
-  }
-
-  /**
-   * Sets the failed sign ins from one client address after which the address is refused.
-   *
-   * @param throttleAddressMaxAttempts the failed sign ins inside one window, 0 for no address limit
-   */
-  public void setThrottleAddressMaxAttempts(Integer throttleAddressMaxAttempts) {
-    this.throttleAddressMaxAttempts = throttleAddressMaxAttempts;
-  }
-
-  /**
-   * Gets the seconds a counter of failed sign ins counts from its first failed sign in.
-   *
-   * @return the seconds of one window, 10 to 86400
-   */
-  public Integer getThrottleWindowSeconds() {
-    return throttleWindowSeconds;
-  }
-
-  /**
-   * Sets the seconds a counter of failed sign ins counts from its first failed sign in.
-   *
-   * @param throttleWindowSeconds the seconds of one window
-   */
-  public void setThrottleWindowSeconds(Integer throttleWindowSeconds) {
-    this.throttleWindowSeconds = throttleWindowSeconds;
   }
 
   /**
