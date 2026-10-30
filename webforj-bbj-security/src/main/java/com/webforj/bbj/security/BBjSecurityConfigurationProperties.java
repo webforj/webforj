@@ -35,7 +35,7 @@ public final class BBjSecurityConfigurationProperties {
   private static final String LOCALHOST = "localhost";
   private static final String PREFIX = "webforj.security.";
   // Security Keys
-  private static final String ENABLED = PREFIX + "enabled";
+  private static final String ENABLED_KEY = PREFIX + "enabled";
   private static final String SECURE_BY_DEFAULT = PREFIX + "secure-by-default";
   private static final String AUTHENTICATION_PATH = PREFIX + "authentication-path";
   private static final String DENY_PATH = PREFIX + "deny-path";
@@ -96,8 +96,8 @@ public final class BBjSecurityConfigurationProperties {
 
   private static void readSecurityKeys(BBjSecurityConfigurationProperties properties,
       Config config) {
-    if (config.hasPath(ENABLED)) {
-      properties.setEnabled(readBoolean(config, ENABLED));
+    if (config.hasPath(ENABLED_KEY)) {
+      properties.setEnabled(readBoolean(config, ENABLED_KEY));
     }
 
     if (config.hasPath(SECURE_BY_DEFAULT)) {
