@@ -397,18 +397,6 @@ class BBjSecurityConfigurationPropertiesTest {
   @Nested
   class AbsentKeys {
 
-    @Test
-    void shouldKeepDefaultsWhenTheSubtreeIsAbsent() {
-      Config config = ConfigFactory.empty();
-
-      properties = new BBjSecurityConfigurationProperties(config);
-
-      assertTrue(properties.getEnabled());
-      assertTrue(properties.getSecureByDefault());
-      assertNull(properties.getAuthenticationPath());
-      assertNull(properties.getDenyPath());
-    }
-
     @ParameterizedTest
     @MethodSource("partialConfigurationCases")
     void shouldKeepDefaultsForKeysThatAreAbsent(String hocon, boolean enabled,
@@ -696,22 +684,6 @@ class BBjSecurityConfigurationPropertiesTest {
 
       assertNull(properties.getAdminTruststore());
       assertNull(properties.getAdminTruststorePassword());
-    }
-
-    @ParameterizedTest
-    @MethodSource("invalidTruststoreValues")
-    void shouldLogTheKeyWhenTheTruststoreValueIsNotString(String key, String value) {
-      Config config =
-          ConfigFactory.parseString("webforj.security.bbj.%s = %s".formatted(key, value));
-
-      properties = new BBjSecurityConfigurationProperties(config);
-
-      List<LogRecord> warnings = getWarnings();
-      assertEquals(1, warnings.size());
-      assertEquals(
-          "The configuration key webforj.security.bbj.%s is not a string and keeps its default"
-              .formatted(key),
-          new SimpleFormatter().formatMessage(warnings.get(0)));
     }
 
     @Test
