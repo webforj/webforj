@@ -354,19 +354,6 @@ class BBjSecurityTest {
     }
 
     @Test
-    void shouldShowTheThrottledToastAndEnableTheFormOnThrottled() {
-      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.THROTTLED);
-
-      BBjSecurity.login(event);
-
-      toastMock
-          .verify(() -> Toast.show("Too many sign in attempts. Try again later.", Theme.WARNING));
-      verify(login, never()).setError(true);
-      verify(login).setEnabled(true);
-      verify(service, never()).openTargetLocation();
-    }
-
-    @Test
     void shouldCloseTheFormWithoutEnablingItOnAuthenticated() {
       BBjSecurity.login(event);
 
@@ -490,17 +477,17 @@ class BBjSecurityTest {
 
     @ParameterizedTest
     @MethodSource("com.webforj.bbj.security.BBjSecurityTest#getSignInsWithProvider")
-    void shouldStopAskingWhenTheSignInIsThrottled(
+    void shouldStopAskingWhenTheSignInIsUnavailable(
         BiFunction<LoginSubmitEvent, Function<Boolean, String>, BBjLoginStatus> signIn) {
       when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.TWO_FACTOR_REQUIRED);
       when(service.login("alice", "pw", "111111")).thenReturn(BBjLoginStatus.TWO_FACTOR_REQUIRED)
-          .thenReturn(BBjLoginStatus.THROTTLED);
+          .thenReturn(BBjLoginStatus.UNAVAILABLE);
       when(provider.apply(false)).thenReturn("111111");
       when(provider.apply(true)).thenReturn("111111");
 
       BBjLoginStatus status = signIn.apply(event, provider);
 
-      assertEquals(BBjLoginStatus.THROTTLED, status);
+      assertEquals(BBjLoginStatus.UNAVAILABLE, status);
       verify(provider, times(1)).apply(false);
       verify(provider, times(1)).apply(true);
       verify(service, times(3)).login(any(), any(), any());
@@ -545,21 +532,6 @@ class BBjSecurityTest {
       order.verify(service).openTargetLocation();
       verify(login, never()).setEnabled(true);
       verify(login, never()).setError(true);
-    }
-
-    @Test
-    void shouldShowTheThrottledToastAndEnableTheFormAfterRefusedCodes() {
-      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.TWO_FACTOR_REQUIRED);
-      when(service.login("alice", "pw", "111111")).thenReturn(BBjLoginStatus.THROTTLED);
-      when(provider.apply(false)).thenReturn("111111");
-
-      BBjSecurity.login(event, provider);
-
-      toastMock
-          .verify(() -> Toast.show("Too many sign in attempts. Try again later.", Theme.WARNING));
-      verify(login, never()).setError(true);
-      verify(login).setEnabled(true);
-      verify(login, never()).close();
     }
 
     @Test

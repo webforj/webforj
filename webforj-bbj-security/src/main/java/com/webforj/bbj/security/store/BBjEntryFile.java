@@ -299,10 +299,7 @@ final class BBjEntryFile {
    */
   enum Content {
     /** Encrypted sign ins of the browsers. */
-    SESSIONS(".sessions", "v1\\.(\\d{1,15})\\.[A-Za-z0-9_-]{43}", "[A-Za-z0-9_-]+"),
-
-    /** Counters of failed sign in attempts. */
-    COUNTERS(".counters", "t2\\.(\\d{1,15})\\.\\d{1,15}\\.[ua]\\.[0-9a-f]{32}", "\\d{1,9}");
+    SESSIONS(".sessions", "v1\\.(\\d{1,15})\\.[A-Za-z0-9_-]{43}", "[A-Za-z0-9_-]+");
 
     private final String suffix;
     private final Pattern entryName;

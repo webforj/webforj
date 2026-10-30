@@ -3,16 +3,13 @@ package com.webforj.bbj.security;
 import com.webforj.App;
 import com.webforj.AppLifecycleListener;
 import com.webforj.Environment;
-import com.webforj.Request;
 import com.webforj.annotation.AppListenerPriority;
 import com.webforj.bbj.security.store.BBjSecurityStore;
-import com.webforj.bbj.security.store.BBjThrottleStore;
 import com.webforj.environment.ObjectTable;
 import com.webforj.router.Router;
 import com.webforj.router.security.RouteSecurityObserver;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
-import java.time.Duration;
 
 /**
  * Registers route security for a BBj application when it starts.
@@ -86,21 +83,13 @@ public final class BBjSecurityRegistrar implements AppLifecycleListener {
   private static void addService(Router router, BBjSecurityConfigurationProperties properties,
       BBjRouteSecurityConfiguration configuration, BBjSecurityStore store) {
     var gateway = new BBjAdminGateway(properties);
-    var throttleWindow = Duration.ofSeconds(properties.getThrottleWindowSeconds());
-    var throttleStore = BBjThrottleStore.create(throttleWindow);
-    logger.log(Level.INFO,
-        "Sign in throttle with user name limit {0}, address limit {1}, window {2} seconds",
-        properties.getThrottleMaxAttempts(), properties.getThrottleAddressMaxAttempts() == 0 ? "off"
-            : properties.getThrottleAddressMaxAttempts(),
-        throttleWindow.toSeconds());
     logger.log(Level.INFO, "BBj Admin API at {0}:{1} with ssl {2} and truststore {3}",
         properties.getAdminHost(), String.valueOf(properties.getAdminPort()),
         properties.getAdminSsl(), properties.getAdminTruststore() == null ? "none" : "set");
 
     var service = BBjAuthenticationService.builder().setGateway(gateway).setStore(store)
         .setProperties(properties).setConfiguration(configuration).setNavigator(router::navigate)
-        .setThrottleStore(throttleStore)
-        .setAddressSupplier(() -> Request.getCurrent().getIPAddress()).build();
+        .build();
     var observer = new BBjSessionObserver(service);
     router.getRenderer().addObserver(observer);
     ObjectTable.put(BBjSecurity.SERVICE_KEY, service);
