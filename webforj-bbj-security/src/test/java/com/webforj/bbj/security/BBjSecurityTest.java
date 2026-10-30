@@ -141,7 +141,8 @@ class BBjSecurityTest {
       LoginSubmitEvent event = mock(LoginSubmitEvent.class);
       when(event.getUsername()).thenReturn("alice");
       when(event.getPassword()).thenReturn("pw");
-      when(event.getComponent()).thenReturn(mock(Login.class));
+      var mockLogin = mock(Login.class);
+      when(event.getComponent()).thenReturn(mockLogin);
       Function<Boolean, String> provider = null;
 
       assertThrows(NullPointerException.class, () -> BBjSecurity.login("alice", "pw", provider));

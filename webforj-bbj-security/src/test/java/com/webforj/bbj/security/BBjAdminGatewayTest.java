@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.AdditionalAnswers.delegatesTo;
@@ -51,6 +50,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.MockedStatic;
 
 class BBjAdminGatewayTest {
@@ -654,18 +654,13 @@ class BBjAdminGatewayTest {
           openFailingSession(new BBjAdminException((String) null)).getKind());
     }
 
-    @Test
-    void shouldClassifyTheTextWhateverItsCase() {
+    @ParameterizedTest
+    @ValueSource(strings = {"UNABLE TO AUTHENTICATE USER. INVALID USERNAME/PASSWORD.",
+        "Server failed login: Authentication failed. Invalid username/password.",
+        "2-factor authentication code required. Invalid username/password."})
+    void shouldClassifyTheTextCorreclty(String message) {
       BBjAdminException exception =
           new BBjAdminException("UNABLE TO AUTHENTICATE USER. INVALID USERNAME/PASSWORD.");
-
-      assertEquals(Kind.INVALID_CREDENTIALS, openFailingSession(exception).getKind());
-    }
-
-    @Test
-    void shouldPreferTheKnownTextToTheRefusedLoginPrefix() {
-      BBjAdminException exception = new BBjAdminException(
-          "Server failed login: Authentication failed. Invalid username/password.");
 
       assertEquals(Kind.INVALID_CREDENTIALS, openFailingSession(exception).getKind());
     }
@@ -698,14 +693,6 @@ class BBjAdminGatewayTest {
     void shouldPreferTheRefusedLoginPrefixToTheCodeTextOfTokenCall() throws Exception {
       assertEquals(Kind.TOKEN_REJECTED,
           readFailingUserName(new BBjAdminException(WRONG_CODE_TEXT)).getKind());
-    }
-
-    @Test
-    void shouldPreferTheCredentialsTextToTheTwoFactorText() {
-      BBjAdminException exception = new BBjAdminException(
-          "2-factor authentication code required. Invalid username/password.");
-
-      assertEquals(Kind.INVALID_CREDENTIALS, openFailingSession(exception).getKind());
     }
 
     @Test
