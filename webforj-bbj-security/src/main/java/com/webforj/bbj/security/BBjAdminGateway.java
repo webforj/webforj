@@ -30,9 +30,10 @@ import java.util.regex.Pattern;
  * Opens sessions for users through the BBj Admin API.
  *
  * <p>
- * The host, the port, the time limit and the lifetime of the token come from the
- * {@link BBjSecurityConfigurationProperties} that were given when the gateway was created. A
- * failure never carries the password or the token in its message.
+ * The host, the port, the use of SSL, the truststore, the time limit and the lifetime of the token
+ * come from the {@link BBjSecurityConfigurationProperties} that were given when the gateway was
+ * created. A failure never carries the password, the truststore password or the token in its
+ * message.
  * </p>
  *
  * @author Christian Liebhardt
@@ -53,6 +54,9 @@ public final class BBjAdminGateway {
       Pattern.compile("eyJ[A-Za-z0-9_-]*\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+");
   private final String host;
   private final int port;
+  private final boolean ssl;
+  private final String truststore;
+  private final String truststorePassword;
   private final int timeoutMillis;
   private final Duration tokenLifetime;
   private final Clock clock;
@@ -81,6 +85,9 @@ public final class BBjAdminGateway {
     this.clock = Objects.requireNonNull(clock, "clock");
     host = properties.getAdminHost();
     port = properties.getAdminPort();
+    ssl = properties.getAdminSsl();
+    truststore = properties.getAdminTruststore();
+    truststorePassword = properties.getAdminTruststorePassword();
     timeoutMillis = (int) Duration.ofSeconds(properties.getAdminTimeoutSeconds()).toMillis();
     tokenLifetime = Duration.ofMinutes(properties.getTokenMinutes());
   }
@@ -89,13 +96,12 @@ public final class BBjAdminGateway {
    * Signs a user in and opens a session for them.
    *
    * <p>
-   * The call blocks until the Admin API answers or the time limit passes. The time limit does not
-   * apply to the sign in with a 2 factor code, which waits until the Admin API answers. The
-   * principal of the session carries the user name the Admin API reports, the names of the BBj
-   * security groups of the user as roles, and the names of the {@link BBjPermissions} the user
-   * holds as authorities. The session expires after the configured token lifetime, counted from the
-   * start of the call. When the user name, the group names or the permissions cannot be read after
-   * the token was issued, the token is not revoked and expires on its own.
+   * The call blocks until the Admin API answers or the time limit passes. The principal of the
+   * session carries the user name the Admin API reports, the names of the BBj security groups of
+   * the user as roles, and the names of the {@link BBjPermissions} the user holds as authorities.
+   * The session expires after the configured token lifetime, counted from the start of the call.
+   * When the user name, the group names or the permissions cannot be read after the token was
+   * issued, the token is not revoked and expires on its own.
    * </p>
    *
    * @param userName the user name
@@ -195,8 +201,9 @@ public final class BBjAdminGateway {
 
   private String fetchToken(String userName, String password) {
     try {
-      return BBjAdminFactory.getAuthToken(getAddress(), port, false, timeoutMillis, userName,
-          password, Locale.ENGLISH, null, null, tokenLifetime.toMinutes(), Map.of());
+      return BBjAdminFactory.getAuthToken(getAddress(), port, ssl, timeoutMillis, userName,
+          password, Locale.ENGLISH, truststore, truststorePassword, tokenLifetime.toMinutes(),
+          Map.of());
     } catch (BBjAdminException | UnknownHostException | RuntimeException e) {
       throw toFailure(CallKind.SIGN_IN, e, password);
     }
@@ -205,8 +212,8 @@ public final class BBjAdminGateway {
   private String fetchToken(String userName, String password, String code) {
     BBjAdminBase admin;
     try {
-      admin =
-          BBjAdminFactory.getBBjAdminWith2FA(getAddress(), port, false, userName, password, code);
+      admin = BBjAdminFactory.getBBjAdmin(getAddress(), port, ssl, timeoutMillis, userName,
+          password, Locale.ENGLISH, truststore, truststorePassword, code);
     } catch (BBjAdminException | UnknownHostException | RuntimeException e) {
       throw toFailure(CallKind.SIGN_IN, e, password, code);
     }
@@ -224,8 +231,8 @@ public final class BBjAdminGateway {
 
   private <T> T sendCall(String token, AdminCall<? extends T> call)
       throws BBjAdminException, UnknownHostException {
-    BBjAdminBase admin = BBjAdminFactory.getBBjAdmin(getAddress(), port, false, timeoutMillis,
-        token, null, Locale.ENGLISH, null, null);
+    BBjAdminBase admin = BBjAdminFactory.getBBjAdmin(getAddress(), port, ssl, timeoutMillis, token,
+        null, Locale.ENGLISH, truststore, truststorePassword);
     try {
       return call.apply(admin);
     } finally {
@@ -248,12 +255,14 @@ public final class BBjAdminGateway {
     return new BBjPrincipal(name, Set.copyOf(groups), Set.copyOf(authorities));
   }
 
-  private static BBjAdminFailure toFailure(CallKind callKind, Throwable cause, String... secrets) {
+  private BBjAdminFailure toFailure(CallKind callKind, Throwable cause, String... secrets) {
     List<Throwable> causes = readCauses(Objects.requireNonNull(cause, "cause"));
     BBjAdminFailure.Kind kind = cause instanceof BBjAdminException ? findKind(callKind, causes)
         : BBjAdminFailure.Kind.UNAVAILABLE;
+    String[] hidden = Arrays.copyOf(secrets, secrets.length + 1);
+    hidden[secrets.length] = truststorePassword;
 
-    return new BBjAdminFailure(kind, getPrefix(kind) + ": " + createDetail(causes, secrets));
+    return new BBjAdminFailure(kind, getPrefix(kind) + ": " + createDetail(causes, hidden));
   }
 
   private static List<Throwable> readCauses(Throwable cause) {

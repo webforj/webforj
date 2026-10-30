@@ -61,6 +61,8 @@ class BBjAdminGatewayTest {
   private static final String UNAVAILABLE = "BBj Admin API is unavailable: ";
   private static final String CODE = "654321";
   private static final String CODE_TOKEN = "codetoken9012";
+  private static final String TRUSTSTORE = "/etc/bbj/admin.p12";
+  private static final String TRUSTSTORE_PASSWORD = "store-secret-2";
   private static final String WRONG_CODE_TEXT =
       "Server failed login: Authentication failed for user "
           + "'alice'. Authentication failed. Invalid 2-factor authentication code.";
@@ -113,15 +115,13 @@ class BBjAdminGatewayTest {
   private void setCodeAdmin(BBjAdminBase codeAdmin) throws BBjAdminException {
     when(codeAdmin.getTokenValue()).thenReturn(CODE_TOKEN);
     when(codeAdmin.renewToken(CODE_TOKEN, 30L)).thenReturn(TOKEN);
-    factory.when(
-        () -> BBjAdminFactory.getBBjAdminWith2FA(loopback, 2002, false, "alice", PASSWORD, CODE))
-        .thenReturn(codeAdmin);
+    factory.when(() -> BBjAdminFactory.getBBjAdmin(loopback, 2002, false, 10000, "alice", PASSWORD,
+        Locale.ENGLISH, null, null, CODE)).thenReturn(codeAdmin);
   }
 
   private void setCodeAdminFailure(Throwable failure) {
-    factory.when(
-        () -> BBjAdminFactory.getBBjAdminWith2FA(loopback, 2002, false, "alice", PASSWORD, CODE))
-        .thenThrow(failure);
+    factory.when(() -> BBjAdminFactory.getBBjAdmin(loopback, 2002, false, 10000, "alice", PASSWORD,
+        Locale.ENGLISH, null, null, CODE)).thenThrow(failure);
   }
 
   private BBjAdminFailure openFailingSession(Throwable failure) {
@@ -330,8 +330,8 @@ class BBjAdminGatewayTest {
       verify(codeAdmin, never()).getUser();
       verify(admin, times(1)).getSingleUserPermissions(TOKEN);
       verify(admin, times(1)).release();
-      factory.verify(
-          () -> BBjAdminFactory.getBBjAdminWith2FA(loopback, 2002, false, "alice", PASSWORD, CODE));
+      factory.verify(() -> BBjAdminFactory.getBBjAdmin(loopback, 2002, false, 10000, "alice",
+          PASSWORD, Locale.ENGLISH, null, null, CODE));
       factory.verify(() -> BBjAdminFactory.getBBjAdmin(loopback, 2002, false, 10000, TOKEN, null,
           Locale.ENGLISH, null, null));
       factory.verifyNoMoreInteractions();
@@ -347,9 +347,8 @@ class BBjAdminGatewayTest {
       BBjAdminBase codeAdmin = mock(BBjAdminBase.class);
       when(codeAdmin.getTokenValue()).thenReturn(CODE_TOKEN);
       when(codeAdmin.renewToken(CODE_TOKEN, 45L)).thenReturn(TOKEN);
-      factory.when(
-          () -> BBjAdminFactory.getBBjAdminWith2FA(loopback, 2003, false, "alice", PASSWORD, CODE))
-          .thenReturn(codeAdmin);
+      factory.when(() -> BBjAdminFactory.getBBjAdmin(loopback, 2003, false, 10000, "alice",
+          PASSWORD, Locale.ENGLISH, null, null, CODE)).thenReturn(codeAdmin);
       factory.when(() -> BBjAdminFactory.getBBjAdmin(loopback, 2003, false, 10000, TOKEN, null,
           Locale.ENGLISH, null, null)).thenReturn(admin);
       when(admin.getUser()).thenReturn("alice");
@@ -360,6 +359,62 @@ class BBjAdminGatewayTest {
       assertEquals(TOKEN, session.getToken());
       assertEquals(NOW.plusSeconds(45 * 60), session.getExpiresAt());
       verify(codeAdmin, times(1)).release();
+    }
+
+    @Test
+    void shouldSignInOverSslWithTheTruststore() throws Exception {
+      BBjSecurityConfigurationProperties properties =
+          new BBjSecurityConfigurationProperties(ConfigFactory.empty());
+      properties.setAdminSsl(true);
+      properties.setAdminTruststore(TRUSTSTORE);
+      properties.setAdminTruststorePassword(TRUSTSTORE_PASSWORD);
+      BBjAdminGateway configured = new BBjAdminGateway(properties, clock);
+      factory.when(() -> BBjAdminFactory.getAuthToken(loopback, 2002, true, 10000, "alice",
+          PASSWORD, Locale.ENGLISH, TRUSTSTORE, TRUSTSTORE_PASSWORD, 30L, Map.of()))
+          .thenReturn(TOKEN);
+      factory.when(() -> BBjAdminFactory.getBBjAdmin(loopback, 2002, true, 10000, TOKEN, null,
+          Locale.ENGLISH, TRUSTSTORE, TRUSTSTORE_PASSWORD)).thenReturn(admin);
+      when(admin.getUser()).thenReturn("alice");
+      when(admin.getSecurityGroupNames()).thenReturn(createGroupNames(List.of()));
+
+      BBjSession session = configured.openSession("alice", PASSWORD, null);
+
+      assertEquals(TOKEN, session.getToken());
+      factory.verify(() -> BBjAdminFactory.getAuthToken(loopback, 2002, true, 10000, "alice",
+          PASSWORD, Locale.ENGLISH, TRUSTSTORE, TRUSTSTORE_PASSWORD, 30L, Map.of()));
+      factory.verify(() -> BBjAdminFactory.getBBjAdmin(loopback, 2002, true, 10000, TOKEN, null,
+          Locale.ENGLISH, TRUSTSTORE, TRUSTSTORE_PASSWORD));
+      factory.verifyNoMoreInteractions();
+    }
+
+    @Test
+    void shouldSignInWithTheCodeOverSslWithTheTruststoreAndTheTimeout() throws Exception {
+      BBjSecurityConfigurationProperties properties =
+          new BBjSecurityConfigurationProperties(ConfigFactory.empty());
+      properties.setAdminSsl(true);
+      properties.setAdminTruststore(TRUSTSTORE);
+      properties.setAdminTruststorePassword(TRUSTSTORE_PASSWORD);
+      properties.setAdminTimeoutSeconds(7);
+      BBjAdminGateway configured = new BBjAdminGateway(properties, clock);
+      BBjAdminBase codeAdmin = mock(BBjAdminBase.class);
+      when(codeAdmin.getTokenValue()).thenReturn(CODE_TOKEN);
+      when(codeAdmin.renewToken(CODE_TOKEN, 30L)).thenReturn(TOKEN);
+      factory.when(() -> BBjAdminFactory.getBBjAdmin(loopback, 2002, true, 7000, "alice", PASSWORD,
+          Locale.ENGLISH, TRUSTSTORE, TRUSTSTORE_PASSWORD, CODE)).thenReturn(codeAdmin);
+      factory.when(() -> BBjAdminFactory.getBBjAdmin(loopback, 2002, true, 7000, TOKEN, null,
+          Locale.ENGLISH, TRUSTSTORE, TRUSTSTORE_PASSWORD)).thenReturn(admin);
+      when(admin.getUser()).thenReturn("alice");
+      when(admin.getSecurityGroupNames()).thenReturn(createGroupNames(List.of()));
+
+      BBjSession session = configured.openSession("alice", PASSWORD, CODE);
+
+      assertEquals(TOKEN, session.getToken());
+      verify(codeAdmin, times(1)).release();
+      factory.verify(() -> BBjAdminFactory.getBBjAdmin(loopback, 2002, true, 7000, "alice",
+          PASSWORD, Locale.ENGLISH, TRUSTSTORE, TRUSTSTORE_PASSWORD, CODE));
+      factory.verify(() -> BBjAdminFactory.getBBjAdmin(loopback, 2002, true, 7000, TOKEN, null,
+          Locale.ENGLISH, TRUSTSTORE, TRUSTSTORE_PASSWORD));
+      factory.verifyNoMoreInteractions();
     }
 
     @ParameterizedTest
@@ -733,6 +788,65 @@ class BBjAdminGatewayTest {
       assertEquals(Kind.INVALID_CODE, failure.getKind());
       assertEquals("BBj Admin API refused the 2-factor code: BBjAdminException: " + WRONG_CODE_TEXT
           + " *** ***", failure.getMessage());
+    }
+
+    @Test
+    void shouldReplaceTheTruststorePasswordWhenTheSignInFails() {
+      BBjSecurityConfigurationProperties properties =
+          new BBjSecurityConfigurationProperties(ConfigFactory.empty());
+      properties.setAdminSsl(true);
+      properties.setAdminTruststore(TRUSTSTORE);
+      properties.setAdminTruststorePassword(TRUSTSTORE_PASSWORD);
+      BBjAdminGateway configured = new BBjAdminGateway(properties, clock);
+      factory
+          .when(() -> BBjAdminFactory.getAuthToken(loopback, 2002, true, 10000, "alice", PASSWORD,
+              Locale.ENGLISH, TRUSTSTORE, TRUSTSTORE_PASSWORD, 30L, Map.of()))
+          .thenThrow(new BBjAdminException("keystore " + TRUSTSTORE_PASSWORD + " refused"));
+
+      BBjAdminFailure failure = assertThrows(BBjAdminFailure.class,
+          () -> configured.openSession("alice", PASSWORD, null));
+
+      assertEquals(UNAVAILABLE + "BBjAdminException: keystore *** refused", failure.getMessage());
+    }
+
+    @Test
+    void shouldReplaceTheTruststorePasswordWhenTheSignInWithCodeFails() {
+      BBjSecurityConfigurationProperties properties =
+          new BBjSecurityConfigurationProperties(ConfigFactory.empty());
+      properties.setAdminSsl(true);
+      properties.setAdminTruststore(TRUSTSTORE);
+      properties.setAdminTruststorePassword(TRUSTSTORE_PASSWORD);
+      BBjAdminGateway configured = new BBjAdminGateway(properties, clock);
+      factory
+          .when(() -> BBjAdminFactory.getBBjAdmin(loopback, 2002, true, 10000, "alice", PASSWORD,
+              Locale.ENGLISH, TRUSTSTORE, TRUSTSTORE_PASSWORD, CODE))
+          .thenThrow(new BBjAdminException("keystore " + TRUSTSTORE_PASSWORD + " refused"));
+
+      BBjAdminFailure failure = assertThrows(BBjAdminFailure.class,
+          () -> configured.openSession("alice", PASSWORD, CODE));
+
+      assertEquals(UNAVAILABLE + "BBjAdminException: keystore *** refused", failure.getMessage());
+    }
+
+    @Test
+    void shouldReplaceTheTruststorePasswordWhenTheCallWithTheTokenFails() {
+      BBjSecurityConfigurationProperties properties =
+          new BBjSecurityConfigurationProperties(ConfigFactory.empty());
+      properties.setAdminSsl(true);
+      properties.setAdminTruststore(TRUSTSTORE);
+      properties.setAdminTruststorePassword(TRUSTSTORE_PASSWORD);
+      BBjAdminGateway configured = new BBjAdminGateway(properties, clock);
+      factory
+          .when(() -> BBjAdminFactory.getBBjAdmin(loopback, 2002, true, 10000, TOKEN, null,
+              Locale.ENGLISH, TRUSTSTORE, TRUSTSTORE_PASSWORD))
+          .thenThrow(new BBjAdminException("keystore " + TRUSTSTORE_PASSWORD + " refused"));
+      BBjSession session =
+          new BBjSession(new BBjPrincipal("alice", Set.of(), Set.of()), TOKEN, NOW.plusSeconds(60));
+
+      BBjAdminFailure failure =
+          assertThrows(BBjAdminFailure.class, () -> configured.closeSession(session));
+
+      assertEquals(UNAVAILABLE + "BBjAdminException: keystore *** refused", failure.getMessage());
     }
 
     @Test
