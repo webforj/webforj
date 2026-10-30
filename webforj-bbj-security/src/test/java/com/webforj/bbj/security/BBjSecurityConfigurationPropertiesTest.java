@@ -9,6 +9,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.ToIntFunction;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -302,6 +303,17 @@ class BBjSecurityConfigurationPropertiesTest {
     }
 
     @Test
+    void shouldRefuseTheConnectionWhenTheRequiredSubstitutionOfTheHostHasNoValue() {
+      Config config = ConfigFactory
+          .parseString("webforj.security.bbj.admin.host = ${BBJ_SECURITY_TEST_UNSET_HOST}");
+
+      properties = new BBjSecurityConfigurationProperties(config);
+
+      assertEquals(Optional.of("config could not be resolved"),
+          properties.findAdminConnectionProblem());
+    }
+
+    @Test
     void shouldReadTheKeysBesideAnUnresolvedSubstitution() {
       Config config = ConfigFactory.parseString("""
           webforj.security.bbj.admin.port = 2020
@@ -356,7 +368,29 @@ class BBjSecurityConfigurationPropertiesTest {
           Arguments.of("admin.port", 65535, port),
           Arguments.of("admin.timeout-seconds", 1, timeout),
           Arguments.of("admin.timeout-seconds", 9999, timeout),
-          Arguments.of("token.minutes", 1, token), Arguments.of("token.minutes", 480, token));
+          Arguments.of("token.minutes", 1, token), Arguments.of("token.minutes", 480, token),
+          Arguments.of("token.minutes", 481, token),
+          Arguments.of("token.minutes", Integer.MAX_VALUE, token));
+    }
+
+    @ParameterizedTest
+    @MethodSource("acceptedRenewBeforeCases")
+    void shouldReadTheRenewBeforeMinutesUpToTheTokenMinutes(String hocon, int expected) {
+      Config config = ConfigFactory.parseString(hocon);
+
+      properties = new BBjSecurityConfigurationProperties(config);
+
+      assertEquals(expected, properties.getRenewBeforeMinutes());
+    }
+
+    private static Stream<Arguments> acceptedRenewBeforeCases() {
+      return Stream.of(Arguments.of("webforj.security.bbj.token.renew-before-minutes = 0", 0),
+          Arguments.of("webforj.security.bbj.token.renew-before-minutes = 30", 30), Arguments.of("""
+              webforj.security.bbj.token {
+                minutes = 600
+                renew-before-minutes = 600
+              }
+              """, 600));
     }
   }
 
@@ -695,6 +729,31 @@ class BBjSecurityConfigurationPropertiesTest {
     }
 
     @ParameterizedTest
+    @MethodSource("renewBeforeAboveTheTokenMinutes")
+    void shouldKeepTheDefaultRenewBeforeMinutesAboveTheTokenMinutes(String hocon, int max) {
+      Config config = ConfigFactory.parseString(hocon);
+
+      properties = new BBjSecurityConfigurationProperties(config);
+
+      assertEquals(5, properties.getRenewBeforeMinutes());
+    }
+
+    @ParameterizedTest
+    @MethodSource("renewBeforeAboveTheTokenMinutes")
+    void shouldLogTheKeyWhenTheRenewBeforeMinutesAreAboveTheTokenMinutes(String hocon, int max) {
+      Config config = ConfigFactory.parseString(hocon);
+
+      properties = new BBjSecurityConfigurationProperties(config);
+
+      List<LogRecord> warnings = getWarnings();
+      assertEquals(1, warnings.size());
+      assertEquals(
+          "The configuration key webforj.security.bbj.token.renew-before-minutes is not "
+              + "between 0 and %d and keeps its default".formatted(max),
+          new SimpleFormatter().formatMessage(warnings.get(0)));
+    }
+
+    @ParameterizedTest
     @ValueSource(strings = {"\"maybe\"", "\"\"", "5", "[true]"})
     void shouldTreatAnInvalidReturnAfterLoginValueAsEnabled(String value) {
       Config config =
@@ -817,6 +876,16 @@ class BBjSecurityConfigurationPropertiesTest {
     private static Stream<Arguments> invalidBooleanKeys() {
       return Stream.of(Arguments.of("enabled"), Arguments.of("secure-by-default"),
           Arguments.of("bbj.admin.ssl"));
+    }
+
+    private static Stream<Arguments> renewBeforeAboveTheTokenMinutes() {
+      return Stream.of(Arguments.of("webforj.security.bbj.token.renew-before-minutes = 31", 30),
+          Arguments.of("""
+              webforj.security.bbj.token {
+                minutes = 10
+                renew-before-minutes = 11
+              }
+              """, 10));
     }
 
     private static Stream<Arguments> invalidTruststoreValues() {
