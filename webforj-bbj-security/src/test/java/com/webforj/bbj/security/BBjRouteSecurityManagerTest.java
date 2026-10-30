@@ -2,12 +2,15 @@ package com.webforj.bbj.security;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
@@ -15,7 +18,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.webforj.Environment;
-import com.webforj.bbj.security.store.BBjSecurityStore;
 import com.webforj.component.Component;
 import com.webforj.router.NavigationContext;
 import com.webforj.router.NavigationOptions;
@@ -32,10 +34,13 @@ import com.webforj.router.security.evaluator.AuthenticationRequiredEvaluator;
 import com.webforj.router.security.evaluator.DenyAllEvaluator;
 import com.webforj.router.security.evaluator.PermitAllEvaluator;
 import com.webforj.router.security.evaluator.RolesAllowedEvaluator;
-import com.webforj.webstorage.LocalStorage;
+import jakarta.servlet.http.HttpSession;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -50,38 +55,48 @@ import org.mockito.MockedStatic;
 class BBjRouteSecurityManagerTest {
   private static final String KEY = AbstractRouteSecurityManager.PRE_AUTH_LOCATION_KEY;
 
+  private final Map<String, Object> attributes = new HashMap<>();
   private MockedStatic<Environment> environmentMock;
-  private MockedStatic<LocalStorage> storageMock;
   private MockedStatic<Router> routerMock;
-  private LocalStorage storage;
   private Router router;
   private BBjRouteSecurityConfiguration configuration;
   private BBjRouteSecurityContext securityContext;
   private BBjRouteSecurityManager manager;
 
   @BeforeEach
+  @SuppressWarnings("unchecked")
   void setUp() {
-    storage = mock(LocalStorage.class);
+    HttpSession httpSession = mock(HttpSession.class);
+    when(httpSession.getAttribute(anyString()))
+        .thenAnswer(call -> attributes.get(call.<String>getArgument(0)));
+    doAnswer(call -> attributes.put(call.getArgument(0), call.getArgument(1))).when(httpSession)
+        .setAttribute(anyString(), any());
+    doAnswer(call -> attributes.remove(call.<String>getArgument(0))).when(httpSession)
+        .removeAttribute(anyString());
+    HttpSession.Accessor accessor = mock(HttpSession.Accessor.class);
+    doAnswer(call -> {
+      call.<Consumer<HttpSession>>getArgument(0).accept(httpSession);
+      return null;
+    }).when(accessor).access(any(Consumer.class));
+    Environment environment = mock(Environment.class);
+    when(environment.getSessionAccessor()).thenReturn(Optional.of(accessor));
+    environmentMock = mockStatic(Environment.class);
+    environmentMock.when(Environment::getCurrent).thenReturn(environment);
+    environmentMock.when(Environment::isPresent).thenCallRealMethod();
+    environmentMock.when(() -> Environment.ifPresent(any())).thenCallRealMethod();
     router = mock(Router.class);
     configuration = mock(BBjRouteSecurityConfiguration.class);
     securityContext = mock(BBjRouteSecurityContext.class);
-    environmentMock = mockStatic(Environment.class);
-    var mockEnviornment = mock(Environment.class);
-    environmentMock.when(Environment::getCurrent).thenReturn(mockEnviornment);
-    storageMock = mockStatic(LocalStorage.class);
-    storageMock.when(LocalStorage::getCurrent).thenReturn(storage);
     routerMock = mockStatic(Router.class);
     routerMock.when(Router::getCurrent).thenReturn(router);
     when(configuration.getAuthenticationLocation()).thenReturn(Optional.of(new Location("/login")));
     when(configuration.getDenyLocation()).thenReturn(Optional.of(new Location("/denied")));
-    manager = new BBjRouteSecurityManager(configuration, securityContext,
-        BBjSecurityStore.create(mockEnviornment));
+    manager = new BBjRouteSecurityManager(configuration, securityContext);
   }
 
   @AfterEach
   void tearDown() {
     routerMock.close();
-    storageMock.close();
     environmentMock.close();
   }
 
@@ -90,22 +105,14 @@ class BBjRouteSecurityManagerTest {
 
     @Test
     void shouldRejectNullConfiguration() {
-      var store = mock(BBjSecurityStore.class);
       assertThrows(NullPointerException.class,
-          () -> new BBjRouteSecurityManager(null, securityContext, store));
+          () -> new BBjRouteSecurityManager(null, securityContext));
     }
 
     @Test
     void shouldRejectNullSecurityContext() {
-      var store = mock(BBjSecurityStore.class);
       assertThrows(NullPointerException.class,
-          () -> new BBjRouteSecurityManager(configuration, null, store));
-    }
-
-    @Test
-    void shouldRejectNullStore() {
-      assertThrows(NullPointerException.class,
-          () -> new BBjRouteSecurityManager(configuration, securityContext, null));
+          () -> new BBjRouteSecurityManager(configuration, null));
     }
 
     @Test
@@ -147,7 +154,7 @@ class BBjRouteSecurityManagerTest {
 
     @Test
     void shouldReadTheSavedLocation() {
-      when(storage.get(KEY)).thenReturn("/protected?x=1");
+      attributes.put(KEY, "/protected?x=1");
 
       Optional<Location> location = manager.getPreAuthenticationLocation();
 
@@ -161,9 +168,19 @@ class BBjRouteSecurityManagerTest {
 
     @Test
     void shouldClearTheSavedLocation() {
+      attributes.put(KEY, "/protected");
+
       manager.clearPreAuthenticationLocation();
 
-      verify(storage).remove(KEY);
+      assertFalse(attributes.containsKey(KEY));
+    }
+
+    @Test
+    void shouldReadNothingWithoutEnvironment() {
+      attributes.put(KEY, "/protected");
+      environmentMock.when(Environment::getCurrent).thenReturn(null);
+
+      assertTrue(manager.getPreAuthenticationLocation().isEmpty());
     }
   }
 
@@ -177,7 +194,7 @@ class BBjRouteSecurityManagerTest {
 
       manager.onAccessDenied(RouteAccessDecision.denyAuthentication(), navigationContext);
 
-      verify(storage).setItem(KEY, "/protected?x=1");
+      assertEquals("/protected?x=1", attributes.get(KEY));
     }
 
     @Test
@@ -187,7 +204,7 @@ class BBjRouteSecurityManagerTest {
 
       manager.onAccessDenied(RouteAccessDecision.deny("insufficient_roles"), navigationContext);
 
-      verify(storage).setItem(KEY, "/admin");
+      assertEquals("/admin", attributes.get(KEY));
     }
 
     @Test
@@ -197,7 +214,7 @@ class BBjRouteSecurityManagerTest {
 
       assertDoesNotThrow(() -> manager.onAccessDenied(decision, missing));
 
-      verify(storage, never()).setItem(any(), any());
+      assertFalse(attributes.containsKey(KEY));
     }
 
     @Test
@@ -207,7 +224,7 @@ class BBjRouteSecurityManagerTest {
 
       manager.onAccessDenied(decision, navigationContext);
 
-      verify(storage, never()).setItem(any(), any());
+      assertFalse(attributes.containsKey(KEY));
     }
 
     @Test
@@ -218,8 +235,10 @@ class BBjRouteSecurityManagerTest {
       manager.onAccessDenied(RouteAccessDecision.denyAuthentication(), navigationContext);
 
       ArgumentCaptor<Location> target = ArgumentCaptor.forClass(Location.class);
-      verify(router).navigate(target.capture(), any(NavigationOptions.class));
+      ArgumentCaptor<NavigationOptions> options = ArgumentCaptor.forClass(NavigationOptions.class);
+      verify(router).navigate(target.capture(), options.capture());
       assertEquals("/login", target.getValue().getFullURI());
+      assertEquals(NavigationType.REPLACE, options.getValue().getNavigationType());
     }
   }
 
@@ -346,9 +365,7 @@ class BBjRouteSecurityManagerTest {
 
     @Test
     void shouldWarnAboutPriorityInTheCoreRange() {
-      var store = mock(BBjSecurityStore.class);
-
-      new BBjRouteSecurityManager(configuration, securityContext, store);
+      new BBjRouteSecurityManager(configuration, securityContext);
 
       List<LogRecord> warnings =
           records.stream().filter(it -> it.getLevel() == Level.WARNING).toList();
@@ -359,9 +376,7 @@ class BBjRouteSecurityManagerTest {
 
     @Test
     void shouldLogEachRegisteredEvaluatorWithItsPriority() {
-      var store = mock(BBjSecurityStore.class);
-
-      new BBjRouteSecurityManager(configuration, securityContext, store);
+      new BBjRouteSecurityManager(configuration, securityContext);
 
       List<List<Object>> registered = records.stream().filter(it -> it.getLevel() == Level.INFO)
           .map(it -> List.of(it.getParameters())).toList();
