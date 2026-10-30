@@ -532,7 +532,7 @@ public final class BBjSecurityConfigurationProperties {
       return Optional.empty();
     }
 
-    if (!adminSsl) {
+    if (!adminSsl.booleanValue()) {
       return Optional
           .of("%s is not a loopback address, so %s must be true".formatted(ADMIN_HOST, ADMIN_SSL));
     }
