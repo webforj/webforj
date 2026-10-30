@@ -448,6 +448,42 @@ class BBjSecurityRegistrarTest {
         + "must name a readable file"), getRecords(Level.SEVERE));
   }
 
+  @ParameterizedTest
+  @MethodSource("emptyTruststores")
+  void shouldRegisterNoServiceWhenTheTruststoreHoldsNoCertificates(String fixture,
+      String passwordKey) throws Exception {
+    String truststore = getFixturePath(fixture);
+    when(environment.getConfig()).thenReturn(ConfigFactory.parseString("""
+        webforj.security.bbj.admin {
+          host = "bbj.example.com"
+          ssl = true
+          truststore = "%s"
+          %s
+        }
+        """.formatted(truststore, passwordKey)));
+
+    registrar.onWillRun(app);
+
+    tableMock.verify(() -> ObjectTable.put(any(String.class), any()), never());
+    verify(renderer).addObserver(any(RouteSecurityObserver.class));
+    assertEquals(List.of("Sign in is unavailable because webforj.security.bbj.admin.truststore "
+        + "holds no certificates"), getRecords(Level.SEVERE));
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"a = ${b}\nb = ${a}", "a = 1 ${b}\nb = {x = 1}",
+      "webforj.security.bbj.admin.host = ${BBJ_SECURITY_TEST_UNSET_HOST}"})
+  void shouldRegisterNoServiceWhenTheConfigurationCannotBeResolved(String hocon) {
+    when(environment.getConfig()).thenReturn(ConfigFactory.parseString(hocon));
+
+    registrar.onWillRun(app);
+
+    tableMock.verify(() -> ObjectTable.put(any(String.class), any()), never());
+    verify(renderer).addObserver(any(RouteSecurityObserver.class));
+    assertEquals(List.of("Sign in is unavailable because config could not be resolved"),
+        getRecords(Level.SEVERE));
+  }
+
   @Test
   void shouldLogNeitherTheTruststoreNorItsPasswordWhenTheTruststoreCannotBeRead() throws Exception {
     String truststore = getFixturePath("truststore.p12");
@@ -494,6 +530,11 @@ class BBjSecurityRegistrarTest {
     return Stream.of(Arguments.of("bbj.example.com", "truststore.p12", "wrong-store-secret"),
         Arguments.of("localhost", "truststore.p12", "wrong-store-secret"),
         Arguments.of("bbj.example.com", "not-a-truststore.txt", TRUSTSTORE_PASSWORD));
+  }
+
+  private static Stream<Arguments> emptyTruststores() {
+    return Stream.of(Arguments.of("truststore.p12", ""), Arguments.of("empty-truststore.p12",
+        "truststore-password = \"%s\"".formatted(TRUSTSTORE_PASSWORD)));
   }
 
   private static Stream<Arguments> missingTruststores() {
