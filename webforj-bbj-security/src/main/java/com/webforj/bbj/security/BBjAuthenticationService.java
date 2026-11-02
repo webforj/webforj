@@ -5,6 +5,7 @@ import com.webforj.bbj.security.model.BBjLoginStatus;
 import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.bbj.security.model.BBjSession;
 import com.webforj.router.history.Location;
+import com.webforj.router.security.RouteSecurityManager;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.time.Clock;
@@ -31,6 +32,7 @@ public final class BBjAuthenticationService {
   private final BBjSecurityStore store;
   private final BBjSecurityConfigurationProperties properties;
   private final BBjRouteSecurityConfiguration configuration;
+  private final RouteSecurityManager securityManager;
   private final Consumer<Location> navigator;
   private final Clock clock;
   private BBjSession session;
@@ -46,6 +48,7 @@ public final class BBjAuthenticationService {
     store = builder.store;
     properties = builder.properties;
     configuration = builder.configuration;
+    securityManager = builder.securityManager;
     navigator = builder.navigator;
     clock = builder.clock;
   }
@@ -118,7 +121,7 @@ public final class BBjAuthenticationService {
     final var current = session;
     session = null;
     store.clearSession();
-    store.clearLocation();
+    securityManager.clearPreAuthenticationLocation();
     openLogoutLocation();
     closeSession(current);
   }
@@ -223,8 +226,7 @@ public final class BBjAuthenticationService {
    * </p>
    */
   void openTargetLocation() {
-    Optional<Location> requested = store.readLocation();
-    store.clearLocation();
+    Optional<Location> requested = securityManager.consumePreAuthenticationLocation();
     if (Boolean.TRUE.equals(properties.getReturnAfterLogin()) && requested.isPresent()) {
       navigator.accept(requested.get());
     } else {
@@ -379,6 +381,7 @@ public final class BBjAuthenticationService {
     private BBjSecurityStore store;
     private BBjSecurityConfigurationProperties properties;
     private BBjRouteSecurityConfiguration configuration;
+    private RouteSecurityManager securityManager;
     private Consumer<Location> navigator;
     private Clock clock;
 
@@ -393,6 +396,7 @@ public final class BBjAuthenticationService {
       Objects.requireNonNull(store, "store");
       Objects.requireNonNull(properties, "properties");
       Objects.requireNonNull(configuration, "configuration");
+      Objects.requireNonNull(securityManager, "securityManager");
       Objects.requireNonNull(navigator, "navigator");
       if (clock == null) {
         clock = Clock.systemUTC();
@@ -415,7 +419,7 @@ public final class BBjAuthenticationService {
     /**
      * Sets the store of the service.
      *
-     * @param store keeps the session of the signed in user and the location requested before
+     * @param store keeps the session of the signed in user
      *
      * @return this builder
      */
@@ -445,6 +449,18 @@ public final class BBjAuthenticationService {
      */
     public Builder setConfiguration(BBjRouteSecurityConfiguration configuration) {
       this.configuration = configuration;
+      return this;
+    }
+
+    /**
+     * Sets the security manager of the service.
+     *
+     * @param securityManager keeps the location requested before signing in
+     *
+     * @return this builder
+     */
+    public Builder setSecurityManager(RouteSecurityManager securityManager) {
+      this.securityManager = securityManager;
       return this;
     }
 

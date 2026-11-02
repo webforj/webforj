@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -149,7 +148,7 @@ class BBjAuthenticationServiceLoginTest {
       fixture.login("alice", PASSWORD);
 
       verifyNoInteractions(fixture.navigator);
-      verify(fixture.store, never()).clearLocation();
+      verifyNoInteractions(fixture.securityManager);
     }
 
     @ParameterizedTest
@@ -157,14 +156,13 @@ class BBjAuthenticationServiceLoginTest {
     void shouldReadClearAndNavigate(boolean returnAfterLogin, Optional<Location> saved,
         Location expected) {
       fixture.properties.setReturnAfterLogin(returnAfterLogin);
-      when(fixture.store.readLocation()).thenReturn(saved);
+      when(fixture.securityManager.consumePreAuthenticationLocation()).thenReturn(saved);
       fixture.whenOpenSession("alice", PASSWORD).thenReturn(fixture.session);
       fixture.login("alice", PASSWORD);
 
       fixture.openTargetLocation();
 
-      verify(fixture.store).readLocation();
-      verify(fixture.store).clearLocation();
+      verify(fixture.securityManager).consumePreAuthenticationLocation();
       verify(fixture.navigator).accept(expected);
     }
   }

@@ -60,12 +60,12 @@ class BBjAuthenticationServiceLogoutTest {
   }
 
   @Test
-  void shouldClearTheLocationStore() {
+  void shouldClearTheRequestedLocation() {
     startSignedInSession();
 
     fixture.logout();
 
-    verify(fixture.store).clearLocation();
+    verify(fixture.securityManager).clearPreAuthenticationLocation();
   }
 
   @ParameterizedTest

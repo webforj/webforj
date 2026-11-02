@@ -18,8 +18,6 @@ import static org.mockito.Mockito.when;
 import com.webforj.Environment;
 import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.bbj.security.model.BBjSession;
-import com.webforj.router.history.Location;
-import com.webforj.router.security.AbstractRouteSecurityManager;
 import jakarta.servlet.http.HttpSession;
 import java.time.Clock;
 import java.time.Instant;
@@ -41,7 +39,6 @@ import org.mockito.MockedStatic;
 
 class BBjSecurityStoreTest {
   private static final String SESSION_KEY = "webforj-bbj-session";
-  private static final String LOCATION_KEY = AbstractRouteSecurityManager.PRE_AUTH_LOCATION_KEY;
   private static final Instant NOW = Instant.parse("2026-01-01T00:00:00Z");
 
   private MockedStatic<Environment> environmentMock;
@@ -166,54 +163,6 @@ class BBjSecurityStoreTest {
   }
 
   @Nested
-  class ReadLocation {
-
-    @Test
-    void shouldReadTheSavedLocation() {
-      attributes.put(LOCATION_KEY, "/protected?x=1");
-
-      Optional<Location> location = store.readLocation();
-
-      assertEquals("/protected?x=1", location.orElseThrow().getFullURI());
-      assertTrue(attributes.containsKey(LOCATION_KEY));
-    }
-
-    @Test
-    void shouldReadNothingWhenNoLocationIsSaved() {
-      assertTrue(store.readLocation().isEmpty());
-    }
-
-    @ParameterizedTest
-    @MethodSource("invalidValues")
-    void shouldDiscardValueThatIsNotPathInsideTheApp(Object value) {
-      attributes.put(LOCATION_KEY, value);
-
-      assertTrue(store.readLocation().isEmpty());
-
-      assertFalse(attributes.containsKey(LOCATION_KEY));
-    }
-
-    private static Stream<Arguments> invalidValues() {
-      return Stream.of(Arguments.of("//evil"), Arguments.of("/evil\\path"),
-          Arguments.of("protected"), Arguments.of("https://evil.example"), Arguments.of(""),
-          Arguments.of("/x\u0001"), Arguments.of(42));
-    }
-  }
-
-  @Nested
-  class ClearLocation {
-
-    @Test
-    void shouldClearTheSavedLocation() {
-      attributes.put(LOCATION_KEY, "/protected");
-
-      store.clearLocation();
-
-      assertFalse(attributes.containsKey(LOCATION_KEY));
-    }
-  }
-
-  @Nested
   class UnavailableHttpSession {
 
     @ParameterizedTest
@@ -242,22 +191,6 @@ class BBjSecurityStoreTest {
       when(environment.getSessionAccessor()).thenReturn(accessor);
 
       assertDoesNotThrow(store::clearSession);
-    }
-
-    @ParameterizedTest
-    @MethodSource("unavailableAccessors")
-    void shouldReadNoLocation(Optional<HttpSession.Accessor> accessor) {
-      when(environment.getSessionAccessor()).thenReturn(accessor);
-
-      assertTrue(store.readLocation().isEmpty());
-    }
-
-    @ParameterizedTest
-    @MethodSource("unavailableAccessors")
-    void shouldNotThrowOnClearLocation(Optional<HttpSession.Accessor> accessor) {
-      when(environment.getSessionAccessor()).thenReturn(accessor);
-
-      assertDoesNotThrow(store::clearLocation);
     }
 
     private static Stream<Arguments> unavailableAccessors() {

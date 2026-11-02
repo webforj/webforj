@@ -63,12 +63,12 @@ public final class BBjSecurityRegistrar implements AppLifecycleListener {
 
     var router = Router.getCurrent();
     if (router != null) {
-      if (problem.isEmpty()) {
-        addService(router, properties, configuration);
-      }
-
       var context = new BBjRouteSecurityContext();
       var manager = new BBjRouteSecurityManager(configuration, context);
+      if (problem.isEmpty()) {
+        addService(router, properties, configuration, manager);
+      }
+
       var securityObserver = new RouteSecurityObserver(manager);
       router.getRenderer().addObserver(securityObserver);
       logger.log(Level.INFO, "Route security enabled with {0} evaluators",
@@ -79,7 +79,7 @@ public final class BBjSecurityRegistrar implements AppLifecycleListener {
   }
 
   private static void addService(Router router, BBjSecurityConfigurationProperties properties,
-      BBjRouteSecurityConfiguration configuration) {
+      BBjRouteSecurityConfiguration configuration, BBjRouteSecurityManager manager) {
     var gateway = new BBjAdminGateway(properties);
     logger.log(Level.INFO, "BBj Admin API at {0}:{1} with ssl {2} and truststore {3}",
         properties.getAdminHost(), String.valueOf(properties.getAdminPort()),
@@ -87,7 +87,7 @@ public final class BBjSecurityRegistrar implements AppLifecycleListener {
 
     var service = BBjAuthenticationService.builder().setGateway(gateway)
         .setStore(new BBjSecurityStore()).setProperties(properties).setConfiguration(configuration)
-        .setNavigator(router::navigate).build();
+        .setSecurityManager(manager).setNavigator(router::navigate).build();
     var observer = new BBjSessionObserver(service);
     router.getRenderer().addObserver(observer);
     ObjectTable.put(BBjSecurity.SERVICE_KEY, service);
