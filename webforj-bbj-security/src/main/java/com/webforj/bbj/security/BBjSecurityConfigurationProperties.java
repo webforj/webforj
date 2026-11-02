@@ -133,8 +133,15 @@ public final class BBjSecurityConfigurationProperties {
       readInt(config, CHECK_SECONDS, 0, 3600).ifPresent(properties::setCheckSeconds);
     }
     if (config.hasPath(RENEW_BEFORE_MINUTES)) {
-      readInt(config, RENEW_BEFORE_MINUTES, 0, properties.getTokenMinutes())
+      readInt(config, RENEW_BEFORE_MINUTES, 0, Integer.MAX_VALUE)
           .ifPresent(properties::setRenewBeforeMinutes);
+    }
+
+    int renewBeforeLimit = properties.getTokenMinutes() - 1;
+    if (properties.getRenewBeforeMinutes() > renewBeforeLimit) {
+      logger.log(Level.WARNING, "The configuration key {0} is not below {1} and is set to {2}",
+          RENEW_BEFORE_MINUTES, TOKEN_MINUTES, String.valueOf(renewBeforeLimit));
+      properties.setRenewBeforeMinutes(renewBeforeLimit);
     }
   }
 

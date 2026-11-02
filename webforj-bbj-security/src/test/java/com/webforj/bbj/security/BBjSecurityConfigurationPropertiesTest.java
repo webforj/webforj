@@ -385,12 +385,35 @@ class BBjSecurityConfigurationPropertiesTest {
 
     private static Stream<Arguments> acceptedRenewBeforeCases() {
       return Stream.of(Arguments.of("webforj.security.bbj.token.renew-before-minutes = 0", 0),
-          Arguments.of("webforj.security.bbj.token.renew-before-minutes = 30", 30), Arguments.of("""
+          Arguments.of("webforj.security.bbj.token.renew-before-minutes = 30", 29), Arguments.of("""
               webforj.security.bbj.token {
                 minutes = 600
                 renew-before-minutes = 600
               }
-              """, 600));
+              """, 599));
+    }
+
+    @Test
+    void shouldLowerTheDefaultRenewBeforeMinutesBelowTheTokenMinutes() {
+      Config config = ConfigFactory.parseString("webforj.security.bbj.token.minutes = 3");
+
+      properties = new BBjSecurityConfigurationProperties(config);
+
+      assertEquals(2, properties.getRenewBeforeMinutes());
+    }
+
+    @Test
+    void shouldLowerTheRenewBeforeMinutesEqualToTheTokenMinutesByOne() {
+      Config config = ConfigFactory.parseString("""
+          webforj.security.bbj.token {
+            minutes = 10
+            renew-before-minutes = 10
+          }
+          """);
+
+      properties = new BBjSecurityConfigurationProperties(config);
+
+      assertEquals(9, properties.getRenewBeforeMinutes());
     }
   }
 
@@ -622,7 +645,7 @@ class BBjSecurityConfigurationPropertiesTest {
 
       properties = new BBjSecurityConfigurationProperties(config);
 
-      assertEquals(5, properties.getRenewBeforeMinutes());
+      assertEquals(max - 1, properties.getRenewBeforeMinutes());
     }
 
     @ParameterizedTest
@@ -635,8 +658,8 @@ class BBjSecurityConfigurationPropertiesTest {
       List<LogRecord> warnings = getWarnings();
       assertEquals(1, warnings.size());
       assertEquals(
-          "The configuration key webforj.security.bbj.token.renew-before-minutes is not "
-              + "between 0 and %d and keeps its default".formatted(max),
+          "The configuration key webforj.security.bbj.token.renew-before-minutes is not below "
+              + "webforj.security.bbj.token.minutes and is set to %d".formatted(max - 1),
           new SimpleFormatter().formatMessage(warnings.get(0)));
     }
 
