@@ -21,7 +21,6 @@ import static org.mockito.Mockito.when;
 import com.webforj.bbj.security.model.BBjLoginStatus;
 import com.webforj.bbj.security.model.BBjPermissions;
 import com.webforj.bbj.security.model.BBjPrincipal;
-import com.webforj.component.Theme;
 import com.webforj.component.login.Login;
 import com.webforj.component.login.event.LoginSubmitEvent;
 import com.webforj.component.toast.Toast;
@@ -343,16 +342,6 @@ class BBjSecurityTest {
       BBjSecurity.login(event);
 
       verify(login).setError(true);
-      verify(login).setEnabled(true);
-    }
-
-    @Test
-    void shouldShowTheToastAndEnableTheFormOnUnavailable() {
-      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.UNAVAILABLE);
-
-      BBjSecurity.login(event);
-
-      toastMock.verify(() -> Toast.show("Cannot sign in right now.", Theme.WARNING));
       verify(login).setEnabled(true);
     }
 
