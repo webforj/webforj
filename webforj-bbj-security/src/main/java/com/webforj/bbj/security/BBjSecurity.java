@@ -32,6 +32,7 @@ public final class BBjSecurity {
    */
   public static final String SERVICE_KEY = BBjAuthenticationService.class.getName();
   private static final String UNAVAILABLE_TEXT = "Cannot sign in right now.";
+  private static final int MAX_CODE_ATTEMPTS = 5;
 
   private BBjSecurity() {}
 
@@ -63,9 +64,10 @@ public final class BBjSecurity {
    * factor code or refuses the given one, the code provider is asked for a code and the sign in is
    * repeated with it. The provider receives {@code false} on the first ask and {@code true} on each
    * ask after a refused code. When the provider returns {@code null}, the sign in stops and ends as
-   * {@link BBjLoginStatus#TWO_FACTOR_REQUIRED}. After a successful sign in the app navigates to the
-   * location the user requested before signing in, or to the default success path. When this method
-   * returns, the navigation has happened.
+   * {@link BBjLoginStatus#TWO_FACTOR_REQUIRED}. The sign in also stops after 5 refused codes and
+   * ends as {@link BBjLoginStatus#TWO_FACTOR_REQUIRED}. After a successful sign in the app
+   * navigates to the location the user requested before signing in, or to the default success path.
+   * When this method returns, the navigation has happened.
    * </p>
    *
    * @param userName the user name
@@ -121,7 +123,8 @@ public final class BBjSecurity {
    * code and the sign in is repeated with it. The provider receives {@code false} on the first ask
    * and {@code true} on each ask after a refused code. When the provider returns {@code null}, the
    * sign in stops and ends as {@link BBjLoginStatus#TWO_FACTOR_REQUIRED} with no error and no
-   * toast.
+   * toast. The sign in also stops after 5 refused codes and ends as
+   * {@link BBjLoginStatus#TWO_FACTOR_REQUIRED}.
    * </p>
    *
    * <p>
@@ -249,13 +252,15 @@ public final class BBjSecurity {
       Function<Boolean, String> codeProvider) {
     var status = sendLogin(userName, password, null);
     var retry = false;
-    while (status == BBjLoginStatus.TWO_FACTOR_REQUIRED) {
+    var attempts = 0;
+    while (status == BBjLoginStatus.TWO_FACTOR_REQUIRED && attempts < MAX_CODE_ATTEMPTS) {
       var code = codeProvider.apply(retry);
       if (code == null || code.isBlank()) {
         break;
       }
 
       retry = true;
+      attempts++;
       status = sendLogin(userName, password, code);
     }
 

@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -460,6 +462,23 @@ class BBjSecurityTest {
       order.verify(provider).apply(true);
       order.verify(service).login("alice", "pw", "222222");
       order.verify(service).openTargetLocation();
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.webforj.bbj.security.BBjSecurityTest#getSignInsWithProvider")
+    void shouldStopAfterFiveRefusedCodes(
+        BiFunction<LoginSubmitEvent, Function<Boolean, String>, BBjLoginStatus> signIn) {
+      when(service.login(eq("alice"), eq("pw"), any()))
+          .thenReturn(BBjLoginStatus.TWO_FACTOR_REQUIRED);
+      when(provider.apply(anyBoolean())).thenReturn("111111", "111111", "111111", "111111",
+          "111111", "111111", null);
+
+      BBjLoginStatus status = signIn.apply(event, provider);
+
+      assertEquals(BBjLoginStatus.TWO_FACTOR_REQUIRED, status);
+      verify(provider, times(5)).apply(anyBoolean());
+      verify(service, times(6)).login(any(), any(), any());
+      verify(service, never()).openTargetLocation();
     }
 
     @ParameterizedTest
