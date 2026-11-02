@@ -184,14 +184,19 @@ public final class BBjAdminGateway {
     String newToken = null;
     try {
       var minutes = tokenLifetime.getSeconds() / 60;
-      newToken = sendCall(oldToken, admin -> admin.renewToken(minutes, true));
+      newToken = sendCall(oldToken, admin -> admin.renewToken(minutes, false));
       var expiry = clock.instant().plus(tokenLifetime);
       var token = newToken;
       var principal = sendCall(newToken, admin -> readPrincipal(admin, token));
 
       return new BBjSession(principal, newToken, expiry);
     } catch (Exception e) {
-      throw toFailure(CallKind.TOKEN, e, oldToken, newToken);
+      BBjAdminFailure failure = toFailure(CallKind.TOKEN, e, oldToken, newToken);
+      if (newToken != null) {
+        endQuietly(newToken);
+      }
+
+      throw failure;
     }
   }
 
@@ -237,6 +242,17 @@ public final class BBjAdminGateway {
       return call.apply(admin);
     } finally {
       admin.release();
+    }
+  }
+
+  private void endQuietly(String token) {
+    try {
+      sendCall(token, admin -> {
+        admin.invalidateToken(token);
+        return null;
+      });
+    } catch (BBjAdminException | UnknownHostException | RuntimeException e) {
+      logger.log(Level.DEBUG, "An unused renewed token could not be ended");
     }
   }
 
