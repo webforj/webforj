@@ -302,7 +302,8 @@ class BBjSecurityRegistrarTest {
 
                     return builder;
                   });
-                  when(builder.build()).thenReturn(mock(BBjAuthenticationService.class));
+                  var mockService = mock(BBjAuthenticationService.class);
+                  when(builder.build()).thenReturn(mockService);
                 })) {
       registrar.onWillRun(app);
 
