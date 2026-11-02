@@ -106,7 +106,7 @@ class BBjAdminGatewayTest {
   }
 
   private void setRenewedAdmin(BBjAdminBase renewedAdmin) throws BBjAdminException {
-    when(admin.renewToken(30L, true)).thenReturn(RENEWED_TOKEN);
+    when(admin.renewToken(30L, false)).thenReturn(RENEWED_TOKEN);
     when(renewedAdmin.getSingleUserPermissions(RENEWED_TOKEN)).thenReturn(permissions);
     factory.when(() -> BBjAdminFactory.getBBjAdmin(loopback, 2002, false, 10000, RENEWED_TOKEN,
         null, Locale.ENGLISH, null, null)).thenReturn(renewedAdmin);
@@ -1119,7 +1119,7 @@ class BBjAdminGatewayTest {
 
       assertEquals(kind, failure.getKind());
       verify(admin, times(1)).release();
-      verify(renewedAdmin, times(1)).release();
+      verify(renewedAdmin, times(2)).release();
     }
 
     @ParameterizedTest
@@ -1135,7 +1135,7 @@ class BBjAdminGatewayTest {
 
       assertEquals(kind, failure.getKind());
       verify(admin, times(1)).release();
-      verify(renewedAdmin, times(1)).release();
+      verify(renewedAdmin, times(2)).release();
     }
 
     @ParameterizedTest
@@ -1152,7 +1152,7 @@ class BBjAdminGatewayTest {
 
       assertEquals(kind, failure.getKind());
       verify(admin, times(1)).release();
-      verify(renewedAdmin, times(1)).release();
+      verify(renewedAdmin, times(2)).release();
     }
 
     @Test
@@ -1168,6 +1168,46 @@ class BBjAdminGatewayTest {
       assertEquals(UNAVAILABLE + "BBjAdminException: bad *** and ***", failure.getMessage());
       assertTrue(records.stream().noneMatch(it -> String.valueOf(it.getMessage()).contains(TOKEN)
           || String.valueOf(it.getMessage()).contains(RENEWED_TOKEN)));
+    }
+
+    @Test
+    void shouldEndTheRenewedTokenWhenTheRenewedUserNameCannotBeRead() throws Exception {
+      setRenewedAdmin(renewedAdmin);
+      when(renewedAdmin.getUser()).thenThrow(new IllegalStateException("boom"));
+
+      BBjAdminFailure failure =
+          assertThrows(BBjAdminFailure.class, () -> gateway.renewSession(session));
+
+      assertEquals(Kind.UNAVAILABLE, failure.getKind());
+      assertEquals(UNAVAILABLE + "IllegalStateException: boom", failure.getMessage());
+      verify(renewedAdmin, times(1)).invalidateToken(RENEWED_TOKEN);
+      verify(admin, never()).invalidateToken(anyString());
+    }
+
+    @Test
+    void shouldThrowTheOriginalFailureWhenTheRenewedTokenCannotBeEnded() throws Exception {
+      setRenewedAdmin(renewedAdmin);
+      when(renewedAdmin.getUser()).thenThrow(new IllegalStateException("boom"));
+      doThrow(new BBjAdminException("end failed")).when(renewedAdmin)
+          .invalidateToken(RENEWED_TOKEN);
+
+      BBjAdminFailure failure =
+          assertThrows(BBjAdminFailure.class, () -> gateway.renewSession(session));
+
+      assertEquals(Kind.UNAVAILABLE, failure.getKind());
+      assertEquals(UNAVAILABLE + "IllegalStateException: boom", failure.getMessage());
+      verify(renewedAdmin, times(1)).invalidateToken(RENEWED_TOKEN);
+    }
+
+    @Test
+    void shouldNotEndAnyTokenWhenTheRenewalFails() throws Exception {
+      when(admin.renewToken(30L, false)).thenThrow(new IllegalStateException("boom"));
+
+      BBjAdminFailure failure =
+          assertThrows(BBjAdminFailure.class, () -> gateway.renewSession(session));
+
+      assertEquals(UNAVAILABLE + "IllegalStateException: boom", failure.getMessage());
+      verify(admin, never()).invalidateToken(anyString());
     }
   }
 }

@@ -226,8 +226,7 @@ public final class BBjSecurity {
    * @param permission the permission
    *
    * @return {@code true} if the signed in user holds the permission, {@code false} if nobody has
-   *         signed in or BBj security is not set up
-   * @throws NullPointerException if {@code permission} is {@code null}
+   *         signed in, BBj security is not set up, or the permission is {@code null}
    */
   public static boolean hasAuthority(BBjPermissions permission) {
     return permission != null && hasAuthority(permission.toString());
