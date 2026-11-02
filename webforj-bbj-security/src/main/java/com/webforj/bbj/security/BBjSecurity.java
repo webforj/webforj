@@ -3,10 +3,8 @@ package com.webforj.bbj.security;
 import com.webforj.bbj.security.model.BBjLoginStatus;
 import com.webforj.bbj.security.model.BBjPermissions;
 import com.webforj.bbj.security.model.BBjPrincipal;
-import com.webforj.component.Theme;
 import com.webforj.component.login.Login;
 import com.webforj.component.login.event.LoginSubmitEvent;
-import com.webforj.component.toast.Toast;
 import com.webforj.environment.ObjectTable;
 import java.util.Objects;
 import java.util.Optional;
@@ -31,7 +29,6 @@ public final class BBjSecurity {
    * The key under which the {@link BBjAuthenticationService} is stored in the object table.
    */
   public static final String SERVICE_KEY = BBjAuthenticationService.class.getName();
-  private static final String UNAVAILABLE_TEXT = "Cannot sign in right now.";
   private static final int MAX_CODE_ATTEMPTS = 5;
 
   private BBjSecurity() {}
@@ -159,8 +156,6 @@ public final class BBjSecurity {
 
     if (status == BBjLoginStatus.INVALID_CREDENTIALS) {
       login.setError(true);
-    } else if (status == BBjLoginStatus.UNAVAILABLE) {
-      Toast.show(UNAVAILABLE_TEXT, Theme.WARNING);
     }
 
     if (status == BBjLoginStatus.AUTHENTICATED) {
