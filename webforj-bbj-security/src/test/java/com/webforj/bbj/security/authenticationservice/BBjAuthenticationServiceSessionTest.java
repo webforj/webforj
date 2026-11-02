@@ -27,7 +27,8 @@ class BBjAuthenticationServiceSessionTest {
   class Construction {
 
     @ParameterizedTest
-    @ValueSource(strings = {"gateway", "store", "properties", "configuration", "navigator"})
+    @ValueSource(strings = {"gateway", "store", "properties", "configuration", "securityManager",
+        "navigator"})
     void shouldRefuseMissingValueNamingIt(String name) {
       BBjAuthenticationService.Builder builder = fixture.createBuilder();
       switch (name) {
@@ -35,6 +36,7 @@ class BBjAuthenticationServiceSessionTest {
         case "store" -> builder.setStore(null);
         case "properties" -> builder.setProperties(null);
         case "configuration" -> builder.setConfiguration(null);
+        case "securityManager" -> builder.setSecurityManager(null);
         default -> builder.setNavigator(null);
       }
 

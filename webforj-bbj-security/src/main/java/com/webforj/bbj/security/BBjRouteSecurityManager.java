@@ -93,8 +93,9 @@ public final class BBjRouteSecurityManager extends AbstractRouteSecurityManager 
   @Override
   protected void onPostAccessDenied(RouteAccessDecision decision, NavigationContext context) {
     switch (decision.getDenialType()) {
-      case AUTHENTICATION_REQUIRED ->
+      case AUTHENTICATION_REQUIRED -> {
         configuration.getAuthenticationLocation().ifPresent(this::navigateRecreating);
+      }
       case ACCESS_DENIED -> configuration.getDenyLocation().ifPresent(location -> {
         if (decision.getReason() != null && !decision.getReason().isEmpty()) {
           location.getQueryParameters().put("reason", decision.getReason());
@@ -106,8 +107,8 @@ public final class BBjRouteSecurityManager extends AbstractRouteSecurityManager 
   }
 
   private void loadEvaluators() {
-    ServiceLoader<BBjRouteSecurityEvaluator> loader = ServiceLoader
-        .load(BBjRouteSecurityEvaluator.class, BBjRouteSecurityManager.class.getClassLoader());
+    ServiceLoader<BBjRouteSecurityEvaluator> loader =
+        ServiceLoader.load(BBjRouteSecurityEvaluator.class);
     loader.forEach(evaluator -> {
       String name = evaluator.getClass().getName();
       int priority = evaluator.getPriority();

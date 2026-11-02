@@ -283,7 +283,7 @@ class BBjAdminGatewayTest {
     }
 
     @Test
-    void shouldGiveNoAuthoritiesToAUserWithoutPermissions() throws Exception {
+    void shouldGiveNoAuthoritiesToUserWithoutPermissions() throws Exception {
       setToken(TOKEN);
       setAdmin(TOKEN);
       when(admin.getUser()).thenReturn("alice");

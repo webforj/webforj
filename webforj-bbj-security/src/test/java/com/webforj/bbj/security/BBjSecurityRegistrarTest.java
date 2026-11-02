@@ -3,6 +3,7 @@ package com.webforj.bbj.security;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -282,6 +283,30 @@ class BBjSecurityRegistrarTest {
 
       assertEquals(Optional.of(logoutLocation), configuration.getLogoutLocation());
       verify(router).navigate(logoutLocation);
+    }
+  }
+
+  @Test
+  void shouldGiveTheServiceTheRouteSecurityManager() {
+    List<Object> managersGiven = new ArrayList<>();
+    when(environment.getConfig()).thenReturn(ConfigFactory.empty());
+
+    try (
+        MockedConstruction<BBjRouteSecurityManager> managers =
+            mockConstruction(BBjRouteSecurityManager.class);
+        MockedConstruction<BBjAuthenticationService.Builder> builders =
+            mockConstruction(BBjAuthenticationService.Builder.class,
+                withSettings().defaultAnswer(RETURNS_SELF), (builder, context) -> {
+                  when(builder.setSecurityManager(any())).thenAnswer(invocation -> {
+                    managersGiven.add(invocation.getArgument(0));
+
+                    return builder;
+                  });
+                  when(builder.build()).thenReturn(mock(BBjAuthenticationService.class));
+                })) {
+      registrar.onWillRun(app);
+
+      assertSame(managers.constructed().get(0), managersGiven.get(0));
     }
   }
 

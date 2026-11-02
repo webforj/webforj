@@ -12,6 +12,7 @@ import com.webforj.bbj.security.model.BBjLoginStatus;
 import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.bbj.security.model.BBjSession;
 import com.webforj.router.history.Location;
+import com.webforj.router.security.RouteSecurityManager;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -52,6 +53,8 @@ public final class SignInFixture implements AutoCloseable {
   /** The route security configuration of the properties. */
   public final BBjRouteSecurityConfiguration configuration =
       new BBjRouteSecurityConfiguration(properties);
+  /** The mocked route security manager, which holds the location requested before the sign in. */
+  public final RouteSecurityManager securityManager = mock(RouteSecurityManager.class);
   /** The mocked navigator. */
   public final Consumer<Location> navigator = createNavigator();
   /** The log records of the service. */
@@ -131,7 +134,8 @@ public final class SignInFixture implements AutoCloseable {
   /** Creates a builder of the service with all values of the fixture. */
   public BBjAuthenticationService.Builder createBuilder() {
     return BBjAuthenticationService.builder().setGateway(gateway).setStore(store)
-        .setProperties(properties).setConfiguration(configuration).setNavigator(navigator);
+        .setProperties(properties).setConfiguration(configuration)
+        .setSecurityManager(securityManager).setNavigator(navigator);
   }
 
   /**
