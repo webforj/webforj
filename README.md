@@ -54,7 +54,7 @@ claude plugin install webforj@webforj-ai
 - **[MCP server](https://docs.webforj.com/docs/ai-tooling/mcp):** live access to the webforJ docs, project scaffolding, theme generation and design token validation, so answers come from current documentation instead of training data.
 - **[Agent Skills](https://docs.webforj.com/docs/ai-tooling/agent-skills):** step-by-step workflows for building forms, creating components, styling apps, securing routes, async work, localization and version upgrades.
 - **[Browserless testing](https://docs.webforj.com/docs/testing/testbed/overview):** views run inside plain JUnit tests, with no browser and no server, so your assistant gets a pass or a fail right after every change it makes.
-- **Docs that talk back:** stuck on a page? Open it in ChatGPT or Claude with one click and ask your question right there.
+- **Docs that answer back:** ask your question in the docs search and get a direct AI answer drawn from the docs, or open any page in ChatGPT or Claude with one click.
 
 ## AI agents that use your app
 
