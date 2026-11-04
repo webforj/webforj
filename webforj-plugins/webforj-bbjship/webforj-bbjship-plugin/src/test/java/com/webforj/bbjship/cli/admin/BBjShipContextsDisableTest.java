@@ -9,7 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.basis.api.admin.BBjAdminContextInfo;
-import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
+import com.webforj.bbjship.AdminList;
 import java.nio.file.Path;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ class BBjShipContextsDisableTest extends EmptyWebAppServer {
   @Test
   void shouldStopAndRemoveTheRunningBbjShipContext() throws Exception {
     Path documentRoot = home.resolve(HTDOCS_FOLDER);
-    when(server.getContextNames()).thenReturn(new BBjAdminAdapterList<>(List.of(BBJSHIP_CONTEXT)));
+    when(server.getContextNames()).thenReturn(new AdminList<>(List.of(BBJSHIP_CONTEXT)));
     when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA))
         .thenReturn(RUNNING.formatted(BBJSHIP_CONTEXT, documentRoot));
@@ -43,7 +43,7 @@ class BBjShipContextsDisableTest extends EmptyWebAppServer {
   @Test
   void shouldRemoveStoppedContextWithoutStoppingIt() throws Exception {
     Path documentRoot = home.resolve(HTDOCS_FOLDER);
-    when(server.getContextNames()).thenReturn(new BBjAdminAdapterList<>(List.of(BBJSHIP_CONTEXT)));
+    when(server.getContextNames()).thenReturn(new AdminList<>(List.of(BBJSHIP_CONTEXT)));
     when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA))
         .thenReturn(CREATED.formatted(BBJSHIP_CONTEXT, documentRoot));

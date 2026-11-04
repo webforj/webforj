@@ -5,7 +5,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.basis.api.admin.BBjAdminBase;
-import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
+import com.webforj.bbjship.AdminList;
 import com.webforj.bbjship.cli.BBjShipCli;
 import com.webforj.bbjship.cli.TerminalLines;
 import com.webforj.bbjship.foundation.BBjShipPlugin;
@@ -36,7 +36,7 @@ class BBjShipCommandGroupTest {
     Path home = Home.createCopy(temporary.resolve("bbx"));
     output = new ByteArrayOutputStream();
     BBjAdminBase admin = mock(BBjAdminBase.class);
-    when(admin.getClasspathNames()).thenReturn(new BBjAdminAdapterList<>(List.of()));
+    when(admin.getClasspathNames()).thenReturn(new AdminList<>(List.of()));
     Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
     cli = BBjShipCli.create(new BBjShipPlugin(home)).setTerminal(new TerminalLines(stream))
         .setAnsi(Ansi.OFF).setSessions(login -> admin).build();

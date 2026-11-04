@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 import com.basis.api.admin.BBjAdminContextInfo;
 import com.basis.api.admin.BBjAdminException;
 import com.basis.api.admin.BBjAdminWebAppServer;
-import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
+import com.webforj.bbjship.AdminList;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -132,8 +132,7 @@ class BBjShipContextsEnableTest extends EmptyWebAppServer {
   @Test
   void shouldUpdateTheRunningBbjShipContextAndRestartIt() throws Exception {
     Path documentRoot = home.resolve(HTDOCS_FOLDER);
-    when(server.getContextNames())
-        .thenReturn(new BBjAdminAdapterList<>(List.of("root", BBJSHIP_CONTEXT)));
+    when(server.getContextNames()).thenReturn(new AdminList<>(List.of("root", BBJSHIP_CONTEXT)));
     when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA))
         .thenReturn(RUNNING.formatted(BBJSHIP_CONTEXT, documentRoot));
@@ -261,8 +260,7 @@ class BBjShipContextsEnableTest extends EmptyWebAppServer {
   void shouldRestoreTheBbjShipContextWhenTheBbjShipDoesNotAnswerOnThePort() throws Exception {
     Path documentRoot = home.resolve(HTDOCS_FOLDER);
     String running = RUNNING.formatted(BBJSHIP_CONTEXT, documentRoot);
-    when(server.getContextNames())
-        .thenReturn(new BBjAdminAdapterList<>(List.of("root", BBJSHIP_CONTEXT)));
+    when(server.getContextNames()).thenReturn(new AdminList<>(List.of("root", BBJSHIP_CONTEXT)));
     when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn(running);
     contexts = new BBjShipContexts(admin, plugin, Duration.ofMillis(300));
@@ -392,8 +390,7 @@ class BBjShipContextsEnableTest extends EmptyWebAppServer {
   void shouldRestoreTheBbjShipContextWhenBbjServicesRefusesTheSslPort() throws Exception {
     Path documentRoot = home.resolve(HTDOCS_FOLDER);
     String running = RUNNING.formatted(BBJSHIP_CONTEXT, documentRoot);
-    when(server.getContextNames())
-        .thenReturn(new BBjAdminAdapterList<>(List.of("root", BBJSHIP_CONTEXT)));
+    when(server.getContextNames()).thenReturn(new AdminList<>(List.of("root", BBJSHIP_CONTEXT)));
     when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn(running);
     doThrow(new BBjAdminException(
@@ -417,7 +414,7 @@ class BBjShipContextsEnableTest extends EmptyWebAppServer {
 
   @Test
   void shouldRefuseContextOfAnotherApplication() throws Exception {
-    when(server.getContextNames()).thenReturn(new BBjAdminAdapterList<>(List.of(BBJSHIP_CONTEXT)));
+    when(server.getContextNames()).thenReturn(new AdminList<>(List.of(BBJSHIP_CONTEXT)));
     when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA))
         .thenReturn(RUNNING.formatted(BBJSHIP_CONTEXT, "/srv/other/htdocs"));

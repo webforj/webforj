@@ -11,7 +11,7 @@ import com.basis.api.admin.BBjAdminAppDeploymentApplication;
 import com.basis.api.admin.BBjAdminAppDeploymentConfiguration;
 import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.BBjAdminException;
-import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
+import com.webforj.bbjship.AdminList;
 import com.webforj.bbjship.Deployer;
 import com.webforj.bbjship.DevelopmentRunFiles;
 import com.webforj.bbjship.foundation.DeploymentArchive;
@@ -52,8 +52,7 @@ final class DeployerListingTest {
     configuration = mock(BBjAdminAppDeploymentConfiguration.class);
     registered = mock(BBjAdminAppDeploymentApplication.class);
     when(admin.getRemoteConfiguration()).thenReturn(configuration);
-    when(configuration.getApplications())
-        .thenReturn(new BBjAdminAdapterList<>(List.of(registered)));
+    when(configuration.getApplications()).thenReturn(new AdminList<>(List.of(registered)));
     when(registered.getString(BBjAdminAppDeploymentApplication.NAME)).thenReturn(NAME);
     when(registered.getString(BBjAdminAppDeploymentApplication.PROGRAM))
         .thenReturn(previous.resolve("bbj/webforj.bbj").toString());
@@ -74,7 +73,7 @@ final class DeployerListingTest {
     when(alphaRegistration.getString(BBjAdminAppDeploymentApplication.CLASSPATH))
         .thenReturn("webforj_bbjship_alpha");
     when(configuration.getApplications())
-        .thenReturn(new BBjAdminAdapterList<>(List.of(registered, alphaRegistration)));
+        .thenReturn(new AdminList<>(List.of(registered, alphaRegistration)));
 
     List<PublishedApplication> applications = Deployer.getApplications(root.toString(), admin);
 
@@ -119,7 +118,7 @@ final class DeployerListingTest {
 
   @Test
   void shouldListNothingWhenNoApplicationIsRegistered() throws Exception {
-    when(configuration.getApplications()).thenReturn(new BBjAdminAdapterList<>(List.of()));
+    when(configuration.getApplications()).thenReturn(new AdminList<>(List.of()));
 
     List<PublishedApplication> applications = Deployer.getApplications(root.toString(), admin);
 
@@ -132,8 +131,7 @@ final class DeployerListingTest {
     Files.createDirectories(root.resolve(".staging"));
     BBjAdminAppDeploymentApplication missing = mock(BBjAdminAppDeploymentApplication.class);
     when(missing.getString(BBjAdminAppDeploymentApplication.NAME)).thenReturn("missing");
-    when(configuration.getApplications())
-        .thenReturn(new BBjAdminAdapterList<>(List.of(registered, missing)));
+    when(configuration.getApplications()).thenReturn(new AdminList<>(List.of(registered, missing)));
 
     List<PublishedApplication> applications = Deployer.getApplications(root.toString(), admin);
 

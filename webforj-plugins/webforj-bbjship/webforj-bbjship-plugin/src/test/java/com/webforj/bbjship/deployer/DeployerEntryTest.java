@@ -13,10 +13,10 @@ import static org.mockito.Mockito.when;
 import com.basis.api.admin.BBjAdminAppDeploymentApplication;
 import com.basis.api.admin.BBjAdminAppDeploymentConfiguration;
 import com.basis.api.admin.BBjAdminBase;
-import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
+import com.webforj.bbjship.AdminList;
 import com.webforj.bbjship.ClasspathRelease;
-import com.webforj.bbjship.Deployer;
 import com.webforj.bbjship.Deployer.DeploymentResult;
+import com.webforj.bbjship.Deployer;
 import com.webforj.bbjship.DeploymentException;
 import com.webforj.bbjship.DevelopmentRunFiles;
 import com.webforj.bbjship.foundation.DeploymentArchive;
@@ -62,10 +62,9 @@ final class DeployerEntryTest {
     configuration = mock(BBjAdminAppDeploymentConfiguration.class);
     BBjAdminAppDeploymentApplication registered = mock(BBjAdminAppDeploymentApplication.class);
     when(admin.getRemoteConfiguration()).thenReturn(configuration);
-    when(admin.getClasspathNames()).thenReturn(new BBjAdminAdapterList<>(List.of(CLASSPATH_NAME)));
-    when(admin.getClasspath(CLASSPATH_NAME)).thenReturn(new BBjAdminAdapterList<>(List.of()));
-    when(configuration.getApplications())
-        .thenReturn(new BBjAdminAdapterList<>(List.of(registered)));
+    when(admin.getClasspathNames()).thenReturn(new AdminList<>(List.of(CLASSPATH_NAME)));
+    when(admin.getClasspath(CLASSPATH_NAME)).thenReturn(new AdminList<>(List.of()));
+    when(configuration.getApplications()).thenReturn(new AdminList<>(List.of(registered)));
     BBjAdminAppDeploymentApplication created = mock(BBjAdminAppDeploymentApplication.class);
     when(configuration.createApplication()).thenReturn(created);
     when(registered.getString(BBjAdminAppDeploymentApplication.NAME)).thenReturn(NAME);
@@ -73,8 +72,8 @@ final class DeployerEntryTest {
         .thenReturn(previous.resolve("bbj/webforj.bbj").toString());
     when(registered.getString(BBjAdminAppDeploymentApplication.CLASSPATH))
         .thenReturn(CLASSPATH_NAME);
-    when(registered.getArguments()).thenReturn(new BBjAdminAdapterList<>(List.of()));
-    when(registered.getJavaArguments()).thenReturn(new BBjAdminAdapterList<>(List.of()));
+    when(registered.getArguments()).thenReturn(new AdminList<>(List.of()));
+    when(registered.getJavaArguments()).thenReturn(new AdminList<>(List.of()));
   }
 
   @Test

@@ -17,8 +17,8 @@ import com.basis.api.admin.BBjAdminAppDeploymentConfiguration;
 import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.BBjAdminException;
 import com.basis.api.admin.BBjAdminList;
-import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
 import com.typesafe.config.ConfigException;
+import com.webforj.bbjship.AdminList;
 import com.webforj.bbjship.ClasspathRelease;
 import com.webforj.bbjship.Deployer;
 import com.webforj.bbjship.DeploymentException;
@@ -70,9 +70,9 @@ final class DeployerConfigurationTest {
         mock(BBjAdminAppDeploymentConfiguration.class);
     application = mock(BBjAdminAppDeploymentApplication.class);
     when(admin.getRemoteConfiguration()).thenReturn(configuration);
-    when(admin.getClasspathNames()).thenReturn(new BBjAdminAdapterList<>(List.of()));
+    when(admin.getClasspathNames()).thenReturn(new AdminList<>(List.of()));
     when(admin.getBBjProcesses()).thenReturn(List.of());
-    when(configuration.getApplications()).thenReturn(new BBjAdminAdapterList<>(List.of()));
+    when(configuration.getApplications()).thenReturn(new AdminList<>(List.of()));
     when(configuration.createApplication()).thenReturn(application);
   }
 
@@ -215,7 +215,7 @@ final class DeployerConfigurationTest {
 
   @Test
   void shouldRegisterTheProgramArgumentsInOrderInPlaceOfThePreviousOnes() throws Exception {
-    BBjAdminList<String> arguments = new BBjAdminAdapterList<>(List.of("stale"));
+    BBjAdminList<String> arguments = new AdminList<>(List.of("stale"));
     when(application.getArguments()).thenReturn(arguments);
     Path app = HelloApp.createCopy(temporary.resolve(NAME));
     Files.writeString(app.resolve(WEBFORJ_CONF), """

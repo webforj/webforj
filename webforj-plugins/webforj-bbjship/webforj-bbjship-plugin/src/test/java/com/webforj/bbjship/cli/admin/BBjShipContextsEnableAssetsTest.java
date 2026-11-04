@@ -17,7 +17,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.basis.api.admin.BBjAdminContextInfo;
-import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
+import com.webforj.bbjship.AdminList;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -40,8 +40,7 @@ class BBjShipContextsEnableAssetsTest extends EmptyWebAppServer {
 
   @Test
   void shouldLeaveTheServerAloneWhenTheAssetsContextDoesNotExist() throws Exception {
-    when(server.getContextNames())
-        .thenReturn(new BBjAdminAdapterList<>(List.of("root", BBJSHIP_CONTEXT)));
+    when(server.getContextNames()).thenReturn(new AdminList<>(List.of("root", BBJSHIP_CONTEXT)));
     when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA))
         .thenReturn(RUNNING.formatted(BBJSHIP_CONTEXT, home.resolve(HTDOCS_FOLDER)));
@@ -59,7 +58,7 @@ class BBjShipContextsEnableAssetsTest extends EmptyWebAppServer {
   void shouldMoveTheAssetsContextToThePortsOfTheBbjShipContextAndRestartIt() throws Exception {
     BBjAdminContextInfo bbjShip = mock(BBjAdminContextInfo.class);
     when(server.getContextNames())
-        .thenReturn(new BBjAdminAdapterList<>(List.of("root", BBJSHIP_CONTEXT, ASSETS_CONTEXT)));
+        .thenReturn(new AdminList<>(List.of("root", BBJSHIP_CONTEXT, ASSETS_CONTEXT)));
     when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(bbjShip);
     when(bbjShip.getString(BBjAdminContextInfo.JSON_DATA))
         .thenReturn(RUNNING.formatted(BBJSHIP_CONTEXT, home.resolve(HTDOCS_FOLDER)));
@@ -124,7 +123,7 @@ class BBjShipContextsEnableAssetsTest extends EmptyWebAppServer {
   void shouldRestartTheAssetsContextOnThePortsOfTheBbjShipContextAsItIs() throws Exception {
     BBjAdminContextInfo bbjShip = mock(BBjAdminContextInfo.class);
     when(server.getContextNames())
-        .thenReturn(new BBjAdminAdapterList<>(List.of("root", BBJSHIP_CONTEXT, ASSETS_CONTEXT)));
+        .thenReturn(new AdminList<>(List.of("root", BBJSHIP_CONTEXT, ASSETS_CONTEXT)));
     when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(bbjShip);
     when(bbjShip.getString(BBjAdminContextInfo.JSON_DATA))
         .thenReturn(RUNNING.formatted(BBJSHIP_CONTEXT, home.resolve(HTDOCS_FOLDER)));
@@ -153,7 +152,7 @@ class BBjShipContextsEnableAssetsTest extends EmptyWebAppServer {
   void shouldLeaveTheAssetsContextStartedInThisSessionOnTheSamePortsAsItIs() throws Exception {
     BBjAdminContextInfo bbjShip = mock(BBjAdminContextInfo.class);
     when(server.getContextNames())
-        .thenReturn(new BBjAdminAdapterList<>(List.of("root", BBJSHIP_CONTEXT, ASSETS_CONTEXT)));
+        .thenReturn(new AdminList<>(List.of("root", BBJSHIP_CONTEXT, ASSETS_CONTEXT)));
     when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(bbjShip);
     when(bbjShip.getString(BBjAdminContextInfo.JSON_DATA))
         .thenReturn(RUNNING.formatted(BBJSHIP_CONTEXT, home.resolve(HTDOCS_FOLDER)));
@@ -183,7 +182,7 @@ class BBjShipContextsEnableAssetsTest extends EmptyWebAppServer {
     BBjAdminContextInfo bbjShip = mock(BBjAdminContextInfo.class);
     String running = RUNNING.formatted(BBJSHIP_CONTEXT, home.resolve(HTDOCS_FOLDER));
     when(server.getContextNames())
-        .thenReturn(new BBjAdminAdapterList<>(List.of("root", BBJSHIP_CONTEXT, ASSETS_CONTEXT)));
+        .thenReturn(new AdminList<>(List.of("root", BBJSHIP_CONTEXT, ASSETS_CONTEXT)));
     when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(bbjShip);
     when(bbjShip.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn(running);
     when(server.getContextInfo(ASSETS_CONTEXT)).thenReturn(info);
@@ -220,7 +219,7 @@ class BBjShipContextsEnableAssetsTest extends EmptyWebAppServer {
           "Document Base": "%s"
         }""".formatted(home.resolve(ASSETS_FOLDER));
     when(server.getContextNames())
-        .thenReturn(new BBjAdminAdapterList<>(List.of("root", BBJSHIP_CONTEXT, ASSETS_CONTEXT)));
+        .thenReturn(new AdminList<>(List.of("root", BBJSHIP_CONTEXT, ASSETS_CONTEXT)));
     when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(bbjShip);
     when(bbjShip.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn(running);
     when(server.getContextInfo(ASSETS_CONTEXT)).thenReturn(info);

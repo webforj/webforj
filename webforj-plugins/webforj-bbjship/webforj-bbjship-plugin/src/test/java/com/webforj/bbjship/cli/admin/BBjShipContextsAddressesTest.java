@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import com.basis.api.admin.BBjAdminContextInfo;
-import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
+import com.webforj.bbjship.AdminList;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Stream;
@@ -18,8 +18,7 @@ class BBjShipContextsAddressesTest extends EmptyWebAppServer {
   @ParameterizedTest
   @MethodSource("getUnsetSslPorts")
   void shouldReadUnsetSslPortAsNoHttpsAddress(String sslPort) throws Exception {
-    when(server.getContextNames())
-        .thenReturn(new BBjAdminAdapterList<>(List.of("root", BBJSHIP_CONTEXT)));
+    when(server.getContextNames()).thenReturn(new AdminList<>(List.of("root", BBJSHIP_CONTEXT)));
     when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA))
         .thenReturn("{\"HTTP port\": 8888, %s\"Document Base\": \"%s\"}".formatted(sslPort,

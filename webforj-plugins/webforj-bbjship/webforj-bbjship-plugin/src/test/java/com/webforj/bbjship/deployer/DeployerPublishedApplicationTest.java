@@ -23,10 +23,10 @@ import com.basis.api.admin.BBjAdminAppDeploymentConfiguration;
 import com.basis.api.admin.BBjAdminBBjProcess;
 import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.BBjAdminException;
-import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
+import com.webforj.bbjship.AdminList;
 import com.webforj.bbjship.ClasspathRelease;
-import com.webforj.bbjship.Deployer;
 import com.webforj.bbjship.Deployer.DeploymentResult;
+import com.webforj.bbjship.Deployer;
 import com.webforj.bbjship.foundation.DeploymentArchive;
 import com.webforj.bbjship.foundation.HelloApp;
 import java.io.ByteArrayInputStream;
@@ -90,25 +90,24 @@ final class DeployerPublishedApplicationTest {
         previous.resolve("dependencies/00003-webforj-data-26.03-SNAPSHOT.jar").toString(),
         previous.resolve(APPLICATION_JAR).toString());
     when(admin.getRemoteConfiguration()).thenReturn(configuration);
-    when(admin.getClasspathNames()).thenReturn(new BBjAdminAdapterList<>(List.of(CLASSPATH_NAME)));
-    when(admin.getClasspath(CLASSPATH_NAME)).thenReturn(new BBjAdminAdapterList<>(classpath));
+    when(admin.getClasspathNames()).thenReturn(new AdminList<>(List.of(CLASSPATH_NAME)));
+    when(admin.getClasspath(CLASSPATH_NAME)).thenReturn(new AdminList<>(classpath));
     when(configuration.createApplication()).thenReturn(published);
     registered = mock(BBjAdminAppDeploymentApplication.class);
-    when(configuration.getApplications())
-        .thenReturn(new BBjAdminAdapterList<>(List.of(registered)));
+    when(configuration.getApplications()).thenReturn(new AdminList<>(List.of(registered)));
     when(registered.getString(BBjAdminAppDeploymentApplication.NAME)).thenReturn(NAME);
     when(registered.getString(BBjAdminAppDeploymentApplication.PROGRAM))
         .thenReturn(previous.resolve(PROGRAM).toString());
     when(registered.getString(BBjAdminAppDeploymentApplication.CLASSPATH))
         .thenReturn(CLASSPATH_NAME);
-    when(registered.getArguments()).thenReturn(new BBjAdminAdapterList<>(List.of()));
-    when(registered.getJavaArguments()).thenReturn(new BBjAdminAdapterList<>(List.of()));
+    when(registered.getArguments()).thenReturn(new AdminList<>(List.of()));
+    when(registered.getJavaArguments()).thenReturn(new AdminList<>(List.of()));
   }
 
   @Test
   void shouldRegisterTheApplicationWithItsClasspathAndLauncher() throws Exception {
-    when(configuration.getApplications()).thenReturn(new BBjAdminAdapterList<>(List.of()));
-    when(admin.getClasspathNames()).thenReturn(new BBjAdminAdapterList<>(List.of()));
+    when(configuration.getApplications()).thenReturn(new AdminList<>(List.of()));
+    when(admin.getClasspathNames()).thenReturn(new AdminList<>(List.of()));
     Path first = temporary.resolve("first-deployments");
     InputStream upload = new ByteArrayInputStream(Files.readAllBytes(archive));
     String destination = first.toString();

@@ -18,7 +18,7 @@ import com.basis.api.admin.BBjAdminAppDeploymentConfiguration;
 import com.basis.api.admin.BBjAdminBBjProcess;
 import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.BBjAdminException;
-import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
+import com.webforj.bbjship.AdminList;
 import com.webforj.bbjship.ClasspathRelease;
 import com.webforj.bbjship.Deployer;
 import com.webforj.bbjship.DeploymentException;
@@ -97,25 +97,22 @@ final class DeployerFailureTest {
     replacement = mock(BBjAdminAppDeploymentApplication.class);
     restored = mock(BBjAdminAppDeploymentApplication.class);
     when(admin.getRemoteConfiguration()).thenReturn(configuration);
-    when(admin.getClasspathNames()).thenReturn(new BBjAdminAdapterList<>(List.of(CLASSPATH_NAME)));
-    when(admin.getClasspath(CLASSPATH_NAME))
-        .thenReturn(new BBjAdminAdapterList<>(previousClasspath));
+    when(admin.getClasspathNames()).thenReturn(new AdminList<>(List.of(CLASSPATH_NAME)));
+    when(admin.getClasspath(CLASSPATH_NAME)).thenReturn(new AdminList<>(previousClasspath));
     when(admin.getBBjProcesses()).thenReturn(List.of());
     when(configuration.createApplication()).thenReturn(restored);
     BBjAdminAppDeploymentApplication registered = mock(BBjAdminAppDeploymentApplication.class);
-    when(configuration.getApplications())
-        .thenReturn(new BBjAdminAdapterList<>(List.of(registered)));
+    when(configuration.getApplications()).thenReturn(new AdminList<>(List.of(registered)));
     when(registered.getString(BBjAdminAppDeploymentApplication.NAME)).thenReturn(NAME);
     when(registered.getString(BBjAdminAppDeploymentApplication.PROGRAM)).thenReturn(program);
     when(registered.getString(BBjAdminAppDeploymentApplication.CLASSPATH))
         .thenReturn(CLASSPATH_NAME);
     when(registered.getProperties()).thenReturn(previousProperties);
-    when(registered.getArguments())
-        .thenReturn(new BBjAdminAdapterList<>(List.of(PREVIOUS_ARGUMENT)));
+    when(registered.getArguments()).thenReturn(new AdminList<>(List.of(PREVIOUS_ARGUMENT)));
     when(registered.getJavaArguments())
-        .thenReturn(new BBjAdminAdapterList<>(List.of(PREVIOUS_JAVA_ARGUMENT)));
-    when(restored.getArguments()).thenReturn(new BBjAdminAdapterList<>(List.of()));
-    when(restored.getJavaArguments()).thenReturn(new BBjAdminAdapterList<>(List.of()));
+        .thenReturn(new AdminList<>(List.of(PREVIOUS_JAVA_ARGUMENT)));
+    when(restored.getArguments()).thenReturn(new AdminList<>(List.of()));
+    when(restored.getJavaArguments()).thenReturn(new AdminList<>(List.of()));
   }
 
   @ParameterizedTest
@@ -232,8 +229,8 @@ final class DeployerFailureTest {
   @Test
   void shouldRemoveTheNewFolderAndRegistrationWhenTheFirstPublicationFails() throws Exception {
     BBjAdminException primary = new BBjAdminException(PUBLICATION_FAILURE);
-    when(configuration.getApplications()).thenReturn(new BBjAdminAdapterList<>(List.of()));
-    when(admin.getClasspathNames()).thenReturn(new BBjAdminAdapterList<>(List.of()));
+    when(configuration.getApplications()).thenReturn(new AdminList<>(List.of()));
+    when(admin.getClasspathNames()).thenReturn(new AdminList<>(List.of()));
     when(configuration.createApplication()).thenReturn(replacement);
     doThrow(primary).when(replacement).commit();
     Path first = temporary.resolve("first-deployments");
@@ -256,7 +253,7 @@ final class DeployerFailureTest {
   @Test
   void shouldRestoreTheLeftoverClasspathWhenItsClaimFails() throws Exception {
     BBjAdminException primary = new BBjAdminException(PUBLICATION_FAILURE);
-    when(configuration.getApplications()).thenReturn(new BBjAdminAdapterList<>(List.of()));
+    when(configuration.getApplications()).thenReturn(new AdminList<>(List.of()));
     when(configuration.createApplication()).thenReturn(replacement);
     doThrow(primary).when(replacement).commit();
     InputStream upload = new ByteArrayInputStream(Files.readAllBytes(archive));

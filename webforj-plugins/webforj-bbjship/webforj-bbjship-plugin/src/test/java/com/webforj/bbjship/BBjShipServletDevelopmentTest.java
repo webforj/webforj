@@ -9,7 +9,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.basis.api.admin.BBjAdminAppDeploymentApplication;
-import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
 import com.google.gson.JsonParser;
 import com.webforj.bbjship.foundation.DeploymentArchive;
 import com.webforj.bbjship.foundation.HelloApp;
@@ -170,8 +169,7 @@ final class BBjShipServletDevelopmentTest extends AdministratorRequest {
         .thenReturn(previous.resolve("bbj/webforj.bbj").toString());
     when(registered.getString(BBjAdminAppDeploymentApplication.CLASSPATH))
         .thenReturn(CLASSPATH_NAME);
-    when(configuration.getApplications())
-        .thenReturn(new BBjAdminAdapterList<>(List.of(registered)));
+    when(configuration.getApplications()).thenReturn(new AdminList<>(List.of(registered)));
     ServletInputStream upload = mock(ServletInputStream.class, delegatesTo(new ByteArrayInputStream(
         Files.readAllBytes(developmentPublished ? archive : development))));
     when(request.getMethod()).thenReturn("PUT");
@@ -204,12 +202,11 @@ final class BBjShipServletDevelopmentTest extends AdministratorRequest {
     when(registered.getString(BBjAdminAppDeploymentApplication.CLASSPATH))
         .thenReturn(CLASSPATH_NAME);
     when(registered.getProperties()).thenReturn(Map.of());
-    when(registered.getArguments()).thenReturn(new BBjAdminAdapterList<>(List.of()));
-    when(registered.getJavaArguments()).thenReturn(new BBjAdminAdapterList<>(List.of()));
-    when(configuration.getApplications())
-        .thenReturn(new BBjAdminAdapterList<>(List.of(registered)));
+    when(registered.getArguments()).thenReturn(new AdminList<>(List.of()));
+    when(registered.getJavaArguments()).thenReturn(new AdminList<>(List.of()));
+    when(configuration.getApplications()).thenReturn(new AdminList<>(List.of(registered)));
     when(admin.getClasspath(CLASSPATH_NAME))
-        .thenReturn(new BBjAdminAdapterList<>(List.of(classFolder.toString())));
+        .thenReturn(new AdminList<>(List.of(classFolder.toString())));
     when(request.getMethod()).thenReturn("DELETE");
 
     BBjShipServlet.handle(request, response, plugin, ClasspathRelease.NONE, sessions);

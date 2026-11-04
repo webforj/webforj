@@ -12,7 +12,7 @@ import static org.mockito.Mockito.when;
 import com.basis.api.admin.BBjAdminAppDeploymentApplication;
 import com.basis.api.admin.BBjAdminAppDeploymentConfiguration;
 import com.basis.api.admin.BBjAdminBase;
-import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
+import com.webforj.bbjship.AdminList;
 import com.webforj.bbjship.cli.BBjShipCli;
 import com.webforj.bbjship.cli.TerminalLines;
 import com.webforj.bbjship.foundation.BBjShipPlugin;
@@ -58,8 +58,7 @@ class AppsUndeployCommandTest {
     configuration = mock(BBjAdminAppDeploymentConfiguration.class);
     when(admin.getRemoteConfiguration()).thenReturn(configuration);
     when(admin.getBBjProcesses()).thenReturn(List.of());
-    BBjAdminAdapterList<BBjAdminAppDeploymentApplication> registrations =
-        new BBjAdminAdapterList<>();
+    AdminList<BBjAdminAppDeploymentApplication> registrations = new AdminList<>();
     for (String name : List.of(HELLO_APP_NAME, "shop")) {
       Path directory = Files.createDirectories(deployments.resolve(name))
           .resolve("0b8f4f0e-3f5c-4a8e-9a49-5d1a6f3c2b10");
@@ -71,8 +70,8 @@ class AppsUndeployCommandTest {
       when(registration.getString(BBjAdminAppDeploymentApplication.CLASSPATH))
           .thenReturn("webforj_bbjship_" + name);
       when(registration.getProperties()).thenReturn(Map.of());
-      when(registration.getArguments()).thenReturn(new BBjAdminAdapterList<>());
-      when(registration.getJavaArguments()).thenReturn(new BBjAdminAdapterList<>());
+      when(registration.getArguments()).thenReturn(new AdminList<>());
+      when(registration.getJavaArguments()).thenReturn(new AdminList<>());
       services.addClasspath("webforj_bbjship_" + name, List.of(directory.toString()));
       registrations.add(registration);
     }

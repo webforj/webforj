@@ -12,7 +12,7 @@ import static org.mockito.Mockito.when;
 import com.basis.api.admin.BBjAdminAppDeploymentApplication;
 import com.basis.api.admin.BBjAdminAppDeploymentConfiguration;
 import com.basis.api.admin.BBjAdminBase;
-import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
+import com.webforj.bbjship.AdminList;
 import com.webforj.bbjship.cli.BBjShipCli;
 import com.webforj.bbjship.cli.TerminalLines;
 import com.webforj.bbjship.foundation.BBjShipPlugin;
@@ -79,8 +79,7 @@ class AppsDeployCommandTest {
     BBjAdminAppDeploymentApplication registration = mock(BBjAdminAppDeploymentApplication.class);
     when(admin.getRemoteConfiguration()).thenReturn(configuration);
     when(admin.getBBjProcesses()).thenReturn(List.of());
-    when(configuration.getApplications())
-        .thenReturn(new BBjAdminAdapterList<>(List.of(registration)));
+    when(configuration.getApplications()).thenReturn(new AdminList<>(List.of(registration)));
     when(configuration.createApplication()).thenReturn(created);
     when(registration.getString(BBjAdminAppDeploymentApplication.NAME)).thenReturn(HELLO_APP_NAME);
     when(registration.getString(BBjAdminAppDeploymentApplication.PROGRAM))
@@ -88,8 +87,8 @@ class AppsDeployCommandTest {
     when(registration.getString(BBjAdminAppDeploymentApplication.CLASSPATH))
         .thenReturn("webforj_bbjship_hello-app");
     when(registration.getProperties()).thenReturn(Map.of());
-    when(registration.getArguments()).thenReturn(new BBjAdminAdapterList<>());
-    when(registration.getJavaArguments()).thenReturn(new BBjAdminAdapterList<>());
+    when(registration.getArguments()).thenReturn(new AdminList<>());
+    when(registration.getJavaArguments()).thenReturn(new AdminList<>());
     output = new ByteArrayOutputStream();
     Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
     cli = BBjShipCli.create(new BBjShipPlugin(home)).setTerminal(new TerminalLines(stream))

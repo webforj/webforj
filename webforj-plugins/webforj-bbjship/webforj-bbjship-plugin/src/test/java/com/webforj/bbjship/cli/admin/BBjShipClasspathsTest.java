@@ -16,7 +16,7 @@ import static org.mockito.Mockito.when;
 
 import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.BBjAdminException;
-import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
+import com.webforj.bbjship.AdminList;
 import com.webforj.bbjship.cli.command.Home;
 import com.webforj.bbjship.foundation.BBjShipPlugin;
 import java.io.IOException;
@@ -47,8 +47,7 @@ class BBjShipClasspathsTest {
   void initServerWithoutBBjShipClasspaths() throws Exception {
     home = Home.createCopy(temporary.resolve("bbx"));
     admin = mock(BBjAdminBase.class);
-    when(admin.getClasspathNames())
-        .thenReturn(new BBjAdminAdapterList<>(List.of("bbj_default", "addon")));
+    when(admin.getClasspathNames()).thenReturn(new AdminList<>(List.of("bbj_default", "addon")));
     classpaths = new BBjShipClasspaths(admin, new BBjShipPlugin(home));
   }
 
@@ -69,10 +68,10 @@ class BBjShipClasspathsTest {
     String library = home.resolve(LIBRARY_JAR).toString();
     String bbj = home.resolve(BBJ_JAR).toString();
     when(admin.getClasspathNames())
-        .thenReturn(new BBjAdminAdapterList<>(List.of(CLI_CLASSPATH, BASE_CLASSPATH)));
+        .thenReturn(new AdminList<>(List.of(CLI_CLASSPATH, BASE_CLASSPATH)));
     when(admin.getClasspath(CLI_CLASSPATH))
-        .thenReturn(new BBjAdminAdapterList<>(List.of(DEFAULT_CLASSPATH, library)));
-    when(admin.getClasspath(BASE_CLASSPATH)).thenReturn(new BBjAdminAdapterList<>(List.of(bbj)));
+        .thenReturn(new AdminList<>(List.of(DEFAULT_CLASSPATH, library)));
+    when(admin.getClasspath(BASE_CLASSPATH)).thenReturn(new AdminList<>(List.of(bbj)));
 
     classpaths.addMissing();
 
@@ -83,9 +82,9 @@ class BBjShipClasspathsTest {
   @Test
   void shouldAddOnlyTheMissingBaseClasspath() throws Exception {
     String library = home.resolve(LIBRARY_JAR).toString();
-    when(admin.getClasspathNames()).thenReturn(new BBjAdminAdapterList<>(List.of(CLI_CLASSPATH)));
+    when(admin.getClasspathNames()).thenReturn(new AdminList<>(List.of(CLI_CLASSPATH)));
     when(admin.getClasspath(CLI_CLASSPATH))
-        .thenReturn(new BBjAdminAdapterList<>(List.of(DEFAULT_CLASSPATH, library)));
+        .thenReturn(new AdminList<>(List.of(DEFAULT_CLASSPATH, library)));
 
     classpaths.addMissing();
 
@@ -145,9 +144,9 @@ class BBjShipClasspathsTest {
 
   @Test
   void shouldRefuseServletClasspathOfAnotherApplication() throws Exception {
-    when(admin.getClasspathNames()).thenReturn(new BBjAdminAdapterList<>(List.of(CLI_CLASSPATH)));
+    when(admin.getClasspathNames()).thenReturn(new AdminList<>(List.of(CLI_CLASSPATH)));
     when(admin.getClasspath(CLI_CLASSPATH))
-        .thenReturn(new BBjAdminAdapterList<>(List.of(DEFAULT_CLASSPATH, "/srv/other.jar")));
+        .thenReturn(new AdminList<>(List.of(DEFAULT_CLASSPATH, "/srv/other.jar")));
 
     IOException failure = assertThrows(IOException.class, classpaths::addMissing);
 
@@ -159,9 +158,9 @@ class BBjShipClasspathsTest {
   @Test
   void shouldRefuseBaseClasspathWithForeignLibrary() throws Exception {
     Path foreign = Files.writeString(temporary.resolve("foreign.jar"), "jar");
-    when(admin.getClasspathNames()).thenReturn(new BBjAdminAdapterList<>(List.of(BASE_CLASSPATH)));
+    when(admin.getClasspathNames()).thenReturn(new AdminList<>(List.of(BASE_CLASSPATH)));
     when(admin.getClasspath(BASE_CLASSPATH))
-        .thenReturn(new BBjAdminAdapterList<>(List.of(foreign.toString())));
+        .thenReturn(new AdminList<>(List.of(foreign.toString())));
 
     IOException failure = assertThrows(IOException.class, classpaths::addMissing);
 

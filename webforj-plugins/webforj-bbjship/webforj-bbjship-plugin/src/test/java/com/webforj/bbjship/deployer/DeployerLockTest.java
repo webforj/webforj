@@ -13,10 +13,10 @@ import static org.mockito.Mockito.when;
 import com.basis.api.admin.BBjAdminAppDeploymentApplication;
 import com.basis.api.admin.BBjAdminAppDeploymentConfiguration;
 import com.basis.api.admin.BBjAdminBase;
-import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
+import com.webforj.bbjship.AdminList;
 import com.webforj.bbjship.ClasspathRelease;
-import com.webforj.bbjship.Deployer;
 import com.webforj.bbjship.Deployer.DeploymentResult;
+import com.webforj.bbjship.Deployer;
 import com.webforj.bbjship.DeploymentException;
 import com.webforj.bbjship.foundation.HelloApp;
 import java.io.ByteArrayInputStream;
@@ -79,8 +79,8 @@ final class DeployerLockTest {
 
       return configuration;
     });
-    when(admin.getClasspathNames()).thenReturn(new BBjAdminAdapterList<>(List.of()));
-    when(configuration.getApplications()).thenReturn(new BBjAdminAdapterList<>(List.of()));
+    when(admin.getClasspathNames()).thenReturn(new AdminList<>(List.of()));
+    when(configuration.getApplications()).thenReturn(new AdminList<>(List.of()));
     BBjAdminAppDeploymentApplication created = mock(BBjAdminAppDeploymentApplication.class);
     when(configuration.createApplication()).thenReturn(created);
   }
@@ -192,7 +192,7 @@ final class DeployerLockTest {
     }).when(published).commit();
     when(configuration.createApplication()).thenReturn(published);
     when(configuration.getApplications()).thenAnswer(
-        invocation -> new BBjAdminAdapterList<>(committed.get() ? List.of(published) : List.of()));
+        invocation -> new AdminList<>(committed.get() ? List.of(published) : List.of()));
     InputStream first = new ByteArrayInputStream(archive);
     InputStream second = new ByteArrayInputStream(Files.readAllBytes(development));
     String destination = root.toString();

@@ -10,7 +10,7 @@ import static org.mockito.Mockito.when;
 import com.basis.api.admin.BBjAdminAppDeploymentApplication;
 import com.basis.api.admin.BBjAdminAppDeploymentConfiguration;
 import com.basis.api.admin.BBjAdminBase;
-import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
+import com.webforj.bbjship.AdminList;
 import com.webforj.bbjship.DevelopmentRunFiles;
 import com.webforj.bbjship.cli.BBjShipCli;
 import com.webforj.bbjship.cli.TerminalLines;
@@ -56,7 +56,7 @@ class AppsListCommandTest {
     admin = services.getAdmin();
     configuration = mock(BBjAdminAppDeploymentConfiguration.class);
     when(admin.getRemoteConfiguration()).thenReturn(configuration);
-    when(configuration.getApplications()).thenReturn(new BBjAdminAdapterList<>(List.of()));
+    when(configuration.getApplications()).thenReturn(new AdminList<>(List.of()));
     Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
     cli = BBjShipCli.create(new BBjShipPlugin(home)).setTerminal(new TerminalLines(stream))
         .setAnsi(Ansi.OFF).setSessions(login -> admin).build();
@@ -183,6 +183,6 @@ class AppsListCommandTest {
     when(shopRegistration.getString(BBjAdminAppDeploymentApplication.CLASSPATH))
         .thenReturn("webforj_bbjship_shop");
     when(configuration.getApplications())
-        .thenReturn(new BBjAdminAdapterList<>(List.of(shopRegistration, helloRegistration)));
+        .thenReturn(new AdminList<>(List.of(shopRegistration, helloRegistration)));
   }
 }

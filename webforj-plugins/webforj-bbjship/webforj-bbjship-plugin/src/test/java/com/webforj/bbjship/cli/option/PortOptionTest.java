@@ -6,7 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.basis.api.admin.BBjAdminBase;
-import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
+import com.webforj.bbjship.AdminList;
 import com.webforj.bbjship.cli.BBjShipCli;
 import com.webforj.bbjship.cli.TerminalLines;
 import com.webforj.bbjship.cli.admin.BBjShipInput;
@@ -29,8 +29,8 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import picocli.CommandLine;
 import picocli.CommandLine.Help.Ansi;
+import picocli.CommandLine;
 
 class PortOptionTest {
 
@@ -53,7 +53,7 @@ class PortOptionTest {
     home = Home.createCopy(temporary.resolve("bbx"));
     output = new ByteArrayOutputStream();
     admin = mock(BBjAdminBase.class);
-    when(admin.getClasspathNames()).thenReturn(new BBjAdminAdapterList<>(List.of()));
+    when(admin.getClasspathNames()).thenReturn(new AdminList<>(List.of()));
     credentials = new ArrayList<>();
     Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
     cli = BBjShipCli.create(new BBjShipPlugin(home)).setTerminal(new TerminalLines(stream))

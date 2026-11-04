@@ -17,7 +17,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.basis.api.admin.BBjAdminContextInfo;
-import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
+import com.webforj.bbjship.AdminList;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -111,8 +111,7 @@ class BBjShipContextsAssetsTest extends EmptyWebAppServer {
   void shouldCreateTheAssetsContextOnThePortOfTheBbjShipContext() throws Exception {
     BBjAdminContextInfo created = mock(BBjAdminContextInfo.class);
     BBjAdminContextInfo bbjShip = mock(BBjAdminContextInfo.class);
-    when(server.getContextNames())
-        .thenReturn(new BBjAdminAdapterList<>(List.of("root", BBJSHIP_CONTEXT)));
+    when(server.getContextNames()).thenReturn(new AdminList<>(List.of("root", BBJSHIP_CONTEXT)));
     when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(bbjShip);
     when(bbjShip.getString(BBjAdminContextInfo.JSON_DATA)).thenReturn(
         "{\"HTTP port\": 9090, \"Document Base\": \"%s\"}".formatted(home.resolve(HTDOCS_FOLDER)));
@@ -223,8 +222,7 @@ class BBjShipContextsAssetsTest extends EmptyWebAppServer {
   void shouldCreateTheAssetsContextOnTheSslPortOfTheBbjShipContext() throws Exception {
     BBjAdminContextInfo created = mock(BBjAdminContextInfo.class);
     BBjAdminContextInfo bbjShip = mock(BBjAdminContextInfo.class);
-    when(server.getContextNames())
-        .thenReturn(new BBjAdminAdapterList<>(List.of("root", BBJSHIP_CONTEXT)));
+    when(server.getContextNames()).thenReturn(new AdminList<>(List.of("root", BBJSHIP_CONTEXT)));
     when(server.getContextInfo(BBJSHIP_CONTEXT)).thenReturn(bbjShip);
     when(bbjShip.getString(BBjAdminContextInfo.JSON_DATA))
         .thenReturn("{\"HTTP port\": 8888, \"SSL port\": 8443, \"Document Base\": \"%s\"}"
@@ -265,8 +263,7 @@ class BBjShipContextsAssetsTest extends EmptyWebAppServer {
 
   @Test
   void shouldLeaveTheAssetsContextTheBbjShipOwnsAsItIs() throws Exception {
-    when(server.getContextNames())
-        .thenReturn(new BBjAdminAdapterList<>(List.of("root", ASSETS_CONTEXT)));
+    when(server.getContextNames()).thenReturn(new AdminList<>(List.of("root", ASSETS_CONTEXT)));
     when(server.getContextInfo(ASSETS_CONTEXT)).thenReturn(info);
     when(info.getString(BBjAdminContextInfo.JSON_DATA))
         .thenReturn(RUNNING.formatted(ASSETS_CONTEXT, home.resolve(ASSETS_FOLDER)));

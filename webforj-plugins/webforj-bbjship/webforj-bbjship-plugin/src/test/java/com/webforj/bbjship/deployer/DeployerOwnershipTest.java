@@ -18,10 +18,10 @@ import static org.mockito.Mockito.when;
 import com.basis.api.admin.BBjAdminAppDeploymentApplication;
 import com.basis.api.admin.BBjAdminAppDeploymentConfiguration;
 import com.basis.api.admin.BBjAdminBase;
-import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
+import com.webforj.bbjship.AdminList;
 import com.webforj.bbjship.ClasspathRelease;
-import com.webforj.bbjship.Deployer;
 import com.webforj.bbjship.Deployer.DeploymentResult;
+import com.webforj.bbjship.Deployer;
 import com.webforj.bbjship.DeploymentException;
 import com.webforj.bbjship.DevelopmentRunFiles;
 import com.webforj.bbjship.foundation.DeploymentArchive;
@@ -75,9 +75,8 @@ final class DeployerOwnershipTest {
     configuration = mock(BBjAdminAppDeploymentConfiguration.class);
     registered = mock(BBjAdminAppDeploymentApplication.class);
     when(admin.getRemoteConfiguration()).thenReturn(configuration);
-    when(admin.getClasspathNames()).thenReturn(new BBjAdminAdapterList<>(List.of(CLASSPATH_NAME)));
-    when(configuration.getApplications())
-        .thenReturn(new BBjAdminAdapterList<>(List.of(registered)));
+    when(admin.getClasspathNames()).thenReturn(new AdminList<>(List.of(CLASSPATH_NAME)));
+    when(configuration.getApplications()).thenReturn(new AdminList<>(List.of(registered)));
     when(registered.getString(BBjAdminAppDeploymentApplication.NAME)).thenReturn(NAME);
     when(registered.getString(BBjAdminAppDeploymentApplication.PROGRAM))
         .thenReturn(previous.resolve("bbj/webforj.bbj").toString());
@@ -183,11 +182,11 @@ final class DeployerOwnershipTest {
 
   @Test
   void shouldClaimTheClasspathOfTheNameWithoutPublishedApplication() throws Exception {
-    when(configuration.getApplications()).thenReturn(new BBjAdminAdapterList<>(List.of()));
+    when(configuration.getApplications()).thenReturn(new AdminList<>(List.of()));
     BBjAdminAppDeploymentApplication published = mock(BBjAdminAppDeploymentApplication.class);
     when(configuration.createApplication()).thenReturn(published);
-    when(admin.getClasspath(CLASSPATH_NAME)).thenReturn(
-        new BBjAdminAdapterList<>(List.of(previous.resolve(APPLICATION_JAR).toString())));
+    when(admin.getClasspath(CLASSPATH_NAME))
+        .thenReturn(new AdminList<>(List.of(previous.resolve(APPLICATION_JAR).toString())));
     InputStream upload = new ByteArrayInputStream(Files.readAllBytes(archive));
     String destination = root.toString();
 
@@ -245,9 +244,9 @@ final class DeployerOwnershipTest {
   void shouldRemoveTheLeftoverClasspathWhenOnlyOtherApplicationsArePublished() throws Exception {
     BBjAdminAppDeploymentApplication foreign = mock(BBjAdminAppDeploymentApplication.class);
     when(foreign.getString(BBjAdminAppDeploymentApplication.NAME)).thenReturn("foreign");
-    when(configuration.getApplications()).thenReturn(new BBjAdminAdapterList<>(List.of(foreign)));
-    when(admin.getClasspath(CLASSPATH_NAME)).thenReturn(
-        new BBjAdminAdapterList<>(List.of(previous.resolve(APPLICATION_JAR).toString())));
+    when(configuration.getApplications()).thenReturn(new AdminList<>(List.of(foreign)));
+    when(admin.getClasspath(CLASSPATH_NAME))
+        .thenReturn(new AdminList<>(List.of(previous.resolve(APPLICATION_JAR).toString())));
     String destination = root.toString();
 
     assertDoesNotThrow(() -> Deployer.undeploy(NAME, destination, admin, ClasspathRelease.NONE));
@@ -262,8 +261,8 @@ final class DeployerOwnershipTest {
 
   @Test
   void shouldRefuseUndeployWithNotFoundWithoutRegistrationOrClasspath() throws Exception {
-    when(configuration.getApplications()).thenReturn(new BBjAdminAdapterList<>(List.of()));
-    when(admin.getClasspathNames()).thenReturn(new BBjAdminAdapterList<>(List.of()));
+    when(configuration.getApplications()).thenReturn(new AdminList<>(List.of()));
+    when(admin.getClasspathNames()).thenReturn(new AdminList<>(List.of()));
     String destination = root.toString();
 
     IOException failure = assertThrows(IOException.class,
@@ -369,11 +368,11 @@ final class DeployerOwnershipTest {
       DevelopmentRunFiles.write(previous, classFolder);
       BBjAdminAppDeploymentApplication published = mock(BBjAdminAppDeploymentApplication.class);
       when(configuration.createApplication()).thenReturn(published);
-      when(admin.getClasspath(CLASSPATH_NAME)).thenReturn(
-          new BBjAdminAdapterList<>(List.of(previous.resolve("dependencies").toString())));
+      when(admin.getClasspath(CLASSPATH_NAME))
+          .thenReturn(new AdminList<>(List.of(previous.resolve("dependencies").toString())));
       when(registered.getProperties()).thenReturn(Map.of());
-      when(registered.getArguments()).thenReturn(new BBjAdminAdapterList<>(List.of()));
-      when(registered.getJavaArguments()).thenReturn(new BBjAdminAdapterList<>(List.of()));
+      when(registered.getArguments()).thenReturn(new AdminList<>(List.of()));
+      when(registered.getJavaArguments()).thenReturn(new AdminList<>(List.of()));
       InputStream upload = new ByteArrayInputStream(Files.readAllBytes(development));
       String destination = root.toString();
 
@@ -396,11 +395,11 @@ final class DeployerOwnershipTest {
     @Test
     void shouldUndeployDevelopmentRun() throws Exception {
       DevelopmentRunFiles.write(previous, classFolder);
-      when(admin.getClasspath(CLASSPATH_NAME)).thenReturn(
-          new BBjAdminAdapterList<>(List.of(previous.resolve("dependencies").toString())));
+      when(admin.getClasspath(CLASSPATH_NAME))
+          .thenReturn(new AdminList<>(List.of(previous.resolve("dependencies").toString())));
       when(registered.getProperties()).thenReturn(Map.of());
-      when(registered.getArguments()).thenReturn(new BBjAdminAdapterList<>(List.of()));
-      when(registered.getJavaArguments()).thenReturn(new BBjAdminAdapterList<>(List.of()));
+      when(registered.getArguments()).thenReturn(new AdminList<>(List.of()));
+      when(registered.getJavaArguments()).thenReturn(new AdminList<>(List.of()));
       String destination = root.toString();
 
       assertDoesNotThrow(() -> Deployer.undeploy(NAME, destination, admin, ClasspathRelease.NONE));

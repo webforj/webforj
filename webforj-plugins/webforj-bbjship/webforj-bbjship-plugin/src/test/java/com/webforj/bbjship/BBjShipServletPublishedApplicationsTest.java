@@ -10,7 +10,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.basis.api.admin.BBjAdminAppDeploymentApplication;
-import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
 import com.google.gson.JsonParser;
 import com.webforj.bbjship.foundation.DeploymentArchive;
 import com.webforj.bbjship.foundation.HelloApp;
@@ -46,12 +45,11 @@ final class BBjShipServletPublishedApplicationsTest extends AdministratorRequest
         .thenReturn(previous.resolve("bbj/webforj.bbj").toString());
     when(registered.getString(BBjAdminAppDeploymentApplication.CLASSPATH))
         .thenReturn(CLASSPATH_NAME);
-    when(registered.getArguments()).thenReturn(new BBjAdminAdapterList<>(List.of()));
-    when(registered.getJavaArguments()).thenReturn(new BBjAdminAdapterList<>(List.of()));
-    when(configuration.getApplications())
-        .thenReturn(new BBjAdminAdapterList<>(List.of(registered)));
-    when(admin.getClasspathNames()).thenReturn(new BBjAdminAdapterList<>(List.of(CLASSPATH_NAME)));
-    when(admin.getClasspath(CLASSPATH_NAME)).thenReturn(new BBjAdminAdapterList<>(List.of()));
+    when(registered.getArguments()).thenReturn(new AdminList<>(List.of()));
+    when(registered.getJavaArguments()).thenReturn(new AdminList<>(List.of()));
+    when(configuration.getApplications()).thenReturn(new AdminList<>(List.of(registered)));
+    when(admin.getClasspathNames()).thenReturn(new AdminList<>(List.of(CLASSPATH_NAME)));
+    when(admin.getClasspath(CLASSPATH_NAME)).thenReturn(new AdminList<>(List.of()));
   }
 
   @Test

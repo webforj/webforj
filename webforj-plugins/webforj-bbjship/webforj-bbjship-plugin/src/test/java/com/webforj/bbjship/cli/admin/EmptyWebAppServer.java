@@ -7,7 +7,7 @@ import static org.mockito.Mockito.when;
 import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.BBjAdminContextInfo;
 import com.basis.api.admin.BBjAdminWebAppServer_1500;
-import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
+import com.webforj.bbjship.AdminList;
 import com.webforj.bbjship.cli.command.Home;
 import com.webforj.bbjship.foundation.BBjShipPlugin;
 import java.nio.file.Path;
@@ -133,7 +133,7 @@ abstract class EmptyWebAppServer {
     info = mock(BBjAdminContextInfo.class);
     when(admin.getWebAppServer()).thenReturn(server);
     when(admin.jsonExecute(anyString())).thenReturn("{}");
-    when(server.getContextNames()).thenReturn(new BBjAdminAdapterList<>(List.of("root")));
+    when(server.getContextNames()).thenReturn(new AdminList<>(List.of("root")));
     contexts = new BBjShipContexts(admin, plugin, BBjShipContexts.ANSWER_DEADLINE);
   }
 }

@@ -11,7 +11,7 @@ import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.BBjAdminContextInfo;
 import com.basis.api.admin.BBjAdminException;
 import com.basis.api.admin.BBjAdminWebAppServer_1500;
-import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
+import com.webforj.bbjship.AdminList;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -57,9 +57,9 @@ public final class BBjServices {
    */
   public BBjServices() throws BBjAdminException {
     when(admin.getClasspathNames())
-        .thenAnswer(invocation -> new BBjAdminAdapterList<>(List.copyOf(classpaths.keySet())));
-    when(admin.getClasspath(anyString())).thenAnswer(
-        invocation -> new BBjAdminAdapterList<>(classpaths.get(invocation.getArgument(0))));
+        .thenAnswer(invocation -> new AdminList<>(List.copyOf(classpaths.keySet())));
+    when(admin.getClasspath(anyString()))
+        .thenAnswer(invocation -> new AdminList<>(classpaths.get(invocation.getArgument(0))));
     doAnswer(invocation -> {
       List<String> entries = invocation.getArgument(1);
       if (entries == null) {
@@ -73,7 +73,7 @@ public final class BBjServices {
     when(admin.getWebAppServer()).thenReturn(server);
     when(admin.jsonExecute(anyString())).thenReturn("{}");
     when(server.getContextNames())
-        .thenAnswer(invocation -> new BBjAdminAdapterList<>(List.copyOf(contexts.keySet())));
+        .thenAnswer(invocation -> new AdminList<>(List.copyOf(contexts.keySet())));
     when(server.getContextInfo(anyString()))
         .thenAnswer(invocation -> contexts.get(invocation.getArgument(0)));
     when(server.createContext(anyString()))

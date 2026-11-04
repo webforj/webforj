@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 
 import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.BBjAdminException;
-import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
+import com.webforj.bbjship.AdminList;
 import com.webforj.bbjship.cli.command.Home;
 import com.webforj.bbjship.foundation.BBjShipPlugin;
 import java.io.ByteArrayOutputStream;
@@ -48,7 +48,7 @@ class BBjShipFailureHandlerTest {
     home = Home.createCopy(temporary.resolve("bbx"));
     output = new ByteArrayOutputStream();
     BBjAdminBase admin = mock(BBjAdminBase.class);
-    when(admin.getClasspathNames()).thenReturn(new BBjAdminAdapterList<>(List.of()));
+    when(admin.getClasspathNames()).thenReturn(new AdminList<>(List.of()));
     credentials = new ArrayList<>();
     Writer stream = new OutputStreamWriter(output, StandardCharsets.UTF_8);
     cli = BBjShipCli.create(new BBjShipPlugin(home)).setTerminal(new TerminalLines(stream))

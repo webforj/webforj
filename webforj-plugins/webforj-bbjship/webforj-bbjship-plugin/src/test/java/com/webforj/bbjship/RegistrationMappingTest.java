@@ -9,7 +9,6 @@ import static org.mockito.Mockito.when;
 
 import com.basis.api.admin.BBjAdminAppDeploymentApplication;
 import com.basis.api.admin.BBjAdminAppDeploymentConfiguration;
-import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
 import com.webforj.bbjship.foundation.HelloApp;
 import com.webforj.bbjship.model.DeploymentRegistration;
 import com.webforj.bbjship.model.InstalledDeployment;
@@ -50,7 +49,7 @@ class RegistrationMappingTest {
     configuration = mock(BBjAdminAppDeploymentConfiguration.class);
     application = mock(BBjAdminAppDeploymentApplication.class);
     when(configuration.createApplication()).thenReturn(application);
-    when(application.getArguments()).thenReturn(new BBjAdminAdapterList<>(new ArrayList<>()));
+    when(application.getArguments()).thenReturn(new AdminList<>(new ArrayList<>()));
   }
 
   @Test
@@ -83,7 +82,7 @@ class RegistrationMappingTest {
   @Test
   void shouldKeepThePropertiesAndArgumentsOfTheRegistration() throws Exception {
     when(application.getProperties()).thenReturn(Map.of("NAME", APP_NAME));
-    when(application.getJavaArguments()).thenReturn(new BBjAdminAdapterList<>(List.of("-Xmx512m")));
+    when(application.getJavaArguments()).thenReturn(new AdminList<>(List.of("-Xmx512m")));
     application.getArguments().add(FIRST_ARGUMENT);
 
     DeploymentRegistration registration = RegistrationMapping.createRegistration(application);

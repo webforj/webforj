@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 import com.basis.api.admin.BBjAdminAppDeploymentApplication;
 import com.basis.api.admin.BBjAdminAppDeploymentConfiguration;
 import com.basis.api.admin.BBjAdminBase;
-import com.basis.api.admin.rest.adapter.BBjAdminAdapterList;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.webforj.bbjship.foundation.BBjShipPlugin;
@@ -93,8 +92,8 @@ abstract class AdministratorRequest {
         && "secret".equals(login.getPassword())))).thenReturn(admin);
     when(admin.checkUserPermission(BBjAdminBase.PERMISSION_ALLOW_ADMIN)).thenReturn(true);
     when(admin.getRemoteConfiguration()).thenReturn(configuration);
-    when(admin.getClasspathNames()).thenReturn(new BBjAdminAdapterList<>(List.of()));
-    when(configuration.getApplications()).thenReturn(new BBjAdminAdapterList<>(List.of()));
+    when(admin.getClasspathNames()).thenReturn(new AdminList<>(List.of()));
+    when(configuration.getApplications()).thenReturn(new AdminList<>(List.of()));
     BBjAdminAppDeploymentApplication created = mock(BBjAdminAppDeploymentApplication.class);
     when(configuration.createApplication()).thenReturn(created);
   }
