@@ -202,12 +202,7 @@ public final class Environment {
   }
 
   /**
-   * Executes the given task in an Environment's thread context. This method allows safe access to
-   * the Environment from background threads.
-   *
-   * <p>
-   * ⚠️ WARNING: This method is experimental since 25.02 and may change in future releases.
-   * </p>
+   * Executes the given task in the Environment of the thread that created the calling thread.
    *
    * <p>
    * If called from an Environment thread, the task is executed immediately. If called from a
@@ -215,28 +210,19 @@ public final class Environment {
    * asynchronously in that Environment's thread.
    * </p>
    *
-   * <p>
-   * Example usage:
-   * </p>
-   *
-   * <pre>{@code
-   * // From a background thread
-   * executorService.submit(() -> {
-   *   Environment.runLater(() -> {
-   *     // This code runs in the Environment thread
-   *     button.setText("Updated from background");
-   *     textField.setEnabled(true);
-   *   });
-   * });
-   * }</pre>
-   *
    * @param task the task to execute
    *
    * @return a PendingResult that completes when the task is executed
    * @throws IllegalStateException if called from a thread with no associated Environment
    *
    * @since 25.02
+   * @deprecated As of version 26.10, replaced by {@link #runLater(Environment, Runnable)}. The
+   *             Environment is read from the thread that created the calling thread, so on a shared
+   *             thread pool every task runs in the Environment of the user whose call created that
+   *             pool thread. Read {@link #getCurrent()} on the Environment thread and pass it.
+   *             Scheduled for removal in the next major release.
    */
+  @Deprecated(since = "26.10", forRemoval = true)
   @Experimental(since = "25.02")
   public static PendingResult<Void> runLater(Runnable task) {
     return runLater(() -> {
@@ -253,8 +239,25 @@ public final class Environment {
    * </p>
    *
    * <p>
-   * Use this overload when the calling thread has no current Environment.
+   * The target is read with {@link #getCurrent()} on the Environment thread and passed to the
+   * background work. The call then works from any thread, including a thread pool shared by all
+   * users.
    * </p>
+   *
+   * <p>
+   * Example usage:
+   * </p>
+   *
+   * <pre>{@code
+   * Environment env = Environment.getCurrent();
+   * executorService.submit(() -> {
+   *   String text = loadText();
+   *   Environment.runLater(env, () -> {
+   *     button.setText(text);
+   *     textField.setEnabled(true);
+   *   });
+   * });
+   * }</pre>
    *
    * @param target the Environment to execute the task in
    * @param task the task to execute
@@ -315,12 +318,8 @@ public final class Environment {
   }
 
   /**
-   * Executes the given supplier in an Environment's thread context and returns its result. This
-   * method allows safe access to the Environment from background threads.
-   *
-   * <p>
-   * ⚠️ WARNING: This method is experimental since 25.02 and may change in future releases.
-   * </p>
+   * Executes the given supplier in the Environment of the thread that created the calling thread
+   * and returns its result.
    *
    * <p>
    * If called from an Environment thread, the supplier is executed immediately. If called from a
@@ -335,7 +334,13 @@ public final class Environment {
    * @throws IllegalStateException if called from a thread with no associated Environment
    *
    * @since 25.02
+   * @deprecated As of version 26.10, replaced by {@link #runLater(Environment, Supplier)}. The
+   *             Environment is read from the thread that created the calling thread, so on a shared
+   *             thread pool every task runs in the Environment of the user whose call created that
+   *             pool thread. Read {@link #getCurrent()} on the Environment thread and pass it.
+   *             Scheduled for removal in the next major release.
    */
+  @Deprecated(since = "26.10", forRemoval = true)
   @Experimental(since = "25.02")
   public static <T> PendingResult<T> runLater(Supplier<T> supplier) {
     Environment env = findEnvironmentForThread();
