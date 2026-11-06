@@ -307,6 +307,18 @@ class SpringRouteSecurityContextTest {
     }
 
     @Test
+    void shouldReturnDetailForNameMissingFromOauth2Principal() {
+      DefaultOAuth2User user = new DefaultOAuth2User(
+          AuthorityUtils.createAuthorityList("ROLE_USER"), Map.of("sub", "jdoe"), "sub");
+      OAuth2AuthenticationToken token =
+          new OAuth2AuthenticationToken(user, user.getAuthorities(), "acme");
+      token.setDetails(Map.of("tenant", "acme"));
+      SecurityContextHolder.getContext().setAuthentication(token);
+
+      assertEquals(Optional.of("acme"), securityContext.getAttribute("tenant"));
+    }
+
+    @Test
     void shouldThrowUnsupportedOperationExceptionForSetAttribute() {
       assertThrows(UnsupportedOperationException.class,
           () -> securityContext.setAttribute("test", "value"));

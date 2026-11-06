@@ -18,10 +18,11 @@ import org.springframework.util.ClassUtils;
  * @since 25.10
  */
 public class SpringRouteSecurityContext implements RouteSecurityContext {
-  private final AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
-  private final boolean oauth2Present =
+  private static final boolean OAUTH2_PRESENT =
       ClassUtils.isPresent("org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal",
           SpringRouteSecurityContext.class.getClassLoader());
+
+  private final AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
 
   /**
    * {@inheritDoc}
@@ -76,9 +77,12 @@ public class SpringRouteSecurityContext implements RouteSecurityContext {
   @Override
   public Optional<Object> getAttribute(String name) {
     Authentication auth = getAuthentication();
-    if (auth != null && oauth2Present
+    if (auth != null && OAUTH2_PRESENT
         && auth.getPrincipal() instanceof OAuth2AuthenticatedPrincipal principal) {
-      return Optional.ofNullable(principal.getAttribute(name));
+      Object claim = principal.getAttribute(name);
+      if (claim != null) {
+        return Optional.of(claim);
+      }
     }
 
     if (auth != null && auth.getDetails() instanceof Map) {

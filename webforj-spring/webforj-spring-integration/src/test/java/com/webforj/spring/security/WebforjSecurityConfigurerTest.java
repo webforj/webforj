@@ -4,12 +4,13 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.webforj.component.Composite;
@@ -18,6 +19,7 @@ import com.webforj.router.annotation.Route;
 import com.webforj.router.security.AbstractRouteSecurityManager;
 import com.webforj.spring.SpringConfigurationProperties;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -32,6 +34,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -42,6 +45,8 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenResponse;
+import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -49,6 +54,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.test.context.NestedTestConfiguration;
 import org.springframework.test.context.NestedTestConfiguration.EnclosingConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -173,11 +179,6 @@ class WebforjSecurityConfigurerTest {
     }
 
     @Test
-    void shouldPermitAccessToOauth2LoginPage() throws Exception {
-      mockMvc.perform(get("/sso")).andExpect(status().isNotFound());
-    }
-
-    @Test
     void shouldRedirectToStoredLocationAfterProviderCallback() throws Exception {
       MockHttpSession session = new MockHttpSession();
       session.setAttribute(AbstractRouteSecurityManager.PRE_AUTH_LOCATION_KEY, "/dashboard");
@@ -198,8 +199,36 @@ class WebforjSecurityConfigurerTest {
     }
 
     @Test
+    void shouldRedirectToProviderEndSessionEndpointAfterOidcLogout() throws Exception {
+      OidcIdToken idToken = new OidcIdToken("id-token", Instant.now(),
+          Instant.now().plusSeconds(60), Map.of("sub", "jdoe"));
+      DefaultOidcUser user =
+          new DefaultOidcUser(AuthorityUtils.createAuthorityList("ROLE_USER"), idToken);
+      OAuth2AuthenticationToken token =
+          new OAuth2AuthenticationToken(user, user.getAuthorities(), "acme");
+
+      mockMvc.perform(post("/logout").with(csrf()).with(authentication(token)))
+          .andExpect(redirectedUrl("https://provider.example/logout?id_token_hint=id-token"
+              + "&post_logout_redirect_uri=http://localhost/sso?logout"));
+    }
+
+    @Test
     void shouldSetAuthenticationPathToOauth2LoginPage() {
       assertEquals("/sso", properties.getAuthenticationPath());
+    }
+
+    @Nested
+    @NestedTestConfiguration(EnclosingConfiguration.INHERIT)
+    @TestPropertySource(properties = "webforj.security.authentication-path=/login")
+    class ConfiguredAuthenticationPath {
+
+      @Autowired
+      private SpringSecurityConfigurationProperties configuredProperties;
+
+      @Test
+      void shouldReplaceConfiguredAuthenticationPathWithOauth2LoginPage() {
+        assertEquals("/sso", configuredProperties.getAuthenticationPath());
+      }
     }
 
     @Configuration
@@ -216,13 +245,16 @@ class WebforjSecurityConfigurerTest {
 
       @Bean
       ClientRegistrationRepository createClientRegistrationRepository() {
-        return new InMemoryClientRegistrationRepository(ClientRegistration
-            .withRegistrationId("acme").clientId("client").clientSecret("secret")
-            .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-            .redirectUri("{baseUrl}/login/oauth2/code/{registrationId}").scope("profile")
-            .authorizationUri("https://provider.example/authorize")
-            .tokenUri("https://provider.example/token")
-            .userInfoUri("https://provider.example/userinfo").userNameAttributeName("sub").build());
+        return new InMemoryClientRegistrationRepository(
+            ClientRegistration.withRegistrationId("acme").clientId("client").clientSecret("secret")
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .redirectUri("{baseUrl}/login/oauth2/code/{registrationId}").scope("profile")
+                .authorizationUri("https://provider.example/authorize")
+                .tokenUri("https://provider.example/token")
+                .userInfoUri("https://provider.example/userinfo").userNameAttributeName("sub")
+                .providerConfigurationMetadata(
+                    Map.of("end_session_endpoint", "https://provider.example/logout"))
+                .build());
       }
 
       @Bean

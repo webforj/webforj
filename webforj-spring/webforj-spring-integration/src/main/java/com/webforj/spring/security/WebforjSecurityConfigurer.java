@@ -3,6 +3,7 @@ package com.webforj.spring.security;
 import com.webforj.component.Component;
 import com.webforj.router.RoutePathResolver;
 import com.webforj.router.RoutePattern;
+import java.lang.System.Logger;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -10,6 +11,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
+import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.csrf.CsrfFilter;
 
 /**
@@ -20,6 +24,7 @@ import org.springframework.security.web.csrf.CsrfFilter;
  */
 public class WebforjSecurityConfigurer
     extends AbstractHttpConfigurer<WebforjSecurityConfigurer, HttpSecurity> {
+  private static final Logger logger = System.getLogger(WebforjSecurityConfigurer.class.getName());
 
   private String loginPage;
   private String loginProcessingUrl;
@@ -92,6 +97,13 @@ public class WebforjSecurityConfigurer
    *
    * <p>
    * The given component is the login page that offers the configured providers.
+   * </p>
+   *
+   * <p>
+   * Requires {@code spring-security-oauth2-client} on the classpath, in a Spring Boot application
+   * through {@code spring-boot-starter-oauth2-client}, and a {@link ClientRegistrationRepository}
+   * bean, for example one built from the {@code spring.security.oauth2.client.registration.*}
+   * properties.
    * </p>
    *
    * @param loginPageComponent the login page component class
@@ -184,9 +196,7 @@ public class WebforjSecurityConfigurer
         loginProcessingUrl = properties.getAuthenticationPath();
       }
     } else if (getEntryLoginPage() != null) {
-      if (properties.getAuthenticationPath() == null) {
-        properties.setAuthenticationPath(getEntryLoginPage());
-      }
+      properties.setAuthenticationPath(getEntryLoginPage());
     }
 
     // Configure form login if specified
@@ -211,7 +221,7 @@ public class WebforjSecurityConfigurer
         logoutSuccessUrl = "/login?logout";
       }
 
-      configureLogout(http);
+      configureLogout(http, context);
     }
 
     // Update properties for webforJ router access denied handling
@@ -288,7 +298,8 @@ public class WebforjSecurityConfigurer
             context.getBean(WebforjAuthenticationSuccessHandler.class);
         form.successHandler(successHandler);
       } catch (Exception e) {
-        // pass
+        logger.log(Logger.Level.DEBUG,
+            "WebforjAuthenticationSuccessHandler not found, using the default success handler", e);
       }
     });
   }
@@ -301,16 +312,27 @@ public class WebforjSecurityConfigurer
     });
   }
 
-  private void configureLogout(HttpSecurity http) {
+  private void configureLogout(HttpSecurity http, ApplicationContext context) {
     http.logout(logout -> {
       logout.logoutUrl(logoutUrl);
 
-      if (logoutSuccessUrl != null) {
+      if (oauth2LoginPage != null) {
+        logout.logoutSuccessHandler(createOidcLogoutSuccessHandler(context));
+      } else if (logoutSuccessUrl != null) {
         logout.logoutSuccessUrl(logoutSuccessUrl);
       }
 
       logout.permitAll();
     });
+  }
+
+  private LogoutSuccessHandler createOidcLogoutSuccessHandler(ApplicationContext context) {
+    OidcClientInitiatedLogoutSuccessHandler handler = new OidcClientInitiatedLogoutSuccessHandler(
+        context.getBean(ClientRegistrationRepository.class));
+    handler.setPostLogoutRedirectUri(
+        logoutSuccessUrl.startsWith("/") ? "{baseUrl}" + logoutSuccessUrl : logoutSuccessUrl);
+    handler.setDefaultTargetUrl(logoutSuccessUrl);
+    return handler;
   }
 
   private String getEntryLoginPage() {
