@@ -64,6 +64,11 @@ class BBjSecurityConfigurationPropertiesTest {
     }
 
     @Test
+    void shouldHaveNullCodePath() {
+      assertNull(properties.getCodePath());
+    }
+
+    @Test
     void shouldHaveDefaultAdminHost() {
       assertEquals("127.0.0.1", properties.getAdminHost());
     }
@@ -145,6 +150,12 @@ class BBjSecurityConfigurationPropertiesTest {
     void shouldSetLogoutSuccessPath() {
       properties.setLogoutSuccessPath("/goodbye");
       assertEquals("/goodbye", properties.getLogoutSuccessPath());
+    }
+
+    @Test
+    void shouldSetCodePath() {
+      properties.setCodePath("/sign-in/code");
+      assertEquals("/sign-in/code", properties.getCodePath());
     }
 
     @Test
@@ -255,6 +266,16 @@ class BBjSecurityConfigurationPropertiesTest {
       assertEquals("/home", properties.getDefaultSuccessPath());
       assertFalse(properties.getReturnAfterLogin());
       assertEquals("/goodbye", properties.getLogoutSuccessPath());
+    }
+
+    @Test
+    void shouldReadTheCodePathKey() {
+      Config config = ConfigFactory
+          .parseString("webforj.security.bbj.two-factor.code-path = \"/sign-in/code\"");
+
+      properties = new BBjSecurityConfigurationProperties(config);
+
+      assertEquals("/sign-in/code", properties.getCodePath());
     }
 
     @Test
@@ -781,6 +802,31 @@ class BBjSecurityConfigurationPropertiesTest {
           + " and keeps its default", new SimpleFormatter().formatMessage(warnings.get(0)));
     }
 
+    @ParameterizedTest
+    @MethodSource("invalidCodePathValues")
+    void shouldKeepNoCodePathWhenItIsNotString(String value) {
+      Config config =
+          ConfigFactory.parseString("webforj.security.bbj.two-factor.code-path = " + value);
+
+      properties = new BBjSecurityConfigurationProperties(config);
+
+      assertNull(properties.getCodePath());
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidCodePathValues")
+    void shouldLogTheKeyWhenTheCodePathIsNotString(String value) {
+      Config config =
+          ConfigFactory.parseString("webforj.security.bbj.two-factor.code-path = " + value);
+
+      properties = new BBjSecurityConfigurationProperties(config);
+
+      List<LogRecord> warnings = getWarnings();
+      assertEquals(1, warnings.size());
+      assertEquals("The configuration key webforj.security.bbj.two-factor.code-path is not a string"
+          + " and keeps its default", new SimpleFormatter().formatMessage(warnings.get(0)));
+    }
+
     private List<LogRecord> getWarnings() {
       return records.stream().filter(it -> it.getLevel() == Level.WARNING).toList();
     }
@@ -831,6 +877,11 @@ class BBjSecurityConfigurationPropertiesTest {
     private static Stream<Arguments> invalidLogoutSuccessPathValues() {
       return Stream.of(Arguments.of("[\"/goodbye\"]"), Arguments.of("{a = 1}"), Arguments.of("5"),
           Arguments.of("true"));
+    }
+
+    private static Stream<Arguments> invalidCodePathValues() {
+      return Stream.of(Arguments.of("[\"/sign-in/code\"]"), Arguments.of("{a = 1}"),
+          Arguments.of("5"), Arguments.of("true"));
     }
 
     private static Stream<Arguments> invalidPathValues() {

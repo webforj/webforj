@@ -46,7 +46,8 @@ public final class BBjSecurity {
    * When the account needs a 2 factor code, the sign in ends as
    * {@link BBjLoginStatus#TWO_FACTOR_REQUIRED} and the service keeps a pending sign in for
    * {@code two-factor.pending-seconds}. {@link #submitCode(String)} completes it and
-   * {@link #cancelLogin()} ends it.
+   * {@link #cancelLogin()} ends it. When {@code two-factor.code-path} is configured, the app also
+   * navigates to that path.
    * </p>
    *
    * @param userName the user name
@@ -59,7 +60,7 @@ public final class BBjSecurity {
     Objects.requireNonNull(userName, "userName");
     Objects.requireNonNull(password, "password");
 
-    return openTargetLocationOnSuccess(getPendingStatus(userName, password));
+    return openLocationOfStatus(getPendingStatus(userName, password));
   }
 
   /**
@@ -101,9 +102,10 @@ public final class BBjSecurity {
    * the account needs a 2 factor code, the sign in ends as
    * {@link BBjLoginStatus#TWO_FACTOR_REQUIRED} with no error and no toast, and the service keeps a
    * pending sign in for {@code two-factor.pending-seconds}. {@link #submitCode(String)} completes
-   * it and {@link #cancelLogin()} ends it. After a successful sign in the component is closed and
-   * then the app navigates to the location the user requested before signing in, or to the default
-   * success path. Otherwise the component is enabled again.
+   * it and {@link #cancelLogin()} ends it. When {@code two-factor.code-path} is configured, the app
+   * navigates to that path and the component is closed. After a successful sign in the component is
+   * closed and then the app navigates to the location the user requested before signing in, or to
+   * the default success path. Otherwise the component is enabled again.
    * </p>
    *
    * @param event the submit event of the component
@@ -113,7 +115,8 @@ public final class BBjSecurity {
    * @throws ClassCastException if the source of the event is not a {@link Login}
    */
   public static BBjLoginStatus login(LoginSubmitEvent event) {
-    return handleSubmit(event, () -> getPendingStatus(event.getUsername(), event.getPassword()));
+    return handleSubmit(event, () -> getPendingStatus(event.getUsername(), event.getPassword()),
+        BBjSecurity::isCodeLocationOpened);
   }
 
   /**
@@ -151,7 +154,7 @@ public final class BBjSecurity {
     Objects.requireNonNull(codeProvider, "codeProvider");
 
     return handleSubmit(event,
-        () -> getStatus(event.getUsername(), event.getPassword(), codeProvider));
+        () -> getStatus(event.getUsername(), event.getPassword(), codeProvider), status -> false);
   }
 
   /**
@@ -275,7 +278,7 @@ public final class BBjSecurity {
   }
 
   private static BBjLoginStatus handleSubmit(LoginSubmitEvent event,
-      Supplier<BBjLoginStatus> signIn) {
+      Supplier<BBjLoginStatus> signIn, Predicate<BBjLoginStatus> isRedirected) {
     Objects.requireNonNull(event, "event");
 
     Login login = (Login) event.getComponent();
@@ -295,6 +298,9 @@ public final class BBjSecurity {
     if (status == BBjLoginStatus.AUTHENTICATED) {
       login.close();
       getService().ifPresent(BBjAuthenticationService::openTargetLocation);
+    } else if (isRedirected.test(status)) {
+      login.close();
+      getService().ifPresent(BBjAuthenticationService::openCodeLocation);
     } else {
       login.setEnabled(true);
     }
@@ -308,6 +314,19 @@ public final class BBjSecurity {
     }
 
     return status;
+  }
+
+  private static BBjLoginStatus openLocationOfStatus(BBjLoginStatus status) {
+    if (status == BBjLoginStatus.TWO_FACTOR_REQUIRED) {
+      getService().ifPresent(BBjAuthenticationService::openCodeLocation);
+    }
+
+    return openTargetLocationOnSuccess(status);
+  }
+
+  private static boolean isCodeLocationOpened(BBjLoginStatus status) {
+    return status == BBjLoginStatus.TWO_FACTOR_REQUIRED
+        && getService().map(BBjAuthenticationService::hasCodeLocation).orElse(false);
   }
 
   private static BBjLoginStatus getPendingStatus(String userName, String password) {

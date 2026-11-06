@@ -151,4 +151,23 @@ class BBjRouteSecurityConfigurationTest {
       assertEquals("/login", location.get().getFullURI());
     }
   }
+
+  @Nested
+  class CodeLocation {
+
+    @Test
+    void shouldUseTheCodePathWhenItIsSet() {
+      properties.setCodePath("/sign-in/code");
+
+      Optional<Location> location = configuration.getCodeLocation();
+
+      assertTrue(location.isPresent());
+      assertEquals("/sign-in/code", location.get().getFullURI());
+    }
+
+    @Test
+    void shouldBeEmptyWhenNoCodePathIsSet() {
+      assertTrue(configuration.getCodeLocation().isEmpty());
+    }
+  }
 }
