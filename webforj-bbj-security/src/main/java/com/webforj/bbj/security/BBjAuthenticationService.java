@@ -27,6 +27,7 @@ import java.util.function.Consumer;
  * @since 26.03
  */
 public final class BBjAuthenticationService {
+  static final int MAX_CODE_ATTEMPTS = 5;
   private static final Logger logger = System.getLogger(BBjAuthenticationService.class.getName());
   private final BBjAdminGateway gateway;
   private final BBjSecurityStore store;
@@ -37,6 +38,10 @@ public final class BBjAuthenticationService {
   private final Clock clock;
   private BBjSession session;
   private Instant lastCheck;
+  private String pendingUserName;
+  private String pendingPassword;
+  private Instant pendingExpiresAt;
+  private int refusedCodes;
 
   /**
    * Creates a service from the values of a builder.
@@ -67,7 +72,8 @@ public final class BBjAuthenticationService {
    *
    * <p>
    * The sign in runs on the calling thread. The credentials are passed to BBj as given. After a
-   * successful sign in the session is saved in the session store. The sign in opens no location.
+   * successful sign in the session is saved in the session store. The sign in opens no location. A
+   * pending sign in is ended.
    * </p>
    *
    * <p>
@@ -89,32 +95,84 @@ public final class BBjAuthenticationService {
    * @throws NullPointerException if {@code userName} or {@code password} is {@code null}
    */
   BBjLoginStatus login(String userName, String password, String code) {
-    Objects.requireNonNull(userName, "userName");
-    Objects.requireNonNull(password, "password");
+    clearPending();
 
-    BBjSession opened;
-    try {
-      opened = gateway.openSession(userName, password, code);
-    } catch (BBjAdminFailure e) {
-      return applyFailure(e);
-    } catch (RuntimeException e) {
-      return applyFailure(createUnavailableFailure());
+    return openSession(userName, password, code);
+  }
+
+  /**
+   * Keeps a sign in that waits for its 2 factor code.
+   *
+   * <p>
+   * The user name and password are kept in this service for {@code pending-seconds}. A pending sign
+   * in that was kept before is replaced. {@link #sendCode(String)} completes it.
+   * </p>
+   *
+   * @param userName the user name
+   * @param password the password
+   * @throws NullPointerException if {@code userName} or {@code password} is {@code null}
+   */
+  void savePendingLogin(String userName, String password) {
+    pendingUserName = Objects.requireNonNull(userName, "userName");
+    pendingPassword = Objects.requireNonNull(password, "password");
+    pendingExpiresAt = clock.instant().plusSeconds(properties.getPendingSeconds());
+    refusedCodes = 0;
+  }
+
+  /**
+   * Completes the pending sign in with a 2 factor code.
+   *
+   * <p>
+   * The code is sent with the kept user name and password. While BBj refuses the code, the pending
+   * sign in is kept for up to 5 refused codes and the status is
+   * {@link BBjLoginStatus#TWO_FACTOR_REQUIRED}. The pending sign in ends after a success, after the
+   * fifth refused code, after any other status and when {@code pending-seconds} have passed. When
+   * no sign in is pending, or it ended on this call by the fifth refused code or by its lifetime,
+   * the status is {@link BBjLoginStatus#CODE_EXPIRED}.
+   * </p>
+   *
+   * @param code the 2 factor code
+   *
+   * @return the status of the code step
+   * @throws NullPointerException if {@code code} is {@code null}
+   */
+  BBjLoginStatus sendCode(String code) {
+    Objects.requireNonNull(code, "code");
+    if (pendingUserName == null || !clock.instant().isBefore(pendingExpiresAt)) {
+      clearPending();
+      return BBjLoginStatus.CODE_EXPIRED;
     }
 
-    return applySession(opened);
+    var status = openSession(pendingUserName, pendingPassword, code);
+    if (status == BBjLoginStatus.TWO_FACTOR_REQUIRED && ++refusedCodes < MAX_CODE_ATTEMPTS) {
+      return status;
+    }
+
+    clearPending();
+
+    return status == BBjLoginStatus.TWO_FACTOR_REQUIRED ? BBjLoginStatus.CODE_EXPIRED : status;
+  }
+
+  /** Ends the pending sign in and forgets its user name and password. */
+  void clearPending() {
+    pendingUserName = null;
+    pendingPassword = null;
+    pendingExpiresAt = null;
+    refusedCodes = 0;
   }
 
   /**
    * Signs the current user out.
    *
    * <p>
-   * When nobody has signed in, nothing happens. Otherwise the user is signed out at once, the saved
-   * session is cleared, the requested location is cleared and the service opens the logout
-   * location. Then the login token is ended. A failure to end it is logged and the token expires on
-   * its own.
+   * A pending sign in is ended. When nobody has signed in, nothing else happens. Otherwise the user
+   * is signed out at once, the saved session is cleared, the requested location is cleared and the
+   * service opens the logout location. Then the login token is ended. A failure to end it is logged
+   * and the token expires on its own.
    * </p>
    */
   void logout() {
+    clearPending();
     if (session == null) {
       return;
     }
@@ -239,6 +297,22 @@ public final class BBjAuthenticationService {
     } else {
       navigator.accept(new Location(properties.getDefaultSuccessPath()));
     }
+  }
+
+  private BBjLoginStatus openSession(String userName, String password, String code) {
+    Objects.requireNonNull(userName, "userName");
+    Objects.requireNonNull(password, "password");
+
+    BBjSession opened;
+    try {
+      opened = gateway.openSession(userName, password, code);
+    } catch (BBjAdminFailure e) {
+      return applyFailure(e);
+    } catch (RuntimeException e) {
+      return applyFailure(createUnavailableFailure());
+    }
+
+    return applySession(opened);
   }
 
   private BBjLoginStatus applySession(BBjSession session) {

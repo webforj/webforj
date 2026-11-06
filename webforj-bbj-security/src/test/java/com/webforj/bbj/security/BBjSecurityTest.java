@@ -114,6 +114,23 @@ class BBjSecurityTest {
     }
 
     @Test
+    void shouldGiveUnavailableForSubmitCode() {
+      assertEquals(BBjLoginStatus.UNAVAILABLE, BBjSecurity.submitCode("123456"));
+    }
+
+    @Test
+    void shouldDoNothingOnCancelLogin() {
+      assertDoesNotThrow(BBjSecurity::cancelLogin);
+    }
+
+    @Test
+    void shouldRejectNullCode() {
+      String code = null;
+
+      assertThrows(NullPointerException.class, () -> BBjSecurity.submitCode(code));
+    }
+
+    @Test
     void shouldReturnEmptyCurrentUser() {
       assertTrue(BBjSecurity.currentUser().isEmpty());
     }
@@ -205,6 +222,71 @@ class BBjSecurityTest {
       BBjSecurity.login("alice", "pw");
 
       verify(service, never()).openTargetLocation();
+    }
+
+    @Test
+    void shouldReturnTheStatusOfTheServiceForSubmitCode() {
+      when(service.sendCode("123456")).thenReturn(BBjLoginStatus.CODE_EXPIRED);
+
+      assertEquals(BBjLoginStatus.CODE_EXPIRED, BBjSecurity.submitCode("123456"));
+    }
+
+    @Test
+    void shouldOpenTheTargetLocationOnAuthenticatedForSubmitCode() {
+      when(service.sendCode("123456")).thenReturn(BBjLoginStatus.AUTHENTICATED);
+
+      BBjSecurity.submitCode("123456");
+
+      InOrder order = inOrder(service);
+      order.verify(service).sendCode("123456");
+      order.verify(service).openTargetLocation();
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = BBjLoginStatus.class, mode = EnumSource.Mode.EXCLUDE,
+        names = {"AUTHENTICATED"})
+    void shouldNotOpenTheTargetLocationOtherwiseForSubmitCode(BBjLoginStatus status) {
+      when(service.sendCode("123456")).thenReturn(status);
+
+      BBjSecurity.submitCode("123456");
+
+      verify(service, never()).openTargetLocation();
+    }
+
+    @Test
+    void shouldCancelThePendingSignInThroughTheService() {
+      BBjSecurity.cancelLogin();
+
+      verify(service).clearPending();
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.webforj.bbj.security.BBjSecurityTest#getSignInsWithoutProvider")
+    void shouldKeepPendingSignInWhenCodeIsRequired(
+        Function<LoginSubmitEvent, BBjLoginStatus> signIn) {
+      LoginSubmitEvent event = mock(LoginSubmitEvent.class);
+      when(event.getUsername()).thenReturn("alice");
+      when(event.getPassword()).thenReturn("pw");
+      when(event.getComponent()).thenReturn(mock(Login.class));
+      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.TWO_FACTOR_REQUIRED);
+
+      signIn.apply(event);
+
+      verify(service).savePendingLogin("alice", "pw");
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.webforj.bbj.security.BBjSecurityTest#getSignInsWithoutProvider")
+    void shouldKeepNoPendingSignInOtherwise(Function<LoginSubmitEvent, BBjLoginStatus> signIn) {
+      LoginSubmitEvent event = mock(LoginSubmitEvent.class);
+      when(event.getUsername()).thenReturn("alice");
+      when(event.getPassword()).thenReturn("pw");
+      when(event.getComponent()).thenReturn(mock(Login.class));
+      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.INVALID_CREDENTIALS);
+
+      signIn.apply(event);
+
+      verify(service, never()).savePendingLogin(any(), any());
     }
 
     @Test
@@ -514,6 +596,17 @@ class BBjSecurityTest {
       assertEquals(BBjLoginStatus.TWO_FACTOR_REQUIRED, status);
       verify(service, times(1)).login(any(), any(), any());
       verify(service, never()).openTargetLocation();
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.webforj.bbj.security.BBjSecurityTest#getSignInsWithProvider")
+    void shouldKeepNoPendingSignInWhenTheProviderGivesNoCode(
+        BiFunction<LoginSubmitEvent, Function<Boolean, String>, BBjLoginStatus> signIn) {
+      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.TWO_FACTOR_REQUIRED);
+
+      signIn.apply(event, provider);
+
+      verify(service, never()).savePendingLogin(any(), any());
     }
 
     @Test

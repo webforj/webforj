@@ -360,6 +360,54 @@ class BBjAuthenticationServiceCheckTest {
     assertEquals(List.of(), fixture.getWarnings());
   }
 
+  @Test
+  void shouldKeepTheSignInWithoutReadingTheStoreWhenTheStoreIsUnavailable() {
+    fixture.setStoreAvailable(false);
+    clearInvocations(fixture.store);
+
+    fixture.check();
+
+    assertSame(fixture.principal, fixture.currentUser().orElseThrow());
+    verify(fixture.store, never()).readSession();
+    fixture.verifyReadUserName(times(1), fixture.session);
+  }
+
+  @Test
+  void shouldClearAnExpiredSessionWhenTheStoreIsUnavailable() {
+    fixture.setStoreAvailable(false);
+    now.set(Instant.parse("2026-01-01T13:00:01Z"));
+
+    fixture.check();
+
+    assertFalse(fixture.currentUser().isPresent());
+    verifyNoInteractions(fixture.gateway);
+  }
+
+  @Test
+  void shouldSignOutWhenTheTokenWasRejectedAndTheStoreIsUnavailable() {
+    fixture.setStoreAvailable(false);
+    clearInvocations(fixture.store);
+    fixture.setReadUserNameFailure(fixture.session,
+        new BBjAdminFailure(Kind.TOKEN_REJECTED, "ended"));
+
+    fixture.check();
+
+    assertFalse(fixture.currentUser().isPresent());
+    verify(fixture.store, never()).readSession();
+  }
+
+  @Test
+  void shouldReplaceTheSessionWithTheRenewedOneWithoutSavingWhenTheStoreIsUnavailable() {
+    fixture.setStoreAvailable(false);
+    now.set(Instant.parse("2026-01-01T12:55:00Z"));
+    fixture.whenRenewSession(fixture.session).thenReturn(renewed);
+
+    fixture.check();
+
+    assertSame(renewedPrincipal, fixture.currentUser().orElseThrow());
+    verify(fixture.store, never()).saveSession(any());
+  }
+
   @ParameterizedTest
   @EnumSource(value = Kind.class, mode = Mode.EXCLUDE, names = "TOKEN_REJECTED")
   void shouldKeepTheSignInAndWarnForEveryOtherFailure(Kind kind) {

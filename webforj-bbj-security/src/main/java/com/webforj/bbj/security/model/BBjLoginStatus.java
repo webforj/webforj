@@ -17,5 +17,8 @@ public enum BBjLoginStatus {
   UNAVAILABLE,
 
   /** The account needs a 2 factor code and no accepted code was given. */
-  TWO_FACTOR_REQUIRED
+  TWO_FACTOR_REQUIRED,
+
+  /** The code step cannot go on. The user signs in again with the password. */
+  CODE_EXPIRED
 }
