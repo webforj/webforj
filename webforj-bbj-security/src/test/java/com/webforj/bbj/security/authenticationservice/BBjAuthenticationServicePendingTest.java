@@ -15,6 +15,7 @@ import com.webforj.bbj.security.BBjAdminFailure;
 import com.webforj.bbj.security.BBjAdminFailure.Kind;
 import com.webforj.bbj.security.SignInFixture;
 import com.webforj.bbj.security.model.BBjLoginStatus;
+import com.webforj.router.history.Location;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -32,6 +33,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class BBjAuthenticationServicePendingTest {
   private static final Instant START = Instant.parse("2026-01-01T12:00:00Z");
@@ -255,5 +257,29 @@ class BBjAuthenticationServicePendingTest {
 
     SimpleFormatter formatter = new SimpleFormatter();
     assertTrue(fixture.records.stream().noneMatch(it -> formatter.format(it).contains(PASSWORD)));
+  }
+
+  @Test
+  void shouldOpenTheCodeLocationOfTheConfiguration() {
+    fixture.properties.setCodePath("/sign-in/code");
+
+    fixture.openCodeLocation();
+
+    verify(fixture.navigator).accept(new Location("/sign-in/code"));
+  }
+
+  @Test
+  void shouldOpenNoLocationWhenNoCodePathIsSet() {
+    fixture.openCodeLocation();
+
+    verifyNoInteractions(fixture.navigator);
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void shouldHaveCodeLocationOnlyWhenCodePathIsSet(boolean set) {
+    fixture.properties.setCodePath(set ? "/sign-in/code" : null);
+
+    assertEquals(set, fixture.hasCodeLocation());
   }
 }

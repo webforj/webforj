@@ -83,4 +83,16 @@ public final class BBjRouteSecurityConfiguration implements RouteSecurityConfigu
         .or(this::getAuthenticationLocation);
   }
 
+  /**
+   * Gets the location the app opens when a sign in waits for its 2 factor code.
+   *
+   * <p>
+   * When no code path is configured, no location applies.
+   * </p>
+   *
+   * @return the code location, or empty if no code path is configured
+   */
+  public Optional<Location> getCodeLocation() {
+    return Optional.ofNullable(properties.getCodePath()).map(Location::new);
+  }
 }

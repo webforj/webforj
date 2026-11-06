@@ -204,6 +204,20 @@ public final class SignInFixture implements AutoCloseable {
     service.openTargetLocation();
   }
 
+  /** Opens the code location through the service. */
+  public void openCodeLocation() {
+    service.openCodeLocation();
+  }
+
+  /**
+   * Tells whether the service has a code location.
+   *
+   * @return true when a code path is configured
+   */
+  public boolean hasCodeLocation() {
+    return service.hasCodeLocation();
+  }
+
   /** Signs out through the service. */
   public void logout() {
     service.logout();

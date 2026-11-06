@@ -215,6 +215,45 @@ class BBjSecurityTest {
     }
 
     @ParameterizedTest
+    @MethodSource("com.webforj.bbj.security.BBjSecurityTest#getSignInsWithoutProvider")
+    void shouldOpenTheCodeLocationAfterKeepingThePendingSignIn(
+        Function<LoginSubmitEvent, BBjLoginStatus> signIn) {
+      LoginSubmitEvent event = mock(LoginSubmitEvent.class);
+      when(event.getUsername()).thenReturn("alice");
+      when(event.getPassword()).thenReturn("pw");
+      when(event.getComponent()).thenReturn(mock(Login.class));
+      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.TWO_FACTOR_REQUIRED);
+      when(service.hasCodeLocation()).thenReturn(true);
+
+      BBjLoginStatus status = signIn.apply(event);
+
+      assertEquals(BBjLoginStatus.TWO_FACTOR_REQUIRED, status);
+      InOrder order = inOrder(service);
+      order.verify(service).savePendingLogin("alice", "pw");
+      order.verify(service).openCodeLocation();
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = BBjLoginStatus.class, mode = EnumSource.Mode.EXCLUDE,
+        names = {"TWO_FACTOR_REQUIRED", "CODE_EXPIRED"})
+    void shouldNotOpenTheCodeLocationOtherwiseForUserNameAndPassword(BBjLoginStatus status) {
+      when(service.login("alice", "pw", null)).thenReturn(status);
+
+      BBjSecurity.login("alice", "pw");
+
+      verify(service, never()).openCodeLocation();
+    }
+
+    @Test
+    void shouldNotOpenTheCodeLocationForSubmitCode() {
+      when(service.sendCode("123456")).thenReturn(BBjLoginStatus.CODE_EXPIRED);
+
+      BBjSecurity.submitCode("123456");
+
+      verify(service, never()).openCodeLocation();
+    }
+
+    @ParameterizedTest
     @EnumSource(value = BBjLoginStatus.class, names = {"INVALID_CREDENTIALS", "UNAVAILABLE"})
     void shouldNotOpenTheTargetLocationOtherwiseForUserNameAndPassword(BBjLoginStatus status) {
       when(service.login("alice", "pw", null)).thenReturn(status);
@@ -444,6 +483,42 @@ class BBjSecurityTest {
       order.verify(service).openTargetLocation();
     }
 
+    @Test
+    void shouldCloseTheFormWithoutEnablingItWhenTheCodeLocationIsOpened() {
+      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.TWO_FACTOR_REQUIRED);
+      when(service.hasCodeLocation()).thenReturn(true);
+
+      BBjSecurity.login(event);
+
+      InOrder order = inOrder(login, service);
+      order.verify(login).close();
+      order.verify(service).openCodeLocation();
+      verify(login, never()).setEnabled(true);
+      verify(service, never()).openTargetLocation();
+    }
+
+    @Test
+    void shouldEnableTheFormWhenNoCodeLocationIsConfigured() {
+      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.TWO_FACTOR_REQUIRED);
+
+      BBjSecurity.login(event);
+
+      verify(login).setEnabled(true);
+      verify(login, never()).close();
+    }
+
+    @Test
+    void shouldEnableTheFormOnInvalidCredentialsWhenCodeLocationIsConfigured() {
+      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.INVALID_CREDENTIALS);
+      when(service.hasCodeLocation()).thenReturn(true);
+
+      BBjSecurity.login(event);
+
+      verify(login).setEnabled(true);
+      verify(login, never()).close();
+      verify(service, never()).openCodeLocation();
+    }
+
     @ParameterizedTest
     @EnumSource(value = BBjLoginStatus.class, names = {"INVALID_CREDENTIALS", "UNAVAILABLE"})
     void shouldNotOpenTheTargetLocationOtherwise(BBjLoginStatus status) {
@@ -607,6 +682,29 @@ class BBjSecurityTest {
       signIn.apply(event, provider);
 
       verify(service, never()).savePendingLogin(any(), any());
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.webforj.bbj.security.BBjSecurityTest#getSignInsWithProvider")
+    void shouldNeverOpenTheCodeLocationWithProvider(
+        BiFunction<LoginSubmitEvent, Function<Boolean, String>, BBjLoginStatus> signIn) {
+      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.TWO_FACTOR_REQUIRED);
+      when(service.hasCodeLocation()).thenReturn(true);
+
+      signIn.apply(event, provider);
+
+      verify(service, never()).openCodeLocation();
+    }
+
+    @Test
+    void shouldEnableTheFormWithProviderWhenCodeLocationIsConfigured() {
+      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.TWO_FACTOR_REQUIRED);
+      when(service.hasCodeLocation()).thenReturn(true);
+
+      BBjSecurity.login(event, provider);
+
+      verify(login).setEnabled(true);
+      verify(login, never()).close();
     }
 
     @Test

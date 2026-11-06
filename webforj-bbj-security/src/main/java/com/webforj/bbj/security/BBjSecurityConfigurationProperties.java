@@ -18,7 +18,7 @@ import java.util.Optional;
  *
  * <p>
  * Security is enabled and routes are secure by default unless set otherwise. No authentication
- * path, no deny path and no logout success path are set by default.
+ * path, no deny path, no logout success path and no code path are set by default.
  * </p>
  *
  * <p>
@@ -51,6 +51,7 @@ public final class BBjSecurityConfigurationProperties {
   private static final String RENEW_BEFORE_MINUTES = TOKEN_PREFIX + "renew-before-minutes";
   private static final String TWO_FACTOR_PREFIX = BBJ_PREFIX + "two-factor.";
   private static final String PENDING_SECONDS = TWO_FACTOR_PREFIX + "pending-seconds";
+  private static final String CODE_PATH = TWO_FACTOR_PREFIX + "code-path";
   // Admin Keys
   private static final String ADMIN_PREFIX = BBJ_PREFIX + "admin.";
   private static final String ADMIN_TIMEOUT_SECONDS = ADMIN_PREFIX + "timeout-seconds";
@@ -72,6 +73,7 @@ public final class BBjSecurityConfigurationProperties {
   private Integer checkSeconds = 30;
   private Integer renewBeforeMinutes = 5;
   private Integer pendingSeconds = 300;
+  private String codePath;
   private String defaultSuccessPath = "/";
   private Boolean returnAfterLogin = true;
   private String logoutSuccessPath;
@@ -154,6 +156,10 @@ public final class BBjSecurityConfigurationProperties {
     if (config.hasPath(PENDING_SECONDS)) {
       readInt(config, PENDING_SECONDS, 1, Integer.MAX_VALUE)
           .ifPresent(properties::setPendingSeconds);
+    }
+
+    if (config.hasPath(CODE_PATH)) {
+      readString(config, CODE_PATH).ifPresent(properties::setCodePath);
     }
   }
 
@@ -426,6 +432,24 @@ public final class BBjSecurityConfigurationProperties {
    */
   public void setPendingSeconds(Integer pendingSeconds) {
     this.pendingSeconds = pendingSeconds;
+  }
+
+  /**
+   * Gets the path opened after a sign in that waits for its 2 factor code.
+   *
+   * @return the code path, or null if none is set
+   */
+  public String getCodePath() {
+    return codePath;
+  }
+
+  /**
+   * Sets the path opened after a sign in that waits for its 2 factor code.
+   *
+   * @param codePath the code path
+   */
+  public void setCodePath(String codePath) {
+    this.codePath = codePath;
   }
 
   /**

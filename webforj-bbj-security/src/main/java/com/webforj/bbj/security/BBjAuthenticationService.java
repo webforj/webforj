@@ -299,6 +299,26 @@ public final class BBjAuthenticationService {
     }
   }
 
+  /**
+   * Opens the location where the user enters the 2 factor code.
+   *
+   * <p>
+   * Nothing is opened when no code path is configured.
+   * </p>
+   */
+  void openCodeLocation() {
+    configuration.getCodeLocation().ifPresent(navigator);
+  }
+
+  /**
+   * Checks whether a location for entering the 2 factor code is configured.
+   *
+   * @return {@code true} if a code path is configured, {@code false} otherwise
+   */
+  boolean hasCodeLocation() {
+    return configuration.getCodeLocation().isPresent();
+  }
+
   private BBjLoginStatus openSession(String userName, String password, String code) {
     Objects.requireNonNull(userName, "userName");
     Objects.requireNonNull(password, "password");
