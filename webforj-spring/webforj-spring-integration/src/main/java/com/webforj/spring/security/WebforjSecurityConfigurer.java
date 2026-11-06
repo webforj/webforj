@@ -23,6 +23,7 @@ public class WebforjSecurityConfigurer
 
   private String loginPage;
   private String loginProcessingUrl;
+  private String oauth2LoginPage;
   private String logoutUrl;
   private String logoutSuccessUrl;
   private String accessDeniedPage;
@@ -68,13 +69,7 @@ public class WebforjSecurityConfigurer
   public WebforjSecurityConfigurer loginPage(Class<? extends Component> loginPageComponent) {
     Objects.requireNonNull(loginPageComponent, "Login page component must not be null");
 
-    String path = RoutePathResolver.resolvePath(loginPageComponent);
-    if (path == null) {
-      throw new IllegalArgumentException(
-          "Failed to resolve route path for component: " + loginPageComponent.getName());
-    }
-
-    String urlPath = patternToUrl(path);
+    String urlPath = resolveRouteUrl(loginPageComponent);
     return loginPage(urlPath, urlPath);
   }
 
@@ -89,6 +84,25 @@ public class WebforjSecurityConfigurer
   public WebforjSecurityConfigurer loginPage(String loginPage, String loginProcessingUrl) {
     this.loginPage = loginPage;
     this.loginProcessingUrl = loginProcessingUrl;
+    return this;
+  }
+
+  /**
+   * Configures login through external OAuth2 or OpenID Connect providers.
+   *
+   * <p>
+   * The given component is the login page that offers the configured providers.
+   * </p>
+   *
+   * @param loginPageComponent the login page component class
+   * @return this configurer for method chaining
+   * @throws NullPointerException if the component class is null
+   * @throws IllegalArgumentException if unable to resolve the route path for the component
+   */
+  public WebforjSecurityConfigurer oauth2Login(Class<? extends Component> loginPageComponent) {
+    Objects.requireNonNull(loginPageComponent, "Login page component must not be null");
+
+    oauth2LoginPage = resolveRouteUrl(loginPageComponent);
     return this;
   }
 
@@ -150,14 +164,7 @@ public class WebforjSecurityConfigurer
     Objects.requireNonNull(accessDeniedPageComponent,
         "Access denied page component must not be null");
 
-    String path = RoutePathResolver.resolvePath(accessDeniedPageComponent);
-    if (path == null) {
-      throw new IllegalArgumentException(
-          "Failed to resolve route path for component: " + accessDeniedPageComponent.getName());
-    }
-
-    String urlPath = patternToUrl(path);
-    return accessDeniedPage(urlPath);
+    return accessDeniedPage(resolveRouteUrl(accessDeniedPageComponent));
   }
 
   /**
@@ -171,35 +178,35 @@ public class WebforjSecurityConfigurer
     SpringSecurityConfigurationProperties properties =
         context.getBean(SpringSecurityConfigurationProperties.class);
 
-    // If both login endpoints are null, try to read from configuration
-    if (loginPage == null && loginProcessingUrl == null) {
+    if (loginPage == null && loginProcessingUrl == null && oauth2LoginPage == null) {
       if (properties.getAuthenticationPath() != null) {
         loginPage = properties.getAuthenticationPath();
         loginProcessingUrl = properties.getAuthenticationPath();
       }
-    } else if (loginPage != null) {
-      // If loginPage was set programmatically via formLogin(), update the properties
-      // so that SpringRouteSecurityConfiguration can use it
+    } else if (getEntryLoginPage() != null) {
       if (properties.getAuthenticationPath() == null) {
-        properties.setAuthenticationPath(loginPage);
+        properties.setAuthenticationPath(getEntryLoginPage());
       }
     }
 
     // Configure form login if specified
     if (loginPage != null) {
       configureFormLogin(http, context);
+    }
 
-      // Auto-configure logout when form login is enabled and logout wasn't explicitly configured
-      if (logoutUrl == null) {
-        logoutUrl = "/logout";
-      }
+    if (oauth2LoginPage != null) {
+      configureOauth2Login(http, context);
+    }
+
+    if (getEntryLoginPage() != null && logoutUrl == null) {
+      logoutUrl = "/logout";
     }
 
     // Configure logout if specified
     if (logoutUrl != null) {
       // Set default logout success URL if not specified
-      if (logoutSuccessUrl == null && loginPage != null) {
-        logoutSuccessUrl = loginPage + "?logout";
+      if (logoutSuccessUrl == null && getEntryLoginPage() != null) {
+        logoutSuccessUrl = getEntryLoginPage() + "?logout";
       } else if (logoutSuccessUrl == null) {
         logoutSuccessUrl = "/login?logout";
       }
@@ -251,6 +258,10 @@ public class WebforjSecurityConfigurer
         }
       }
 
+      if (oauth2LoginPage != null) {
+        registry.requestMatchers(oauth2LoginPage).permitAll();
+      }
+
       // Permit access denied page if configured
       if (accessDeniedPage != null) {
         registry.requestMatchers(accessDeniedPage).permitAll();
@@ -282,6 +293,14 @@ public class WebforjSecurityConfigurer
     });
   }
 
+  private void configureOauth2Login(HttpSecurity http, ApplicationContext context) {
+    http.oauth2Login(oauth2 -> {
+      oauth2.loginPage(oauth2LoginPage);
+      context.getBeanProvider(WebforjAuthenticationSuccessHandler.class)
+          .ifAvailable(oauth2::successHandler);
+    });
+  }
+
   private void configureLogout(HttpSecurity http) {
     http.logout(logout -> {
       logout.logoutUrl(logoutUrl);
@@ -292,6 +311,20 @@ public class WebforjSecurityConfigurer
 
       logout.permitAll();
     });
+  }
+
+  private String getEntryLoginPage() {
+    return loginPage != null ? loginPage : oauth2LoginPage;
+  }
+
+  private String resolveRouteUrl(Class<? extends Component> component) {
+    String path = RoutePathResolver.resolvePath(component);
+    if (path == null) {
+      throw new IllegalArgumentException(
+          "Failed to resolve route path for component: " + component.getName());
+    }
+
+    return patternToUrl(path);
   }
 
   private String patternToUrl(String pattern) {

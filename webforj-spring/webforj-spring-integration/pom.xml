@@ -52,6 +52,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-oauth2-client</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-mcp-apps</artifactId>
       <version>${project.version}</version>

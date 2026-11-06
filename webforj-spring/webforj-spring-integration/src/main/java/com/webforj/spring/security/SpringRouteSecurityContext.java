@@ -8,6 +8,8 @@ import org.springframework.security.authentication.AuthenticationTrustResolverIm
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
+import org.springframework.util.ClassUtils;
 
 /**
  * Spring Security implementation of {@link RouteSecurityContext}.
@@ -17,6 +19,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
  */
 public class SpringRouteSecurityContext implements RouteSecurityContext {
   private final AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
+  private final boolean oauth2Present =
+      ClassUtils.isPresent("org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal",
+          SpringRouteSecurityContext.class.getClassLoader());
 
   /**
    * {@inheritDoc}
@@ -71,6 +76,11 @@ public class SpringRouteSecurityContext implements RouteSecurityContext {
   @Override
   public Optional<Object> getAttribute(String name) {
     Authentication auth = getAuthentication();
+    if (auth != null && oauth2Present
+        && auth.getPrincipal() instanceof OAuth2AuthenticatedPrincipal principal) {
+      return Optional.ofNullable(principal.getAttribute(name));
+    }
+
     if (auth != null && auth.getDetails() instanceof Map) {
       @SuppressWarnings("unchecked")
       Map<String, Object> details = (Map<String, Object>) auth.getDetails();

@@ -26,6 +26,8 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 
 @ExtendWith(MockitoExtension.class)
 class SpringRouteSecurityContextTest {
@@ -275,6 +277,30 @@ class SpringRouteSecurityContextTest {
       details.put("sessionId", "123456");
       when(authentication.getDetails()).thenReturn(details);
       SecurityContextHolder.getContext().setAuthentication(authentication);
+
+      Optional<Object> attribute = securityContext.getAttribute("nonexistent");
+      assertFalse(attribute.isPresent());
+    }
+
+    @Test
+    void shouldReturnAttributeFromOauth2Principal() {
+      DefaultOAuth2User user =
+          new DefaultOAuth2User(AuthorityUtils.createAuthorityList("ROLE_USER"),
+              Map.of("sub", "jdoe", "email", "jdoe@example.com"), "sub");
+      SecurityContextHolder.getContext()
+          .setAuthentication(new OAuth2AuthenticationToken(user, user.getAuthorities(), "acme"));
+
+      Optional<Object> email = securityContext.getAttribute("email");
+      assertTrue(email.isPresent());
+      assertEquals("jdoe@example.com", email.get());
+    }
+
+    @Test
+    void shouldReturnEmptyForUnknownOauth2Claim() {
+      DefaultOAuth2User user = new DefaultOAuth2User(
+          AuthorityUtils.createAuthorityList("ROLE_USER"), Map.of("sub", "jdoe"), "sub");
+      SecurityContextHolder.getContext()
+          .setAuthentication(new OAuth2AuthenticationToken(user, user.getAuthorities(), "acme"));
 
       Optional<Object> attribute = securityContext.getAttribute("nonexistent");
       assertFalse(attribute.isPresent());
