@@ -163,6 +163,29 @@ class BBjSecurityStoreTest {
   }
 
   @Nested
+  class Availability {
+
+    @Test
+    void shouldBeAvailableWithTheSessionAccessor() {
+      assertTrue(store.isAvailable());
+    }
+
+    @Test
+    void shouldNotBeAvailableWithoutTheSessionAccessor() {
+      when(environment.getSessionAccessor()).thenReturn(Optional.empty());
+
+      assertFalse(store.isAvailable());
+    }
+
+    @Test
+    void shouldNotBeAvailableWithoutEnvironment() {
+      environmentMock.when(Environment::getCurrent).thenReturn(null);
+
+      assertFalse(store.isAvailable());
+    }
+  }
+
+  @Nested
   class UnavailableHttpSession {
 
     @ParameterizedTest

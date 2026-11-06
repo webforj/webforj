@@ -57,16 +57,15 @@ public final class BBjSecurityRegistrar implements AppLifecycleListener {
     }
 
     var problem = properties.findAdminConnectionProblem();
-    if (problem.isPresent()) {
-      logger.log(Level.ERROR, "Sign in is unavailable because {0}", problem.get());
-    }
+    problem.ifPresent(s -> logger.log(Level.ERROR, "Sign in is unavailable because {0}", s));
 
     var router = Router.getCurrent();
     if (router != null) {
       var context = new BBjRouteSecurityContext();
-      var manager = new BBjRouteSecurityManager(configuration, context);
+      var store = new BBjSecurityStore();
+      var manager = new BBjRouteSecurityManager(configuration, context, store);
       if (problem.isEmpty()) {
-        addService(router, properties, configuration, manager);
+        addService(router, properties, configuration, manager, store);
       }
 
       var securityObserver = new RouteSecurityObserver(manager);
@@ -79,15 +78,16 @@ public final class BBjSecurityRegistrar implements AppLifecycleListener {
   }
 
   private static void addService(Router router, BBjSecurityConfigurationProperties properties,
-      BBjRouteSecurityConfiguration configuration, BBjRouteSecurityManager manager) {
+      BBjRouteSecurityConfiguration configuration, BBjRouteSecurityManager manager,
+      BBjSecurityStore store) {
     var gateway = new BBjAdminGateway(properties);
     logger.log(Level.INFO, "BBj Admin API at {0}:{1} with ssl {2} and truststore {3}",
         properties.getAdminHost(), String.valueOf(properties.getAdminPort()),
         properties.getAdminSsl(), properties.getAdminTruststore() == null ? "none" : "set");
 
-    var service = BBjAuthenticationService.builder().setGateway(gateway)
-        .setStore(new BBjSecurityStore()).setProperties(properties).setConfiguration(configuration)
-        .setSecurityManager(manager).setNavigator(router::navigate).build();
+    var service = BBjAuthenticationService.builder().setGateway(gateway).setStore(store)
+        .setProperties(properties).setConfiguration(configuration).setSecurityManager(manager)
+        .setNavigator(router::navigate).build();
     var observer = new BBjSessionObserver(service);
     router.getRenderer().addObserver(observer);
     ObjectTable.put(BBjSecurity.SERVICE_KEY, service);

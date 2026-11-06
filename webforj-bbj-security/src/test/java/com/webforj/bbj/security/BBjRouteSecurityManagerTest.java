@@ -56,6 +56,7 @@ class BBjRouteSecurityManagerTest {
   private static final String KEY = AbstractRouteSecurityManager.PRE_AUTH_LOCATION_KEY;
 
   private final Map<String, Object> attributes = new HashMap<>();
+  private Environment environment;
   private MockedStatic<Environment> environmentMock;
   private MockedStatic<Router> routerMock;
   private Router router;
@@ -78,7 +79,7 @@ class BBjRouteSecurityManagerTest {
       call.<Consumer<HttpSession>>getArgument(0).accept(httpSession);
       return null;
     }).when(accessor).access(any(Consumer.class));
-    Environment environment = mock(Environment.class);
+    environment = mock(Environment.class);
     when(environment.getSessionAccessor()).thenReturn(Optional.of(accessor));
     environmentMock = mockStatic(Environment.class);
     environmentMock.when(Environment::getCurrent).thenReturn(environment);
@@ -91,7 +92,7 @@ class BBjRouteSecurityManagerTest {
     routerMock.when(Router::getCurrent).thenReturn(router);
     when(configuration.getAuthenticationLocation()).thenReturn(Optional.of(new Location("/login")));
     when(configuration.getDenyLocation()).thenReturn(Optional.of(new Location("/denied")));
-    manager = new BBjRouteSecurityManager(configuration, securityContext);
+    manager = new BBjRouteSecurityManager(configuration, securityContext, new BBjSecurityStore());
   }
 
   @AfterEach
@@ -106,13 +107,19 @@ class BBjRouteSecurityManagerTest {
     @Test
     void shouldRejectNullConfiguration() {
       assertThrows(NullPointerException.class,
-          () -> new BBjRouteSecurityManager(null, securityContext));
+          () -> new BBjRouteSecurityManager(null, securityContext, new BBjSecurityStore()));
+    }
+
+    @Test
+    void shouldRejectNullStore() {
+      assertThrows(NullPointerException.class,
+          () -> new BBjRouteSecurityManager(configuration, securityContext, null));
     }
 
     @Test
     void shouldRejectNullSecurityContext() {
       assertThrows(NullPointerException.class,
-          () -> new BBjRouteSecurityManager(configuration, null));
+          () -> new BBjRouteSecurityManager(configuration, null, new BBjSecurityStore()));
     }
 
     @Test
@@ -243,6 +250,84 @@ class BBjRouteSecurityManagerTest {
   }
 
   @Nested
+  class WithoutSessionAccessor {
+
+    @BeforeEach
+    void setUpWithoutAccessor() {
+      when(environment.getSessionAccessor()).thenReturn(Optional.empty());
+    }
+
+    @Test
+    void shouldKeepTheRequestedLocationInMemory() {
+      NavigationContext navigationContext = mock(NavigationContext.class);
+      when(navigationContext.getLocation()).thenReturn(new Location("/protected?x=1"));
+
+      manager.onAccessDenied(RouteAccessDecision.denyAuthentication(), navigationContext);
+
+      assertEquals("/protected?x=1",
+          manager.getPreAuthenticationLocation().orElseThrow().getFullURI());
+      assertTrue(attributes.isEmpty());
+    }
+
+    @Test
+    void shouldClearTheRequestedLocationFromMemory() {
+      NavigationContext navigationContext = mock(NavigationContext.class);
+      when(navigationContext.getLocation()).thenReturn(new Location("/protected"));
+      manager.onAccessDenied(RouteAccessDecision.denyAuthentication(), navigationContext);
+
+      manager.clearPreAuthenticationLocation();
+
+      assertTrue(manager.getPreAuthenticationLocation().isEmpty());
+    }
+
+    @Test
+    void shouldKeepNothingWithoutLocation() {
+      NavigationContext navigationContext = mock(NavigationContext.class);
+      RouteAccessDecision decision = RouteAccessDecision.deny("insufficient_roles");
+
+      manager.onAccessDenied(decision, navigationContext);
+
+      assertTrue(manager.getPreAuthenticationLocation().isEmpty());
+    }
+
+    @Test
+    void shouldKeepNothingWithoutNavigationContext() {
+      NavigationContext missing = null;
+      RouteAccessDecision decision = RouteAccessDecision.denyAuthentication();
+
+      assertDoesNotThrow(() -> manager.onAccessDenied(decision, missing));
+
+      assertTrue(manager.getPreAuthenticationLocation().isEmpty());
+    }
+
+    @Test
+    void shouldRedirectToTheAuthenticationLocationAfterKeeping() {
+      NavigationContext navigationContext = mock(NavigationContext.class);
+      when(navigationContext.getLocation()).thenReturn(new Location("/protected"));
+
+      manager.onAccessDenied(RouteAccessDecision.denyAuthentication(), navigationContext);
+
+      ArgumentCaptor<Location> target = ArgumentCaptor.forClass(Location.class);
+      verify(router).navigate(target.capture(), any(NavigationOptions.class));
+      assertEquals("/login", target.getValue().getFullURI());
+    }
+  }
+
+  @Nested
+  class WithSessionAccessor {
+
+    @Test
+    void shouldKeepTheRequestedLocationInTheHttpSessionOnly() {
+      NavigationContext navigationContext = mock(NavigationContext.class);
+      when(navigationContext.getLocation()).thenReturn(new Location("/protected"));
+      manager.onAccessDenied(RouteAccessDecision.denyAuthentication(), navigationContext);
+      attributes.remove(KEY);
+
+      assertTrue(manager.getPreAuthenticationLocation().isEmpty());
+    }
+  }
+
+  @Nested
   class PostAccessDenied {
 
     @Test
@@ -365,7 +450,7 @@ class BBjRouteSecurityManagerTest {
 
     @Test
     void shouldWarnAboutPriorityInTheCoreRange() {
-      new BBjRouteSecurityManager(configuration, securityContext);
+      new BBjRouteSecurityManager(configuration, securityContext, new BBjSecurityStore());
 
       List<LogRecord> warnings =
           records.stream().filter(it -> it.getLevel() == Level.WARNING).toList();
@@ -376,7 +461,7 @@ class BBjRouteSecurityManagerTest {
 
     @Test
     void shouldLogEachRegisteredEvaluatorWithItsPriority() {
-      new BBjRouteSecurityManager(configuration, securityContext);
+      new BBjRouteSecurityManager(configuration, securityContext, new BBjSecurityStore());
 
       List<List<Object>> registered = records.stream().filter(it -> it.getLevel() == Level.INFO)
           .map(it -> List.of(it.getParameters())).toList();

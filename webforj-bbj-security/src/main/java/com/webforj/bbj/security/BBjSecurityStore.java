@@ -1,5 +1,6 @@
 package com.webforj.bbj.security;
 
+import com.webforj.Environment;
 import com.webforj.bbj.security.model.BBjSession;
 import com.webforj.environment.SessionObjectTable;
 import java.lang.System.Logger;
@@ -13,6 +14,10 @@ import java.util.Optional;
  * <p>
  * All tabs of one HTTP session share the saved session, so it survives a page reload. Nothing
  * secret is logged. A failure is logged by its class name only.
+ * </p>
+ *
+ * <p>
+ * The HTTP session is available only when the environment has a session accessor.
  * </p>
  *
  * @author Christian Liebhardt
@@ -92,5 +97,15 @@ public final class BBjSecurityStore {
       logger.log(Level.WARNING, FAILURE, "The sign in could not be removed from the HTTP session",
           e.getClass().getName());
     }
+  }
+
+  /**
+   * Tells whether the HTTP session is available to keep a session.
+   *
+   * @return true when the environment has a session accessor
+   */
+  boolean isAvailable() {
+    Environment environment = Environment.getCurrent();
+    return environment != null && environment.getSessionAccessor().isPresent();
   }
 }

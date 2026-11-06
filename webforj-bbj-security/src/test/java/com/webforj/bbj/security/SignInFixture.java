@@ -95,6 +95,7 @@ public final class SignInFixture implements AutoCloseable {
       return null;
     }).when(store).clearSession();
     when(store.readSession()).thenAnswer(call -> Optional.ofNullable(storedSession.get()));
+    when(store.isAvailable()).thenReturn(true);
     service = createBuilder().build();
   }
 
@@ -203,6 +204,15 @@ public final class SignInFixture implements AutoCloseable {
    */
   public void setStoredSession(BBjSession target) {
     storedSession.set(target);
+  }
+
+  /**
+   * Tells the service whether the session store can keep a session.
+   *
+   * @param available true when the HTTP session is available
+   */
+  public void setStoreAvailable(boolean available) {
+    when(store.isAvailable()).thenReturn(available);
   }
 
   /** Restores the session of the session store through the service. */
@@ -334,6 +344,14 @@ public final class SignInFixture implements AutoCloseable {
 
     return records.stream().filter(it -> it.getLevel() == Level.WARNING)
         .map(formatter::formatMessage).toList();
+  }
+
+  /** Gives the formatted info messages of the service. */
+  public List<String> getInfoMessages() {
+    SimpleFormatter formatter = new SimpleFormatter();
+
+    return records.stream().filter(it -> it.getLevel() == Level.INFO).map(formatter::formatMessage)
+        .toList();
   }
 
   /** Gives the formatted debug messages of the service. */
