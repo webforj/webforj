@@ -126,6 +126,17 @@ class BBjAuthenticationServiceLogoutTest {
   }
 
   @Test
+  void shouldSignOutAndEndTheTokenWhenTheStoreIsUnavailable() {
+    fixture.setStoreAvailable(false);
+    startSignedInSession();
+
+    fixture.logout();
+
+    assertFalse(fixture.currentUser().isPresent());
+    fixture.verifyCloseSession(times(1), fixture.session);
+  }
+
+  @Test
   void shouldActLikeNobodySignedInOnSecondLogout() {
     startSignedInSession();
     fixture.logout();

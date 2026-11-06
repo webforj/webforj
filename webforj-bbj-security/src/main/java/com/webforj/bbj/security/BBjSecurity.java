@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Entry point of an app to sign users in and out against BBj and to read the user that signed in.
@@ -29,7 +30,6 @@ public final class BBjSecurity {
    * The key under which the {@link BBjAuthenticationService} is stored in the object table.
    */
   public static final String SERVICE_KEY = BBjAuthenticationService.class.getName();
-  private static final int MAX_CODE_ATTEMPTS = 5;
 
   private BBjSecurity() {}
 
@@ -39,8 +39,14 @@ public final class BBjSecurity {
    * <p>
    * The sign in runs on the calling thread. After a successful sign in the app navigates to the
    * location the user requested before signing in, or to the default success path. When this method
-   * returns, the navigation has happened. When the account needs a 2 factor code, the sign in ends
-   * as {@link BBjLoginStatus#TWO_FACTOR_REQUIRED}.
+   * returns, the navigation has happened.
+   * </p>
+   *
+   * <p>
+   * When the account needs a 2 factor code, the sign in ends as
+   * {@link BBjLoginStatus#TWO_FACTOR_REQUIRED} and the service keeps a pending sign in for
+   * {@code two-factor.pending-seconds}. {@link #submitCode(String)} completes it and
+   * {@link #cancelLogin()} ends it.
    * </p>
    *
    * @param userName the user name
@@ -50,7 +56,10 @@ public final class BBjSecurity {
    * @throws NullPointerException if any parameter is {@code null}
    */
   public static BBjLoginStatus login(String userName, String password) {
-    return login(userName, password, retry -> null);
+    Objects.requireNonNull(userName, "userName");
+    Objects.requireNonNull(password, "password");
+
+    return openTargetLocationOnSuccess(getPendingStatus(userName, password));
   }
 
   /**
@@ -64,7 +73,7 @@ public final class BBjSecurity {
    * {@link BBjLoginStatus#TWO_FACTOR_REQUIRED}. The sign in also stops after 5 refused codes and
    * ends as {@link BBjLoginStatus#TWO_FACTOR_REQUIRED}. After a successful sign in the app
    * navigates to the location the user requested before signing in, or to the default success path.
-   * When this method returns, the navigation has happened.
+   * When this method returns, the navigation has happened. No pending sign in is kept.
    * </p>
    *
    * @param userName the user name
@@ -80,12 +89,7 @@ public final class BBjSecurity {
     Objects.requireNonNull(password, "password");
     Objects.requireNonNull(codeProvider, "codeProvider");
 
-    var status = getStatus(userName, password, codeProvider);
-    if (status == BBjLoginStatus.AUTHENTICATED) {
-      getService().ifPresent(BBjAuthenticationService::openTargetLocation);
-    }
-
-    return status;
+    return openTargetLocationOnSuccess(getStatus(userName, password, codeProvider));
   }
 
   /**
@@ -95,9 +99,11 @@ public final class BBjSecurity {
    * The component shows no error while the sign in runs. When the credentials are invalid the
    * component shows its error state. When the sign in is unavailable a warning toast is shown. When
    * the account needs a 2 factor code, the sign in ends as
-   * {@link BBjLoginStatus#TWO_FACTOR_REQUIRED} with no error and no toast. After a successful sign
-   * in the component is closed and then the app navigates to the location the user requested before
-   * signing in, or to the default success path. Otherwise the component is enabled again.
+   * {@link BBjLoginStatus#TWO_FACTOR_REQUIRED} with no error and no toast, and the service keeps a
+   * pending sign in for {@code two-factor.pending-seconds}. {@link #submitCode(String)} completes
+   * it and {@link #cancelLogin()} ends it. After a successful sign in the component is closed and
+   * then the app navigates to the location the user requested before signing in, or to the default
+   * success path. Otherwise the component is enabled again.
    * </p>
    *
    * @param event the submit event of the component
@@ -107,7 +113,7 @@ public final class BBjSecurity {
    * @throws ClassCastException if the source of the event is not a {@link Login}
    */
   public static BBjLoginStatus login(LoginSubmitEvent event) {
-    return login(event, retry -> null);
+    return handleSubmit(event, () -> getPendingStatus(event.getUsername(), event.getPassword()));
   }
 
   /**
@@ -121,7 +127,7 @@ public final class BBjSecurity {
    * and {@code true} on each ask after a refused code. When the provider returns {@code null}, the
    * sign in stops and ends as {@link BBjLoginStatus#TWO_FACTOR_REQUIRED} with no error and no
    * toast. The sign in also stops after 5 refused codes and ends as
-   * {@link BBjLoginStatus#TWO_FACTOR_REQUIRED}.
+   * {@link BBjLoginStatus#TWO_FACTOR_REQUIRED}. No pending sign in is kept.
    * </p>
    *
    * <p>
@@ -144,28 +150,53 @@ public final class BBjSecurity {
     Objects.requireNonNull(event, "event");
     Objects.requireNonNull(codeProvider, "codeProvider");
 
-    Login login = (Login) event.getComponent();
-    login.setError(false);
-    BBjLoginStatus status;
-    try {
-      status = getStatus(event.getUsername(), event.getPassword(), codeProvider);
-    } catch (RuntimeException e) {
-      login.setEnabled(true);
-      throw e;
-    }
+    return handleSubmit(event,
+        () -> getStatus(event.getUsername(), event.getPassword(), codeProvider));
+  }
 
-    if (status == BBjLoginStatus.INVALID_CREDENTIALS) {
-      login.setError(true);
-    }
+  /**
+   * Completes a sign in that waits for its 2 factor code.
+   *
+   * <p>
+   * The sign in was started by {@link #login(String, String)} or {@link #login(LoginSubmitEvent)}
+   * and ended as {@link BBjLoginStatus#TWO_FACTOR_REQUIRED}. The code is sent with the kept user
+   * name and password. When BBj refuses the code, the status is
+   * {@link BBjLoginStatus#TWO_FACTOR_REQUIRED} and the pending sign in stays for another code.
+   * After a successful sign in the app navigates to the location the user requested before signing
+   * in, or to the default success path. When this method returns, the navigation has happened.
+   * </p>
+   *
+   * <p>
+   * When no sign in is pending, the pending sign in is older than
+   * {@code two-factor.pending-seconds} or the fifth code was refused, the status is
+   * {@link BBjLoginStatus#CODE_EXPIRED}. A reload of the page ends a pending sign in too. The user
+   * then signs in again with the password. Any status other than
+   * {@link BBjLoginStatus#TWO_FACTOR_REQUIRED} ends the pending sign in. When BBj security is not
+   * set up for the app, the status is {@link BBjLoginStatus#UNAVAILABLE}.
+   * </p>
+   *
+   * @param code the 2 factor code
+   *
+   * @return the status of the code step
+   * @throws NullPointerException if {@code code} is {@code null}
+   */
+  public static BBjLoginStatus submitCode(String code) {
+    Objects.requireNonNull(code, "code");
 
-    if (status == BBjLoginStatus.AUTHENTICATED) {
-      login.close();
-      getService().ifPresent(BBjAuthenticationService::openTargetLocation);
-    } else {
-      login.setEnabled(true);
-    }
+    return openTargetLocationOnSuccess(
+        getService().map(it -> it.sendCode(code)).orElse(BBjLoginStatus.UNAVAILABLE));
+  }
 
-    return status;
+  /**
+   * Ends a sign in that waits for its 2 factor code.
+   *
+   * <p>
+   * The kept user name and password are forgotten. When no sign in is pending, or BBj security is
+   * not set up for the app, nothing happens.
+   * </p>
+   */
+  public static void cancelLogin() {
+    getService().ifPresent(BBjAuthenticationService::clearPending);
   }
 
   /**
@@ -243,12 +274,58 @@ public final class BBjSecurity {
     return set -> set.contains(value);
   }
 
+  private static BBjLoginStatus handleSubmit(LoginSubmitEvent event,
+      Supplier<BBjLoginStatus> signIn) {
+    Objects.requireNonNull(event, "event");
+
+    Login login = (Login) event.getComponent();
+    login.setError(false);
+    BBjLoginStatus status;
+    try {
+      status = signIn.get();
+    } catch (RuntimeException e) {
+      login.setEnabled(true);
+      throw e;
+    }
+
+    if (status == BBjLoginStatus.INVALID_CREDENTIALS) {
+      login.setError(true);
+    }
+
+    if (status == BBjLoginStatus.AUTHENTICATED) {
+      login.close();
+      getService().ifPresent(BBjAuthenticationService::openTargetLocation);
+    } else {
+      login.setEnabled(true);
+    }
+
+    return status;
+  }
+
+  private static BBjLoginStatus openTargetLocationOnSuccess(BBjLoginStatus status) {
+    if (status == BBjLoginStatus.AUTHENTICATED) {
+      getService().ifPresent(BBjAuthenticationService::openTargetLocation);
+    }
+
+    return status;
+  }
+
+  private static BBjLoginStatus getPendingStatus(String userName, String password) {
+    var status = sendLogin(userName, password, null);
+    if (status == BBjLoginStatus.TWO_FACTOR_REQUIRED) {
+      getService().ifPresent(it -> it.savePendingLogin(userName, password));
+    }
+
+    return status;
+  }
+
   private static BBjLoginStatus getStatus(String userName, String password,
       Function<Boolean, String> codeProvider) {
     var status = sendLogin(userName, password, null);
     var retry = false;
     var attempts = 0;
-    while (status == BBjLoginStatus.TWO_FACTOR_REQUIRED && attempts < MAX_CODE_ATTEMPTS) {
+    while (status == BBjLoginStatus.TWO_FACTOR_REQUIRED
+        && attempts < BBjAuthenticationService.MAX_CODE_ATTEMPTS) {
       var code = codeProvider.apply(retry);
       if (code == null || code.isBlank()) {
         break;

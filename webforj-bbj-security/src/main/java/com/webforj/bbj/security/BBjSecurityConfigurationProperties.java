@@ -49,6 +49,8 @@ public final class BBjSecurityConfigurationProperties {
   private static final String TOKEN_MINUTES = TOKEN_PREFIX + "minutes";
   private static final String CHECK_SECONDS = TOKEN_PREFIX + "check-seconds";
   private static final String RENEW_BEFORE_MINUTES = TOKEN_PREFIX + "renew-before-minutes";
+  private static final String TWO_FACTOR_PREFIX = BBJ_PREFIX + "two-factor.";
+  private static final String PENDING_SECONDS = TWO_FACTOR_PREFIX + "pending-seconds";
   // Admin Keys
   private static final String ADMIN_PREFIX = BBJ_PREFIX + "admin.";
   private static final String ADMIN_TIMEOUT_SECONDS = ADMIN_PREFIX + "timeout-seconds";
@@ -69,6 +71,7 @@ public final class BBjSecurityConfigurationProperties {
   private Integer tokenMinutes = 30;
   private Integer checkSeconds = 30;
   private Integer renewBeforeMinutes = 5;
+  private Integer pendingSeconds = 300;
   private String defaultSuccessPath = "/";
   private Boolean returnAfterLogin = true;
   private String logoutSuccessPath;
@@ -86,6 +89,7 @@ public final class BBjSecurityConfigurationProperties {
       readSecurityKeys(properties, resolved);
       readBBjKeys(properties, resolved);
       readTokenKeys(properties, resolved);
+      readTwoFactorKeys(properties, resolved);
       readAdminKeys(properties, resolved);
 
       return true;
@@ -142,6 +146,14 @@ public final class BBjSecurityConfigurationProperties {
       logger.log(Level.WARNING, "The configuration key {0} is not below {1} and is set to {2}",
           RENEW_BEFORE_MINUTES, TOKEN_MINUTES, String.valueOf(renewBeforeLimit));
       properties.setRenewBeforeMinutes(renewBeforeLimit);
+    }
+  }
+
+  private static void readTwoFactorKeys(BBjSecurityConfigurationProperties properties,
+      Config config) {
+    if (config.hasPath(PENDING_SECONDS)) {
+      readInt(config, PENDING_SECONDS, 1, Integer.MAX_VALUE)
+          .ifPresent(properties::setPendingSeconds);
     }
   }
 
@@ -396,6 +408,24 @@ public final class BBjSecurityConfigurationProperties {
    */
   public void setRenewBeforeMinutes(Integer renewBeforeMinutes) {
     this.renewBeforeMinutes = renewBeforeMinutes;
+  }
+
+  /**
+   * Gets the seconds a sign in waits for its 2 factor code.
+   *
+   * @return the seconds a pending sign in is kept
+   */
+  public Integer getPendingSeconds() {
+    return pendingSeconds;
+  }
+
+  /**
+   * Sets the seconds a sign in waits for its 2 factor code.
+   *
+   * @param pendingSeconds the seconds a pending sign in is kept
+   */
+  public void setPendingSeconds(Integer pendingSeconds) {
+    this.pendingSeconds = pendingSeconds;
   }
 
   /**

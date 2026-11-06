@@ -6,8 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -164,6 +166,22 @@ class BBjAuthenticationServiceLoginTest {
 
       verify(fixture.securityManager).consumePreAuthenticationLocation();
       verify(fixture.navigator).accept(expected);
+    }
+  }
+
+  @Nested
+  class WithoutSessionAccessor {
+
+    @Test
+    void shouldAuthenticateAndKeepTheUserForThePageWithoutSaving() {
+      fixture.setStoreAvailable(false);
+      fixture.whenOpenSession("alice", PASSWORD).thenReturn(fixture.session);
+
+      BBjLoginStatus status = fixture.login("alice", PASSWORD);
+
+      assertEquals(BBjLoginStatus.AUTHENTICATED, status);
+      assertSame(fixture.principal, fixture.currentUser().orElseThrow());
+      verify(fixture.store, never()).saveSession(any());
     }
   }
 

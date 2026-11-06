@@ -4,10 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.webforj.bbj.security.BBjAuthenticationService;
 import com.webforj.bbj.security.SignInFixture;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
@@ -74,6 +77,19 @@ class BBjAuthenticationServiceSessionTest {
       fixture.restoreSession();
 
       assertFalse(fixture.currentUser().isPresent());
+    }
+
+    @Test
+    void shouldSignNobodyInAndLogOnceWhenTheStoreIsUnavailable() {
+      fixture.setStoreAvailable(false);
+      when(fixture.store.readSession()).thenReturn(Optional.of(fixture.session));
+
+      fixture.restoreSession();
+
+      assertFalse(fixture.currentUser().isPresent());
+      verify(fixture.store, never()).readSession();
+      assertEquals(List.of("No HTTP session accessor, the sign in is kept for this page only"),
+          fixture.getInfoMessages());
     }
   }
 }

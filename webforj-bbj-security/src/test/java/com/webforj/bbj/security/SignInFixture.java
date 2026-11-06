@@ -173,6 +173,32 @@ public final class SignInFixture implements AutoCloseable {
     return service.login(userName, password, code);
   }
 
+  /**
+   * Keeps a pending sign in through the service.
+   *
+   * @param userName the user name
+   * @param password the password
+   */
+  public void savePendingLogin(String userName, String password) {
+    service.savePendingLogin(userName, password);
+  }
+
+  /**
+   * Completes the pending sign in through the service.
+   *
+   * @param code the 2 factor code
+   *
+   * @return the status of the code step
+   */
+  public BBjLoginStatus sendCode(String code) {
+    return service.sendCode(code);
+  }
+
+  /** Ends the pending sign in through the service. */
+  public void clearPending() {
+    service.clearPending();
+  }
+
   /** Opens the target location through the service. */
   public void openTargetLocation() {
     service.openTargetLocation();
@@ -297,6 +323,19 @@ public final class SignInFixture implements AutoCloseable {
    */
   public void verifyOpenSession(VerificationMode mode, String userName, String password) {
     verify(gateway, mode).openSession(userName, password, null);
+  }
+
+  /**
+   * Verifies the opening of a session with a 2 factor code on the gateway.
+   *
+   * @param mode the verification mode
+   * @param userName the user name
+   * @param password the password
+   * @param code the 2 factor code
+   */
+  public void verifyOpenSession(VerificationMode mode, String userName, String password,
+      String code) {
+    verify(gateway, mode).openSession(userName, password, code);
   }
 
   /**

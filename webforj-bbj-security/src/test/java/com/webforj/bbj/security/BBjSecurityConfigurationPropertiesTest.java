@@ -84,6 +84,11 @@ class BBjSecurityConfigurationPropertiesTest {
     }
 
     @Test
+    void shouldHaveDefaultPendingSeconds() {
+      assertEquals(300, properties.getPendingSeconds());
+    }
+
+    @Test
     void shouldHaveDefaultSuccessPath() {
       assertEquals("/", properties.getDefaultSuccessPath());
     }
@@ -164,6 +169,12 @@ class BBjSecurityConfigurationPropertiesTest {
     void shouldSetTokenMinutes() {
       properties.setTokenMinutes(15);
       assertEquals(15, properties.getTokenMinutes());
+    }
+
+    @Test
+    void shouldSetPendingSeconds() {
+      properties.setPendingSeconds(60);
+      assertEquals(60, properties.getPendingSeconds());
     }
 
     @Test
@@ -363,6 +374,8 @@ class BBjSecurityConfigurationPropertiesTest {
           BBjSecurityConfigurationProperties::getAdminTimeoutSeconds;
       ToIntFunction<BBjSecurityConfigurationProperties> token =
           BBjSecurityConfigurationProperties::getTokenMinutes;
+      ToIntFunction<BBjSecurityConfigurationProperties> pending =
+          BBjSecurityConfigurationProperties::getPendingSeconds;
 
       return Stream.of(Arguments.of("admin.port", 1, port), Arguments.of("admin.port", 40000, port),
           Arguments.of("admin.port", 65535, port),
@@ -370,7 +383,10 @@ class BBjSecurityConfigurationPropertiesTest {
           Arguments.of("admin.timeout-seconds", 9999, timeout),
           Arguments.of("token.minutes", 1, token), Arguments.of("token.minutes", 480, token),
           Arguments.of("token.minutes", 481, token),
-          Arguments.of("token.minutes", Integer.MAX_VALUE, token));
+          Arguments.of("token.minutes", Integer.MAX_VALUE, token),
+          Arguments.of("two-factor.pending-seconds", 1, pending),
+          Arguments.of("two-factor.pending-seconds", 600, pending),
+          Arguments.of("two-factor.pending-seconds", Integer.MAX_VALUE, pending));
     }
 
     @ParameterizedTest
@@ -591,6 +607,7 @@ class BBjSecurityConfigurationPropertiesTest {
       assertEquals(2002, properties.getAdminPort());
       assertEquals(10, properties.getAdminTimeoutSeconds());
       assertEquals(30, properties.getTokenMinutes());
+      assertEquals(300, properties.getPendingSeconds());
     }
 
     @ParameterizedTest
@@ -620,6 +637,7 @@ class BBjSecurityConfigurationPropertiesTest {
       assertEquals(2002, properties.getAdminPort());
       assertEquals(10, properties.getAdminTimeoutSeconds());
       assertEquals(30, properties.getTokenMinutes());
+      assertEquals(300, properties.getPendingSeconds());
     }
 
     @ParameterizedTest
@@ -788,7 +806,8 @@ class BBjSecurityConfigurationPropertiesTest {
     }
 
     private static Stream<Arguments> invalidIntegerValues() {
-      return Stream.of("admin.port", "admin.timeout-seconds", "token.minutes")
+      return Stream
+          .of("admin.port", "admin.timeout-seconds", "token.minutes", "two-factor.pending-seconds")
           .flatMap(key -> Stream.of("true", "[1]", "{a = 1}", "2.5", "\"abc\"", "\"\"")
               .map(value -> Arguments.of(key, value)));
     }
@@ -799,7 +818,9 @@ class BBjSecurityConfigurationPropertiesTest {
           Arguments.of("admin.timeout-seconds", 0, 1, 9999),
           Arguments.of("admin.timeout-seconds", 10000, 1, 9999),
           Arguments.of("token.minutes", 0, 1, Integer.MAX_VALUE),
-          Arguments.of("token.minutes", -1, 1, Integer.MAX_VALUE));
+          Arguments.of("token.minutes", -1, 1, Integer.MAX_VALUE),
+          Arguments.of("two-factor.pending-seconds", 0, 1, Integer.MAX_VALUE),
+          Arguments.of("two-factor.pending-seconds", -1, 1, Integer.MAX_VALUE));
     }
 
     private static Stream<Arguments> invalidAdminStringValues() {
