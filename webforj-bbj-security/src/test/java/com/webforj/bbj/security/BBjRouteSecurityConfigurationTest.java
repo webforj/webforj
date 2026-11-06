@@ -46,7 +46,7 @@ class BBjRouteSecurityConfigurationTest {
 
     private static Stream<Arguments> enabledStatusCases() {
       return Stream.of(Arguments.of(Boolean.TRUE, true), Arguments.of(Boolean.FALSE, false),
-          Arguments.of(null, false));
+          Arguments.of(null, true));
     }
   }
 
@@ -63,7 +63,7 @@ class BBjRouteSecurityConfigurationTest {
 
     private static Stream<Arguments> secureByDefaultCases() {
       return Stream.of(Arguments.of(Boolean.TRUE, true), Arguments.of(Boolean.FALSE, false),
-          Arguments.of(null, false));
+          Arguments.of(null, true));
     }
   }
 

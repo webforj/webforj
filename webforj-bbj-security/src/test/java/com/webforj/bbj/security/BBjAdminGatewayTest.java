@@ -945,7 +945,7 @@ class BBjAdminGatewayTest {
     }
 
     @Test
-    void shouldReleaseTheConnectionAndWarnOnceWhenTheUserNameCannotBeRead() throws Exception {
+    void shouldReleaseEachConnectionAndNotWarnWhenTheUserNameCannotBeRead() throws Exception {
       when(admin.getUser())
           .thenThrow(new BBjAdminException("Server failed login: Authentication token is expired"));
 
@@ -953,11 +953,33 @@ class BBjAdminGatewayTest {
           assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD, null));
 
       assertEquals(Kind.TOKEN_REJECTED, failure.getKind());
-      verify(admin, times(1)).release();
-      List<LogRecord> warnings =
-          records.stream().filter(it -> it.getLevel() == Level.WARNING).toList();
-      assertEquals(1, warnings.size());
-      assertTrue(warnings.getFirst().getMessage().contains("expires on its own"));
+      verify(admin, times(2)).release();
+      assertTrue(records.stream().noneMatch(it -> it.getLevel() == Level.WARNING));
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.webforj.bbj.security.BBjAdminGatewayTest#getGroupNameFailures")
+    void shouldEndTheIssuedTokenOnceWhenThePrincipalCannotBeRead(Throwable cause, Kind kind)
+        throws Exception {
+      when(admin.getUser()).thenThrow(cause);
+
+      BBjAdminFailure failure =
+          assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD, null));
+
+      assertEquals(kind, failure.getKind());
+      verify(admin, times(1)).invalidateToken(TOKEN);
+    }
+
+    @Test
+    void shouldThrowTheOriginalFailureWhenTheIssuedTokenCannotBeEnded() throws Exception {
+      when(admin.getUser()).thenThrow(new IllegalStateException("boom"));
+      doThrow(new BBjAdminException("end failed")).when(admin).invalidateToken(TOKEN);
+
+      BBjAdminFailure failure =
+          assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD, null));
+
+      assertEquals(UNAVAILABLE + "IllegalStateException: boom", failure.getMessage());
+      verify(admin, times(1)).invalidateToken(TOKEN);
     }
 
     @Test
@@ -984,7 +1006,7 @@ class BBjAdminGatewayTest {
           assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD, null));
 
       assertEquals(Kind.UNAVAILABLE, failure.getKind());
-      verify(admin, times(1)).release();
+      verify(admin, times(2)).release();
     }
 
     @ParameterizedTest
@@ -998,8 +1020,8 @@ class BBjAdminGatewayTest {
           assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD, null));
 
       assertEquals(kind, failure.getKind());
-      verify(admin, times(1)).release();
-      assertEquals(1, records.stream().filter(it -> it.getLevel() == Level.WARNING).count());
+      verify(admin, times(2)).release();
+      assertTrue(records.stream().noneMatch(it -> it.getLevel() == Level.WARNING));
     }
 
     @Test
@@ -1028,8 +1050,8 @@ class BBjAdminGatewayTest {
           assertThrows(BBjAdminFailure.class, () -> gateway.openSession("alice", PASSWORD, null));
 
       assertEquals(kind, failure.getKind());
-      verify(admin, times(1)).release();
-      assertEquals(1, records.stream().filter(it -> it.getLevel() == Level.WARNING).count());
+      verify(admin, times(2)).release();
+      assertTrue(records.stream().noneMatch(it -> it.getLevel() == Level.WARNING));
     }
 
     @Test
@@ -1061,7 +1083,7 @@ class BBjAdminGatewayTest {
 
     @ParameterizedTest
     @MethodSource("com.webforj.bbj.security.BBjAdminGatewayTest#getGroupNameFailures")
-    void shouldReleaseBothConnectionsAndWarnOnceWhenTheCodeTokenCannotBeRead(Throwable cause,
+    void shouldReleaseEachConnectionAndNotWarnWhenTheCodeTokenCannotBeRead(Throwable cause,
         Kind kind) throws Exception {
       BBjAdminBase codeAdmin = mock(BBjAdminBase.class);
       setCodeAdmin(codeAdmin);
@@ -1072,8 +1094,8 @@ class BBjAdminGatewayTest {
 
       assertEquals(kind, failure.getKind());
       verify(codeAdmin, times(1)).release();
-      verify(admin, times(1)).release();
-      assertEquals(1, records.stream().filter(it -> it.getLevel() == Level.WARNING).count());
+      verify(admin, times(2)).release();
+      assertTrue(records.stream().noneMatch(it -> it.getLevel() == Level.WARNING));
     }
 
     @Test

@@ -248,10 +248,14 @@ public final class BBjSecurityConfigurationProperties {
   /**
    * Sets whether security is enabled.
    *
+   * <p>
+   * A {@code null} value is ignored with a warning and the current value stays.
+   * </p>
+   *
    * @param enabled true to enable security, false to disable
    */
   public void setEnabled(Boolean enabled) {
-    this.enabled = enabled;
+    this.enabled = resolveValue(ENABLED_KEY, enabled, this.enabled);
   }
 
   /**
@@ -266,10 +270,14 @@ public final class BBjSecurityConfigurationProperties {
   /**
    * Sets whether routes are secure by default.
    *
+   * <p>
+   * A {@code null} value is ignored with a warning and the current value stays.
+   * </p>
+   *
    * @param secureByDefault true to make routes secure by default, false otherwise
    */
   public void setSecureByDefault(Boolean secureByDefault) {
-    this.secureByDefault = secureByDefault;
+    this.secureByDefault = resolveValue(SECURE_BY_DEFAULT, secureByDefault, this.secureByDefault);
   }
 
   /**
@@ -338,10 +346,14 @@ public final class BBjSecurityConfigurationProperties {
   /**
    * Sets the port of the BBj Admin API.
    *
+   * <p>
+   * A {@code null} value is ignored with a warning and the current value stays.
+   * </p>
+   *
    * @param adminPort the port
    */
   public void setAdminPort(Integer adminPort) {
-    this.adminPort = adminPort;
+    this.adminPort = resolveValue(ADMIN_PORT, adminPort, this.adminPort);
   }
 
   /**
@@ -356,10 +368,15 @@ public final class BBjSecurityConfigurationProperties {
   /**
    * Sets the time limit of an Admin API call in seconds.
    *
+   * <p>
+   * A {@code null} value is ignored with a warning and the current value stays.
+   * </p>
+   *
    * @param adminTimeoutSeconds the time limit in seconds
    */
   public void setAdminTimeoutSeconds(Integer adminTimeoutSeconds) {
-    this.adminTimeoutSeconds = adminTimeoutSeconds;
+    this.adminTimeoutSeconds =
+        resolveValue(ADMIN_TIMEOUT_SECONDS, adminTimeoutSeconds, this.adminTimeoutSeconds);
   }
 
   /**
@@ -374,10 +391,14 @@ public final class BBjSecurityConfigurationProperties {
   /**
    * Sets the lifetime of a login token in minutes.
    *
+   * <p>
+   * A {@code null} value is ignored with a warning and the current value stays.
+   * </p>
+   *
    * @param tokenMinutes the lifetime in minutes
    */
   public void setTokenMinutes(Integer tokenMinutes) {
-    this.tokenMinutes = tokenMinutes;
+    this.tokenMinutes = resolveValue(TOKEN_MINUTES, tokenMinutes, this.tokenMinutes);
   }
 
   /**
@@ -392,10 +413,14 @@ public final class BBjSecurityConfigurationProperties {
   /**
    * Sets the seconds between two checks of a login token against the server.
    *
+   * <p>
+   * A {@code null} value is ignored with a warning and the current value stays.
+   * </p>
+   *
    * @param checkSeconds the seconds between two checks
    */
   public void setCheckSeconds(Integer checkSeconds) {
-    this.checkSeconds = checkSeconds;
+    this.checkSeconds = resolveValue(CHECK_SECONDS, checkSeconds, this.checkSeconds);
   }
 
   /**
@@ -410,10 +435,15 @@ public final class BBjSecurityConfigurationProperties {
   /**
    * Sets the minutes before the expiry of a login token in which a check renews the token.
    *
+   * <p>
+   * A {@code null} value is ignored with a warning and the current value stays.
+   * </p>
+   *
    * @param renewBeforeMinutes the minutes before the expiry
    */
   public void setRenewBeforeMinutes(Integer renewBeforeMinutes) {
-    this.renewBeforeMinutes = renewBeforeMinutes;
+    this.renewBeforeMinutes =
+        resolveValue(RENEW_BEFORE_MINUTES, renewBeforeMinutes, this.renewBeforeMinutes);
   }
 
   /**
@@ -428,10 +458,14 @@ public final class BBjSecurityConfigurationProperties {
   /**
    * Sets the seconds a sign in waits for its 2 factor code.
    *
+   * <p>
+   * A {@code null} value is ignored with a warning and the current value stays.
+   * </p>
+   *
    * @param pendingSeconds the seconds a pending sign in is kept
    */
   public void setPendingSeconds(Integer pendingSeconds) {
-    this.pendingSeconds = pendingSeconds;
+    this.pendingSeconds = resolveValue(PENDING_SECONDS, pendingSeconds, this.pendingSeconds);
   }
 
   /**
@@ -482,10 +516,15 @@ public final class BBjSecurityConfigurationProperties {
   /**
    * Sets whether the user returns to the requested location after a sign in.
    *
+   * <p>
+   * A {@code null} value is ignored with a warning and the current value stays.
+   * </p>
+   *
    * @param returnAfterLogin true to return to the requested location, false otherwise
    */
   public void setReturnAfterLogin(Boolean returnAfterLogin) {
-    this.returnAfterLogin = returnAfterLogin;
+    this.returnAfterLogin =
+        resolveValue(RETURN_AFTER_LOGIN, returnAfterLogin, this.returnAfterLogin);
   }
 
   /**
@@ -518,10 +557,14 @@ public final class BBjSecurityConfigurationProperties {
   /**
    * Sets whether the connection to the BBj Admin API uses SSL.
    *
+   * <p>
+   * A {@code null} value is ignored with a warning and the current value stays.
+   * </p>
+   *
    * @param adminSsl true to use SSL, false otherwise
    */
   public void setAdminSsl(Boolean adminSsl) {
-    this.adminSsl = adminSsl;
+    this.adminSsl = resolveValue(ADMIN_SSL, adminSsl, this.adminSsl);
   }
 
   /**
@@ -631,5 +674,16 @@ public final class BBjSecurityConfigurationProperties {
       return Optional
           .of("%s cannot be read with %s".formatted(ADMIN_TRUSTSTORE, ADMIN_TRUSTSTORE_PASSWORD));
     }
+  }
+
+  private static <T> T resolveValue(String key, T value, T current) {
+    if (value == null) {
+      logger.log(Level.WARNING, "The configuration key {0} is null and keeps its current value",
+          key);
+
+      return current;
+    }
+
+    return value;
   }
 }

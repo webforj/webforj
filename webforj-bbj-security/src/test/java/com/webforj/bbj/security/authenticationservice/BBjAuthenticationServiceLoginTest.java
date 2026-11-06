@@ -58,6 +58,8 @@ class BBjAuthenticationServiceLoginTest {
     @ParameterizedTest
     @MethodSource("com.webforj.bbj.security.SignInFixture#getAcceptedInputs")
     void shouldAcceptInputAtTheLimit(String userName, String password) {
+      fixture.whenOpenSession(userName, password).thenReturn(fixture.session);
+
       fixture.login(userName, password);
 
       fixture.verifyOpenSession(times(1), userName, password);
@@ -101,6 +103,39 @@ class BBjAuthenticationServiceLoginTest {
       fixture.verifyCloseSession(times(1), fixture.session);
       verifyNoMoreInteractions(fixture.gateway);
       assertSame(replacing.getPrincipal(), fixture.currentUser().orElseThrow());
+    }
+
+    @Test
+    void shouldCloseTheTokenOfTheStoredSessionOfAnotherUserWhenNoneIsHeld() {
+      BBjSession other =
+          new BBjSession(fixture.principal, "tok-other-789", Instant.parse("2026-01-01T14:00:00Z"));
+      fixture.setStoredSession(other);
+      fixture.whenOpenSession("alice", PASSWORD).thenReturn(fixture.session);
+
+      BBjLoginStatus status = fixture.login("alice", PASSWORD);
+
+      assertEquals(BBjLoginStatus.AUTHENTICATED, status);
+      fixture.verifyCloseSession(times(1), other);
+      fixture.verifyCloseSession(never(), fixture.session);
+      verify(fixture.store).saveSession(fixture.session);
+    }
+
+    @Test
+    void shouldCloseTheTokensOfTheHeldAndTheStoredSessionWhenTheyDiffer() {
+      BBjSession other =
+          new BBjSession(fixture.principal, "tok-other-789", Instant.parse("2026-01-01T14:00:00Z"));
+      BBjSession replacing =
+          new BBjSession(fixture.principal, "tok-def-456", Instant.parse("2026-01-01T14:00:00Z"));
+      fixture.whenOpenSession("alice", PASSWORD).thenReturn(fixture.session).thenReturn(replacing);
+      fixture.login("alice", PASSWORD);
+      fixture.setStoredSession(other);
+      clearInvocations(fixture.gateway);
+
+      fixture.login("alice", PASSWORD);
+
+      fixture.verifyCloseSession(times(1), fixture.session);
+      fixture.verifyCloseSession(times(1), other);
+      fixture.verifyCloseSession(never(), replacing);
     }
 
     @Test

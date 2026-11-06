@@ -10,6 +10,8 @@ import com.typesafe.config.ConfigFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.ToIntFunction;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -827,8 +829,66 @@ class BBjSecurityConfigurationPropertiesTest {
           + " and keeps its default", new SimpleFormatter().formatMessage(warnings.get(0)));
     }
 
+    @ParameterizedTest
+    @MethodSource("nullSetters")
+    void shouldKeepTheCurrentValueAndLogTheKeyWhenTheSetterGetsNull(String key,
+        Consumer<BBjSecurityConfigurationProperties> setNull,
+        Function<BBjSecurityConfigurationProperties, Object> getValue, Object expected) {
+      setNull.accept(properties);
+
+      assertEquals(expected, getValue.apply(properties));
+      List<LogRecord> warnings = getWarnings();
+      assertEquals(1, warnings.size());
+      assertEquals("The configuration key %s is null and keeps its current value".formatted(key),
+          new SimpleFormatter().formatMessage(warnings.get(0)));
+    }
+
     private List<LogRecord> getWarnings() {
       return records.stream().filter(it -> it.getLevel() == Level.WARNING).toList();
+    }
+
+    private static Stream<Arguments> nullSetters() {
+      return Stream.of(
+          Arguments.of("webforj.security.enabled",
+              (Consumer<BBjSecurityConfigurationProperties>) it -> it.setEnabled(null),
+              (Function<BBjSecurityConfigurationProperties, Object>) it -> it.getEnabled(), true),
+          Arguments.of("webforj.security.secure-by-default",
+              (Consumer<BBjSecurityConfigurationProperties>) it -> it.setSecureByDefault(null),
+              (Function<BBjSecurityConfigurationProperties, Object>) it -> it.getSecureByDefault(),
+              true),
+          Arguments.of("webforj.security.bbj.admin.port",
+              (Consumer<BBjSecurityConfigurationProperties>) it -> it.setAdminPort(null),
+              (Function<BBjSecurityConfigurationProperties, Object>) it -> it.getAdminPort(), 2002),
+          Arguments.of("webforj.security.bbj.admin.timeout-seconds",
+              (Consumer<BBjSecurityConfigurationProperties>) it -> it.setAdminTimeoutSeconds(null),
+              (Function<BBjSecurityConfigurationProperties, Object>) it -> it
+                  .getAdminTimeoutSeconds(),
+              10),
+          Arguments.of("webforj.security.bbj.token.minutes",
+              (Consumer<BBjSecurityConfigurationProperties>) it -> it.setTokenMinutes(null),
+              (Function<BBjSecurityConfigurationProperties, Object>) it -> it.getTokenMinutes(),
+              30),
+          Arguments.of("webforj.security.bbj.token.check-seconds",
+              (Consumer<BBjSecurityConfigurationProperties>) it -> it.setCheckSeconds(null),
+              (Function<BBjSecurityConfigurationProperties, Object>) it -> it.getCheckSeconds(),
+              30),
+          Arguments.of("webforj.security.bbj.token.renew-before-minutes",
+              (Consumer<BBjSecurityConfigurationProperties>) it -> it.setRenewBeforeMinutes(null),
+              (Function<BBjSecurityConfigurationProperties, Object>) it -> it
+                  .getRenewBeforeMinutes(),
+              5),
+          Arguments.of("webforj.security.bbj.two-factor.pending-seconds",
+              (Consumer<BBjSecurityConfigurationProperties>) it -> it.setPendingSeconds(null),
+              (Function<BBjSecurityConfigurationProperties, Object>) it -> it.getPendingSeconds(),
+              300),
+          Arguments.of("webforj.security.bbj.return-after-login",
+              (Consumer<BBjSecurityConfigurationProperties>) it -> it.setReturnAfterLogin(null),
+              (Function<BBjSecurityConfigurationProperties, Object>) it -> it.getReturnAfterLogin(),
+              true),
+          Arguments.of("webforj.security.bbj.admin.ssl",
+              (Consumer<BBjSecurityConfigurationProperties>) it -> it.setAdminSsl(null),
+              (Function<BBjSecurityConfigurationProperties, Object>) it -> it.getAdminSsl(),
+              false));
     }
 
     private static Stream<Arguments> invalidBooleanKeys() {

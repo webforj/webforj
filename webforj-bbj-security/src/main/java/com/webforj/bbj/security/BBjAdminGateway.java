@@ -41,8 +41,6 @@ import java.util.regex.Pattern;
  */
 public final class BBjAdminGateway {
   private static final Logger logger = System.getLogger(BBjAdminGateway.class.getName());
-  private static final String CLOSED_TOKEN_NOTE =
-      "A BBj login token could not be read after it was issued and expires on its own";
   private static final String MASK = "***";
   private static final String REFUSED_LOGIN_PREFIX = "server failed login:";
   private static final String ENTRY_SEPARATOR = " / ";
@@ -101,7 +99,7 @@ public final class BBjAdminGateway {
    * the user as roles, and the names of the {@link BBjPermissions} the user holds as authorities.
    * The session expires after the configured token lifetime, counted from the start of the call.
    * When the user name, the group names or the permissions cannot be read after the token was
-   * issued, the token is not revoked and expires on its own.
+   * issued, the token is ended.
    * </p>
    *
    * @param userName the user name
@@ -129,7 +127,7 @@ public final class BBjAdminGateway {
       return new BBjSession(principal, token, start.plus(tokenLifetime));
     } catch (BBjAdminException | UnknownHostException | RuntimeException e) {
       BBjAdminFailure failure = toFailure(CallKind.TOKEN, e, password, code, token);
-      logger.log(Level.WARNING, CLOSED_TOKEN_NOTE);
+      endQuietly(token);
 
       throw failure;
     }
@@ -252,7 +250,7 @@ public final class BBjAdminGateway {
         return null;
       });
     } catch (BBjAdminException | UnknownHostException | RuntimeException e) {
-      logger.log(Level.DEBUG, "An unused renewed token could not be ended");
+      logger.log(Level.DEBUG, "An unused token could not be ended");
     }
   }
 

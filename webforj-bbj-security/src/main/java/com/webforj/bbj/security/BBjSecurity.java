@@ -70,16 +70,18 @@ public final class BBjSecurity {
    * The sign in runs on the calling thread. It sends the password first. While BBj asks for a 2
    * factor code or refuses the given one, the code provider is asked for a code and the sign in is
    * repeated with it. The provider receives {@code false} on the first ask and {@code true} on each
-   * ask after a refused code. When the provider returns {@code null}, the sign in stops and ends as
-   * {@link BBjLoginStatus#TWO_FACTOR_REQUIRED}. The sign in also stops after 5 refused codes and
-   * ends as {@link BBjLoginStatus#TWO_FACTOR_REQUIRED}. After a successful sign in the app
-   * navigates to the location the user requested before signing in, or to the default success path.
-   * When this method returns, the navigation has happened. No pending sign in is kept.
+   * ask after a refused code. When the provider returns {@code null} or a blank code, the sign in
+   * stops and ends as {@link BBjLoginStatus#TWO_FACTOR_REQUIRED}. The sign in also stops after 5
+   * refused codes and ends as {@link BBjLoginStatus#TWO_FACTOR_REQUIRED}. After a successful sign
+   * in the app navigates to the location the user requested before signing in, or to the default
+   * success path. When this method returns, the navigation has happened. No pending sign in is
+   * kept.
    * </p>
    *
    * @param userName the user name
    * @param password the password
-   * @param codeProvider gives the 2 factor code, or {@code null} to stop the sign in
+   * @param codeProvider gives the 2 factor code, or {@code null} or a blank code to stop the sign
+   *        in
    *
    * @return the status of the sign in
    * @throws NullPointerException if any parameter is {@code null}
@@ -98,11 +100,11 @@ public final class BBjSecurity {
    *
    * <p>
    * The component shows no error while the sign in runs. When the credentials are invalid the
-   * component shows its error state. When the sign in is unavailable a warning toast is shown. When
-   * the account needs a 2 factor code, the sign in ends as
-   * {@link BBjLoginStatus#TWO_FACTOR_REQUIRED} with no error and no toast, and the service keeps a
-   * pending sign in for {@code two-factor.pending-seconds}. {@link #submitCode(String)} completes
-   * it and {@link #cancelLogin()} ends it. When {@code two-factor.code-path} is configured, the app
+   * component shows its error state. When the sign in is unavailable, the component shows no error
+   * and is enabled again. When the account needs a 2 factor code, the sign in ends as
+   * {@link BBjLoginStatus#TWO_FACTOR_REQUIRED} with no error, and the service keeps a pending sign
+   * in for {@code two-factor.pending-seconds}. {@link #submitCode(String)} completes it and
+   * {@link #cancelLogin()} ends it. When {@code two-factor.code-path} is configured, the app
    * navigates to that path and the component is closed. After a successful sign in the component is
    * closed and then the app navigates to the location the user requested before signing in, or to
    * the default success path. Otherwise the component is enabled again.
@@ -127,22 +129,23 @@ public final class BBjSecurity {
    * The component shows no error while the sign in runs. The sign in sends the password first.
    * While BBj asks for a 2 factor code or refuses the given one, the code provider is asked for a
    * code and the sign in is repeated with it. The provider receives {@code false} on the first ask
-   * and {@code true} on each ask after a refused code. When the provider returns {@code null}, the
-   * sign in stops and ends as {@link BBjLoginStatus#TWO_FACTOR_REQUIRED} with no error and no
-   * toast. The sign in also stops after 5 refused codes and ends as
+   * and {@code true} on each ask after a refused code. When the provider returns {@code null} or a
+   * blank code, the sign in stops and ends as {@link BBjLoginStatus#TWO_FACTOR_REQUIRED} with no
+   * error. The sign in also stops after 5 refused codes and ends as
    * {@link BBjLoginStatus#TWO_FACTOR_REQUIRED}. No pending sign in is kept.
    * </p>
    *
    * <p>
    * When the credentials are invalid the component shows its error state. When the sign in is
-   * unavailable a warning toast is shown. After a successful sign in the component is closed and
-   * then the app navigates to the location the user requested before signing in, or to the default
-   * success path. Otherwise the component is enabled again, also when the sign in or the code
-   * provider throws.
+   * unavailable, the component shows no error. After a successful sign in the component is closed
+   * and then the app navigates to the location the user requested before signing in, or to the
+   * default success path. Otherwise the component is enabled again, also when the sign in or the
+   * code provider throws.
    * </p>
    *
    * @param event the submit event of the component
-   * @param codeProvider gives the 2 factor code, or {@code null} to stop the sign in
+   * @param codeProvider gives the 2 factor code, or {@code null} or a blank code to stop the sign
+   *        in
    *
    * @return the status of the sign in
    * @throws NullPointerException if any parameter is {@code null}

@@ -4,6 +4,7 @@ import static com.webforj.bbj.security.SignInFixture.PASSWORD;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -11,7 +12,9 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import com.webforj.bbj.security.BBjAdminFailure;
 import com.webforj.bbj.security.BBjAdminFailure.Kind;
 import com.webforj.bbj.security.SignInFixture;
+import com.webforj.bbj.security.model.BBjSession;
 import com.webforj.router.history.Location;
+import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -38,7 +41,8 @@ class BBjAuthenticationServiceLogoutTest {
   void shouldCallNoOneWhenNobodySignedIn() {
     fixture.logout();
 
-    verifyNoInteractions(fixture.navigator, fixture.gateway, fixture.store);
+    verifyNoInteractions(fixture.navigator, fixture.gateway);
+    verify(fixture.store, never()).clearSession();
   }
 
   @Test
@@ -144,6 +148,32 @@ class BBjAuthenticationServiceLogoutTest {
 
     fixture.logout();
 
-    verifyNoInteractions(fixture.navigator, fixture.gateway, fixture.store);
+    verifyNoInteractions(fixture.navigator, fixture.gateway);
+    verify(fixture.store, never()).clearSession();
+  }
+
+  @Test
+  void shouldSignOutAStoredSessionThisServiceDoesNotHold() {
+    fixture.setStoredSession(fixture.session);
+
+    fixture.logout();
+
+    verify(fixture.store).clearSession();
+    verify(fixture.securityManager).clearPreAuthenticationLocation();
+    verify(fixture.navigator).accept(new Location("/login"));
+    fixture.verifyCloseSession(times(1), fixture.session);
+  }
+
+  @Test
+  void shouldCloseTheTokensOfTheHeldAndTheStoredSessionWhenTheyDiffer() {
+    BBjSession other =
+        new BBjSession(fixture.principal, "tok-other-789", Instant.parse("2026-01-01T14:00:00Z"));
+    startSignedInSession();
+    fixture.setStoredSession(other);
+
+    fixture.logout();
+
+    fixture.verifyCloseSession(times(1), fixture.session);
+    fixture.verifyCloseSession(times(1), other);
   }
 }

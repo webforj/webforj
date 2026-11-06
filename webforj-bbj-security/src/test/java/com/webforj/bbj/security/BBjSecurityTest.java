@@ -23,7 +23,6 @@ import com.webforj.bbj.security.model.BBjPermissions;
 import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.component.login.Login;
 import com.webforj.component.login.event.LoginSubmitEvent;
-import com.webforj.component.toast.Toast;
 import com.webforj.environment.ObjectTable;
 import java.util.Optional;
 import java.util.Set;
@@ -49,19 +48,16 @@ class BBjSecurityTest {
   private final BBjPrincipal principal =
       new BBjPrincipal("alice", Set.of("ROLE_USER"), Set.of("admin-access"));
   private MockedStatic<ObjectTable> tableMock;
-  private MockedStatic<Toast> toastMock;
   private BBjAuthenticationService service;
 
   @BeforeEach
   void setUp() {
     tableMock = mockStatic(ObjectTable.class);
-    toastMock = mockStatic(Toast.class);
     service = mock(BBjAuthenticationService.class);
   }
 
   @AfterEach
   void tearDown() {
-    toastMock.close();
     tableMock.close();
   }
 
@@ -643,6 +639,21 @@ class BBjSecurityTest {
 
     @ParameterizedTest
     @MethodSource("com.webforj.bbj.security.BBjSecurityTest#getSignInsWithProvider")
+    void shouldStopWhenTheProviderGivesBlankCode(
+        BiFunction<LoginSubmitEvent, Function<Boolean, String>, BBjLoginStatus> signIn) {
+      when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.TWO_FACTOR_REQUIRED);
+      when(provider.apply(false)).thenReturn("  ");
+
+      BBjLoginStatus status = signIn.apply(event, provider);
+
+      assertEquals(BBjLoginStatus.TWO_FACTOR_REQUIRED, status);
+      verify(provider, times(1)).apply(false);
+      verify(service, times(1)).login(any(), any(), any());
+      verify(service, never()).openTargetLocation();
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.webforj.bbj.security.BBjSecurityTest#getSignInsWithProvider")
     void shouldStopAskingWhenTheSignInIsUnavailable(
         BiFunction<LoginSubmitEvent, Function<Boolean, String>, BBjLoginStatus> signIn) {
       when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.TWO_FACTOR_REQUIRED);
@@ -708,7 +719,7 @@ class BBjSecurityTest {
     }
 
     @Test
-    void shouldEnableTheFormWithoutErrorOrToastWhenNoCodeIsGiven() {
+    void shouldEnableTheFormWithoutErrorWhenNoCodeIsGiven() {
       when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.TWO_FACTOR_REQUIRED);
 
       BBjSecurity.login(event, provider);
@@ -716,7 +727,6 @@ class BBjSecurityTest {
       verify(login, never()).setError(true);
       verify(login).setEnabled(true);
       verify(login, never()).close();
-      toastMock.verifyNoInteractions();
     }
 
     @Test

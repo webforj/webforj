@@ -11,6 +11,8 @@ import java.lang.System.Logger.Level;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -80,6 +82,12 @@ public final class BBjAuthenticationService {
    * When the session store is not available, the session is kept for the page only. When the
    * session store is available and the session cannot be saved, the sign in fails as unavailable,
    * its login token is ended and the user that was signed in before stays signed in.
+   * </p>
+   *
+   * <p>
+   * After a successful sign in the login token of the session this service held and the login token
+   * of the session the session store held are ended, each once, unless it is the token of the new
+   * session.
    * </p>
    *
    * <p>
@@ -165,24 +173,33 @@ public final class BBjAuthenticationService {
    * Signs the current user out.
    *
    * <p>
-   * A pending sign in is ended. When nobody has signed in, nothing else happens. Otherwise the user
-   * is signed out at once, the saved session is cleared, the requested location is cleared and the
-   * service opens the logout location. Then the login token is ended. A failure to end it is logged
-   * and the token expires on its own.
+   * A pending sign in is ended. The session store is read first, because all tabs of one browser
+   * share it and it can hold a sign in that this service has not picked up. When the session store
+   * is not available, the session held by this service is used instead. When neither this service
+   * nor the session store holds a session, nothing else happens. Otherwise the user is signed out
+   * at once, the saved session is cleared, the requested location is cleared and the service opens
+   * the logout location.
+   * </p>
+   *
+   * <p>
+   * Then the login token of the session this service held and the login token of the session the
+   * session store held are ended, each once. A failure to end a token is logged and the token
+   * expires on its own.
    * </p>
    */
   void logout() {
     clearPending();
-    if (session == null) {
+    var held = session;
+    var stored = findSharedSession().orElse(null);
+    if (held == null && stored == null) {
       return;
     }
 
-    final var current = session;
     session = null;
     store.clearSession();
     securityManager.clearPreAuthenticationLocation();
     openLogoutLocation();
-    closeSession(current);
+    closeReplacedSessions(held, stored, null);
   }
 
   /**
@@ -336,6 +353,7 @@ public final class BBjAuthenticationService {
   }
 
   private BBjLoginStatus applySession(BBjSession session) {
+    var stored = findSharedSession().orElse(null);
     try {
       saveSession(session);
     } catch (IllegalStateException e) {
@@ -343,14 +361,26 @@ public final class BBjAuthenticationService {
       return BBjLoginStatus.UNAVAILABLE;
     }
 
-    var replaced = this.session;
+    var held = this.session;
     this.session = session;
     lastCheck = clock.instant();
-    if (replaced != null) {
-      closeSession(replaced);
-    }
+    closeReplacedSessions(held, stored, session.getToken());
 
     return BBjLoginStatus.AUTHENTICATED;
+  }
+
+  private void closeReplacedSessions(BBjSession held, BBjSession stored, String keptToken) {
+    Map<String, BBjSession> replaced = new LinkedHashMap<>();
+    if (held != null) {
+      replaced.put(held.getToken(), held);
+    }
+
+    if (stored != null) {
+      replaced.putIfAbsent(stored.getToken(), stored);
+    }
+
+    replaced.remove(keptToken);
+    replaced.values().forEach(this::closeSession);
   }
 
   private BBjLoginStatus applyFailure(BBjAdminFailure failure) {
