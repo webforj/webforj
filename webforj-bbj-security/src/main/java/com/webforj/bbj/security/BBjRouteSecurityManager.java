@@ -33,6 +33,11 @@ import java.util.ServiceLoader;
  * reason.
  * </p>
  *
+ * <p>
+ * The requested location is saved in the HTTP session. When the HTTP session is not available, it
+ * is kept for the page only.
+ * </p>
+ *
  * @author Christian Liebhardt
  * @since 26.03
  */
@@ -40,6 +45,8 @@ public final class BBjRouteSecurityManager extends AbstractRouteSecurityManager 
   private static final Logger logger = System.getLogger(BBjRouteSecurityManager.class.getName());
   private final BBjRouteSecurityConfiguration configuration;
   private final BBjRouteSecurityContext securityContext;
+  private final BBjSecurityStore store;
+  private String requestedLocation;
 
   /**
    * Creates a manager with the core evaluators, the {@link BBjPermissionEvaluator} and the listed
@@ -47,14 +54,17 @@ public final class BBjRouteSecurityManager extends AbstractRouteSecurityManager 
    *
    * @param configuration the route security configuration
    * @param securityContext the route security context
+   * @param store the session store that tells whether the HTTP session is available
    *
-   * @throws NullPointerException if {@code configuration} or {@code securityContext} is null
+   * @throws NullPointerException if {@code configuration}, {@code securityContext} or {@code store}
+   *         is null
    * @throws ServiceConfigurationError if a listed evaluator cannot be loaded
    */
   BBjRouteSecurityManager(BBjRouteSecurityConfiguration configuration,
-      BBjRouteSecurityContext securityContext) {
+      BBjRouteSecurityContext securityContext, BBjSecurityStore store) {
     this.configuration = Objects.requireNonNull(configuration, "configuration");
     this.securityContext = Objects.requireNonNull(securityContext, "securityContext");
+    this.store = Objects.requireNonNull(store, "store");
 
     registerEvaluator(new DenyAllEvaluator(), 1);
     registerEvaluator(new AnonymousAccessEvaluator(), 2);
@@ -79,6 +89,48 @@ public final class BBjRouteSecurityManager extends AbstractRouteSecurityManager 
   @Override
   public RouteSecurityConfiguration getConfiguration() {
     return configuration;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void onAccessDenied(RouteAccessDecision decision, NavigationContext context) {
+    if (store.isAvailable()) {
+      super.onAccessDenied(decision, context);
+      return;
+    }
+
+    if (context != null && context.getLocation() != null) {
+      requestedLocation = context.getLocation().getFullURI();
+    }
+
+    onPostAccessDenied(decision, context);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Optional<Location> getPreAuthenticationLocation() {
+    if (store.isAvailable()) {
+      return super.getPreAuthenticationLocation();
+    }
+
+    return Optional.ofNullable(requestedLocation).map(Location::new);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void clearPreAuthenticationLocation() {
+    if (store.isAvailable()) {
+      super.clearPreAuthenticationLocation();
+      return;
+    }
+
+    requestedLocation = null;
   }
 
   /**

@@ -71,8 +71,9 @@ public final class BBjAuthenticationService {
    * </p>
    *
    * <p>
-   * When the session cannot be saved, the sign in fails as unavailable, its login token is ended
-   * and the user that was signed in before stays signed in.
+   * When the session store is not available, the session is kept for the page only. When the
+   * session store is available and the session cannot be saved, the sign in fails as unavailable,
+   * its login token is ended and the user that was signed in before stays signed in.
    * </p>
    *
    * <p>
@@ -130,11 +131,12 @@ public final class BBjAuthenticationService {
    * Checks the signed in user against the session store and the server.
    *
    * <p>
-   * The session store is read first, because all tabs of one browser share it. When it holds no
-   * session, the check ends there. A session held by this service is then dropped without a call to
-   * the server, without a change to the session store and without opening a location. When the
-   * store holds a session with another token than this service, or this service holds none, the
-   * stored session takes its place and its check is due at once.
+   * The session store is read first, because all tabs of one browser share it. When the session
+   * store is not available, the session held by this service is used instead and nothing is read.
+   * When the session store holds no session, the check ends there. A session held by this service
+   * is then dropped without a call to the server, without a change to the session store and without
+   * opening a location. When the store holds a session with another token than this service, or
+   * this service holds none, the stored session takes its place and its check is due at once.
    * </p>
    *
    * <p>
@@ -156,7 +158,7 @@ public final class BBjAuthenticationService {
    * </p>
    */
   void check() {
-    Optional<BBjSession> stored = store.readSession();
+    Optional<BBjSession> stored = findSharedSession();
     if (stored.isEmpty()) {
       applyMissingSession();
       return;
@@ -209,10 +211,15 @@ public final class BBjAuthenticationService {
    *
    * <p>
    * The session saved in the session store is put in place without calling BBj. When the store
-   * holds no usable session, nobody is signed in.
+   * holds no usable session, or is not available, nobody is signed in.
    * </p>
    */
   void restoreSession() {
+    if (!store.isAvailable()) {
+      logger.log(Level.INFO, "No HTTP session accessor, the sign in is kept for this page only");
+      return;
+    }
+
     store.readSession().ifPresent(it -> session = it);
   }
 
@@ -236,7 +243,7 @@ public final class BBjAuthenticationService {
 
   private BBjLoginStatus applySession(BBjSession session) {
     try {
-      store.saveSession(session);
+      saveSession(session);
     } catch (IllegalStateException e) {
       closeSession(session);
       return BBjLoginStatus.UNAVAILABLE;
@@ -299,7 +306,7 @@ public final class BBjAuthenticationService {
   }
 
   private void applyRejection(BBjSession checked) {
-    Optional<BBjSession> stored = store.readSession();
+    Optional<BBjSession> stored = findSharedSession();
     if (stored.isPresent() && !stored.get().getToken().equals(checked.getToken())) {
       applyStoredSession(stored.get());
       logger.log(Level.DEBUG, "Another sign in in the session store replaced the rejected one");
@@ -312,7 +319,7 @@ public final class BBjAuthenticationService {
 
   private void applyRenewal(BBjSession renewed) {
     try {
-      store.saveSession(renewed);
+      saveSession(renewed);
     } catch (IllegalStateException e) {
       logger.log(Level.WARNING, "The renewed sign in could not be kept, the user was signed out");
       clearSignIn();
@@ -324,6 +331,16 @@ public final class BBjAuthenticationService {
     session = renewed;
     lastCheck = clock.instant();
     logger.log(Level.INFO, "The sign in was renewed");
+  }
+
+  private Optional<BBjSession> findSharedSession() {
+    return store.isAvailable() ? store.readSession() : Optional.ofNullable(session);
+  }
+
+  private void saveSession(BBjSession toSave) {
+    if (store.isAvailable()) {
+      store.saveSession(toSave);
+    }
   }
 
   private void clearSignIn() {
@@ -363,7 +380,7 @@ public final class BBjAuthenticationService {
   }
 
   private void openLogoutLocation() {
-    configuration.getLogoutLocation().ifPresent(navigator::accept);
+    configuration.getLogoutLocation().ifPresent(navigator);
   }
 
   private static BBjAdminFailure createUnavailableFailure() {
