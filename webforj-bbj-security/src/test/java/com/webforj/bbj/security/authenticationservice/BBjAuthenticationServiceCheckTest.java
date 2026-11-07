@@ -146,6 +146,7 @@ class BBjAuthenticationServiceCheckTest {
 
   @Test
   void shouldTakeTheSessionAnotherTabRenewedWhenTheCheckedTokenWasRejected() {
+    fixture.whenReadUserName(renewed).thenReturn("alice");
     fixture.whenReadUserName(fixture.session).thenAnswer(call -> {
       fixture.setStoredSession(renewed);
       throw new BBjAdminFailure(Kind.TOKEN_REJECTED, "ended");
@@ -156,8 +157,8 @@ class BBjAuthenticationServiceCheckTest {
     assertSame(renewedPrincipal, fixture.currentUser().orElseThrow());
     verify(fixture.store, never()).clearSession();
     assertEquals(List.of(), getInfoMessages());
-    assertEquals(List.of("Another sign in in the session store replaced the rejected one"),
-        fixture.getDebugMessages());
+    assertEquals(List.of("Another sign in in the session store replaced the rejected one",
+        "The sign in was checked and stays"), fixture.getDebugMessages());
   }
 
   @Test
@@ -478,5 +479,43 @@ class BBjAuthenticationServiceCheckTest {
     SimpleFormatter formatter = new SimpleFormatter();
     assertTrue(fixture.records.stream().noneMatch(it -> formatter.format(it).contains("alice")
         || formatter.format(it).contains("tok-abc-123")));
+  }
+
+  @Test
+  void shouldReadNobodyFromCurrentUserWhenAnotherTabSignedOut() {
+    fixture.setStoredSession(null);
+
+    assertFalse(fixture.currentUser().isPresent());
+    verifyNoInteractions(fixture.gateway);
+  }
+
+  @Test
+  void shouldReadNobodyFromCurrentUserWhenTheSessionExpired() {
+    now.set(Instant.parse("2026-01-01T13:00:00Z"));
+
+    assertFalse(fixture.currentUser().isPresent());
+    verifyNoInteractions(fixture.gateway);
+  }
+
+  @Test
+  void shouldReadNobodyFromCurrentUserWhenTheServerRejectsTheTokenOnceCheckSecondsPassed() {
+    fixture.check();
+    clearInvocations(fixture.gateway);
+    fixture.setReadUserNameFailure(fixture.session,
+        new BBjAdminFailure(Kind.TOKEN_REJECTED, "ended"));
+    now.set(START.plusSeconds(30));
+
+    assertFalse(fixture.currentUser().isPresent());
+    fixture.verifyReadUserName(times(1), fixture.session);
+  }
+
+  @Test
+  void shouldReadThePrincipalFromCurrentUserWithNoServerCallWhenTheCheckIsNotDue() {
+    fixture.check();
+    clearInvocations(fixture.gateway);
+    now.set(START.plusSeconds(29));
+
+    assertSame(fixture.principal, fixture.currentUser().orElseThrow());
+    verifyNoInteractions(fixture.gateway);
   }
 }

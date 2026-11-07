@@ -63,6 +63,7 @@ class BBjAuthenticationServiceSessionTest {
 
     @Test
     void shouldPutTheStoredSessionInPlace() {
+      fixture.whenReadUserName(fixture.session).thenReturn("alice");
       when(fixture.store.readSession()).thenReturn(Optional.of(fixture.session));
 
       fixture.restoreSession();

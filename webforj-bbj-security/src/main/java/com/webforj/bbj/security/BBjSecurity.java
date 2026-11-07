@@ -227,6 +227,11 @@ public final class BBjSecurity {
    * is compared exactly, case sensitive.
    * </p>
    *
+   * <p>
+   * The sign in is checked first. A sign in that expired, that was removed from the session store
+   * or that the server no longer accepts reads as nobody signed in.
+   * </p>
+   *
    * @param role the name of the role
    *
    * @return {@code true} if the signed in user holds the role, {@code false} if nobody has signed
@@ -245,6 +250,11 @@ public final class BBjSecurity {
    * is compared exactly, case sensitive.
    * </p>
    *
+   * <p>
+   * The sign in is checked first. A sign in that expired, that was removed from the session store
+   * or that the server no longer accepts reads as nobody signed in.
+   * </p>
+   *
    * @param authority the name of the authority
    *
    * @return {@code true} if the signed in user holds the authority, {@code false} if nobody has
@@ -258,6 +268,11 @@ public final class BBjSecurity {
   /**
    * Checks whether the user that signed in holds a {@link BBjPermissions} permission.
    *
+   * <p>
+   * The sign in is checked first. A sign in that expired, that was removed from the session store
+   * or that the server no longer accepts reads as nobody signed in.
+   * </p>
+   *
    * @param permission the permission
    *
    * @return {@code true} if the signed in user holds the permission, {@code false} if nobody has
@@ -269,6 +284,11 @@ public final class BBjSecurity {
 
   /**
    * Gets the user that signed in.
+   *
+   * <p>
+   * The sign in is checked first. A sign in that expired, that was removed from the session store
+   * or that the server no longer accepts reads as nobody signed in.
+   * </p>
    *
    * @return the signed in user, or empty if nobody has signed in or BBj security is not set up
    */

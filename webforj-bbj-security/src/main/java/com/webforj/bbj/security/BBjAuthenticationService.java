@@ -275,9 +275,16 @@ public final class BBjAuthenticationService {
   /**
    * Gets the user that signed in.
    *
+   * <p>
+   * The sign in is checked first as {@link #check()} describes. A sign in that expired, that was
+   * removed from the session store or that the server no longer accepts reads as nobody signed in.
+   * </p>
+   *
    * @return the signed in user, or empty if nobody has signed in
    */
   Optional<BBjPrincipal> currentUser() {
+    check();
+
     return Optional.ofNullable(session).map(BBjSession::getPrincipal);
   }
 

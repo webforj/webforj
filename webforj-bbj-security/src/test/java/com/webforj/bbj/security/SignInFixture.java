@@ -13,7 +13,9 @@ import com.webforj.bbj.security.model.BBjPrincipal;
 import com.webforj.bbj.security.model.BBjSession;
 import com.webforj.router.history.Location;
 import com.webforj.router.security.RouteSecurityManager;
+import java.time.Clock;
 import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -132,11 +134,12 @@ public final class SignInFixture implements AutoCloseable {
         Arguments.of(false, Optional.of(REQUESTED_LOCATION), DEFAULT_LOCATION));
   }
 
-  /** Creates a builder of the service with all values of the fixture. */
+  /** Creates a builder of the service with all values of the fixture and a fixed clock. */
   public BBjAuthenticationService.Builder createBuilder() {
     return BBjAuthenticationService.builder().setGateway(gateway).setStore(store)
         .setProperties(properties).setConfiguration(configuration)
-        .setSecurityManager(securityManager).setNavigator(navigator);
+        .setSecurityManager(securityManager).setNavigator(navigator)
+        .setClock(Clock.fixed(Instant.parse("2026-01-01T12:00:00Z"), ZoneOffset.UTC));
   }
 
   /**
