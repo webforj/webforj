@@ -1,6 +1,7 @@
 package com.webforj.component.layout.appnav;
 
 
+import com.google.gson.annotations.SerializedName;
 import com.webforj.component.Component;
 import com.webforj.component.element.PropertyDescriptor;
 import com.webforj.component.element.annotation.NodeName;
@@ -63,28 +64,25 @@ public class AppNavItem extends NavigationContainer<AppNavItem> implements HasSt
     /**
      * The current browsing context.
      */
-    SELF("_self"),
+    @SerializedName("_self")
+    SELF,
     /**
      * A new tab, but users can configure browsers to open a new window instead.
      */
-    BLANK("_blank"),
+    @SerializedName("_blank")
+    BLANK,
     /**
-     * The parent browsing context of the current one. If no parent, behaves as {@link #_SELF}.
+     * The parent browsing context of the current one. If no parent, behaves as {@link #SELF}.
      */
-    PARENT("_parent"),
+    @SerializedName("_parent")
+    PARENT,
 
     /**
      * The topmost browsing context (the "highest" context that’s an ancestor of the current one).
-     * If no ancestors, behaves as {@link #_SELF}.
+     * If no ancestors, behaves as {@link #SELF}.
      */
-    TOP("_top");
-
-    @SuppressWarnings("unused")
-    private final String value;
-
-    NavigationTarget(String value) {
-      this.value = value;
-    }
+    @SerializedName("_top")
+    TOP;
   }
 
   /**
