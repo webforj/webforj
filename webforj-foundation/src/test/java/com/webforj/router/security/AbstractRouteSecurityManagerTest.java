@@ -1,6 +1,7 @@
 package com.webforj.router.security;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -14,8 +15,12 @@ import com.webforj.router.NavigationOptions;
 import com.webforj.router.Router;
 import com.webforj.router.annotation.Route;
 import com.webforj.router.history.Location;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -122,6 +127,42 @@ class AbstractRouteSecurityManagerTest {
     assertTrue(decision.isGranted());
     verify(evaluator).evaluate(eq(TestRoute.class), eq(navigationContext), eq(securityContext),
         any(SecurityEvaluatorChain.class));
+  }
+
+  @Test
+  void shouldLogCauseOnEvaluatorError() {
+    RuntimeException error = new RuntimeException("Test error");
+    RouteSecurityEvaluator evaluator = mock(RouteSecurityEvaluator.class);
+    when(evaluator.supports(TestRoute.class)).thenReturn(true);
+    when(evaluator.evaluate(eq(TestRoute.class), eq(navigationContext), eq(securityContext),
+        any(SecurityEvaluatorChain.class))).thenThrow(error);
+    securityManager.registerEvaluator(evaluator, 10);
+    List<LogRecord> records = new ArrayList<>();
+    Handler handler = new Handler() {
+      @Override
+      public void publish(LogRecord logRecord) {
+        records.add(logRecord);
+      }
+
+      @Override
+      public void flush() {}
+
+      @Override
+      public void close() {}
+    };
+    Logger logger = Logger.getLogger(AbstractRouteSecurityManager.class.getName());
+    logger.addHandler(handler);
+
+    try {
+      securityManager.evaluate(TestRoute.class, navigationContext);
+    } finally {
+      logger.removeHandler(handler);
+    }
+
+    assertEquals(1, records.size());
+    assertSame(error, records.get(0).getThrown());
+    assertEquals("Error in evaluator " + evaluator.getClass().getName(),
+        records.get(0).getMessage());
   }
 
   @Test
