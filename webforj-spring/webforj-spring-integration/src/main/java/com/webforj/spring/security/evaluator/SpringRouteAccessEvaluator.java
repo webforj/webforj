@@ -120,7 +120,7 @@ public class SpringRouteAccessEvaluator implements RouteSecurityEvaluator {
         return RouteAccessDecision.deny(code);
       }
     } catch (Exception e) {
-      logger.log(Level.ERROR, "Error evaluating SpEL expression: {0}", expression, e);
+      logger.log(Level.ERROR, "Error evaluating SpEL expression: " + expression, e);
       return RouteAccessDecision.deny(code);
     }
   }

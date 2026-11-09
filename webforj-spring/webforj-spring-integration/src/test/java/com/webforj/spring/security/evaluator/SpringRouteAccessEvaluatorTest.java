@@ -2,6 +2,7 @@ package com.webforj.spring.security.evaluator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -10,8 +11,13 @@ import com.webforj.router.security.RouteAccessDecision;
 import com.webforj.router.security.RouteSecurityContext;
 import com.webforj.router.security.SecurityEvaluatorChain;
 import com.webforj.spring.security.annotation.RouteAccess;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -21,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.expression.ParseException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -220,6 +227,42 @@ class SpringRouteAccessEvaluatorTest {
       assertFalse(decision.isGranted());
       assertEquals(RouteAccessDecision.AccessDenialType.AUTHENTICATION_REQUIRED,
           decision.getDenialType());
+    }
+  }
+
+  @Nested
+  class ExpressionErrors {
+
+    @Test
+    void shouldLogCauseWhenExpressionFails() {
+      when(securityContext.isAuthenticated()).thenReturn(true);
+      List<LogRecord> records = new ArrayList<>();
+      Handler handler = new Handler() {
+        @Override
+        public void publish(LogRecord logRecord) {
+          records.add(logRecord);
+        }
+
+        @Override
+        public void flush() {}
+
+        @Override
+        public void close() {}
+      };
+      Logger logger = Logger.getLogger(SpringRouteAccessEvaluator.class.getName());
+      logger.addHandler(handler);
+
+      try {
+        evaluator.evaluate(RouteWithInvalidExpression.class, navigationContext, securityContext,
+            chain);
+      } finally {
+        logger.removeHandler(handler);
+      }
+
+      assertEquals(1, records.size());
+      assertInstanceOf(ParseException.class, records.get(0).getThrown());
+      assertEquals("Error evaluating SpEL expression: this is not valid SpEL",
+          records.get(0).getMessage());
     }
   }
 
