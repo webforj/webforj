@@ -15,6 +15,7 @@ public class WebforjFrameworkRequestMatcher implements RequestMatcher {
   // Core framework paths that need CSRF exemption
   private static final String RPC_PATH = "/webapprmi";
   private static final String WEBAPP_LIB = "/webapp/_lib/";
+  private static final String FILE_UPLOAD_PATH = "/fileUploadServlet";
 
   // Default configurable paths
   private static final String DEFAULT_ICONS_DIR = "icons/";
@@ -82,6 +83,10 @@ public class WebforjFrameworkRequestMatcher implements RequestMatcher {
 
     // RPC endpoint - always allow
     if (pathToCheck.equals(RPC_PATH) || pathToCheck.startsWith(RPC_PATH + "/")) {
+      return true;
+    }
+
+    if (pathToCheck.equals(FILE_UPLOAD_PATH)) {
       return true;
     }
 
