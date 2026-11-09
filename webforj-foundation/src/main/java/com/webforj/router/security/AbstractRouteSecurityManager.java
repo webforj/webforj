@@ -264,7 +264,7 @@ public abstract class AbstractRouteSecurityManager implements RouteSecurityManag
 
             return decision;
           } catch (Exception e) {
-            logger.log(Level.ERROR, "Error in evaluator {0}", evaluator.getClass().getName(), e);
+            logger.log(Level.ERROR, "Error in evaluator " + evaluator.getClass().getName(), e);
             // On error, deny access for safety
             return RouteAccessDecision.deny("Security evaluation error");
           }

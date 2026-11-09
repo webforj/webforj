@@ -83,8 +83,8 @@ public class RouteSecurityObserver implements RouteRendererObserver {
         securityManager.onAccessDenied(decision, context);
       }
     } catch (Exception e) {
-      logger.log(Level.ERROR, "Error during security evaluation for route: {0}",
-          routeClass.getName(), e);
+      logger.log(Level.ERROR, "Error during security evaluation for route: " + routeClass.getName(),
+          e);
       // On error, deny access for safety
       continueCallback.accept(false);
     }
