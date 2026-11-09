@@ -217,7 +217,8 @@ class BBjSecurityTest {
       LoginSubmitEvent event = mock(LoginSubmitEvent.class);
       when(event.getUsername()).thenReturn("alice");
       when(event.getPassword()).thenReturn("pw");
-      when(event.getComponent()).thenReturn(mock(Login.class));
+      var mockLogin = mock(Login.class);
+      when(event.getComponent()).thenReturn(mockLogin);
       when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.TWO_FACTOR_REQUIRED);
       when(service.hasCodeLocation()).thenReturn(true);
 
@@ -302,7 +303,8 @@ class BBjSecurityTest {
       LoginSubmitEvent event = mock(LoginSubmitEvent.class);
       when(event.getUsername()).thenReturn("alice");
       when(event.getPassword()).thenReturn("pw");
-      when(event.getComponent()).thenReturn(mock(Login.class));
+      var mockLogin = mock(Login.class);
+      when(event.getComponent()).thenReturn(mockLogin);
       when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.TWO_FACTOR_REQUIRED);
 
       signIn.apply(event);
@@ -316,7 +318,8 @@ class BBjSecurityTest {
       LoginSubmitEvent event = mock(LoginSubmitEvent.class);
       when(event.getUsername()).thenReturn("alice");
       when(event.getPassword()).thenReturn("pw");
-      when(event.getComponent()).thenReturn(mock(Login.class));
+      var mockLogin = mock(Login.class);
+      when(event.getComponent()).thenReturn(mockLogin);
       when(service.login("alice", "pw", null)).thenReturn(BBjLoginStatus.INVALID_CREDENTIALS);
 
       signIn.apply(event);

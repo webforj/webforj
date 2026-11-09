@@ -106,8 +106,9 @@ class BBjRouteSecurityManagerTest {
 
     @Test
     void shouldRejectNullConfiguration() {
+      final var securityStore = new BBjSecurityStore();
       assertThrows(NullPointerException.class,
-          () -> new BBjRouteSecurityManager(null, securityContext, new BBjSecurityStore()));
+          () -> new BBjRouteSecurityManager(null, securityContext, securityStore));
     }
 
     @Test
@@ -118,8 +119,9 @@ class BBjRouteSecurityManagerTest {
 
     @Test
     void shouldRejectNullSecurityContext() {
+      final var securityStore = new BBjSecurityStore();
       assertThrows(NullPointerException.class,
-          () -> new BBjRouteSecurityManager(configuration, null, new BBjSecurityStore()));
+          () -> new BBjRouteSecurityManager(configuration, null, securityStore));
     }
 
     @Test
