@@ -597,7 +597,10 @@ public class Binding<C extends ValueAware<C, ViewT>, ViewT, B, BeanValueT> {
       }
 
       try {
-        result[0] = validate(cachedValue, true);
+        if (!skipValidation) {
+          result[0] = validate(cachedValue, true);
+        }
+
         if (result[0].isValid()) {
           BeanValueT transformedValue = getTransformer().map(t -> t.transformToModel(cachedValue))
               .orElseGet(() -> tryCastingToBeanValue(cachedValue));
@@ -634,10 +637,10 @@ public class Binding<C extends ValueAware<C, ViewT>, ViewT, B, BeanValueT> {
     ViewT value = event.getValue();
 
     if (shouldAutoValidate || shouldAutoWrite) {
-      result = validate(value, shouldAutoValidate);
+      result = validate(value, true);
     }
 
-    if (shouldAutoWrite) {
+    if (shouldAutoWrite && result.isValid()) {
       write(autoWriteBean, true);
     }
 
