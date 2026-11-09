@@ -378,8 +378,6 @@ public class Binding<C extends ValueAware<C, ViewT>, ViewT, B, BeanValueT> {
       return ValidationResult.valid();
     }
 
-    cachedValue = value;
-    isValueCached = true;
     ValidationResult result;
 
     try {
@@ -637,7 +635,13 @@ public class Binding<C extends ValueAware<C, ViewT>, ViewT, B, BeanValueT> {
     }
 
     if (shouldAutoWrite) {
-      write(autoWriteBean, true);
+      cachedValue = value;
+      isValueCached = true;
+      try {
+        write(autoWriteBean, true);
+      } finally {
+        isValueCached = false;
+      }
     }
 
     if (result != null) {
