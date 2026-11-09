@@ -1,10 +1,10 @@
 <div align="center">
 
-![webforJ: the full-stack Java framework for building business web apps and modernizing Swing apps in Java](https://raw.githubusercontent.com/webforj/.github/main/profile/cover-v2.png)
+![webforJ: the full-stack Java framework for building business web apps and modernizing Swing apps in Java](https://raw.githubusercontent.com/webforj/.github/main/profile/cover-v3.png)
 
-**The frontend is Java now.**
+**Java is all you need.**
 
-Build web apps in pure Java, edit them visually while they run, and bring your Swing apps along. webforJ is the full-stack Java framework for business web apps: you build the whole app, UI included, in Java, and your AI assistant already knows it. Backed by BASIS International's almost 40 years of expertise, including 20+ years of delivering technology built on Java.
+webforJ is the full-stack Java framework for business web apps. You build the whole app in Java, from screens and routing to forms, data, security and tests, with no JavaScript and no REST layer to maintain. It works with the backend you already have, standalone or with Spring Boot. It's AI-ready from day one, so your coding assistant writes real webforJ and checks its own work. And if you have Swing apps, they come along: run them in the browser today and move them to webforJ one screen at a time. Backed by BASIS International's almost 40 years of expertise, including 20+ years of delivering technology built on Java.
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.webforj/webforj-parent.svg?color=022495)](https://central.sonatype.com/artifact/com.webforj/webforj)
 [![License: MIT](https://img.shields.io/badge/License-MIT-022495)](LICENSE)
@@ -12,13 +12,21 @@ Build web apps in pure Java, edit them visually while they run, and bring your S
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=webforj&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=webforj)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/8775/badge)](https://www.bestpractices.dev/projects/8775)
 
-**[Start your first app](https://docs.webforj.com/docs/introduction/getting-started)** · [Documentation](https://docs.webforj.com) · [Releases](https://github.com/webforj/webforj/releases) · [Blog](https://docs.webforj.com/blog)
+**[Start your first app](https://docs.webforj.com/docs/introduction/getting-started)** · [Documentation](https://docs.webforj.com) · [Releases](https://github.com/webforj/webforj/releases) · [Blog](https://docs.webforj.com/blog) · [Book a call](https://webforj.com/schedule-discovery/)
 
 </div>
 
+## What you get
+
+- **Full stack in Java:** a Java web framework and a Java UI framework in one. UI components, routing, forms with binding and validation, tables, security, translation and browserless tests come with the framework.
+- **Any backend:** run standalone or with Spring Boot, and bind your views to Spring Data, JPA or any data source through a [repository](https://docs.webforj.com/docs/advanced/repository/overview).
+- **AI-ready:** one plugin teaches Claude Code, GitHub Copilot, Cursor, Gemini CLI and Codex the real API, browserless tests tell your assistant when a change works, and the craftforJ assistant edits your running app.
+- **Built for developers:** one language and one team. Start with [startforJ](https://docs.webforj.com/startforj), learn from docs that answer back and live demos, edit visually with craftforJ, and talk to a team that speaks English, German, French and Spanish.
+- **Swing to web migration:** run Swing, JavaFX and SWT apps in the browser with [Webswing](https://docs.webforj.com/docs/integrations/webswing/overview), move them to webforJ one screen at a time, and let the old and new screens [talk to each other](https://docs.webforj.com/docs/integrations/webswing/communication) during the move. See the [Swing to web migration guide](https://docs.webforj.com/blog/swing-to-web-migration).
+
 ## No JavaScript to write. Just Java.
 
-Your views are Java classes, and there's no REST layer between your UI and your backend. Your Spring services go straight into the view. Routing, forms with binding and validation, tables, security and translation come with the framework, so one Java web framework covers the whole app.
+Your views are Java classes, and there's no REST layer between your UI and your backend. Your Spring services go straight into the view.
 
 ```java
 @Route("/orders")
