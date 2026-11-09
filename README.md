@@ -1,10 +1,10 @@
 <div align="center">
 
-![webforJ: the AI-ready Java web UI framework for building web apps and modernizing Swing apps in Java](https://raw.githubusercontent.com/webforj/.github/main/profile/cover.png)
+![webforJ: the full-stack Java framework for building business web apps and modernizing Swing apps in Java](https://raw.githubusercontent.com/webforj/.github/main/profile/cover.png)
 
 **The frontend is Java now.**
 
-Build web apps in pure Java, edit them visually while they run, and bring your Swing apps along. webforJ is the AI-ready Java web UI framework, and your AI assistant already knows it. Backed by BASIS International's almost 40 years of expertise, including 20+ years of delivering technology built on Java.
+Build web apps in pure Java, edit them visually while they run, and bring your Swing apps along. webforJ is the full-stack Java framework for business web apps: you build the whole app, UI included, in Java, and your AI assistant already knows it. Backed by BASIS International's almost 40 years of expertise, including 20+ years of delivering technology built on Java.
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.webforj/webforj-parent.svg?color=022495)](https://central.sonatype.com/artifact/com.webforj/webforj)
 [![License: MIT](https://img.shields.io/badge/License-MIT-022495)](LICENSE)
@@ -18,7 +18,7 @@ Build web apps in pure Java, edit them visually while they run, and bring your S
 
 ## No JavaScript to write. Just Java.
 
-Your views are Java classes, and there's no REST layer between your UI and your backend. Your Spring services go straight into the view.
+Your views are Java classes, and there's no REST layer between your UI and your backend. Your Spring services go straight into the view. Routing, forms with binding and validation, tables, security and translation come with the framework, so one Java web framework covers the whole app.
 
 ```java
 @Route("/orders")
@@ -100,7 +100,15 @@ To build from source, you need Java 21 or higher and Maven. From the repository 
 mvn install
 ```
 
-Using webforJ for a business-critical app? [Talk to the team](https://webforj.com/schedule-discovery/).
+## Stay in touch
+
+Ask a question, report a bug or plan a project with the team. We speak English, German, French and Spanish.
+
+[![Ask the docs](https://img.shields.io/badge/Ask%20the%20docs-022495?style=for-the-badge&logo=algolia&logoColor=white)](https://docs.webforj.com) [![Report a bug](https://img.shields.io/badge/Report%20a%20bug-24292f?style=for-the-badge&logo=github&logoColor=white)](https://github.com/webforj/webforj/issues/new/choose) [![Book a call](https://img.shields.io/badge/Book%20a%20call-022495?style=for-the-badge&logo=data:image/svg%2Bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik03IDJoMnYyaDZWMmgydjJoMmEyIDIgMCAwIDEgMiAydjE0YTIgMiAwIDAgMS0yIDJINWEyIDIgMCAwIDEtMi0yVjZhMiAyIDAgMCAxIDItMmgyVjJ6bTEyIDhINXYxMGgxNFYxMHoiLz48L3N2Zz4=&logoColor=white)](https://webforj.com/schedule-discovery/)
+
+Follow webforJ for releases, tutorials and videos.
+
+[![Follow webforJ on LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=data:image/svg%2Bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0yMC40NSAyMC40NWgtMy41NnYtNS41N2MwLTEuMzMtLjAyLTMuMDQtMS44NS0zLjA0LTEuODUgMC0yLjE0IDEuNDUtMi4xNCAyLjk0djUuNjdIOS4zNVY5aDMuNDF2MS41NmguMDVjLjQ4LS45IDEuNjQtMS44NSAzLjM3LTEuODUgMy42IDAgNC4yNyAyLjM3IDQuMjcgNS40NnY2LjI4ek01LjM0IDcuNDNhMi4wNiAyLjA2IDAgMSAxIDAtNC4xMyAyLjA2IDIuMDYgMCAwIDEgMCA0LjEzek03LjEyIDIwLjQ1SDMuNTZWOWgzLjU2djExLjQ1eiIvPjwvc3ZnPg==&logoColor=white)](https://www.linkedin.com/company/webforj) [![webforJ on YouTube](https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@webforJ) [![webforJ blog](https://img.shields.io/badge/Blog-F26522?style=for-the-badge&logo=rss&logoColor=white)](https://docs.webforj.com/blog)
 
 ## License
 
