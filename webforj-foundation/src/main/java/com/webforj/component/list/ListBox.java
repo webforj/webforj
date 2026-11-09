@@ -176,6 +176,38 @@ public final class ListBox extends DwcList<ListBox, List<Object>>
 
   /**
    * {@inheritDoc}
+   *
+   * <p>
+   * In multiple selection mode the item is added to the items already selected.
+   * </p>
+   */
+  @Override
+  public ListBox select(ListItem item) {
+    if (item == null || selectionMode == SelectionMode.SINGLE) {
+      return super.select(item);
+    }
+
+    verifyItemInList(item);
+
+    if (!getInternalSelectedList().contains(item)) {
+      getInternalSelectedList().add(item);
+    }
+
+    BBjListBox list = inferListBox();
+
+    if (list != null) {
+      try {
+        list.selectIndex(indexOf(item.getKey()));
+      } catch (BBjException e) {
+        throw new WebforjRuntimeException(e);
+      }
+    }
+
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
    */
   @Override
   public ListBox select(ListItem... items) {
