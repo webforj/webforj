@@ -608,8 +608,8 @@ public final class Environment {
       getBBjAPI().postCustomEvent(RUN_LATER_EVENT, requestId);
     } catch (Exception e) {
       pendingRequests.remove(requestId);
-      logger.log(Level.ERROR, "Failed to post custom event for request {0}: {1}", requestId,
-          e.getMessage(), e);
+      logger.log(Level.ERROR, String.format("Failed to post custom event for request %s: %s",
+          requestId, e.getMessage()), e);
       result.completeExceptionally(e);
     }
 
@@ -631,7 +631,8 @@ public final class Environment {
       getBBjAPI().setCustomEventCallback(RUN_LATER_EVENT, eventHandler, "handleEvent");
       logger.log(Level.DEBUG, "runLater event callback registered successfully");
     } catch (BBjException e) {
-      logger.log(Level.ERROR, "Failed to register runLater event handler: {0}", e.getMessage(), e);
+      logger.log(Level.ERROR,
+          String.format("Failed to register runLater event handler: %s", e.getMessage()), e);
       throw new WebforjWebManagerException("Failed to register runLater event handler.", e);
     }
   }
