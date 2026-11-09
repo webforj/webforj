@@ -182,16 +182,8 @@ class NumberFieldTest {
     }
 
     @ParameterizedTest
-    @MethodSource("provideValuesAndTexts")
+    @MethodSource({"provideValuesAndTexts", "provideSpecialValuesAndTexts"})
     void shouldSetValueAsPlainText(Double value, String text) {
-      NumberField spy = spy(component);
-      spy.setValue(value);
-      verify(spy, times(1)).setText(text);
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideSpecialValuesAndTexts")
-    void shouldSetSpecialValueAsText(Double value, String text) {
       NumberField spy = spy(component);
       spy.setValue(value);
       verify(spy, times(1)).setText(text);
