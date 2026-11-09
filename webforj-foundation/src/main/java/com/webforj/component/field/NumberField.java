@@ -8,6 +8,7 @@ import com.webforj.concern.HasPattern;
 import com.webforj.concern.HasStep;
 import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.dispatcher.EventListener;
+import java.math.BigDecimal;
 
 /**
  * The NumberField provides a user interface component let the user enter a number. They include
@@ -121,11 +122,11 @@ public final class NumberField extends DwcFieldInitializer<NumberField, Double>
    */
   @Override
   public NumberField setValue(Double value) {
-    if (value != null && value % 1 == 0) {
-      return setText(String.valueOf(value.intValue()));
+    if (value == null || !Double.isFinite(value)) {
+      return setText(String.valueOf(value));
     }
 
-    return setText(String.valueOf(value));
+    return setText(BigDecimal.valueOf(value).stripTrailingZeros().toPlainString());
   }
 
   /**
@@ -268,11 +269,7 @@ public final class NumberField extends DwcFieldInitializer<NumberField, Double>
   @Override
   protected Double convertValue(String value) {
     try {
-      if (value.contains(".")) {
-        return Double.valueOf(value);
-      } else {
-        return Double.valueOf(Integer.valueOf(value));
-      }
+      return Double.valueOf(value);
     } catch (NumberFormatException e) {
       return null;
     }
