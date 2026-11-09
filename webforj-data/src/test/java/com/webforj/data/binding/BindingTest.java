@@ -339,6 +339,50 @@ class BindingTest {
       assertEquals("Write error B", result2.getMessages().get(0));
     }
 
+    @Test
+    void shouldValidateNullReturnedByTransformer() {
+      AtomicReference<String> validated = new AtomicReference<>("unset");
+      fieldBinding.setTransformer(new NullTransformer());
+      fieldBinding.addValidator(value -> {
+        validated.set(value);
+        return ValidationResult.valid();
+      });
+
+      mockComponent.setValue("");
+      assertTrue(fieldBinding.validate(false).isValid());
+      assertNull(validated.get());
+    }
+
+    @Test
+    void shouldWriteNullReturnedByTransformer() {
+      fieldBinding.setTransformer(new NullTransformer());
+      mockComponent.setValue("");
+      assertTrue(fieldBinding.write(bean, false).isValid());
+      assertNull(bean.getName());
+    }
+
+    @Test
+    void shouldReadNullReturnedByTransformer() {
+      fieldBinding.setTransformer(new NullTransformer());
+      mockComponent.setValue("Foo");
+      fieldBinding.read(bean);
+      assertNull(mockComponent.getValue());
+    }
+
+    @Test
+    void shouldReportNullReturnedByTransformerForPrimitiveProperty() {
+      Binding<NameComponentMock, String, PersonBean, Integer> ageBinding =
+          new Binding<>(mockComponent, PersonBean.class, "age");
+      ageBinding.setTransformer(Transformer.of(v -> null, String::valueOf));
+      mockComponent.setValue("");
+
+      ValidationResult result = ageBinding.write(bean, false);
+
+      assertFalse(result.isValid());
+      assertEquals("A value is required.", result.getMessages().get(0));
+      assertEquals(30, bean.getAge());
+    }
+
     private final class FailTransformer implements Transformer<String, String> {
 
       @Override
@@ -349,6 +393,19 @@ class BindingTest {
       @Override
       public String transformToComponent(String modelValue) {
         throw new TransformationException("Transformation failed");
+      }
+    }
+
+    private final class NullTransformer implements Transformer<String, String> {
+
+      @Override
+      public String transformToModel(String viewValue) {
+        return null;
+      }
+
+      @Override
+      public String transformToComponent(String modelValue) {
+        return null;
       }
     }
   }

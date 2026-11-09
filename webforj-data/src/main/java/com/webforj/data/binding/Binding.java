@@ -383,9 +383,10 @@ public class Binding<C extends ValueAware<C, ViewT>, ViewT, B, BeanValueT> {
     ValidationResult result;
 
     try {
-      BeanValueT transformedValue = null;
-      transformedValue =
-          getTransformer().map(t -> t.transformToModel(value)).orElse(tryCastingToBeanValue(value));
+      BeanValueT transformedValue = toModelValue(value);
+      if (transformedValue == null && isPrimitiveProperty()) {
+        throw new TransformationException("A value is required.");
+      }
 
       List<String> messages = new ArrayList<>();
       for (Validator<BeanValueT> validator : validators) {
@@ -567,8 +568,7 @@ public class Binding<C extends ValueAware<C, ViewT>, ViewT, B, BeanValueT> {
   public Binding<C, ViewT, B, BeanValueT> read(B bean) {
     doGetGetter(bean).ifPresent(g -> {
       BeanValueT value = g.apply(bean);
-      ViewT transformedValue = getTransformer().map(t -> t.transformToComponent(value))
-          .orElseGet(() -> tryCastingToComponentValue(value));
+      ViewT transformedValue = toComponentValue(value);
       component.setValue(transformedValue);
     });
     return this;
@@ -599,8 +599,7 @@ public class Binding<C extends ValueAware<C, ViewT>, ViewT, B, BeanValueT> {
       try {
         result[0] = validate(cachedValue, true);
         if (result[0].isValid()) {
-          BeanValueT transformedValue = getTransformer().map(t -> t.transformToModel(cachedValue))
-              .orElseGet(() -> tryCastingToBeanValue(cachedValue));
+          BeanValueT transformedValue = toModelValue(cachedValue);
           s.accept(bean, transformedValue);
         }
       } catch (TransformationException e) {
@@ -716,6 +715,24 @@ public class Binding<C extends ValueAware<C, ViewT>, ViewT, B, BeanValueT> {
       throw new MutatorException("Failed to resolve setter for property '" + property
           + "' on bean class '" + beanClass.getName()
           + "'. Ensure the property name is correct and the setter method is accessible.", e);
+    }
+  }
+
+  private BeanValueT toModelValue(ViewT value) {
+    return transformer != null ? transformer.transformToModel(value) : tryCastingToBeanValue(value);
+  }
+
+  private ViewT toComponentValue(BeanValueT value) {
+    return transformer != null ? transformer.transformToComponent(value)
+        : tryCastingToComponentValue(value);
+  }
+
+  private boolean isPrimitiveProperty() {
+    try {
+      BeanIntrospection.Property prop = BeanIntrospection.of(beanClass).getProperty(property);
+      return prop != null && prop.descriptor().getPropertyType().isPrimitive();
+    } catch (IntrospectionException e) {
+      return false;
     }
   }
 
