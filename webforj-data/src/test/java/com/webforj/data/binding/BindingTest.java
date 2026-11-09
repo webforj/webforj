@@ -79,6 +79,15 @@ class BindingTest {
   }
 
   @Test
+  void shouldWriteCurrentValueChangedAfterValidate() {
+    mockComponent.setValue("A");
+    fieldBinding.validate();
+    mockComponent.setValue("B");
+    fieldBinding.write(bean);
+    assertEquals("B", bean.getName());
+  }
+
+  @Test
   void shouldDisableClientValidationWhenAutoValidateEnabled() {
     assertFalse(fieldBinding.isAutoValidate());
     assertTrue(mockComponent.isAutoClientValidate());
