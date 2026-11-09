@@ -625,6 +625,20 @@ class TableTest {
     }
 
     @Test
+    void shouldStopOrderingTheRowsByColumnWhoseSortingIsDisabled() {
+      Table<Person> table = new Table<>();
+      table.addColumn("name", Person::getName).setSortable(true);
+      table.setItems(Arrays.asList(new Person("John"), new Person("Ada"), new Person("Jane")));
+      table.handleSortChanged(new TableSortChangeEvent<>(table, createSortPayload("asc")));
+
+      table.getColumnById("name").setSortable(false);
+      table.refresh();
+
+      assertEquals(List.of("John", "Ada", "Jane"),
+          table.getRepository().findAll().map(Person::getName).toList());
+    }
+
+    @Test
     void shouldOrderTheRowsOfNewItemsBySortedColumnsBeforeTheElementIsDefined() {
       Table<Person> table = new Table<>();
       table.addColumn("name", Person::getName).setSortDirection(Column.SortDirection.DESC);

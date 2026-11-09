@@ -342,6 +342,11 @@ public final class Column<T, V> implements Serializable {
   /**
    * Enable or disable sorting for the column.
    *
+   * <p>
+   * Disabling sorting on a sortable column clears its sort direction and sort index, so the table
+   * no longer orders its rows by that column.
+   * </p>
+   *
    * @param sortable the new sortable status
    * @return the column itself
    */
@@ -349,6 +354,11 @@ public final class Column<T, V> implements Serializable {
     boolean oldSortable = this.sortable;
     this.sortable = sortable;
     changeSupport.firePropertyChange("sortable", oldSortable, sortable);
+
+    if (oldSortable && !sortable) {
+      setSortDirection(SortDirection.NONE);
+      setSortIndex(0);
+    }
 
     return this;
   }
