@@ -1,6 +1,6 @@
 <div align="center">
 
-![webforJ: the full-stack Java framework for building business web apps and modernizing Swing apps in Java](https://raw.githubusercontent.com/webforj/.github/main/profile/cover.png)
+![webforJ: the full-stack Java framework for building business web apps and modernizing Swing apps in Java](https://raw.githubusercontent.com/webforj/.github/main/profile/cover-v2.png)
 
 **The frontend is Java now.**
 
