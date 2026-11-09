@@ -253,6 +253,46 @@ class ListBoxTest {
     }
 
     @Test
+    void shouldKeepEveryKeySelectedOneByOne() throws IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+
+      component.setSelectionMode(SelectionMode.MULTIPLE);
+      component.add("key-1", "value-1");
+      component.add("key-2", "value-2");
+      component.add("key-3", "value-3");
+
+      component.selectKey("key-1");
+      component.selectKey("key-3");
+      component.selectKey("key-1");
+
+      assertEquals(List.of("key-1", "key-3"), component.getSelectedKeys());
+    }
+
+    @Test
+    void shouldAddEveryKeySelectedOneByOneToTheControl() throws BBjException {
+      component.setSelectionMode(SelectionMode.MULTIPLE);
+      component.add("key-1", "value-1");
+      component.add("key-2", "value-2");
+      component.add("key-3", "value-3");
+
+      component.selectKey("key-1");
+      component.selectKey("key-3");
+
+      verify(control, times(1)).selectIndex(0);
+      verify(control, times(1)).selectIndex(2);
+      verify(control, times(0)).setSelectedIndices(any(BBjVector.class));
+    }
+
+    @Test
+    void shouldThrowWebforjRuntimeExceptionWhenSelectingOneKeyFails() throws BBjException {
+      doThrow(BBjException.class).when(control).selectIndex(0);
+      component.setSelectionMode(SelectionMode.MULTIPLE);
+      component.add("key-1", "value-1");
+
+      assertThrows(WebforjRuntimeException.class, () -> component.selectKey("key-1"));
+    }
+
+    @Test
     @DisplayName("should throw DwcjRuntimeException when getSelectedIndices throws BBjException")
     void shouldThrowDwcjRuntimeExceptionWhenGetSelectedIndicesThrowsBBjException()
         throws BBjException {
@@ -351,6 +391,23 @@ class ListBoxTest {
       component.onAttach();
 
       verify(control, times(1)).setSelectedIndices(new BBjVector(Arrays.asList(1, 2)));
+    }
+
+    @Test
+    void shouldReApplyEveryKeySelectedOneByOne() throws BBjException, IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+
+      component.setSelectionMode(SelectionMode.MULTIPLE);
+      component.add("key-1", "value-1");
+      component.add("key-2", "value-2");
+      component.add("key-3", "value-3");
+      component.selectKey("key-1");
+      component.selectKey("key-3");
+
+      ReflectionUtils.unNullifyControl(component, control);
+      component.onAttach();
+
+      verify(control, times(1)).setSelectedIndices(new BBjVector(Arrays.asList(0, 2)));
     }
 
     @Test
