@@ -572,7 +572,6 @@ class BindingContextTest {
       BindingContext<PersonBean> context = new BindingContext<>(PersonBean.class);
       context.bind(nameComponent, "name").useTransformer(new ZoneTransformer()).add();
       context.bind(ageComponent, "age").add();
-      PersonBean bean = new PersonBean("John Doe", 30);
       context.observe(bean);
       bean.setName("Jane Doe");
       bean.setAge(40);
