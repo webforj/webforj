@@ -3,7 +3,11 @@ package com.webforj.data.repository;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.webforj.data.HasEntityKey;
+import com.webforj.data.repository.event.RepositoryCommitEvent;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
 class RepositoryKeyProviderTest {
@@ -42,6 +46,79 @@ class RepositoryKeyProviderTest {
     CollectionRepository<TestEntity> repo = new CollectionRepository<>(List.of(entity));
 
     assertEquals(entity, repo.getKey(entity));
+  }
+
+  @Test
+  void shouldNotQueryWhenSettingKeyProviderWithoutCommitListener() {
+    List<RepositoryCriteria<TestEntity, Object>> queries = new ArrayList<>();
+    DelegatingRepository<TestEntity, Object> repo = new DelegatingRepository<>(criteria -> {
+      queries.add(criteria);
+      return Stream.empty();
+    }, criteria -> 0, key -> Optional.empty());
+
+    repo.setKeyProvider(TestEntity::getId);
+
+    assertEquals(List.of(), queries);
+  }
+
+  @Test
+  void shouldNotifyCommitListenersWhenSettingKeyProvider() {
+    TestEntity entity = new TestEntity(123L);
+    CollectionRepository<TestEntity> repo = new CollectionRepository<>(List.of(entity));
+    List<RepositoryCommitEvent<TestEntity>> events = new ArrayList<>();
+    repo.onCommit(events::add);
+
+    repo.setKeyProvider(TestEntity::getId);
+
+    assertEquals(1, events.size());
+    assertEquals(List.of(entity), events.get(0).getCommits());
+  }
+
+  @Test
+  void shouldNotQueryWhenSettingKeyProviderAfterCommitListenerIsRemoved() {
+    List<RepositoryCriteria<TestEntity, Object>> queries = new ArrayList<>();
+    DelegatingRepository<TestEntity, Object> repo = new DelegatingRepository<>(criteria -> {
+      queries.add(criteria);
+      return Stream.empty();
+    }, criteria -> 0, key -> Optional.empty());
+    repo.onCommit(event -> {
+    }).remove();
+
+    repo.setKeyProvider(TestEntity::getId);
+
+    assertEquals(List.of(), queries);
+  }
+
+  @Test
+  void shouldNotQueryWhenCommitListenerDoesNotReadCommits() {
+    List<RepositoryCriteria<TestEntity, Object>> queries = new ArrayList<>();
+    DelegatingRepository<TestEntity, Object> repo = new DelegatingRepository<>(criteria -> {
+      queries.add(criteria);
+      return Stream.empty();
+    }, criteria -> 0, key -> Optional.empty());
+    repo.onCommit(event -> {
+    });
+
+    repo.setKeyProvider(TestEntity::getId);
+
+    assertEquals(List.of(), queries);
+  }
+
+  @Test
+  void shouldQueryOnceWhenCommitListenerReadsCommitsTwice() {
+    List<RepositoryCriteria<TestEntity, Object>> queries = new ArrayList<>();
+    DelegatingRepository<TestEntity, Object> repo = new DelegatingRepository<>(criteria -> {
+      queries.add(criteria);
+      return Stream.empty();
+    }, criteria -> 0, key -> Optional.empty());
+    repo.onCommit(event -> {
+      event.getCommits().size();
+      event.getCommits().size();
+    });
+
+    repo.setKeyProvider(TestEntity::getId);
+
+    assertEquals(1, queries.size());
   }
 
   static class TestEntity {
