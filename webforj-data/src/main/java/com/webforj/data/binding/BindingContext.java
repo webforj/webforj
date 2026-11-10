@@ -324,7 +324,9 @@ public class BindingContext<B>
   /**
    * Validates all the bindings in the context.
    *
-   * @param report whether to report the validation result using the {@link BindingReporter}
+   * @param report whether to report the validation result using the {@link BindingReporter} and
+   *        focus the first component with a validation error when
+   *        {@link #setAutoFocusFirstViolation(boolean)} is on
    * @return the validation result.
    */
   @SuppressWarnings("squid:S3740")
@@ -345,7 +347,7 @@ public class BindingContext<B>
       }
     }
 
-    if (!isValid && isAutoFocusFirstViolation() && firstInvalidComponent != null
+    if (report && !isValid && isAutoFocusFirstViolation() && firstInvalidComponent != null
         && firstInvalidComponent instanceof FocusAcceptorAware focusAcceptorAware) {
       focusAcceptorAware.focus();
     }

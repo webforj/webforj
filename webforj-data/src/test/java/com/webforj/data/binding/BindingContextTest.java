@@ -16,6 +16,7 @@ import com.webforj.data.binding.annotation.BindingRequired;
 import com.webforj.data.binding.annotation.UseProperty;
 import com.webforj.data.binding.annotation.UseTransformer;
 import com.webforj.data.binding.annotation.UseValidator;
+import com.webforj.data.concern.FocusAcceptorAware;
 import com.webforj.data.validation.server.ValidationResult;
 import com.webforj.data.validation.server.validator.JakartaValidator;
 import com.webforj.data.validation.server.validator.Validator;
@@ -354,6 +355,45 @@ class BindingContextTest {
       assertEquals("Jane Doe", bean.getName());
       assertEquals(1, validations.get());
       assertEquals(1, reports.get());
+    }
+
+    @Test
+    void shouldFocusFirstViolationWhenReported() {
+      FocusCountingNameComponent focusComponent = new FocusCountingNameComponent();
+      NameComponentMock boundComponent = focusComponent;
+      context.bind(boundComponent, "name")
+          .useValidator(value -> !value.isEmpty(), "Name is required").add();
+
+      context.validate();
+
+      assertEquals(1, focusComponent.getFocusCount());
+    }
+
+    @Test
+    void shouldNotFocusFirstViolationWhenCheckingValidity() {
+      FocusCountingNameComponent focusComponent = new FocusCountingNameComponent();
+      NameComponentMock boundComponent = focusComponent;
+      context.bind(boundComponent, "name")
+          .useValidator(value -> !value.isEmpty(), "Name is required").add();
+
+      assertFalse(context.isValid());
+      assertFalse(context.validate(false).isValid());
+      assertEquals(0, focusComponent.getFocusCount());
+    }
+
+    class FocusCountingNameComponent extends NameComponentMock
+        implements FocusAcceptorAware<FocusCountingNameComponent> {
+      private int focusCount;
+
+      @Override
+      public FocusCountingNameComponent focus() {
+        focusCount++;
+        return this;
+      }
+
+      int getFocusCount() {
+        return focusCount;
+      }
     }
   }
 
