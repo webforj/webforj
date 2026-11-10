@@ -16,6 +16,7 @@ import com.webforj.data.validation.server.ValidationResult;
 import com.webforj.data.validation.server.validator.JakartaValidator;
 import com.webforj.data.validation.server.validator.Validator;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -329,6 +330,25 @@ class BindingContextTest {
 
       assertEquals("Jane Doe", bean.getName());
       assertNotEquals(500, bean.getAge());
+    }
+
+    @Test
+    void shouldValidateAndReportOncePerWrite() {
+      nameComponent.setValue("Jane Doe");
+      AtomicInteger validations = new AtomicInteger();
+      AtomicInteger reports = new AtomicInteger();
+      context.bind(nameComponent, "name").useValidator(value -> {
+        validations.incrementAndGet();
+        return ValidationResult.valid();
+      }).add();
+      context.getBinding("name").setReporter((result, binding) -> reports.incrementAndGet());
+
+      ValidationResult result = context.write(bean);
+
+      assertTrue(result.isValid());
+      assertEquals("Jane Doe", bean.getName());
+      assertEquals(1, validations.get());
+      assertEquals(1, reports.get());
     }
   }
 

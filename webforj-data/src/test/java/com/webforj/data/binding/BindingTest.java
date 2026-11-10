@@ -20,12 +20,15 @@ import com.webforj.data.transformation.TransformationException;
 import com.webforj.data.transformation.transformer.Transformer;
 import com.webforj.data.validation.server.ValidationResult;
 import com.webforj.data.validation.server.validator.Validator;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class BindingTest {
 
@@ -204,6 +207,17 @@ class BindingTest {
       mockComponent.setValue("Foo");
       assertFalse(fieldBinding.write(bean).isValid());
       assertEquals("John Doe", bean.getName());
+    }
+
+    @Test
+    void shouldNotValidateWhenWriteSkipsValidation() {
+      AtomicInteger reports = new AtomicInteger();
+      fieldBinding.setReporter((result, binding) -> reports.incrementAndGet());
+
+      mockComponent.setValue("Foo");
+      assertTrue(fieldBinding.write(bean, true).isValid());
+      assertEquals("Foo", bean.getName());
+      assertEquals(0, reports.get());
     }
 
     @Test
@@ -450,6 +464,27 @@ class BindingTest {
 
       mockComponent.setValue("Foo");
       assertEquals("Foo bar", localBean.getName());
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldValidateAndReportOncePerAutoWriteChange(boolean autoValidate) {
+      fieldBinding.setAutoValidate(autoValidate);
+      AtomicInteger validations = new AtomicInteger();
+      AtomicInteger reports = new AtomicInteger();
+      fieldBinding.addValidator(value -> {
+        validations.incrementAndGet();
+        return ValidationResult.valid();
+      });
+      fieldBinding.setReporter((result, binding) -> reports.incrementAndGet());
+      PersonBean localBean = new PersonBean();
+      fieldBinding.setAutoWrite(localBean);
+
+      mockComponent.setValue("Foo bar");
+
+      assertEquals("Foo bar", localBean.getName());
+      assertEquals(1, validations.get());
+      assertEquals(1, reports.get());
     }
 
     @Test
