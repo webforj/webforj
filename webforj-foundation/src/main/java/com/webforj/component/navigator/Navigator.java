@@ -110,6 +110,7 @@ public final class Navigator extends DwcFocusableComponent<Navigator>
           NavigatorMovePreviousEvent.class);
 
   private Paginator paginator;
+  private Paginator ownedPaginator;
   private boolean autoDisable = false;
   private Layout layout = Layout.PREVIEW;
   private PropertyChangeListener lastPropertyChangeListener;
@@ -159,41 +160,62 @@ public final class Navigator extends DwcFocusableComponent<Navigator>
   /**
    * Constructs a Navigator instance with the specified repository, page size and Layout.
    *
+   * <p>
+   * The Navigator creates a {@link Paginator} for the repository and destroys it when it is
+   * replaced or the Navigator is destroyed.
+   * </p>
+   *
    * @param repository The repository containing the items to be paginated.
    * @param pageSize The number of items to display on each page.
    * @param layout The layout of the middle area of the Navigator.
    */
   public Navigator(Repository<?> repository, int pageSize, Layout layout) {
     this(new Paginator(repository, pageSize), layout);
+    this.ownedPaginator = this.paginator;
   }
 
   /**
    * Constructs a Navigator instance with the specified repository and page size.
    *
+   * <p>
+   * The Navigator creates a {@link Paginator} for the repository and destroys it when it is
+   * replaced or the Navigator is destroyed.
+   * </p>
+   *
    * @param repository The repository containing the items to be paginated.
    * @param pageSize The number of items to display on each page.
    */
   public Navigator(Repository<?> repository, int pageSize) {
-    this(new Paginator(repository, pageSize));
+    this(repository, pageSize, Layout.PREVIEW);
   }
 
   /**
    * Constructs a Navigator instance with the specified repository and Layout.
    *
+   * <p>
+   * The Navigator creates a {@link Paginator} for the repository and destroys it when it is
+   * replaced or the Navigator is destroyed.
+   * </p>
+   *
    * @param repository The repository containing the items to be paginated.
    * @param layout The layout of the middle area of the Navigator.
    */
   public Navigator(Repository<?> repository, Layout layout) {
-    this(new Paginator(repository), layout);
+    this(repository, Paginator.DEFAULT_PAGE_SIZE, layout);
   }
 
   /**
    * Constructs a Navigator instance with the specified repository.
    *
+   * <p>
+   * The Navigator creates a {@link Paginator} for the repository and destroys it when it is
+   * replaced or the Navigator is destroyed.
+   * </p>
+   *
    * @param repository The repository containing the items to be paginated.
    */
   public Navigator(Repository<?> repository) {
-    this(new Paginator(repository));
+    this(repository, Paginator.DEFAULT_PAGE_SIZE);
   }
 
   /**
@@ -287,6 +309,11 @@ public final class Navigator extends DwcFocusableComponent<Navigator>
   /**
    * Sets the paginator of the Navigator.
    *
+   * <p>
+   * A paginator the Navigator created from a repository is destroyed when it is replaced. A
+   * paginator passed to the Navigator is never destroyed by it.
+   * </p>
+   *
    * @param paginator the paginator of the Navigator.
    * @return the component itself.
    */
@@ -295,6 +322,12 @@ public final class Navigator extends DwcFocusableComponent<Navigator>
 
     if (lastPropertyChangeListener != null) {
       this.paginator.removePropertyChangeListener(lastPropertyChangeListener);
+    }
+
+    if (ownedPaginator != null && ownedPaginator != paginator) {
+      ownedPaginator.destroy();
+      ownedPaginator = null;
+      paginator.setCurrent(paginator.getCurrent());
     }
 
     lastPropertyChangeListener = new PaginatorChangeListener();
@@ -716,6 +749,21 @@ public final class Navigator extends DwcFocusableComponent<Navigator>
         event.getStartIndex(), event.getEndIndex());
 
     getEventDispatcher().dispatchEvent(navigatorChangeEvent);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+
+    paginator.removePropertyChangeListener(lastPropertyChangeListener);
+
+    if (ownedPaginator != null) {
+      ownedPaginator.destroy();
+      ownedPaginator = null;
+    }
   }
 
   /**

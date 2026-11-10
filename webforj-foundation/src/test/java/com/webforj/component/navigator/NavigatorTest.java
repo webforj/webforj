@@ -3,6 +3,7 @@ package com.webforj.component.navigator;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.basis.bbj.proxies.sysgui.BBjNavigator;
@@ -15,6 +16,7 @@ import com.webforj.component.navigator.event.NavigatorMovePreviousEvent;
 import com.webforj.data.Paginator;
 import com.webforj.data.repository.CollectionRepository;
 import com.webforj.data.repository.Repository;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -158,6 +160,96 @@ class NavigatorTest {
     component.setVisible(false, part);
     assertEquals(false, component.isVisible(part),
         String.format("Part %s should be hidden", part.name()));
+  }
+
+  @Nested
+  @DisplayName("Paginator API")
+  class PaginatorApi {
+
+    private final List<String> items = new ArrayList<>(
+        List.of("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"));
+    private final Repository<String> repo = new CollectionRepository<>(items);
+
+    @Test
+    void shouldDestroyCreatedPaginatorWhenReplaced() {
+      Navigator navigator = new Navigator(repo, 2);
+      navigator.getPaginator().setCurrent(3);
+
+      Paginator replacement = new Paginator(repo, 2);
+      navigator.setPaginator(replacement);
+      replacement.setCurrent(2);
+      repo.commit();
+
+      assertEquals(2, repo.getOffset());
+    }
+
+    @Test
+    void shouldApplyReplacementPageWhenCreatedPaginatorReplaced() {
+      Navigator navigator = new Navigator(repo, 2);
+      navigator.getPaginator().setCurrent(3);
+      navigator.setPaginator(new Paginator(repo, 2));
+
+      assertEquals(0, repo.getOffset());
+    }
+
+    @Test
+    void shouldDestroyCreatedPaginatorWhenDestroyed() {
+      Navigator navigator = new Navigator(repo, 2);
+      navigator.getPaginator().setCurrent(3);
+      navigator.destroy();
+
+      Paginator paginator = new Paginator(repo, 2);
+      paginator.setCurrent(2);
+      repo.commit();
+
+      assertEquals(2, repo.getOffset());
+    }
+
+    @Test
+    void shouldKeepCreatedPaginatorWhenSetAgain() {
+      Navigator navigator = new Navigator(repo, 2);
+      Paginator created = navigator.getPaginator();
+      navigator.setPaginator(created);
+
+      items.add("eleven");
+      repo.commit();
+
+      assertEquals(11, created.getTotalItems());
+    }
+
+    @Test
+    void shouldKeepGivenPaginatorWhenReplaced() {
+      Paginator given = new Paginator(repo, 2);
+      Navigator navigator = new Navigator(given);
+      navigator.setPaginator(new Paginator(20, 2));
+
+      items.add("eleven");
+      repo.commit();
+
+      assertEquals(11, given.getTotalItems());
+    }
+
+    @Test
+    void shouldKeepGivenPaginatorWhenDestroyed() {
+      Paginator given = new Paginator(repo, 2);
+      Navigator navigator = new Navigator(given);
+      navigator.destroy();
+
+      items.add("eleven");
+      repo.commit();
+
+      assertEquals(11, given.getTotalItems());
+    }
+
+    @Test
+    void shouldStopFollowingPaginatorWhenDestroyed() {
+      Paginator given = new Paginator(repo, 2);
+      Navigator navigator = new Navigator(given);
+      navigator.destroy();
+      given.setCurrent(3);
+
+      assertNull(navigator.getProperty("current"));
+    }
   }
 
   @Nested

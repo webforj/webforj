@@ -2,6 +2,7 @@ package com.webforj.data;
 
 import com.webforj.data.repository.Repository;
 import com.webforj.data.repository.event.RepositoryCommitEvent;
+import com.webforj.dispatcher.ListenerRegistration;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Objects;
@@ -29,6 +30,7 @@ public class Paginator {
   private int[] pages;
   private boolean isUpdating = false;
   private Repository<?> repository;
+  private ListenerRegistration<? extends RepositoryCommitEvent<?>> commitRegistration;
   private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 
   /**
@@ -62,6 +64,10 @@ public class Paginator {
   /**
    * Constructs a Paginator instance with the specified repository and page size.
    *
+   * <p>
+   * The paginator follows the commits of the repository until {@link #destroy()} is called.
+   * </p>
+   *
    * @param repository The repository containing the items to be paginated.
    * @param pageSize The number of items to display on each page.
    */
@@ -69,14 +75,18 @@ public class Paginator {
     Objects.requireNonNull(repository, "repository cannot be null");
 
     this.repository = repository;
-    this.totalItems = repository.size();
+    this.totalItems = getRepositorySize();
     this.pageSize = pageSize;
-    this.repository.addCommitListener(this::handleRepositoryCommit);
+    this.commitRegistration = this.repository.addCommitListener(this::handleRepositoryCommit);
     calculatePagination();
   }
 
   /**
    * Constructs a Paginator instance with the specified repository.
+   *
+   * <p>
+   * The paginator follows the commits of the repository until {@link #destroy()} is called.
+   * </p>
    *
    * @param repository The repository containing the items to be paginated.
    */
@@ -291,6 +301,33 @@ public class Paginator {
     return this;
   }
 
+  /**
+   * Stops listening to the commits of the repository.
+   *
+   * <p>
+   * A paginator created with a repository follows every commit of that repository and sets the
+   * offset and the limit of the repository to its current page. This method must be called when the
+   * paginator is no longer used and the repository stays in use, for example when another paginator
+   * takes over the same repository. After the call the paginator no longer follows the repository,
+   * no longer changes its offset and limit, and the repository no longer holds a reference to it.
+   * The total number of items is then set with {@link #setTotalItems(int)}.
+   * </p>
+   *
+   * <p>
+   * A paginator created without a repository has nothing to release, and calling this method more
+   * than once has no effect.
+   * </p>
+   *
+   * @since 26.10
+   */
+  public void destroy() {
+    if (commitRegistration != null) {
+      commitRegistration.remove();
+      commitRegistration = null;
+      repository = null;
+    }
+  }
+
   private void calculatePagination() {
     totalPages = (int) Math.ceil((double) totalItems / pageSize);
 
@@ -338,12 +375,20 @@ public class Paginator {
 
   private void handleRepositoryCommit(RepositoryCommitEvent<?> ev) {
     if (!ev.isSingleCommit() && !isUpdating) {
-      final int offset = repository.getOffset();
-      final int limit = repository.getLimit();
+      setTotalItems(getRepositorySize(), false);
+    }
+  }
 
-      repository.setOffset(0);
-      repository.setLimit(0);
-      setTotalItems(repository.size(), false);
+  private int getRepositorySize() {
+    final int offset = repository.getOffset();
+    final int limit = repository.getLimit();
+
+    repository.setOffset(0);
+    repository.setLimit(0);
+
+    try {
+      return repository.size();
+    } finally {
       repository.setOffset(offset);
       repository.setLimit(limit);
     }
