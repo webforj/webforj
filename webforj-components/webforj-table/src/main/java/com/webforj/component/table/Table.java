@@ -164,6 +164,7 @@ public class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T
   private final List<Column<T, ?>> columns = new ArrayList<>();
   private final Set<String> selectedKeys = new HashSet<>();
   private Repository<T> repository = new CollectionRepository<>(Collections.emptyList());
+  private ListenerRegistration<RepositoryCommitEvent<T>> repositoryCommitRegistration;
   private boolean registeredValueChangeListener = false;
   private Function<T, List<String>> rowPartProvider = item -> Collections.emptyList();
   private BiFunction<T, Column<T, ?>, List<String>> cellPartProvider =
@@ -374,8 +375,12 @@ public class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T
 
     // set the repository if it's the first time or if it's different from the current repository
     if (this.repository == null || !this.repository.equals(repository)) {
+      if (repositoryCommitRegistration != null) {
+        repositoryCommitRegistration.remove();
+      }
+
       this.repository = repository;
-      this.repository.onCommit(this::handleRepositoryCommit);
+      repositoryCommitRegistration = this.repository.onCommit(this::handleRepositoryCommit);
       applyOrderCriteria();
 
       // Sync EntityKeysRegistry with Repository's key provider
