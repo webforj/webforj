@@ -1744,6 +1744,11 @@ public class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T
     getItemKeysRegistry().cleanUp();
     columns.clear();
     selectedKeys.clear();
+    if (repositoryCommitRegistration != null) {
+      repositoryCommitRegistration.remove();
+      repositoryCommitRegistration = null;
+    }
+
     repository = null;
   }
 
