@@ -1,11 +1,15 @@
 package com.webforj.data.binding;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.webforj.data.PersonBean;
+import com.webforj.data.ZoneAware;
 import com.webforj.data.binding.annotation.BindingExclude;
 import com.webforj.data.binding.annotation.BindingReadOnly;
 import com.webforj.data.binding.annotation.BindingRequired;
@@ -15,6 +19,7 @@ import com.webforj.data.binding.annotation.UseValidator;
 import com.webforj.data.validation.server.ValidationResult;
 import com.webforj.data.validation.server.validator.JakartaValidator;
 import com.webforj.data.validation.server.validator.Validator;
+import java.time.ZoneId;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -471,6 +476,138 @@ class BindingContextTest {
 
     context.setLocale(Locale.GERMAN);
     assertEquals(Locale.GERMAN, validator.getLocale());
+  }
+
+  @Nested
+  class ZoneApi {
+    @Test
+    void shouldUseSystemDefaultZone() {
+      BindingContext<PersonBean> context = new BindingContext<>(PersonBean.class);
+
+      assertEquals(ZoneId.systemDefault(), context.getZone());
+    }
+
+    @Test
+    void shouldPropagateZoneToZoneAwareTransformersAndValidators() {
+      ZoneTransformer transformer = new ZoneTransformer();
+      ZoneValidator validator = new ZoneValidator();
+      BindingContext<PersonBean> context = new BindingContext<>(PersonBean.class);
+      context.bind(new NameComponentMock(), "name").useTransformer(transformer)
+          .useValidator(validator).add();
+      ZoneId zone = ZoneId.of("Asia/Tokyo");
+
+      assertSame(context, context.setZone(zone));
+      assertEquals(zone, context.getZone());
+      assertEquals(zone, transformer.getZone());
+      assertEquals(zone, validator.getZone());
+    }
+
+    @Test
+    void shouldSkipTransformersAndValidatorsThatAreNotZoneAware() {
+      BindingContext<PersonBean> context = new BindingContext<>(PersonBean.class);
+      context.bind(new NameComponentMock(), "name").useTransformer(new CaseTransformer()).add();
+      context.bind(new AgeComponentMock(), "age").useValidator(new AgeValidator()).add();
+      ZoneId zone = ZoneId.of("Asia/Tokyo");
+
+      assertDoesNotThrow(() -> context.setZone(zone));
+      assertEquals(zone, context.getZone());
+    }
+
+    @Test
+    void shouldRejectNullZone() {
+      BindingContext<PersonBean> context = new BindingContext<>(PersonBean.class);
+      ZoneId zone = null;
+
+      assertThrows(NullPointerException.class, () -> context.setZone(zone));
+    }
+
+    @Test
+    void shouldPassZoneToValidatorDeclaredWithAnnotation() {
+      class Container {
+        @UseValidator(value = ZoneValidator.class, message = "Name is invalid")
+        NameComponentMock name = new NameComponentMock();
+      }
+
+      BindingContext<PersonBean> context = BindingContext.of(new Container(), PersonBean.class);
+      ZoneAware<?> validator = (ZoneAware<?>) context.getBinding("name").getValidators().get(0);
+      ZoneId zone = ZoneId.of("Asia/Tokyo");
+
+      context.setZone(zone);
+
+      assertEquals(zone, validator.getZone());
+    }
+
+    @Test
+    void shouldPassDefaultZoneToAddedBinding() {
+      ZoneTransformer transformer = new ZoneTransformer();
+      ZoneValidator validator = new ZoneValidator();
+      BindingContext<PersonBean> context = new BindingContext<>(PersonBean.class);
+
+      context.bind(new NameComponentMock(), "name").useTransformer(transformer)
+          .useValidator(validator).add();
+
+      assertEquals(context.getZone(), transformer.getZone());
+      assertEquals(context.getZone(), validator.getZone());
+    }
+
+    @Test
+    void shouldPassZoneToBindingAddedAfterZoneChange() {
+      ZoneTransformer transformer = new ZoneTransformer();
+      ZoneValidator validator = new ZoneValidator();
+      BindingContext<PersonBean> context = new BindingContext<>(PersonBean.class);
+      ZoneId zone = ZoneId.of("Asia/Tokyo");
+      context.setZone(zone);
+
+      context.bind(new NameComponentMock(), "name").useTransformer(transformer)
+          .useValidator(validator).add();
+
+      assertEquals(zone, transformer.getZone());
+      assertEquals(zone, validator.getZone());
+    }
+
+    @Test
+    void shouldReadObservedBeanIntoBindingsWithZoneAwareTransformer() {
+      NameComponentMock nameComponent = new NameComponentMock();
+      AgeComponentMock ageComponent = new AgeComponentMock();
+      BindingContext<PersonBean> context = new BindingContext<>(PersonBean.class);
+      context.bind(nameComponent, "name").useTransformer(new ZoneTransformer()).add();
+      context.bind(ageComponent, "age").add();
+      PersonBean bean = new PersonBean("John Doe", 30);
+      context.observe(bean);
+      bean.setName("Jane Doe");
+      bean.setAge(40);
+
+      context.setZone(ZoneId.of("Asia/Tokyo"));
+
+      assertEquals("Jane Doe", nameComponent.getValue());
+      assertEquals(30, ageComponent.getValue());
+    }
+
+    @Test
+    void shouldKeepZoneWhenValidatorRejectsIt() {
+      class RejectingValidator extends ZoneValidator {
+        @Override
+        public ZoneValidator setZone(ZoneId zone) {
+          if (zone.equals(ZoneId.of("Asia/Tokyo"))) {
+            throw new IllegalArgumentException("Tokyo is rejected");
+          }
+
+          return super.setZone(zone);
+        }
+      }
+
+      ZoneTransformer transformer = new ZoneTransformer();
+      BindingContext<PersonBean> context = new BindingContext<>(PersonBean.class);
+      context.bind(new NameComponentMock(), "name").useTransformer(transformer)
+          .useValidator(new RejectingValidator()).add();
+      ZoneId previousZone = ZoneId.of("Europe/Berlin");
+      context.setZone(previousZone);
+      ZoneId zone = ZoneId.of("Asia/Tokyo");
+
+      assertThrows(IllegalArgumentException.class, () -> context.setZone(zone));
+      assertEquals(previousZone, context.getZone());
+      assertEquals(previousZone, transformer.getZone());
+    }
   }
 
   @Nested

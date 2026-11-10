@@ -1,6 +1,7 @@
 package com.webforj.data.binding;
 
 import com.webforj.data.LocaleAware;
+import com.webforj.data.ZoneAware;
 import com.webforj.data.binding.annotation.BindingExclude;
 import com.webforj.data.binding.annotation.BindingReadOnly;
 import com.webforj.data.binding.annotation.BindingRequired;
@@ -22,6 +23,7 @@ import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.time.ZoneId;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,7 +61,8 @@ import java.util.function.Supplier;
  * @since 24.01
  * @author Hyyan Abo Fakher
  */
-public class BindingContext<B> implements LocaleAware<BindingContext<B>> {
+public class BindingContext<B>
+    implements LocaleAware<BindingContext<B>>, ZoneAware<BindingContext<B>> {
   private final EventDispatcher dispatcher = new EventDispatcher();
   private final Class<B> beanClass;
   private final Map<String, Binding<?, ?, B, ?>> bindings = new LinkedHashMap<>();
@@ -69,6 +72,7 @@ public class BindingContext<B> implements LocaleAware<BindingContext<B>> {
   private boolean globalAutoValidate = true;
   private boolean autoFocusFirstViolation = true;
   private Locale locale = Locale.getDefault();
+  private ZoneId zone = ZoneId.systemDefault();
   private B observedBean = null;
 
   /**
@@ -585,14 +589,7 @@ public class BindingContext<B> implements LocaleAware<BindingContext<B>> {
     this.locale = locale;
 
     for (Binding<?, ?, B, ?> binding : bindings.values()) {
-      binding.getTransformer().filter(LocaleAware.class::isInstance).map(LocaleAware.class::cast)
-          .ifPresent(t -> t.setLocale(locale));
-
-      for (Validator<?> validator : binding.getValidators()) {
-        if (validator instanceof LocaleAware<?> localeAware) {
-          localeAware.setLocale(locale);
-        }
-      }
+      findMembers(binding, LocaleAware.class).forEach(member -> member.setLocale(locale));
     }
 
     return this;
@@ -605,6 +602,67 @@ public class BindingContext<B> implements LocaleAware<BindingContext<B>> {
    */
   public Locale getLocale() {
     return locale;
+  }
+
+  /**
+   * Configures the time zone to be used by the context.
+   *
+   * <p>
+   * The time zone is passed to every transformer and validator of the bindings in the context that
+   * is {@link ZoneAware}, and to those of every binding added later. When one of them rejects the
+   * time zone, the context and its bindings keep the previous time zone.
+   * </p>
+   *
+   * <p>
+   * When a bean is observed, the components whose transformer is {@link ZoneAware} are populated
+   * again from that bean. Other components keep their value until the next {@link #read(Object)}.
+   * </p>
+   *
+   * @param zone the time zone to use
+   *
+   * @return the binding context.
+   * @throws NullPointerException if the zone is null
+   */
+  public BindingContext<B> setZone(ZoneId zone) {
+    Objects.requireNonNull(zone, "zone cannot be null");
+    List<ZoneAware<?>> updatedMembers = new ArrayList<>();
+
+    try {
+      for (Binding<?, ?, B, ?> binding : bindings.values()) {
+        for (ZoneAware<?> member : findMembers(binding, ZoneAware.class)) {
+          member.setZone(zone);
+          updatedMembers.add(member);
+        }
+      }
+    } catch (RuntimeException e) {
+      updatedMembers.forEach(member -> member.setZone(this.zone));
+      throw e;
+    }
+
+    this.zone = zone;
+
+    if (observedBean != null) {
+      for (Binding<?, ?, B, ?> binding : bindings.values()) {
+        if (binding.getTransformer().filter(ZoneAware.class::isInstance).isPresent()) {
+          binding.read(observedBean);
+        }
+      }
+    }
+
+    return this;
+  }
+
+  /**
+   * Gets the time zone used by the context.
+   *
+   * <p>
+   * The time zone defaults to the system default time zone of the server.
+   * </p>
+   *
+   * @return the time zone used by the context.
+   */
+  public ZoneId getZone() {
+    return zone;
   }
 
   private static SimpleImmutableEntry<Transformer<?, ?>, String> processUseTransformerAnnotation(
@@ -652,6 +710,19 @@ public class BindingContext<B> implements LocaleAware<BindingContext<B>> {
     }
 
     return results;
+  }
+
+  private static <A> List<A> findMembers(Binding<?, ?, ?, ?> binding, Class<A> type) {
+    List<A> members = new ArrayList<>();
+    binding.getTransformer().filter(type::isInstance).map(type::cast).ifPresent(members::add);
+
+    for (Validator<?> validator : binding.getValidators()) {
+      if (type.isInstance(validator)) {
+        members.add(type.cast(validator));
+      }
+    }
+
+    return members;
   }
 
   private final class FieldBindingBuilderImpl<C extends ValueAware<C, ViewT>, ViewT, BeanValueT>
@@ -818,6 +889,7 @@ public class BindingContext<B> implements LocaleAware<BindingContext<B>> {
 
     @Override
     public BindingContext<B> add() {
+      findMembers(fieldBinding, ZoneAware.class).forEach(member -> member.setZone(zone));
       bindings.put(property, fieldBinding);
 
       if (component instanceof BindAware bindAware) {
