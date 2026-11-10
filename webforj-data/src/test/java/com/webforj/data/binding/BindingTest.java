@@ -123,6 +123,26 @@ class BindingTest {
     assertTrue(ageBinding.isRequired());
   }
 
+  @Test
+  void shouldNotDetectRequiredFromSizeWithoutMinimum() {
+    NameComponentMock component = new NameComponentMock();
+    Binding<NameComponentMock, String, SizedBean, String> binding =
+        new Binding<>(component, SizedBean.class, "nickname");
+
+    assertFalse(binding.isRequired());
+    assertFalse(component.isRequired());
+  }
+
+  @Test
+  void shouldDetectRequiredFromSizeWithMinimum() {
+    NameComponentMock component = new NameComponentMock();
+    Binding<NameComponentMock, String, SizedBean, String> binding =
+        new Binding<>(component, SizedBean.class, "code");
+
+    assertTrue(binding.isRequired());
+    assertTrue(component.isRequired());
+  }
+
   @Nested
   class BeanGetterSetter {
 
