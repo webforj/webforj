@@ -52,6 +52,8 @@ class WebforjSecurityContextHolderStrategyTest {
 
   @AfterEach
   void tearDown() {
+    strategy.clearContext();
+
     if (environmentMock != null) {
       environmentMock.close();
     }
@@ -108,6 +110,22 @@ class WebforjSecurityContextHolderStrategyTest {
       assertNotNull(retrievedContext);
       assertSame(storedContext, retrievedContext);
       assertSame(auth, retrievedContext.getAuthentication());
+    }
+  }
+
+  @Nested
+  class ContextOfThread {
+
+    @Test
+    void shouldReturnContextSetThroughAnotherInstance() {
+      environmentMock.when(Environment::getCurrent).thenReturn(null);
+      SecurityContext context = new SecurityContextImpl();
+      WebforjSecurityContextHolderStrategy laterStrategy =
+          new WebforjSecurityContextHolderStrategy();
+
+      strategy.setContext(context);
+
+      assertSame(context, laterStrategy.getContext());
     }
   }
 }
