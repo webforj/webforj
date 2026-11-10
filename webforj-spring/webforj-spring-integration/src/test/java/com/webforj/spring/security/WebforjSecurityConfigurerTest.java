@@ -147,6 +147,19 @@ class WebforjSecurityConfigurerTest {
       mockMvc.perform(get("/signin")).andExpect(status().isNotFound());
     }
 
+    @Nested
+    @TestPropertySource(properties = "webforj.security.authentication-path=/login")
+    class ConfiguredAuthenticationPath {
+
+      @Autowired
+      private SpringSecurityConfigurationProperties properties;
+
+      @Test
+      void shouldPreserveConfiguredAuthenticationPathForFormLogin() {
+        assertEquals("/login", properties.getAuthenticationPath());
+      }
+    }
+
     private CsrfToken loadStoredToken(MockHttpSession session) throws Exception {
       mockMvc.perform(get("/signin").session(session));
       return (CsrfToken) session.getAttribute(WebforjCsrfTokenFilter.SESSION_ATTRIBUTE_NAME);

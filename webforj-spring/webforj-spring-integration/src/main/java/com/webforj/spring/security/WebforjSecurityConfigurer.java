@@ -195,8 +195,10 @@ public class WebforjSecurityConfigurer
         loginPage = properties.getAuthenticationPath();
         loginProcessingUrl = properties.getAuthenticationPath();
       }
-    } else if (getEntryLoginPage() != null) {
-      properties.setAuthenticationPath(getEntryLoginPage());
+    } else if (loginPage != null && properties.getAuthenticationPath() == null) {
+      properties.setAuthenticationPath(loginPage);
+    } else if (oauth2LoginPage != null) {
+      properties.setAuthenticationPath(oauth2LoginPage);
     }
 
     // Configure form login if specified
