@@ -4,7 +4,7 @@
 
 **Java is all you need.**
 
-webforJ is the full-stack Java framework for business web apps. You build the whole app in Java, from screens and routing to forms, data, security and tests, with no JavaScript and no REST layer to maintain. It works with the backend you already have, standalone or with Spring Boot. It's AI-ready from day one, so your coding assistant writes real webforJ and checks its own work. And if you have Swing apps, they come along: run them in the browser today and move them to webforJ one screen at a time. Backed by BASIS International's almost 40 years of expertise, including 20+ years of delivering technology built on Java.
+webforJ is the [full-stack Java framework](https://docs.webforj.com/blog/java-full-stack-framework) for business web apps. You build the whole app in Java, from screens and routing to forms, data, security and tests, with no JavaScript and no REST layer to maintain. It works with the backend you already have, standalone or with Spring Boot. It's AI-ready from day one, so your coding assistant writes real webforJ and checks its own work. And if you have Swing apps, they come along: run them in the browser today and move them to webforJ one screen at a time. Backed by BASIS International's almost 40 years of expertise, including 20+ years of delivering technology built on Java.
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.webforj/webforj-parent.svg?color=022495)](https://central.sonatype.com/artifact/com.webforj/webforj)
 [![License: MIT](https://img.shields.io/badge/License-MIT-022495)](LICENSE)
