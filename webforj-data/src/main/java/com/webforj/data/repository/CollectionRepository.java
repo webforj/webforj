@@ -2,6 +2,7 @@ package com.webforj.data.repository;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -24,9 +25,11 @@ public class CollectionRepository<T> extends AbstractRepository<T>
    * Creates a new instance of CollectionRepository with the provided list of items.
    *
    * @param items The list of items to be used for data retrieval.
+   *
+   * @throws NullPointerException if the items are null
    */
   public CollectionRepository(Collection<T> items) {
-    this.items = items;
+    this.items = Objects.requireNonNull(items, "Items cannot be null");
     setKeyProvider(entity -> {
       if (entity instanceof com.webforj.data.HasEntityKey hasEntityKey) {
         return hasEntityKey.getEntityKey();

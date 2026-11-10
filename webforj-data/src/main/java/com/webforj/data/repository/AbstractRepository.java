@@ -5,7 +5,7 @@ import com.webforj.data.repository.event.RepositoryCommitEvent;
 import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
-import java.util.Collections;
+import java.util.AbstractList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
@@ -108,7 +108,7 @@ public abstract class AbstractRepository<T> implements Repository<T> {
    */
   @Override
   public AbstractRepository<T> commit() {
-    fireCommitEvent(Collections.unmodifiableList(findAll().toList()), false);
+    fireCommitEvent(new CommitList<>(this), false);
     return this;
   }
 
@@ -146,5 +146,38 @@ public abstract class AbstractRepository<T> implements Repository<T> {
    */
   protected void fireCommitEvent(List<T> commits, boolean isSingle) {
     getEventDispatcher().dispatchEvent(new RepositoryCommitEvent<T>(this, commits, isSingle));
+  }
+
+  private static final class CommitList<T> extends AbstractList<T> {
+    private final Repository<T> repository;
+    private List<T> items;
+
+    CommitList(Repository<T> repository) {
+      this.repository = repository;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public T get(int index) {
+      return getItems().get(index);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int size() {
+      return getItems().size();
+    }
+
+    private List<T> getItems() {
+      if (items == null) {
+        items = repository.findAll().toList();
+      }
+
+      return items;
+    }
   }
 }

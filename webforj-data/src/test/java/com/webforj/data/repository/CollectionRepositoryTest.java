@@ -2,6 +2,7 @@ package com.webforj.data.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.webforj.data.repository.event.RepositoryCommitEvent;
@@ -111,5 +112,12 @@ class CollectionRepositoryTest {
     int count = repository.size(query);
 
     assertEquals(0, count);
+  }
+
+  @Test
+  void shouldThrowWhenItemsAreNull() {
+    List<String> nullItems = null;
+
+    assertThrows(NullPointerException.class, () -> new CollectionRepository<>(nullItems));
   }
 }
