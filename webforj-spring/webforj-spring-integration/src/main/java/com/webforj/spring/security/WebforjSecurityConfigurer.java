@@ -30,6 +30,7 @@ public class WebforjSecurityConfigurer
   private String logoutSuccessUrl;
   private String accessDeniedPage;
   private boolean providerLogout;
+  private String bearerTokenCookieName;
   private Consumer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizedUrl> anyRequestRule =
       AuthorizeHttpRequestsConfigurer.AuthorizedUrl::permitAll;
 
@@ -218,6 +219,25 @@ public class WebforjSecurityConfigurer
   }
 
   /**
+   * Reads the bearer token from the given cookie when a request carries no authorization header
+   * token.
+   *
+   * <p>
+   * The login of a valid token is kept in the session, where routes see it. The token check itself
+   * is configured with {@link HttpSecurity#oauth2ResourceServer}.
+   * </p>
+   *
+   * @param cookieName the name of the cookie that holds the token
+   * @return this configurer for method chaining
+   * @throws NullPointerException if the cookie name is null
+   */
+  public WebforjSecurityConfigurer bearerToken(String cookieName) {
+    this.bearerTokenCookieName =
+        Objects.requireNonNull(cookieName, "Bearer token cookie name must not be null");
+    return this;
+  }
+
+  /**
    * {@inheritDoc}
    */
   @Override
@@ -270,6 +290,10 @@ public class WebforjSecurityConfigurer
     // Update properties for webforJ router access denied handling
     if (accessDeniedPage != null && properties.getDenyPath() == null) {
       properties.setDenyPath(accessDeniedPage);
+    }
+
+    if (bearerTokenCookieName != null) {
+      http.with(new WebforjBearerTokenConfigurer(bearerTokenCookieName));
     }
 
     // Configure CSRF with webforJ exemptions
