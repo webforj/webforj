@@ -804,7 +804,7 @@ public class Binding<C extends ValueAware<C, ViewT>, ViewT, B, BeanValueT> {
 
     for (Annotation a : annotations) {
       for (Class<?> indicator : REQUIRED_INDICATOR_ANNOTATIONS) {
-        if (indicator.isInstance(a)) {
+        if (indicator.isInstance(a) && marksRequired(a)) {
           return true;
         }
       }
@@ -813,12 +813,27 @@ public class Binding<C extends ValueAware<C, ViewT>, ViewT, B, BeanValueT> {
     return false;
   }
 
+  private static boolean marksRequired(Annotation annotation) {
+    if (!SIZE_ANNOTATION.equals(annotation.annotationType().getName())) {
+      return true;
+    }
+
+    // An empty text has the length 0, so only a minimum above 0 rejects it. The minimum is read
+    // reflectively because Jakarta validation is optional on the classpath.
+    try {
+      return (int) annotation.annotationType().getMethod("min").invoke(annotation) > 0;
+    } catch (ReflectiveOperationException e) {
+      return true;
+    }
+  }
+
+  private static final String SIZE_ANNOTATION = "jakarta.validation.constraints.Size";
   private static final Class<?>[] REQUIRED_INDICATOR_ANNOTATIONS = resolveRequiredIndicators();
 
   private static Class<?>[] resolveRequiredIndicators() {
     List<String> names =
         List.of("jakarta.validation.constraints.NotNull", "jakarta.validation.constraints.NotEmpty",
-            "jakarta.validation.constraints.NotBlank", "jakarta.validation.constraints.Size");
+            "jakarta.validation.constraints.NotBlank", SIZE_ANNOTATION);
     List<Class<?>> resolved = new ArrayList<>(names.size());
     for (String name : names) {
       try {
