@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -17,6 +18,9 @@ import com.webforj.exceptions.WebforjRuntimeException;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.InOrder;
 
 class SlotAssignerTest {
 
@@ -65,6 +69,32 @@ class SlotAssignerTest {
 
     verify(containerWindowMock).add(slotComponentMock);
     verify(containerControlMock).setSlot("main", slotControlMock);
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void shouldKeepSlotComponentVisibilityWhenAssigned(boolean visible) throws BBjException {
+    SlotAssigner spy = spy(slotAssigner);
+
+    Component slotComponentMock = mock(Component.class);
+    BBjControl slotControlMock = mock(BBjControl.class);
+    doReturn(visible).when(slotControlMock).isVisible();
+
+    spy.assign("main", slotComponentMock);
+    doReturn(slotControlMock).when(spy).getControl(slotComponentMock);
+
+    Window containerWindowMock = mock(Window.class);
+    BBjControl containerControlMock = mock(BBjControl.class);
+
+    doReturn(containerWindowMock).when(containerComponent).getWindow();
+    doReturn(containerControlMock).when(spy).getControl(containerComponent);
+
+    spy.attach();
+
+    InOrder order = inOrder(containerControlMock, slotControlMock);
+    order.verify(containerControlMock).setSlot("main", slotControlMock);
+    order.verify(slotControlMock).setVisible(visible);
+    order.verifyNoMoreInteractions();
   }
 
   @Test
