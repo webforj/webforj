@@ -158,11 +158,11 @@ public abstract class DwcOptionInput<T extends DwcValidatableComponent<T, Boolea
   /**
    * Alias for {@link #setChecked(boolean) setChecked}.
    *
-   * @param value true if checked, false if unchecked.
+   * @param value true if checked, false or null if unchecked.
    */
   @Override
   public T setValue(Boolean value) {
-    return setChecked(value);
+    return setChecked(Boolean.TRUE.equals(value));
   }
 
   /**
