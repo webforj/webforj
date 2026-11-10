@@ -99,6 +99,31 @@ class WebforjFrameworkRequestMatcherTest {
   }
 
   @Nested
+  class FileUploadEndpoint {
+
+    @ParameterizedTest
+    @MethodSource("fileUploadTestCases")
+    void shouldExemptOnlyTheFileUploadEndpoint(String servletMapping, String servletPath,
+        String pathInfo, boolean expectedMatch) {
+      when(properties.getServletMapping()).thenReturn(servletMapping);
+      matcher = new WebforjFrameworkRequestMatcher(properties);
+
+      when(request.getServletPath()).thenReturn(servletPath);
+      when(request.getPathInfo()).thenReturn(pathInfo);
+
+      assertEquals(expectedMatch, matcher.matches(request));
+    }
+
+    static Stream<Arguments> fileUploadTestCases() {
+      return Stream.of(Arguments.of("/*", "/webforjServlet", "/fileUploadServlet", true),
+          Arguments.of("/myapp/*", "/myapp", "/fileUploadServlet", true),
+          Arguments.of("/*", "/webforjServlet", "/fileUploadServlet/orders", false),
+          Arguments.of("/*", "/webforjServlet", "/fileUploadServletOrders", false),
+          Arguments.of("/myapp/*", "/api", "/fileUploadServlet", false));
+    }
+  }
+
+  @Nested
   class LibraryResources {
 
     @BeforeEach

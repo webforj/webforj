@@ -33,7 +33,7 @@
     <webforj.guava.version>33.7.2-jre</webforj.guava.version>
     <webforj.jakarta-servlet.version>6.1.0</webforj.jakarta-servlet.version>
     <webforj.javaparser.version>3.27.1</webforj.javaparser.version>
-    <webforj.jsoup.version>1.23.2</webforj.jsoup.version>
+    <webforj.jsoup.version>1.24.1</webforj.jsoup.version>
     <webforj.junit.version>5.10.3</webforj.junit.version>
     <webforj.kotlin.version>2.4.21</webforj.kotlin.version>
     <!-- The SDK version Spring AI 2.0.0 resolves -->
