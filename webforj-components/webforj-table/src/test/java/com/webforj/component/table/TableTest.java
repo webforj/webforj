@@ -292,6 +292,18 @@ class TableTest {
 
       verify(table, times(1)).handleRepositoryCommit(any());
     }
+
+    @Test
+    void shouldIgnoreCommitsAfterDestroy() {
+      Table<String> table = spy(new Table<>());
+      CollectionRepository<String> list = new CollectionRepository<>(List.of("item1"));
+      table.setRepository(list);
+      table.onDidDestroy();
+
+      list.commit();
+
+      verify(table, never()).handleRepositoryCommit(any());
+    }
   }
 
   @Nested
