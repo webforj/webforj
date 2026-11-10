@@ -69,7 +69,8 @@ class RouteSecurityObserverRegistrarTest {
 
   @Test
   void shouldRunWithoutSpringSecurityOnTheClassPath() throws Exception {
-    ClassLoader loader = new SpringSecurityFreeClassLoader();
+    ClassLoader loader =
+        new HidingClassLoader("org.springframework.security.", "com.webforj.spring.security.");
     Class<?> configurationType =
         Class.forName(SpringRouteSecurityConfiguration.class.getName(), true, loader);
     when(context.getBean(ArgumentMatchers.<Class<Object>>any()))

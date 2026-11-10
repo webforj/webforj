@@ -3,7 +3,6 @@ package com.webforj.spring.security;
 import com.webforj.component.Component;
 import com.webforj.router.RoutePathResolver;
 import com.webforj.router.RoutePattern;
-import java.lang.System.Logger;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -24,14 +23,13 @@ import org.springframework.security.web.csrf.CsrfFilter;
  */
 public class WebforjSecurityConfigurer
     extends AbstractHttpConfigurer<WebforjSecurityConfigurer, HttpSecurity> {
-  private static final Logger logger = System.getLogger(WebforjSecurityConfigurer.class.getName());
-
   private String loginPage;
   private String loginProcessingUrl;
   private String oauth2LoginPage;
   private String logoutUrl;
   private String logoutSuccessUrl;
   private String accessDeniedPage;
+  private boolean formLoginConfigured;
   private Consumer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizedUrl> anyRequestRule =
       AuthorizeHttpRequestsConfigurer.AuthorizedUrl::permitAll;
 
@@ -87,6 +85,7 @@ public class WebforjSecurityConfigurer
    * @return this configurer for method chaining
    */
   public WebforjSecurityConfigurer loginPage(String loginPage, String loginProcessingUrl) {
+    formLoginConfigured = true;
     this.loginPage = loginPage;
     this.loginProcessingUrl = loginProcessingUrl;
     return this;
@@ -120,7 +119,12 @@ public class WebforjSecurityConfigurer
 
   /**
    * Configures logout with default settings. Uses "/logout" as the logout URL and redirects to the
-   * login page with "?logout" parameter.
+   * login page with "?logout" parameter for form login, or starts provider logout for OAuth2 login.
+   *
+   * <p>
+   * With OAuth2 login, the success URL is sent to the provider as the post logout redirect URI and
+   * must be registered with the provider.
+   * </p>
    *
    * @return this configurer for method chaining
    */
@@ -130,7 +134,12 @@ public class WebforjSecurityConfigurer
 
   /**
    * Configures logout with a custom logout URL. Redirects to the login page with "?logout"
-   * parameter after successful logout.
+   * parameter for form login, or starts provider logout for OAuth2 login.
+   *
+   * <p>
+   * With OAuth2 login, the success URL is sent to the provider as the post logout redirect URI and
+   * must be registered with the provider.
+   * </p>
    *
    * @param logoutUrl the URL that processes logout requests
    * @return this configurer for method chaining
@@ -141,6 +150,11 @@ public class WebforjSecurityConfigurer
 
   /**
    * Configures logout with custom URLs.
+   *
+   * <p>
+   * With OAuth2 login, the success URL is sent to the provider as the post logout redirect URI and
+   * must be registered with the provider.
+   * </p>
    *
    * @param logoutUrl the URL that processes logout requests
    * @param logoutSuccessUrl the URL to redirect to after successful logout
@@ -190,24 +204,36 @@ public class WebforjSecurityConfigurer
     SpringSecurityConfigurationProperties properties =
         context.getBean(SpringSecurityConfigurationProperties.class);
 
-    if (loginPage == null && loginProcessingUrl == null && oauth2LoginPage == null) {
+    if (formLoginConfigured && loginPage == null && properties.getAuthenticationPath() != null) {
+      loginPage = properties.getAuthenticationPath();
+      if (loginProcessingUrl == null) {
+        loginProcessingUrl = properties.getAuthenticationPath();
+      }
+    }
+
+    if (formLoginConfigured && loginPage != null && properties.getAuthenticationPath() == null) {
+      properties.setAuthenticationPath(loginPage);
+    } else if (loginPage == null && oauth2LoginPage != null) {
+      properties.setAuthenticationPath(oauth2LoginPage);
+    }
+
+    WebforjAuthenticationSuccessHandler successHandler =
+        context.getBeanProvider(WebforjAuthenticationSuccessHandler.class).getIfUnique();
+
+    if (!formLoginConfigured && oauth2LoginPage == null) {
       if (properties.getAuthenticationPath() != null) {
         loginPage = properties.getAuthenticationPath();
         loginProcessingUrl = properties.getAuthenticationPath();
       }
-    } else if (loginPage != null && properties.getAuthenticationPath() == null) {
-      properties.setAuthenticationPath(loginPage);
-    } else if (oauth2LoginPage != null) {
-      properties.setAuthenticationPath(oauth2LoginPage);
     }
 
     // Configure form login if specified
     if (loginPage != null) {
-      configureFormLogin(http, context);
+      configureFormLogin(http, successHandler);
     }
 
     if (oauth2LoginPage != null) {
-      configureOauth2Login(http, context);
+      configureOauth2Login(http, successHandler);
     }
 
     if (getEntryLoginPage() != null && logoutUrl == null) {
@@ -284,7 +310,8 @@ public class WebforjSecurityConfigurer
     });
   }
 
-  private void configureFormLogin(HttpSecurity http, ApplicationContext context) {
+  private void configureFormLogin(HttpSecurity http,
+      WebforjAuthenticationSuccessHandler successHandler) {
     http.formLogin(form -> {
       form.loginPage(loginPage);
 
@@ -294,23 +321,19 @@ public class WebforjSecurityConfigurer
         form.loginProcessingUrl(loginPage);
       }
 
-      // Use webforJ's authentication success handler to respect stored locations
-      try {
-        WebforjAuthenticationSuccessHandler successHandler =
-            context.getBean(WebforjAuthenticationSuccessHandler.class);
+      if (successHandler != null) {
         form.successHandler(successHandler);
-      } catch (Exception e) {
-        logger.log(Logger.Level.DEBUG,
-            "WebforjAuthenticationSuccessHandler not found, using the default success handler", e);
       }
     });
   }
 
-  private void configureOauth2Login(HttpSecurity http, ApplicationContext context) {
+  private void configureOauth2Login(HttpSecurity http,
+      WebforjAuthenticationSuccessHandler successHandler) {
     http.oauth2Login(oauth2 -> {
       oauth2.loginPage(oauth2LoginPage);
-      context.getBeanProvider(WebforjAuthenticationSuccessHandler.class)
-          .ifAvailable(oauth2::successHandler);
+      if (successHandler != null) {
+        oauth2.successHandler(successHandler);
+      }
     });
   }
 
@@ -342,7 +365,6 @@ public class WebforjSecurityConfigurer
   }
 
   private String resolveRouteUrl(Class<? extends Component> component) {
-    Objects.requireNonNull(component, "Failed to resolve route path for component: null");
     String path = RoutePathResolver.resolvePath(component);
     if (path == null) {
       throw new IllegalArgumentException(

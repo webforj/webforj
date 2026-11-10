@@ -3,9 +3,12 @@ package com.webforj.spring.security;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -29,8 +32,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -239,7 +244,7 @@ class WebforjSecurityConfigurerTest {
       private SpringSecurityConfigurationProperties configuredProperties;
 
       @Test
-      void shouldReplaceConfiguredAuthenticationPathWithOauth2LoginPage() {
+      void shouldUseOauth2LoginPageOverConfiguredAuthenticationPath() {
         assertEquals("/sso", configuredProperties.getAuthenticationPath());
       }
     }
@@ -280,6 +285,344 @@ class WebforjSecurityConfigurerTest {
       OAuth2UserService<OAuth2UserRequest, OAuth2User> createUserService() {
         return request -> new DefaultOAuth2User(AuthorityUtils.createAuthorityList("ROLE_USER"),
             Map.of("sub", "jdoe"), "sub");
+      }
+
+      @Bean
+      SpringConfigurationProperties createSpringConfigurationProperties() {
+        SpringConfigurationProperties properties = new SpringConfigurationProperties();
+        properties.setServletMapping("/*");
+        return properties;
+      }
+    }
+  }
+
+  @Nested
+  @NestedTestConfiguration(EnclosingConfiguration.OVERRIDE)
+  @SpringJUnitWebConfig(FormAndOauth2Login.FormAndOauth2LoginSecurityConfig.class)
+  class FormAndOauth2Login {
+
+    @Autowired
+    private WebApplicationContext context;
+
+    @Autowired
+    private SpringSecurityConfigurationProperties properties;
+
+    private MockMvc mockMvc;
+
+    @BeforeEach
+    void setUp() {
+      mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
+    }
+
+    @Test
+    void shouldPreferFormLoginPageAsAuthenticationPath() {
+      assertEquals("/signin", properties.getAuthenticationPath());
+    }
+
+    @Test
+    void shouldPermitCustomOauth2LogoutUrlAndUseAbsoluteSuccessUrl() throws Exception {
+      OidcIdToken idToken = new OidcIdToken("id-token", Instant.now(),
+          Instant.now().plusSeconds(60), Map.of("sub", "jdoe"));
+      DefaultOidcUser user =
+          new DefaultOidcUser(AuthorityUtils.createAuthorityList("ROLE_USER"), idToken);
+      OAuth2AuthenticationToken token =
+          new OAuth2AuthenticationToken(user, user.getAuthorities(), "acme");
+
+      mockMvc.perform(post("/signout").with(csrf()).with(authentication(token)))
+          .andExpect(redirectedUrl("https://provider.example/logout?id_token_hint=id-token"
+              + "&post_logout_redirect_uri=http://localhost/home"));
+    }
+
+    @Nested
+    @NestedTestConfiguration(EnclosingConfiguration.INHERIT)
+    @TestPropertySource(properties = "webforj.security.authentication-path=/login")
+    class ConfiguredAuthenticationPath {
+
+      @Autowired
+      private SpringSecurityConfigurationProperties configuredProperties;
+
+      @Test
+      void shouldPreserveConfiguredAuthenticationPathOverFormAndOauth2Login() {
+        assertEquals("/login", configuredProperties.getAuthenticationPath());
+      }
+    }
+
+    @Configuration
+    @EnableWebSecurity
+    @EnableWebMvc
+    @Import(SpringSecurityAutoConfiguration.class)
+    static class FormAndOauth2LoginSecurityConfig {
+
+      @Bean
+      SecurityFilterChain buildFilterChain(HttpSecurity http) {
+        return http.with(WebforjSecurityConfigurer.webforj(), configurer -> {
+          configurer.loginPage("/signin", "/authenticate");
+          configurer.oauth2Login(SsoLoginView.class);
+          configurer.logout("/signout", "/home");
+        }).build();
+      }
+
+      @Bean
+      ClientRegistrationRepository createClientRegistrationRepository() {
+        return new InMemoryClientRegistrationRepository(
+            ClientRegistration.withRegistrationId("acme").clientId("client").clientSecret("secret")
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .redirectUri("{baseUrl}/login/oauth2/code/{registrationId}").scope("profile")
+                .authorizationUri("https://provider.example/authorize")
+                .tokenUri("https://provider.example/token")
+                .userInfoUri("https://provider.example/userinfo").userNameAttributeName("sub")
+                .providerConfigurationMetadata(
+                    Map.of("end_session_endpoint", "https://provider.example/logout"))
+                .build());
+      }
+
+      @Bean
+      OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> createTokenClient() {
+        return request -> OAuth2AccessTokenResponse.withToken("token")
+            .tokenType(OAuth2AccessToken.TokenType.BEARER).expiresIn(3600).build();
+      }
+
+      @Bean
+      OAuth2UserService<OAuth2UserRequest, OAuth2User> createUserService() {
+        return request -> new DefaultOAuth2User(AuthorityUtils.createAuthorityList("ROLE_USER"),
+            Map.of("sub", "jdoe"), "sub");
+      }
+
+      @Bean
+      SpringConfigurationProperties createSpringConfigurationProperties() {
+        SpringConfigurationProperties properties = new SpringConfigurationProperties();
+        properties.setServletMapping("/*");
+        return properties;
+      }
+    }
+  }
+
+  @Nested
+  @NestedTestConfiguration(EnclosingConfiguration.OVERRIDE)
+  @SpringJUnitWebConfig(FormAndOauth2WithoutConfiguredPath.SecurityConfig.class)
+  class FormAndOauth2WithoutConfiguredPath {
+
+    @Autowired
+    private SpringSecurityConfigurationProperties properties;
+
+    @Test
+    void shouldUseOauth2LoginPageAsAuthenticationPath() {
+      assertEquals("/sso", properties.getAuthenticationPath());
+    }
+
+    @Configuration
+    @EnableWebSecurity
+    @EnableWebMvc
+    @Import(SpringSecurityAutoConfiguration.class)
+    static class SecurityConfig {
+
+      @Bean
+      SecurityFilterChain buildFilterChain(HttpSecurity http) {
+        return http.with(WebforjSecurityConfigurer.webforj(), configurer -> {
+          configurer.loginPage();
+          configurer.oauth2Login(SsoLoginView.class);
+        }).build();
+      }
+
+      @Bean
+      ClientRegistrationRepository createClientRegistrationRepository() {
+        return new InMemoryClientRegistrationRepository(
+            ClientRegistration.withRegistrationId("acme").clientId("client").clientSecret("secret")
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .redirectUri("{baseUrl}/login/oauth2/code/{registrationId}").scope("profile")
+                .authorizationUri("https://provider.example/authorize")
+                .tokenUri("https://provider.example/token")
+                .userInfoUri("https://provider.example/userinfo").userNameAttributeName("sub")
+                .providerConfigurationMetadata(
+                    Map.of("end_session_endpoint", "https://provider.example/logout"))
+                .build());
+      }
+
+      @Bean
+      SpringConfigurationProperties createSpringConfigurationProperties() {
+        SpringConfigurationProperties properties = new SpringConfigurationProperties();
+        properties.setServletMapping("/*");
+        return properties;
+      }
+    }
+  }
+
+  @Nested
+  @NestedTestConfiguration(EnclosingConfiguration.OVERRIDE)
+  @TestPropertySource(properties = "webforj.security.authentication-path=/login")
+  @SpringJUnitWebConfig(FormLoginWithoutPageAndOauth2.SecurityConfig.class)
+  class FormLoginWithoutPageAndOauth2 {
+
+    @Autowired
+    private WebApplicationContext context;
+
+    @Autowired
+    private SpringSecurityConfigurationProperties properties;
+
+    private MockMvc mockMvc;
+
+    @BeforeEach
+    void setUp() {
+      mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
+    }
+
+    @Test
+    void shouldUseConfiguredAuthenticationPathForFormLoginBesideOauth2Login() throws Exception {
+      assertEquals("/login", properties.getAuthenticationPath());
+      mockMvc
+          .perform(
+              post("/login").with(csrf()).param("username", "user").param("password", "password"))
+          .andExpect(status().is3xxRedirection());
+    }
+
+    @Configuration
+    @EnableWebSecurity
+    @EnableWebMvc
+    @Import(SpringSecurityAutoConfiguration.class)
+    static class SecurityConfig {
+
+      @Bean
+      SecurityFilterChain buildFilterChain(HttpSecurity http) {
+        return http.with(WebforjSecurityConfigurer.webforj(), configurer -> {
+          configurer.loginPage();
+          configurer.oauth2Login(SsoLoginView.class);
+        }).build();
+      }
+
+      @Bean
+      ClientRegistrationRepository createClientRegistrationRepository() {
+        return new InMemoryClientRegistrationRepository(
+            ClientRegistration.withRegistrationId("acme").clientId("client").clientSecret("secret")
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .redirectUri("{baseUrl}/login/oauth2/code/{registrationId}").scope("profile")
+                .authorizationUri("https://provider.example/authorize")
+                .tokenUri("https://provider.example/token")
+                .userInfoUri("https://provider.example/userinfo").userNameAttributeName("sub")
+                .providerConfigurationMetadata(
+                    Map.of("end_session_endpoint", "https://provider.example/logout"))
+                .build());
+      }
+
+      @Bean
+      UserDetailsService userDetailsService() {
+        return new InMemoryUserDetailsManager(
+            User.withUsername("user").password("{noop}password").roles("USER").build());
+      }
+
+      @Bean
+      SpringConfigurationProperties createSpringConfigurationProperties() {
+        SpringConfigurationProperties properties = new SpringConfigurationProperties();
+        properties.setServletMapping("/*");
+        return properties;
+      }
+    }
+  }
+
+  @Nested
+  @NestedTestConfiguration(EnclosingConfiguration.OVERRIDE)
+  @TestPropertySource(properties = "webforj.security.authentication-path=/login")
+  @SpringJUnitWebConfig(FormLoginWithExplicitProcessingUrl.SecurityConfig.class)
+  class FormLoginWithExplicitProcessingUrl {
+
+    @Autowired
+    private WebApplicationContext context;
+
+    private MockMvc mockMvc;
+
+    @BeforeEach
+    void setUp() {
+      mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
+    }
+
+    @Test
+    void shouldKeepExplicitProcessingUrlWhenAuthenticationPathIsConfigured() throws Exception {
+      mockMvc
+          .perform(
+              post("/process").with(csrf()).param("username", "user").param("password", "password"))
+          .andExpect(status().is3xxRedirection());
+    }
+
+    @Configuration
+    @EnableWebSecurity
+    @EnableWebMvc
+    @Import(SpringSecurityAutoConfiguration.class)
+    static class SecurityConfig {
+
+      @Bean
+      SecurityFilterChain buildFilterChain(HttpSecurity http) {
+        return http.with(WebforjSecurityConfigurer.webforj(),
+            configurer -> configurer.loginPage(null, "/process")).build();
+      }
+
+      @Bean
+      UserDetailsService userDetailsService() {
+        return new InMemoryUserDetailsManager(
+            User.withUsername("user").password("{noop}password").roles("USER").build());
+      }
+
+      @Bean
+      SpringConfigurationProperties createSpringConfigurationProperties() {
+        SpringConfigurationProperties properties = new SpringConfigurationProperties();
+        properties.setServletMapping("/*");
+        return properties;
+      }
+    }
+  }
+
+  @Nested
+  @NestedTestConfiguration(EnclosingConfiguration.OVERRIDE)
+  @SpringJUnitWebConfig(WithoutOauth2Client.SecurityConfig.class)
+  class WithoutOauth2Client {
+
+    @Autowired
+    private WebApplicationContext context;
+
+    private MockMvc mockMvc;
+
+    @BeforeEach
+    void setUp() {
+      mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
+    }
+
+    @Test
+    void shouldLoadConfigurerWithoutOauth2ClientClasses() throws Exception {
+      String repositoryName = ClientRegistrationRepository.class.getName();
+      HidingClassLoader loader = SecurityConfig.LOADER;
+      Class<?> configurerType =
+          Class.forName(WebforjSecurityConfigurer.class.getName(), true, loader);
+
+      assertSame(loader, configurerType.getClassLoader());
+      assertThrows(ClassNotFoundException.class, () -> Class.forName(repositoryName, true, loader));
+    }
+
+    @Test
+    void shouldRedirectToLoginPageAfterLogout() throws Exception {
+      mockMvc.perform(post("/logout").with(csrf()).with(user("user")))
+          .andExpect(redirectedUrl("/login?logout"));
+    }
+
+    @Configuration
+    @EnableWebSecurity
+    @EnableWebMvc
+    @Import(SpringSecurityAutoConfiguration.class)
+    static class SecurityConfig {
+      static final HidingClassLoader LOADER =
+          new HidingClassLoader("org.springframework.security.oauth2.client.",
+              "com.webforj.spring.security.WebforjSecurityConfigurer",
+              "com.webforj.spring.security.WebforjCsrfTokenFilter");
+
+      @Bean
+      @SuppressWarnings("unchecked")
+      SecurityFilterChain buildFilterChain(HttpSecurity http) throws Exception {
+        Class<?> configurerType =
+            Class.forName(WebforjSecurityConfigurer.class.getName(), true, LOADER);
+        Object configurer = configurerType.getMethod("webforj").invoke(null);
+        configurerType.getMethod("loginPage", String.class).invoke(configurer, "/login");
+        configurerType.getMethod("logout").invoke(configurer);
+
+        return http
+            .with((AbstractHttpConfigurer<?, HttpSecurity>) configurer, Customizer.withDefaults())
+            .build();
       }
 
       @Bean
