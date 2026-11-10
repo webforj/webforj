@@ -77,7 +77,7 @@ public class SpringRouteSecurityContext implements RouteSecurityContext {
   @Override
   public Optional<Object> getAttribute(String name) {
     Authentication auth = getAuthentication();
-    if (auth != null && auth.getDetails() instanceof Map details) {
+    if (auth != null && auth.getDetails() instanceof Map<?, ?> details) {
       Object detail = details.get(name);
       if (detail != null) {
         return Optional.of(detail);
