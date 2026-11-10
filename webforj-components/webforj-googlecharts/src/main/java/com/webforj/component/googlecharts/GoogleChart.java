@@ -533,7 +533,9 @@ public class GoogleChart extends ElementComposite
     sb.append("window.addEventListener('resize', component.___handleResize__);");
     getElement().executeJsAsync(sb.toString());
 
-    this.firstRenderListenerRegistration.remove();
+    if (this.firstRenderListenerRegistration != null) {
+      this.firstRenderListenerRegistration.remove();
+    }
     getElement().executeJsAsync("requestAnimationFrame(() => component.redraw());");
   }
 
