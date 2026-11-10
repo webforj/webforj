@@ -319,6 +319,18 @@ class SpringRouteSecurityContextTest {
     }
 
     @Test
+    void shouldReturnDetailOverOauth2PrincipalClaim() {
+      DefaultOAuth2User user = new DefaultOAuth2User(
+          AuthorityUtils.createAuthorityList("ROLE_USER"), Map.of("tenant", "principal"), "tenant");
+      OAuth2AuthenticationToken token =
+          new OAuth2AuthenticationToken(user, user.getAuthorities(), "acme");
+      token.setDetails(Map.of("tenant", "details"));
+      SecurityContextHolder.getContext().setAuthentication(token);
+
+      assertEquals(Optional.of("details"), securityContext.getAttribute("tenant"));
+    }
+
+    @Test
     void shouldThrowUnsupportedOperationExceptionForSetAttribute() {
       assertThrows(UnsupportedOperationException.class,
           () -> securityContext.setAttribute("test", "value"));

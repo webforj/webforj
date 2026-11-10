@@ -77,19 +77,19 @@ public class SpringRouteSecurityContext implements RouteSecurityContext {
   @Override
   public Optional<Object> getAttribute(String name) {
     Authentication auth = getAuthentication();
+    if (auth != null && auth.getDetails() instanceof Map details) {
+      Object detail = details.get(name);
+      if (detail != null) {
+        return Optional.of(detail);
+      }
+    }
+
     if (auth != null && OAUTH2_PRESENT
         && auth.getPrincipal() instanceof OAuth2AuthenticatedPrincipal principal) {
       Object claim = principal.getAttribute(name);
       if (claim != null) {
         return Optional.of(claim);
       }
-    }
-
-    if (auth != null && auth.getDetails() instanceof Map) {
-      @SuppressWarnings("unchecked")
-      Map<String, Object> details = (Map<String, Object>) auth.getDetails();
-
-      return Optional.ofNullable(details.get(name));
     }
 
     return Optional.empty();
