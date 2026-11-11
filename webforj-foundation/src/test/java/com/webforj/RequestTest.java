@@ -1,8 +1,11 @@
 package com.webforj;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.basis.bbj.proxies.BBjAPI;
@@ -165,5 +168,33 @@ class RequestTest {
     TimeZone result = TimeZone.getTimeZone("Asia/Shanghai");
     when(thinClient.getClientTimeZone()).thenReturn(result);
     assertEquals(result, request.getTimeZone());
+  }
+
+  @Test
+  void shouldGetTimeZoneIdOfBrowser() throws BBjException {
+    when(webManager.executeScript(anyString())).thenReturn("Europe/Berlin");
+    assertEquals("Europe/Berlin", request.getTimeZoneID());
+  }
+
+  @Test
+  void shouldAskBrowserForTimeZoneIdOnce() throws BBjException {
+    when(webManager.executeScript(anyString())).thenReturn("Europe/Berlin");
+    request.getTimeZoneID();
+    request.getTimeZoneID();
+    verify(webManager, times(1)).executeScript(anyString());
+  }
+
+  @Test
+  void shouldFallBackToClientTimeZoneIdWhenScriptFails() throws BBjException {
+    when(webManager.executeScript(anyString())).thenThrow(BBjException.class);
+    when(thinClient.getClientTimeZone()).thenReturn(TimeZone.getTimeZone("GMT+01:00"));
+    assertEquals("GMT+01:00", request.getTimeZoneID());
+  }
+
+  @Test
+  void shouldFallBackToClientTimeZoneIdWhenBrowserNameIsNoZone() throws BBjException {
+    when(webManager.executeScript(anyString())).thenReturn("Not/AZone");
+    when(thinClient.getClientTimeZone()).thenReturn(TimeZone.getTimeZone("GMT+01:00"));
+    assertEquals("GMT+01:00", request.getTimeZoneID());
   }
 }

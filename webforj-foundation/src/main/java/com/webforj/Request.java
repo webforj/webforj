@@ -6,6 +6,8 @@ import com.webforj.environment.ObjectTable;
 import com.webforj.exceptions.WebforjRuntimeException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.DateTimeException;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -19,6 +21,8 @@ import java.util.TimeZone;
  * @since 23.01
  */
 public final class Request {
+  private static final String TIME_ZONE_SCRIPT = "Intl.DateTimeFormat().resolvedOptions().timeZone";
+  private String timeZoneId;
 
   private Request() {}
 
@@ -220,6 +224,27 @@ public final class Request {
   }
 
   /**
+   * Returns the ID of the time zone of the browser, such as {@code Europe/Berlin}.
+   *
+   * <p>
+   * Unlike {@link #getTimeZone()}, which carries the offset of the client when the session started,
+   * the ID names a region whose rules include daylight saving time. The browser is asked once, the
+   * ID is kept for the rest of the session. When the browser gives no valid ID, the ID of
+   * {@link #getTimeZone()} is returned.
+   * </p>
+   *
+   * @return the ID of the time zone of the browser
+   * @since 26.10
+   */
+  public String getTimeZoneID() {
+    if (timeZoneId == null) {
+      timeZoneId = resolveTimeZoneId();
+    }
+
+    return timeZoneId;
+  }
+
+  /**
    * Returns the operating system name from the client's machine.
    *
    * @return the operating system name from the client's machine
@@ -249,5 +274,14 @@ public final class Request {
 
   Environment getEnvironment() {
     return Environment.getCurrent();
+  }
+
+  private String resolveTimeZoneId() {
+    try {
+      Object name = getEnvironment().getBBjAPI().getWebManager().executeScript(TIME_ZONE_SCRIPT);
+      return ZoneId.of(String.valueOf(name)).getId();
+    } catch (BBjException | DateTimeException e) {
+      return getTimeZone().getID();
+    }
   }
 }
