@@ -220,11 +220,10 @@ public class WebforjSecurityConfigurer
     WebforjAuthenticationSuccessHandler successHandler =
         context.getBeanProvider(WebforjAuthenticationSuccessHandler.class).getIfUnique();
 
-    if (!formLoginConfigured && oauth2LoginPage == null) {
-      if (properties.getAuthenticationPath() != null) {
-        loginPage = properties.getAuthenticationPath();
-        loginProcessingUrl = properties.getAuthenticationPath();
-      }
+    if (!formLoginConfigured && oauth2LoginPage == null
+        && properties.getAuthenticationPath() != null) {
+      loginPage = properties.getAuthenticationPath();
+      loginProcessingUrl = properties.getAuthenticationPath();
     }
 
     // Configure form login if specified
