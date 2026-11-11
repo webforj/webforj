@@ -4,6 +4,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AuthenticationEntryPointFailureHandler;
@@ -15,7 +16,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
  * <p>
  * The stored bearer token login is removed. A rejected header token is answered as unauthorized. A
  * rejected cookie token writes no response and marks the request, so that it continues without the
- * token.
+ * token. A failure of the token check itself is rethrown and keeps the stored login.
  * </p>
  *
  * @author Christian Liebhardt
@@ -42,6 +43,10 @@ final class WebforjBearerTokenFailureHandler implements AuthenticationFailureHan
   @Override
   public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
       AuthenticationException exception) throws IOException, ServletException {
+    if (AuthenticationServiceException.class.isAssignableFrom(exception.getClass())) {
+      throw exception;
+    }
+
     repository.removeContext(request);
     if (resolver.hasHeaderToken(request)) {
       headerFailureHandler.onAuthenticationFailure(request, response, exception);

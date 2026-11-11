@@ -1,7 +1,10 @@
 package com.webforj.spring.security;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import jakarta.servlet.http.Cookie;
@@ -14,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
@@ -66,6 +70,25 @@ class WebforjBearerTokenFailureHandlerTest {
 
     assertEquals(401, response.getStatus());
     assertTrue(response.getHeader(HttpHeaders.WWW_AUTHENTICATE).startsWith("Bearer"));
+    assertNull(request.getAttribute(WebforjBearerTokenFailureHandler.REJECTED_ATTRIBUTE_NAME));
+  }
+
+  @ParameterizedTest
+  @MethodSource("rejectedRequests")
+  void shouldRethrowTokenCheckFailureAndKeepStoredBearerLogin(MockHttpServletRequest request) {
+    MockHttpSession session = new MockHttpSession();
+    session.setAttribute(KEY,
+        new SecurityContextImpl(BearerTokenLogins.create("ada", "ROLE_USER")));
+    request.setSession(session);
+    MockHttpServletResponse response = new MockHttpServletResponse();
+    AuthenticationServiceException failure =
+        new AuthenticationServiceException("key set unreachable");
+
+    AuthenticationServiceException thrown = assertThrows(AuthenticationServiceException.class,
+        () -> handler.onAuthenticationFailure(request, response, failure));
+
+    assertSame(failure, thrown);
+    assertNotNull(session.getAttribute(KEY));
     assertNull(request.getAttribute(WebforjBearerTokenFailureHandler.REJECTED_ATTRIBUTE_NAME));
   }
 
