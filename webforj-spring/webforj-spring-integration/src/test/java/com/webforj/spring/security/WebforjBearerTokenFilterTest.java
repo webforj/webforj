@@ -32,7 +32,7 @@ class WebforjBearerTokenFilterTest {
       new WebforjSecurityContextHolderStrategy();
   private final WebforjBearerTokenFilter filter =
       new WebforjBearerTokenFilter(new WebforjBearerTokenResolver("jwt", request -> false),
-          new WebforjBearerTokenContextRepository(), holderStrategy);
+          new WebforjBearerTokenContextRepository(request -> false), holderStrategy);
   private final MockHttpSession session = new MockHttpSession();
   private final List<ServletRequest> passedRequests = new ArrayList<>();
   private final List<Authentication> passedLogins = new ArrayList<>();

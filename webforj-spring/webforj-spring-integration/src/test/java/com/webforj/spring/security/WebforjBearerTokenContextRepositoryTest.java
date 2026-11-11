@@ -1,5 +1,7 @@
 package com.webforj.spring.security;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
@@ -21,7 +23,7 @@ class WebforjBearerTokenContextRepositoryTest {
       HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
 
   private final WebforjBearerTokenContextRepository repository =
-      new WebforjBearerTokenContextRepository();
+      new WebforjBearerTokenContextRepository(request -> false);
   private final MockHttpSession session = new MockHttpSession();
 
   @Nested
@@ -66,6 +68,63 @@ class WebforjBearerTokenContextRepositoryTest {
       repository.saveContext(bearerLogin, request, new MockHttpServletResponse());
 
       assertSame(bearerLogin, session.getAttribute(KEY));
+    }
+
+    @Test
+    void shouldChangeSessionIdWhenSavingIntoSessionWithoutLogin() {
+      SecurityContext context =
+          new SecurityContextImpl(BearerTokenLogins.create("ada", "ROLE_USER"));
+      MockHttpServletRequest request = new MockHttpServletRequest("GET", "/account");
+      request.setSession(session);
+      String idBefore = session.getId();
+
+      repository.saveContext(context, request, new MockHttpServletResponse());
+
+      assertNotEquals(idBefore, request.getSession().getId());
+      assertSame(context, request.getSession().getAttribute(KEY));
+    }
+
+    @Test
+    void shouldKeepSessionIdWhenSavingFrameworkRequestIntoSessionWithoutLogin() {
+      WebforjBearerTokenContextRepository frameworkRepository =
+          new WebforjBearerTokenContextRepository(request -> true);
+      SecurityContext context =
+          new SecurityContextImpl(BearerTokenLogins.create("ada", "ROLE_USER"));
+      MockHttpServletRequest request = new MockHttpServletRequest("GET", "/account");
+      request.setSession(session);
+      String idBefore = session.getId();
+
+      frameworkRepository.saveContext(context, request, new MockHttpServletResponse());
+
+      assertEquals(idBefore, request.getSession().getId());
+      assertSame(context, request.getSession().getAttribute(KEY));
+    }
+
+    @Test
+    void shouldKeepSessionIdWhenReplacingStoredBearerLogin() {
+      session.setAttribute(KEY,
+          new SecurityContextImpl(BearerTokenLogins.create("ada", "ROLE_USER")));
+      SecurityContext bearerLogin =
+          new SecurityContextImpl(BearerTokenLogins.create("grace", "ROLE_USER"));
+      MockHttpServletRequest request = new MockHttpServletRequest("GET", "/account");
+      request.setSession(session);
+      String idBefore = session.getId();
+
+      repository.saveContext(bearerLogin, request, new MockHttpServletResponse());
+
+      assertEquals(idBefore, request.getSession().getId());
+      assertSame(bearerLogin, request.getSession().getAttribute(KEY));
+    }
+
+    @Test
+    void shouldCreateSessionWhenSavingWithoutSession() {
+      SecurityContext context =
+          new SecurityContextImpl(BearerTokenLogins.create("ada", "ROLE_USER"));
+      MockHttpServletRequest request = new MockHttpServletRequest("GET", "/account");
+
+      repository.saveContext(context, request, new MockHttpServletResponse());
+
+      assertSame(context, request.getSession(false).getAttribute(KEY));
     }
   }
 

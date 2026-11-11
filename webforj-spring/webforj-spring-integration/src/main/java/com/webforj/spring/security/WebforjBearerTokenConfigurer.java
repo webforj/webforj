@@ -37,9 +37,12 @@ final class WebforjBearerTokenConfigurer
     }
 
     ApplicationContext context = http.getSharedObject(ApplicationContext.class);
-    WebforjBearerTokenResolver resolver = new WebforjBearerTokenResolver(cookieName,
-        context.getBean(WebforjFrameworkRequestMatcher.class));
-    WebforjBearerTokenContextRepository repository = new WebforjBearerTokenContextRepository();
+    WebforjFrameworkRequestMatcher frameworkMatcher =
+        context.getBean(WebforjFrameworkRequestMatcher.class);
+    WebforjBearerTokenResolver resolver =
+        new WebforjBearerTokenResolver(cookieName, frameworkMatcher);
+    WebforjBearerTokenContextRepository repository =
+        new WebforjBearerTokenContextRepository(frameworkMatcher);
     WebforjBearerTokenFailureHandler failureHandler =
         new WebforjBearerTokenFailureHandler(resolver, repository);
 

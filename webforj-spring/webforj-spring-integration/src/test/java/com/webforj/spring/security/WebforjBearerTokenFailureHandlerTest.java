@@ -25,8 +25,8 @@ class WebforjBearerTokenFailureHandlerTest {
 
   private final WebforjBearerTokenResolver resolver =
       new WebforjBearerTokenResolver("jwt", request -> false);
-  private final WebforjBearerTokenFailureHandler handler =
-      new WebforjBearerTokenFailureHandler(resolver, new WebforjBearerTokenContextRepository());
+  private final WebforjBearerTokenFailureHandler handler = new WebforjBearerTokenFailureHandler(
+      resolver, new WebforjBearerTokenContextRepository(request -> false));
 
   @ParameterizedTest
   @MethodSource("rejectedRequests")
