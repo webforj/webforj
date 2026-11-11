@@ -38,6 +38,35 @@ class WebforjBearerTokenContextRepositoryTest {
 
       assertSame(context, session.getAttribute(KEY));
     }
+
+    @Test
+    void shouldKeepStoredFormLoginWhenSaving() {
+      SecurityContext formLogin = new SecurityContextImpl(UsernamePasswordAuthenticationToken
+          .authenticated("ada", null, List.of(new SimpleGrantedAuthority("ROLE_USER"))));
+      session.setAttribute(KEY, formLogin);
+      SecurityContext bearerLogin =
+          new SecurityContextImpl(BearerTokenLogins.create("grace", "ROLE_USER"));
+      MockHttpServletRequest request = new MockHttpServletRequest("GET", "/account");
+      request.setSession(session);
+
+      repository.saveContext(bearerLogin, request, new MockHttpServletResponse());
+
+      assertSame(formLogin, session.getAttribute(KEY));
+    }
+
+    @Test
+    void shouldReplaceStoredBearerLoginWhenSaving() {
+      session.setAttribute(KEY,
+          new SecurityContextImpl(BearerTokenLogins.create("ada", "ROLE_USER")));
+      SecurityContext bearerLogin =
+          new SecurityContextImpl(BearerTokenLogins.create("grace", "ROLE_USER"));
+      MockHttpServletRequest request = new MockHttpServletRequest("GET", "/account");
+      request.setSession(session);
+
+      repository.saveContext(bearerLogin, request, new MockHttpServletResponse());
+
+      assertSame(bearerLogin, session.getAttribute(KEY));
+    }
   }
 
   @Nested
