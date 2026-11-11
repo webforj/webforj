@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Set;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
@@ -95,7 +96,7 @@ final class WebforjBearerTokenResolver implements BearerTokenResolver {
 
     @Override
     public Cookie[] getCookies() {
-      return Arrays.stream(super.getCookies())
+      return Optional.ofNullable(super.getCookies()).stream().flatMap(Arrays::stream)
           .filter(cookie -> !cookie.getName().equals(cookieName)).toArray(Cookie[]::new);
     }
   }
