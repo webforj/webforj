@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AuthenticationEntryPointFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
@@ -14,9 +14,10 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
  * Handles a rejected bearer token.
  *
  * <p>
- * The stored bearer token login is removed. A rejected header token is answered as unauthorized. A
- * rejected cookie token writes no response and marks the request, so that it continues without the
- * token. A failure of the token check itself is rethrown and keeps the stored login.
+ * The stored bearer token login is removed. A rejected header token is answered by the
+ * authentication entry point of the resource server. A rejected cookie token writes no response and
+ * marks the request, so that it continues without the token. A failure of the token check itself is
+ * rethrown and keeps the stored login.
  * </p>
  *
  * @author Christian Liebhardt
@@ -26,15 +27,15 @@ final class WebforjBearerTokenFailureHandler implements AuthenticationFailureHan
   static final String REJECTED_ATTRIBUTE_NAME =
       WebforjBearerTokenFailureHandler.class.getName() + ".REJECTED";
 
-  private final AuthenticationFailureHandler headerFailureHandler =
-      new AuthenticationEntryPointFailureHandler(new BearerTokenAuthenticationEntryPoint());
+  private final AuthenticationFailureHandler headerFailureHandler;
   private final WebforjBearerTokenResolver resolver;
   private final WebforjBearerTokenContextRepository repository;
 
   WebforjBearerTokenFailureHandler(WebforjBearerTokenResolver resolver,
-      WebforjBearerTokenContextRepository repository) {
+      WebforjBearerTokenContextRepository repository, AuthenticationEntryPoint entryPoint) {
     this.resolver = resolver;
     this.repository = repository;
+    this.headerFailureHandler = new AuthenticationEntryPointFailureHandler(entryPoint);
   }
 
   /**

@@ -94,6 +94,9 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.FilterChainProxy;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.SecurityFilterChain;
@@ -743,6 +746,12 @@ class WebforjSecurityConfigurerTest {
     private static final String KEY =
         HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
 
+    private static final AuthenticationEntryPoint CUSTOM_ENTRY_POINT =
+        (request, response, exception) -> {
+          response.setStatus(418);
+          response.setHeader("X-Entry-Point", "custom");
+        };
+
     @Autowired
     private WebApplicationContext context;
 
@@ -847,6 +856,51 @@ class WebforjSecurityConfigurerTest {
     }
 
     @Test
+    void shouldAnswerRejectedHeaderTokenWithEntryPointOfResourceServer() throws Exception {
+      String rejectedToken = tokens.createRejected(RejectedToken.EXPIRED, "ada", "USER");
+      HttpSecurity http = httpSecurityProvider.getObject();
+      http.with(WebforjSecurityConfigurer.webforj(), configurer -> configurer.bearerToken("jwt"));
+      http.oauth2ResourceServer(server -> server.jwt(jwt -> jwt.decoder(decoder))
+          .authenticationEntryPoint(CUSTOM_ENTRY_POINT));
+      MockMvc chainMvc = createMockMvc(http.build());
+
+      chainMvc.perform(get("/account").header(HttpHeaders.AUTHORIZATION, "Bearer " + rejectedToken))
+          .andExpect(status().isIAmATeapot()).andExpect(header().string("X-Entry-Point", "custom"));
+    }
+
+    @Test
+    void shouldAnswerRejectedHeaderTokenWithEntryPointOfResourceServerBesideLoginPage()
+        throws Exception {
+      String rejectedToken = tokens.createRejected(RejectedToken.EXPIRED, "ada", "USER");
+      HttpSecurity http = httpSecurityProvider.getObject();
+      http.with(WebforjSecurityConfigurer.webforj(),
+          configurer -> configurer.loginPage("/signin").bearerToken("jwt"));
+      http.oauth2ResourceServer(server -> server.jwt(jwt -> jwt.decoder(decoder))
+          .authenticationEntryPoint(CUSTOM_ENTRY_POINT));
+      MockMvc chainMvc = createMockMvc(http.build());
+
+      chainMvc
+          .perform(get("/account").header(HttpHeaders.ACCEPT, "text/html")
+              .header(HttpHeaders.AUTHORIZATION, "Bearer " + rejectedToken))
+          .andExpect(status().isIAmATeapot()).andExpect(header().string("X-Entry-Point", "custom"));
+    }
+
+    @Test
+    void shouldAnswerRejectedHeaderTokenWithUnauthorizedWithoutExceptionHandling()
+        throws Exception {
+      String rejectedToken = tokens.createRejected(RejectedToken.EXPIRED, "ada", "USER");
+      HttpSecurity http = httpSecurityProvider.getObject();
+      http.exceptionHandling(AbstractHttpConfigurer::disable);
+      http.with(WebforjSecurityConfigurer.webforj(), configurer -> configurer.bearerToken("jwt"));
+      http.oauth2ResourceServer(server -> server.jwt(jwt -> jwt.decoder(decoder)));
+      MockMvc chainMvc = createMockMvc(http.build());
+
+      chainMvc.perform(get("/account").header(HttpHeaders.AUTHORIZATION, "Bearer " + rejectedToken))
+          .andExpect(status().isUnauthorized())
+          .andExpect(header().string(HttpHeaders.WWW_AUTHENTICATE, startsWith("Bearer")));
+    }
+
+    @Test
     void shouldIgnoreTokenCookieOnPostWithoutCsrfToken() throws Exception {
       String token = tokens.createValid("ada", "USER");
 
@@ -921,6 +975,11 @@ class WebforjSecurityConfigurerTest {
 
       assertEquals(1, plainContext.getBeansOfType(SecurityFilterChain.class).size());
       plainContext.close();
+    }
+
+    private MockMvc createMockMvc(SecurityFilterChain chain) {
+      return MockMvcBuilders.webAppContextSetup(context).addFilters(new FilterChainProxy(chain))
+          .build();
     }
 
     enum TokenTransport {

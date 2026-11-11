@@ -20,6 +20,7 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 
 class WebforjBearerTokenFailureHandlerTest {
@@ -30,7 +31,8 @@ class WebforjBearerTokenFailureHandlerTest {
   private final WebforjBearerTokenResolver resolver =
       new WebforjBearerTokenResolver("jwt", request -> false);
   private final WebforjBearerTokenFailureHandler handler = new WebforjBearerTokenFailureHandler(
-      resolver, new WebforjBearerTokenContextRepository(request -> false));
+      resolver, new WebforjBearerTokenContextRepository(request -> false),
+      new BearerTokenAuthenticationEntryPoint());
 
   @ParameterizedTest
   @MethodSource("rejectedRequests")
@@ -71,6 +73,22 @@ class WebforjBearerTokenFailureHandlerTest {
     assertEquals(401, response.getStatus());
     assertTrue(response.getHeader(HttpHeaders.WWW_AUTHENTICATE).startsWith("Bearer"));
     assertNull(request.getAttribute(WebforjBearerTokenFailureHandler.REJECTED_ATTRIBUTE_NAME));
+  }
+
+  @Test
+  void shouldAnswerRejectedHeaderTokenWithGivenEntryPoint() throws Exception {
+    WebforjBearerTokenFailureHandler teapotHandler = new WebforjBearerTokenFailureHandler(resolver,
+        new WebforjBearerTokenContextRepository(request -> false),
+        (request, response, exception) -> response.setStatus(418));
+    MockHttpServletRequest request = new MockHttpServletRequest("GET", "/account");
+    request.addHeader(HttpHeaders.AUTHORIZATION, "Bearer expired-token");
+    MockHttpServletResponse response = new MockHttpServletResponse();
+
+    teapotHandler.onAuthenticationFailure(request, response,
+        new InvalidBearerTokenException("expired"));
+
+    assertEquals(418, response.getStatus());
+    assertNull(response.getHeader(HttpHeaders.WWW_AUTHENTICATE));
   }
 
   @ParameterizedTest

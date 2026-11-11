@@ -1,12 +1,17 @@
 package com.webforj.spring.security;
 
+import java.util.concurrent.atomic.AtomicReference;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.config.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.access.ExceptionTranslationFilter;
 
 /**
  * Configures the resource server of a webforJ application to read the bearer token from a cookie
@@ -53,8 +58,24 @@ final class WebforjBearerTokenConfigurer
         new WebforjBearerTokenResolver(cookieName, frameworkMatcher);
     WebforjBearerTokenContextRepository repository =
         new WebforjBearerTokenContextRepository(frameworkMatcher);
-    WebforjBearerTokenFailureHandler failureHandler =
-        new WebforjBearerTokenFailureHandler(resolver, repository);
+    AtomicReference<AuthenticationEntryPoint> entryPoint =
+        new AtomicReference<>(new BearerTokenAuthenticationEntryPoint());
+    WebforjBearerTokenFailureHandler failureHandler = new WebforjBearerTokenFailureHandler(resolver,
+        repository,
+        (request, response, exception) -> entryPoint.get().commence(request, response, exception));
+
+    ExceptionHandlingConfigurer<?> exceptionHandling =
+        http.getConfigurer(ExceptionHandlingConfigurer.class);
+    if (exceptionHandling != null) {
+      exceptionHandling
+          .withObjectPostProcessor(new ObjectPostProcessor<ExceptionTranslationFilter>() {
+            @Override
+            public <O extends ExceptionTranslationFilter> O postProcess(O filter) {
+              entryPoint.set(filter.getAuthenticationEntryPoint());
+              return filter;
+            }
+          });
+    }
 
     resourceServer.bearerTokenResolver(resolver);
     resourceServer
