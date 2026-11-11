@@ -4,6 +4,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.security.config.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 
@@ -25,6 +26,10 @@ final class WebforjBearerTokenConfigurer
   /**
    * {@inheritDoc}
    *
+   * <p>
+   * A configured logout deletes the token cookie.
+   * </p>
+   *
    * @throws IllegalStateException if no resource server is configured
    */
   @Override
@@ -34,6 +39,11 @@ final class WebforjBearerTokenConfigurer
     if (resourceServer == null) {
       throw new IllegalStateException("The bearer token cookie needs a resource server. "
           + "Configure it with HttpSecurity.oauth2ResourceServer.");
+    }
+
+    LogoutConfigurer<?> logout = http.getConfigurer(LogoutConfigurer.class);
+    if (logout != null) {
+      logout.deleteCookies(cookieName);
     }
 
     ApplicationContext context = http.getSharedObject(ApplicationContext.class);
