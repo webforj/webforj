@@ -930,13 +930,12 @@ class WebforjSecurityConfigurerTest {
     }
 
     @Test
-    void shouldUseTokenCookieOnFrameworkRequest() throws Exception {
+    void shouldStoreNothingForTokenCookieOnFrameworkRequest() throws Exception {
       String token = tokens.createValid("ada", "USER");
 
       mockMvc.perform(post("/webapprmi").session(session).cookie(new Cookie("jwt", token)));
 
-      SecurityContext stored = (SecurityContext) session.getAttribute(KEY);
-      assertEquals("ada", stored.getAuthentication().getName());
+      assertNull(session.getAttribute(KEY));
     }
 
     @Test

@@ -23,9 +23,14 @@ final class WebforjBearerTokenContextRepository extends HttpSessionSecurityConte
   }
 
   /**
-   * Saves the context in the session, also when its login is marked as transient. A session that
-   * holds no login gets a new session id first, except on a webforJ framework request. A session
-   * that holds another login, such as a form login, is left unchanged.
+   * Saves the context in the session, also when its login is marked as transient. A new session
+   * stores the login. A session that holds another login, such as a form login, is left unchanged.
+   * A refreshed login of the same user is stored under the same session id.
+   *
+   * <p>
+   * Any other login gets a new session id first. A webforJ framework request cannot change the
+   * session id, so it stores nothing and the login holds for that request only.
+   * </p>
    *
    * @param context the context to save
    * @param request the request whose session holds the context
@@ -42,12 +47,16 @@ final class WebforjBearerTokenContextRepository extends HttpSessionSecurityConte
           session.getAttribute(SPRING_SECURITY_CONTEXT_KEY) instanceof SecurityContext current
               ? current.getAuthentication()
               : null;
-      if (stored == null) {
-        if (!frameworkMatcher.matches(request)) {
-          request.changeSessionId();
-        }
-      } else if (!(stored instanceof AbstractOAuth2TokenAuthenticationToken<?>)) {
+      if (stored != null && !(stored instanceof AbstractOAuth2TokenAuthenticationToken<?>)) {
         return;
+      }
+
+      if (!isSameUser(stored, context.getAuthentication())) {
+        if (frameworkMatcher.matches(request)) {
+          return;
+        }
+
+        request.changeSessionId();
       }
     }
 
@@ -66,5 +75,9 @@ final class WebforjBearerTokenContextRepository extends HttpSessionSecurityConte
         && context.getAuthentication() instanceof AbstractOAuth2TokenAuthenticationToken<?>) {
       session.removeAttribute(SPRING_SECURITY_CONTEXT_KEY);
     }
+  }
+
+  private boolean isSameUser(Authentication stored, Authentication login) {
+    return stored != null && login != null && stored.getName().equals(login.getName());
   }
 }
