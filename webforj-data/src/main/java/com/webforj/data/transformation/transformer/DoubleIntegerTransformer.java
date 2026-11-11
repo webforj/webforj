@@ -28,7 +28,7 @@ public final class DoubleIntegerTransformer implements Transformer<Double, Integ
     }
 
     try {
-      return new BigDecimal(viewValue).intValueExact();
+      return BigDecimal.valueOf(viewValue).intValueExact();
     } catch (NumberFormatException | ArithmeticException e) {
       throw new TransformationException(MESSAGE, e);
     }

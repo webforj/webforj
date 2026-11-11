@@ -28,7 +28,7 @@ public final class DoubleLongTransformer implements Transformer<Double, Long> {
     }
 
     try {
-      return new BigDecimal(viewValue).longValueExact();
+      return BigDecimal.valueOf(viewValue).longValueExact();
     } catch (NumberFormatException | ArithmeticException e) {
       throw new TransformationException(MESSAGE, e);
     }

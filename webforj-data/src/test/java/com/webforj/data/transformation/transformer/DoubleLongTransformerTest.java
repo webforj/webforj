@@ -35,8 +35,8 @@ class DoubleLongTransformerTest {
   }
 
   @ParameterizedTest
-  @ValueSource(doubles = {1.5, -0.25, 9.223372036854775807E18, -1.0E19, Double.NaN,
-      Double.NEGATIVE_INFINITY})
+  @ValueSource(doubles = {1.5, -0.25, 9.223372036854775807E18, -9.223372036854775808E18, -1.0E19,
+      Double.NaN, Double.NEGATIVE_INFINITY})
   void shouldRejectValueThatIsNotWholeOrOutOfRange(double viewValue) {
     Double value = viewValue;
     TransformationException exception =
@@ -49,6 +49,6 @@ class DoubleLongTransformerTest {
   private static Stream<Arguments> getValues() {
     return Stream.of(Arguments.of(0.0, 0L), Arguments.of(9876543210.0, 9876543210L),
         Arguments.of(-42.0, -42L), Arguments.of(9007199254740992.0, 9007199254740992L),
-        Arguments.of(-9.223372036854775808E18, Long.MIN_VALUE));
+        Arguments.of(1.2345678901234568E18, 1234567890123456800L));
   }
 }
