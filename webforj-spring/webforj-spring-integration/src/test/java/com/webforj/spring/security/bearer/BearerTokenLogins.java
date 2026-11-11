@@ -1,4 +1,4 @@
-package com.webforj.spring.security;
+package com.webforj.spring.security.bearer;
 
 import java.time.Instant;
 import java.util.List;

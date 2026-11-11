@@ -1,5 +1,7 @@
-package com.webforj.spring.security;
+package com.webforj.spring.security.bearer;
 
+import com.webforj.spring.security.WebforjFrameworkRequestMatcher;
+import com.webforj.spring.security.WebforjSecurityConfigurer;
 import java.util.concurrent.atomic.AtomicReference;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.config.ObjectPostProcessor;
@@ -17,14 +19,23 @@ import org.springframework.security.web.access.ExceptionTranslationFilter;
  * Configures the resource server of a webforJ application to read the bearer token from a cookie
  * and to keep its login in the session.
  *
+ * <p>
+ * {@link WebforjSecurityConfigurer#bearerToken(String)} applies it.
+ * </p>
+ *
  * @author Christian Liebhardt
  * @since 26.10
  */
-final class WebforjBearerTokenConfigurer
+public final class WebforjBearerTokenConfigurer
     extends AbstractHttpConfigurer<WebforjBearerTokenConfigurer, HttpSecurity> {
   private final String cookieName;
 
-  WebforjBearerTokenConfigurer(String cookieName) {
+  /**
+   * Creates a configurer that reads the bearer token from the given cookie.
+   *
+   * @param cookieName the name of the cookie that holds the token
+   */
+  public WebforjBearerTokenConfigurer(String cookieName) {
     this.cookieName = cookieName;
   }
 

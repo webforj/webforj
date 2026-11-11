@@ -3,6 +3,7 @@ package com.webforj.spring.security;
 import com.webforj.component.Component;
 import com.webforj.router.RoutePathResolver;
 import com.webforj.router.RoutePattern;
+import com.webforj.spring.security.bearer.WebforjBearerTokenConfigurer;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.function.Consumer;

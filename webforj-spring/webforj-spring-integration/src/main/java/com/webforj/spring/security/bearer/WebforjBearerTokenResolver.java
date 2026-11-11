@@ -1,4 +1,4 @@
-package com.webforj.spring.security;
+package com.webforj.spring.security.bearer;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,4 +1,4 @@
-package com.webforj.spring.security;
+package com.webforj.spring.security.bearer;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

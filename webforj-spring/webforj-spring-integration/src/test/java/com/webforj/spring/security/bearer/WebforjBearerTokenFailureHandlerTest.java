@@ -1,4 +1,4 @@
-package com.webforj.spring.security;
+package com.webforj.spring.security.bearer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

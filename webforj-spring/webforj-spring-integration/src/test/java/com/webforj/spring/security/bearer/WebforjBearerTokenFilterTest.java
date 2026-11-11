@@ -1,10 +1,11 @@
-package com.webforj.spring.security;
+package com.webforj.spring.security.bearer;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
+import com.webforj.spring.security.WebforjSecurityContextHolderStrategy;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.Cookie;
