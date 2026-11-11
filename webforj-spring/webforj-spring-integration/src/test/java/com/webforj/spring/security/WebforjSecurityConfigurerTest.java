@@ -867,6 +867,15 @@ class WebforjSecurityConfigurerTest {
     }
 
     @Test
+    void shouldKeepStoredBearerLoginOnPostWithoutToken() throws Exception {
+      String token = tokens.createValid("ada", "USER");
+      mockMvc.perform(get("/account").session(session).cookie(new Cookie("jwt", token)));
+
+      mockMvc.perform(post("/account").with(csrf()).session(session)).andExpect(status().isOk())
+          .andExpect(content().string("ada FACTOR_BEARER,ROLE_USER"));
+    }
+
+    @Test
     void shouldUseTokenCookieOnFrameworkRequest() throws Exception {
       String token = tokens.createValid("ada", "USER");
 

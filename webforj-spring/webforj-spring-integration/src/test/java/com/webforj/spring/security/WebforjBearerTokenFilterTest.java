@@ -80,6 +80,37 @@ class WebforjBearerTokenFilterTest {
   }
 
   @Nested
+  class WithoutTokenOnUnreadableCookie {
+
+    @Test
+    void shouldKeepStoredBearerLogin() throws Exception {
+      SecurityContext stored =
+          new SecurityContextImpl(BearerTokenLogins.create("ada", "ROLE_USER"));
+      session.setAttribute(KEY, stored);
+      holderStrategy.setContext(stored);
+      MockHttpServletRequest request = createRequest("POST");
+
+      filter.doFilter(request, new MockHttpServletResponse(), createChain(false));
+
+      assertSame(stored, session.getAttribute(KEY));
+      assertEquals(List.of(stored.getAuthentication()), passedLogins);
+    }
+
+    @Test
+    void shouldRemoveStoredBearerLoginOfExpiredToken() throws Exception {
+      SecurityContext stored = new SecurityContextImpl(BearerTokenLogins.createExpired("ada"));
+      session.setAttribute(KEY, stored);
+      holderStrategy.setContext(stored);
+
+      filter.doFilter(createRequest("POST"), new MockHttpServletResponse(), createChain(false));
+
+      assertNull(session.getAttribute(KEY));
+      assertEquals(1, passedLogins.size());
+      assertNull(passedLogins.get(0));
+    }
+  }
+
+  @Nested
   class WithToken {
 
     @Test
@@ -123,7 +154,11 @@ class WebforjBearerTokenFilterTest {
   }
 
   private MockHttpServletRequest createRequest() {
-    MockHttpServletRequest request = new MockHttpServletRequest("GET", "/account");
+    return createRequest("GET");
+  }
+
+  private MockHttpServletRequest createRequest(String method) {
+    MockHttpServletRequest request = new MockHttpServletRequest(method, "/account");
     request.setSession(session);
     return request;
   }

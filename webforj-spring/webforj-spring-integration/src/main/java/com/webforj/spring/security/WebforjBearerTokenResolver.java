@@ -68,6 +68,16 @@ final class WebforjBearerTokenResolver implements BearerTokenResolver {
     }
   }
 
+  /**
+   * Checks whether the token cookie of the request may be read.
+   *
+   * @param request the request
+   * @return true for read requests and webforJ framework requests
+   */
+  boolean isCookieReadable(HttpServletRequest request) {
+    return COOKIE_METHODS.contains(request.getMethod()) || frameworkMatcher.matches(request);
+  }
+
   boolean hasHeaderToken(HttpServletRequest request) {
     return headerResolver.resolve(request) != null;
   }
@@ -80,10 +90,6 @@ final class WebforjBearerTokenResolver implements BearerTokenResolver {
    */
   HttpServletRequest hideCookieToken(HttpServletRequest request) {
     return new CookieTokenHidingRequest(request, cookieName);
-  }
-
-  private boolean isCookieReadable(HttpServletRequest request) {
-    return COOKIE_METHODS.contains(request.getMethod()) || frameworkMatcher.matches(request);
   }
 
   private static final class CookieTokenHidingRequest extends HttpServletRequestWrapper {

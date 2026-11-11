@@ -17,4 +17,11 @@ final class BearerTokenLogins {
         .issuedAt(Instant.now()).expiresAt(Instant.now().plusSeconds(3600)).build();
     return new JwtAuthenticationToken(jwt, authorities);
   }
+
+  static JwtAuthenticationToken createExpired(String name) {
+    Jwt jwt = Jwt.withTokenValue(name + "-token").header("alg", "RS256").subject(name)
+        .issuedAt(Instant.now().minusSeconds(7200)).expiresAt(Instant.now().minusSeconds(3600))
+        .build();
+    return new JwtAuthenticationToken(jwt, List.of(new SimpleGrantedAuthority("ROLE_USER")));
+  }
 }
