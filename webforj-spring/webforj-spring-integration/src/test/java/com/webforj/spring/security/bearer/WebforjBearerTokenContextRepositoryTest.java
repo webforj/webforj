@@ -85,19 +85,20 @@ class WebforjBearerTokenContextRepositoryTest {
     }
 
     @Test
-    void shouldStoreNothingWhenSavingFrameworkRequestIntoSessionWithoutLogin() {
+    void shouldStoreLoginWithoutNewSessionIdWhenSavingFrameworkRequestIntoNewSession() {
       WebforjBearerTokenContextRepository frameworkRepository =
           new WebforjBearerTokenContextRepository(request -> true);
       SecurityContext context =
           new SecurityContextImpl(BearerTokenLogins.create("ada", "ROLE_USER"));
       MockHttpServletRequest request = new MockHttpServletRequest("GET", "/account");
       request.setSession(session);
+      session.setNew(true);
       String idBefore = session.getId();
 
       frameworkRepository.saveContext(context, request, new MockHttpServletResponse());
 
       assertEquals(idBefore, request.getSession().getId());
-      assertNull(request.getSession().getAttribute(KEY));
+      assertSame(context, request.getSession().getAttribute(KEY));
     }
 
     @Test
@@ -122,6 +123,22 @@ class WebforjBearerTokenContextRepositoryTest {
           new SecurityContextImpl(BearerTokenLogins.createWithoutName("ROLE_USER")));
       SecurityContext bearerLogin =
           new SecurityContextImpl(BearerTokenLogins.createWithoutName("ROLE_ADMIN"));
+      MockHttpServletRequest request = new MockHttpServletRequest("GET", "/account");
+      request.setSession(session);
+      String idBefore = session.getId();
+
+      repository.saveContext(bearerLogin, request, new MockHttpServletResponse());
+
+      assertNotEquals(idBefore, request.getSession().getId());
+      assertSame(bearerLogin, request.getSession().getAttribute(KEY));
+    }
+
+    @Test
+    void shouldChangeSessionIdWhenReplacingStoredBearerLoginWithoutNameWithOtherToken() {
+      session.setAttribute(KEY,
+          new SecurityContextImpl(BearerTokenLogins.createWithoutName("ROLE_USER", "first-token")));
+      SecurityContext bearerLogin =
+          new SecurityContextImpl(BearerTokenLogins.createWithoutName("ROLE_USER", "second-token"));
       MockHttpServletRequest request = new MockHttpServletRequest("GET", "/account");
       request.setSession(session);
       String idBefore = session.getId();
@@ -181,12 +198,31 @@ class WebforjBearerTokenContextRepositoryTest {
     }
 
     @Test
-    void shouldStoreNothingWhenSavingFrameworkRequestOverBearerLoginOfAnotherUser() {
-      WebforjBearerTokenContextRepository frameworkRepository =
-          new WebforjBearerTokenContextRepository(request -> true);
+    void shouldReplaceBearerLoginWithoutNewSessionIdWhenSavingFrameworkRequestIntoNewSession() {
       SecurityContext storedLogin =
           new SecurityContextImpl(BearerTokenLogins.create("ada", "ROLE_USER"));
       session.setAttribute(KEY, storedLogin);
+      WebforjBearerTokenContextRepository frameworkRepository =
+          new WebforjBearerTokenContextRepository(request -> true);
+      SecurityContext bearerLogin =
+          new SecurityContextImpl(BearerTokenLogins.create("grace", "ROLE_USER"));
+      MockHttpServletRequest request = new MockHttpServletRequest("GET", "/account");
+      request.setSession(session);
+      session.setNew(true);
+      String idBefore = session.getId();
+
+      frameworkRepository.saveContext(bearerLogin, request, new MockHttpServletResponse());
+
+      assertEquals(idBefore, request.getSession().getId());
+      assertSame(bearerLogin, request.getSession().getAttribute(KEY));
+    }
+
+    @Test
+    void shouldRemoveStoredBearerLoginWhenSavingFrameworkRequestOfAnotherUserIntoJoinedSession() {
+      WebforjBearerTokenContextRepository frameworkRepository =
+          new WebforjBearerTokenContextRepository(request -> true);
+      session.setAttribute(KEY,
+          new SecurityContextImpl(BearerTokenLogins.create("ada", "ROLE_USER")));
       SecurityContext bearerLogin =
           new SecurityContextImpl(BearerTokenLogins.create("grace", "ROLE_USER"));
       MockHttpServletRequest request = new MockHttpServletRequest("GET", "/account");
@@ -196,7 +232,41 @@ class WebforjBearerTokenContextRepositoryTest {
       frameworkRepository.saveContext(bearerLogin, request, new MockHttpServletResponse());
 
       assertEquals(idBefore, request.getSession().getId());
-      assertSame(storedLogin, request.getSession().getAttribute(KEY));
+      assertNull(request.getSession().getAttribute(KEY));
+    }
+
+    @Test
+    void shouldStoreRefreshedLoginWhenSavingFrameworkRequestOfSameUserIntoJoinedSession() {
+      WebforjBearerTokenContextRepository frameworkRepository =
+          new WebforjBearerTokenContextRepository(request -> true);
+      session.setAttribute(KEY,
+          new SecurityContextImpl(BearerTokenLogins.create("ada", "ROLE_USER")));
+      SecurityContext refreshedLogin =
+          new SecurityContextImpl(BearerTokenLogins.create("ada", "ROLE_USER"));
+      MockHttpServletRequest request = new MockHttpServletRequest("GET", "/account");
+      request.setSession(session);
+      String idBefore = session.getId();
+
+      frameworkRepository.saveContext(refreshedLogin, request, new MockHttpServletResponse());
+
+      assertEquals(idBefore, request.getSession().getId());
+      assertSame(refreshedLogin, request.getSession().getAttribute(KEY));
+    }
+
+    @Test
+    void shouldStoreNothingWhenSavingFrameworkRequestIntoJoinedSessionWithoutLogin() {
+      WebforjBearerTokenContextRepository frameworkRepository =
+          new WebforjBearerTokenContextRepository(request -> true);
+      SecurityContext context =
+          new SecurityContextImpl(BearerTokenLogins.create("ada", "ROLE_USER"));
+      MockHttpServletRequest request = new MockHttpServletRequest("GET", "/account");
+      request.setSession(session);
+      String idBefore = session.getId();
+
+      frameworkRepository.saveContext(context, request, new MockHttpServletResponse());
+
+      assertEquals(idBefore, request.getSession().getId());
+      assertNull(request.getSession().getAttribute(KEY));
     }
 
     @Test

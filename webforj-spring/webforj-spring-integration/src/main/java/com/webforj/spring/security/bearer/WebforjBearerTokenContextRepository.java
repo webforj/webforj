@@ -30,8 +30,9 @@ final class WebforjBearerTokenContextRepository extends HttpSessionSecurityConte
    * is the same user only with the same token.
    *
    * <p>
-   * Any other login gets a new session id first. A webforJ framework request cannot change the
-   * session id, so it stores nothing and the login holds for that request only.
+   * Any other login gets a new session id first. A webforJ framework request never changes the
+   * session id. A session that is new still stores the login. In any other session, a framework
+   * request of another user removes the stored bearer login and stores nothing.
    * </p>
    *
    * @param context the context to save
@@ -54,11 +55,15 @@ final class WebforjBearerTokenContextRepository extends HttpSessionSecurityConte
       }
 
       if (!isSameUser(stored, context.getAuthentication())) {
-        if (frameworkMatcher.matches(request)) {
+        if (!frameworkMatcher.matches(request)) {
+          request.changeSessionId();
+        } else if (!session.isNew()) {
+          if (stored != null) {
+            session.removeAttribute(SPRING_SECURITY_CONTEXT_KEY);
+          }
+
           return;
         }
-
-        request.changeSessionId();
       }
     }
 

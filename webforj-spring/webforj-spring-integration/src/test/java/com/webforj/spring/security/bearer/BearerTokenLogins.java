@@ -24,8 +24,12 @@ final class BearerTokenLogins {
   }
 
   static JwtAuthenticationToken createWithoutName(String role) {
+    return createWithoutName(role, role + "-token");
+  }
+
+  static JwtAuthenticationToken createWithoutName(String role, String tokenValue) {
     List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
-    Jwt jwt = Jwt.withTokenValue(role + "-token").header("alg", "RS256").issuedAt(Instant.now())
+    Jwt jwt = Jwt.withTokenValue(tokenValue).header("alg", "RS256").issuedAt(Instant.now())
         .expiresAt(Instant.now().plusSeconds(3600)).build();
     return new JwtAuthenticationToken(jwt, authorities);
   }
