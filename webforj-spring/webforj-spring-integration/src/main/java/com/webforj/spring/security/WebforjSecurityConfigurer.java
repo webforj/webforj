@@ -32,7 +32,7 @@ public class WebforjSecurityConfigurer
   private String accessDeniedPage;
   private boolean providerLogout;
   private String bearerTokenCookieName;
-  private Consumer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizedUrl> anyRequestRule =
+  private final Consumer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizedUrl> anyRequestRule =
       AuthorizeHttpRequestsConfigurer.AuthorizedUrl::permitAll;
 
   /**
