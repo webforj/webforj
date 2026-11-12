@@ -117,6 +117,54 @@ class WebforjBearerTokenContextRepositoryTest {
     }
 
     @Test
+    void shouldChangeSessionIdWhenReplacingStoredBearerLoginWithoutName() {
+      session.setAttribute(KEY,
+          new SecurityContextImpl(BearerTokenLogins.createWithoutName("ROLE_USER")));
+      SecurityContext bearerLogin =
+          new SecurityContextImpl(BearerTokenLogins.createWithoutName("ROLE_ADMIN"));
+      MockHttpServletRequest request = new MockHttpServletRequest("GET", "/account");
+      request.setSession(session);
+      String idBefore = session.getId();
+
+      repository.saveContext(bearerLogin, request, new MockHttpServletResponse());
+
+      assertNotEquals(idBefore, request.getSession().getId());
+      assertSame(bearerLogin, request.getSession().getAttribute(KEY));
+    }
+
+    @Test
+    void shouldKeepSessionIdWhenRefreshingStoredBearerLoginWithoutNameWithSameToken() {
+      session.setAttribute(KEY,
+          new SecurityContextImpl(BearerTokenLogins.createWithoutName("ROLE_USER")));
+      SecurityContext refreshedLogin =
+          new SecurityContextImpl(BearerTokenLogins.createWithoutName("ROLE_USER"));
+      MockHttpServletRequest request = new MockHttpServletRequest("GET", "/account");
+      request.setSession(session);
+      String idBefore = session.getId();
+
+      repository.saveContext(refreshedLogin, request, new MockHttpServletResponse());
+
+      assertEquals(idBefore, request.getSession().getId());
+      assertSame(refreshedLogin, request.getSession().getAttribute(KEY));
+    }
+
+    @Test
+    void shouldKeepSessionIdWhenRefreshingStoredBearerLoginWithNullNameWithSameToken() {
+      session.setAttribute(KEY,
+          new SecurityContextImpl(BearerTokenLogins.createWithNullName("opaque-token")));
+      SecurityContext refreshedLogin =
+          new SecurityContextImpl(BearerTokenLogins.createWithNullName("opaque-token"));
+      MockHttpServletRequest request = new MockHttpServletRequest("GET", "/account");
+      request.setSession(session);
+      String idBefore = session.getId();
+
+      repository.saveContext(refreshedLogin, request, new MockHttpServletResponse());
+
+      assertEquals(idBefore, request.getSession().getId());
+      assertSame(refreshedLogin, request.getSession().getAttribute(KEY));
+    }
+
+    @Test
     void shouldKeepSessionIdWhenRefreshingStoredBearerLoginOfSameUser() {
       session.setAttribute(KEY,
           new SecurityContextImpl(BearerTokenLogins.create("ada", "ROLE_USER")));

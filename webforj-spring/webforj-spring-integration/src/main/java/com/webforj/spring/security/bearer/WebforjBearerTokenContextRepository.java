@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.oauth2.server.resource.authentication.AbstractOAuth2TokenAuthenticationToken;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.util.StringUtils;
 
 /**
  * Keeps the login of a bearer token in the session, where webforJ reads it to check routes.
@@ -25,7 +26,8 @@ final class WebforjBearerTokenContextRepository extends HttpSessionSecurityConte
   /**
    * Saves the context in the session, also when its login is marked as transient. A new session
    * stores the login. A session that holds another login, such as a form login, is left unchanged.
-   * A refreshed login of the same user is stored under the same session id.
+   * A refreshed login of the same user is stored under the same session id. A login without a name
+   * is the same user only with the same token.
    *
    * <p>
    * Any other login gets a new session id first. A webforJ framework request cannot change the
@@ -78,6 +80,15 @@ final class WebforjBearerTokenContextRepository extends HttpSessionSecurityConte
   }
 
   private boolean isSameUser(Authentication stored, Authentication login) {
-    return stored != null && login != null && stored.getName().equals(login.getName());
+    if (!(stored instanceof AbstractOAuth2TokenAuthenticationToken<?> storedLogin)
+        || !(login instanceof AbstractOAuth2TokenAuthenticationToken<?> newLogin)) {
+      return false;
+    }
+
+    if (StringUtils.hasText(storedLogin.getName())) {
+      return storedLogin.getName().equals(newLogin.getName());
+    }
+
+    return storedLogin.getToken().getTokenValue().equals(newLogin.getToken().getTokenValue());
   }
 }
