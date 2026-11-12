@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+import com.webforj.router.security.RouteSecurityContext;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -328,6 +329,19 @@ class SpringRouteSecurityContextTest {
       SecurityContextHolder.getContext().setAuthentication(token);
 
       assertEquals(Optional.of("details"), securityContext.getAttribute("tenant"));
+    }
+
+    @Test
+    void shouldReturnEmptyWithoutOauth2Classes() throws Exception {
+      String contextName = SpringRouteSecurityContext.class.getName();
+      HidingClassLoader loader =
+          new HidingClassLoader("org.springframework.security.oauth2.", contextName);
+      RouteSecurityContext context = (RouteSecurityContext) Class.forName(contextName, true, loader)
+          .getDeclaredConstructor().newInstance();
+      when(authentication.getDetails()).thenReturn(Map.of("tenant", "acme"));
+      SecurityContextHolder.getContext().setAuthentication(authentication);
+
+      assertEquals(Optional.empty(), context.getAttribute("email"));
     }
 
     @Test
