@@ -128,6 +128,38 @@ class WebforjBearerTokenContextRepositoryTest {
     }
 
     @Test
+    void shouldChangeSessionIdWhenReplacingStoredBearerLoginOfSameNameFromAnotherIssuer() {
+      session.setAttribute(KEY, new SecurityContextImpl(
+          BearerTokenLogins.create("ada", "ROLE_USER", "https://first.example")));
+      SecurityContext bearerLogin = new SecurityContextImpl(
+          BearerTokenLogins.create("ada", "ROLE_USER", "https://second.example"));
+      MockHttpServletRequest request = new MockHttpServletRequest("GET", "/account");
+      request.setSession(session);
+      String idBefore = session.getId();
+
+      repository.saveContext(bearerLogin, request, new MockHttpServletResponse());
+
+      assertNotEquals(idBefore, request.getSession().getId());
+      assertSame(bearerLogin, request.getSession().getAttribute(KEY));
+    }
+
+    @Test
+    void shouldKeepSessionIdWhenReplacingStoredBearerLoginOfSameNameFromSameIssuer() {
+      session.setAttribute(KEY, new SecurityContextImpl(
+          BearerTokenLogins.create("ada", "ROLE_USER", "https://first.example")));
+      SecurityContext bearerLogin = new SecurityContextImpl(
+          BearerTokenLogins.create("ada", "ROLE_USER", "https://first.example"));
+      MockHttpServletRequest request = new MockHttpServletRequest("GET", "/account");
+      request.setSession(session);
+      String idBefore = session.getId();
+
+      repository.saveContext(bearerLogin, request, new MockHttpServletResponse());
+
+      assertEquals(idBefore, request.getSession().getId());
+      assertSame(bearerLogin, request.getSession().getAttribute(KEY));
+    }
+
+    @Test
     void shouldChangeSessionIdOnceWhenSavingLoginOfAnotherUserFromParallelRequests()
         throws InterruptedException, ExecutionException, TimeoutException {
       CountingSession countingSession = new CountingSession();
