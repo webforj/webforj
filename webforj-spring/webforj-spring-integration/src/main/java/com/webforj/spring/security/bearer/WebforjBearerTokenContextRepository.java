@@ -9,6 +9,7 @@ import org.springframework.security.oauth2.server.resource.authentication.Abstra
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.StringUtils;
+import org.springframework.web.util.WebUtils;
 
 /**
  * Keeps the login of a bearer token in the session, where webforJ reads it to check routes.
@@ -44,8 +45,11 @@ final class WebforjBearerTokenContextRepository extends HttpSessionSecurityConte
       HttpServletResponse response) {
     HttpSession session = request.getSession(false);
     if (session == null) {
-      session = request.getSession();
-    } else {
+      request.getSession().setAttribute(SPRING_SECURITY_CONTEXT_KEY, context);
+      return;
+    }
+
+    synchronized (WebUtils.getSessionMutex(session)) {
       Authentication stored =
           session.getAttribute(SPRING_SECURITY_CONTEXT_KEY) instanceof SecurityContext current
               ? current.getAuthentication()
@@ -65,9 +69,9 @@ final class WebforjBearerTokenContextRepository extends HttpSessionSecurityConte
           return;
         }
       }
-    }
 
-    session.setAttribute(SPRING_SECURITY_CONTEXT_KEY, context);
+      session.setAttribute(SPRING_SECURITY_CONTEXT_KEY, context);
+    }
   }
 
   /**

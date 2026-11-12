@@ -4,8 +4,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -115,6 +125,49 @@ class WebforjBearerTokenContextRepositoryTest {
 
       assertNotEquals(idBefore, request.getSession().getId());
       assertSame(bearerLogin, request.getSession().getAttribute(KEY));
+    }
+
+    @Test
+    void shouldChangeSessionIdOnceWhenSavingLoginOfAnotherUserFromParallelRequests()
+        throws InterruptedException, ExecutionException, TimeoutException {
+      CountingSession countingSession = new CountingSession();
+      countingSession.setAttribute(KEY,
+          new SecurityContextImpl(BearerTokenLogins.create("ada", "ROLE_USER")));
+      SecurityContext firstLogin =
+          new SecurityContextImpl(BearerTokenLogins.create("grace", "ROLE_USER"));
+      SecurityContext secondLogin =
+          new SecurityContextImpl(BearerTokenLogins.create("grace", "ROLE_USER"));
+      MockHttpServletRequest firstRequest = new MockHttpServletRequest("GET", "/account");
+      firstRequest.setSession(countingSession);
+      MockHttpServletRequest secondRequest = new MockHttpServletRequest("GET", "/account");
+      secondRequest.setSession(countingSession);
+      CyclicBarrier barrier = new CyclicBarrier(2);
+      WebforjBearerTokenContextRepository racingRepository =
+          new WebforjBearerTokenContextRepository(request -> {
+            try {
+              barrier.await(1, TimeUnit.SECONDS);
+            } catch (InterruptedException | BrokenBarrierException | TimeoutException e) {
+              return false;
+            }
+
+            return false;
+          });
+      ExecutorService executor = Executors.newFixedThreadPool(2);
+
+      try {
+        Future<?> first = executor.submit(() -> racingRepository.saveContext(firstLogin,
+            firstRequest, new MockHttpServletResponse()));
+        Future<?> second = executor.submit(() -> racingRepository.saveContext(secondLogin,
+            secondRequest, new MockHttpServletResponse()));
+        first.get(5, TimeUnit.SECONDS);
+        second.get(5, TimeUnit.SECONDS);
+      } finally {
+        executor.shutdownNow();
+      }
+
+      Object stored = countingSession.getAttribute(KEY);
+      assertEquals(1, countingSession.getChangeCount());
+      assertTrue(stored == firstLogin || stored == secondLogin);
     }
 
     @Test
@@ -316,6 +369,20 @@ class WebforjBearerTokenContextRepositoryTest {
       repository.removeContext(request);
 
       assertNull(request.getSession(false));
+    }
+  }
+
+  private static final class CountingSession extends MockHttpSession {
+    private final AtomicInteger changeCount = new AtomicInteger();
+
+    int getChangeCount() {
+      return changeCount.get();
+    }
+
+    @Override
+    public String changeSessionId() {
+      changeCount.incrementAndGet();
+      return super.changeSessionId();
     }
   }
 }
