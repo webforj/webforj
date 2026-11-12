@@ -388,6 +388,7 @@ public class WebforjSecurityConfigurer
   }
 
   private String resolveRouteUrl(Class<? extends Component> component) {
+    Objects.requireNonNull(component, "component cannot be null");
     String path = RoutePathResolver.resolvePath(component);
     if (path == null) {
       throw new IllegalArgumentException(
