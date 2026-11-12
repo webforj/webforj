@@ -217,7 +217,7 @@ class WebforjSecurityConfigurerTest {
     }
 
     @Test
-    void shouldRedirectToProviderEndSessionEndpointAfterOidcLogout() throws Exception {
+    void shouldRedirectToOauth2LoginPageAfterOidcLogoutWithoutProviderLogout() throws Exception {
       OidcIdToken idToken = new OidcIdToken("id-token", Instant.now(),
           Instant.now().plusSeconds(60), Map.of("sub", "jdoe"));
       DefaultOidcUser user =
@@ -226,8 +226,7 @@ class WebforjSecurityConfigurerTest {
           new OAuth2AuthenticationToken(user, user.getAuthorities(), "acme");
 
       mockMvc.perform(post("/logout").with(csrf()).with(authentication(token)))
-          .andExpect(redirectedUrl("https://provider.example/logout?id_token_hint=id-token"
-              + "&post_logout_redirect_uri=http://localhost/sso?logout"));
+          .andExpect(redirectedUrl("/sso?logout"));
     }
 
     @Test
@@ -308,7 +307,7 @@ class WebforjSecurityConfigurerTest {
 
       mockMvc.perform(post("/logout").with(csrf()).with(authentication(token)))
           .andExpect(redirectedUrl("https://provider.example/logout?id_token_hint=id-token"
-              + "&post_logout_redirect_uri=http://localhost/sso?logout"));
+              + "&post_logout_redirect_uri=http://localhost/sso"));
     }
 
     @Configuration
@@ -324,8 +323,67 @@ class WebforjSecurityConfigurerTest {
 
         return http
             .with(WebforjSecurityConfigurer.webforj(),
-                configurer -> configurer.oauth2Login(SsoLoginView.class))
+                configurer -> configurer.oauth2Login(SsoLoginView.class).oauth2Logout())
             .oauth2Login(oauth2 -> oauth2.clientRegistrationRepository(repository)).build();
+      }
+
+      @Bean
+      SpringConfigurationProperties createSpringConfigurationProperties() {
+        SpringConfigurationProperties properties = new SpringConfigurationProperties();
+        properties.setServletMapping("/*");
+        return properties;
+      }
+    }
+  }
+
+  @Nested
+  @NestedTestConfiguration(EnclosingConfiguration.OVERRIDE)
+  @SpringJUnitWebConfig(Oauth2Logout.SecurityConfig.class)
+  class Oauth2Logout {
+
+    @Autowired
+    private WebApplicationContext context;
+
+    private MockMvc mockMvc;
+
+    @BeforeEach
+    void setUp() {
+      mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
+    }
+
+    @Test
+    void shouldSendAbsoluteSuccessUrlToProviderAfterOidcLogout() throws Exception {
+      OidcIdToken idToken = new OidcIdToken("id-token", Instant.now(),
+          Instant.now().plusSeconds(60), Map.of("sub", "jdoe"));
+      DefaultOidcUser user =
+          new DefaultOidcUser(AuthorityUtils.createAuthorityList("ROLE_USER"), idToken);
+      OAuth2AuthenticationToken token =
+          new OAuth2AuthenticationToken(user, user.getAuthorities(), "acme");
+
+      mockMvc.perform(post("/signout").with(csrf()).with(authentication(token)))
+          .andExpect(redirectedUrl("https://provider.example/logout?id_token_hint=id-token"
+              + "&post_logout_redirect_uri=http://localhost/home"));
+    }
+
+    @Test
+    void shouldRedirectToSuccessUrlAfterLogoutOfOtherSessions() throws Exception {
+      mockMvc.perform(post("/signout").with(csrf()).with(user("user")))
+          .andExpect(redirectedUrl("/home"));
+    }
+
+    @Configuration
+    @EnableWebSecurity
+    @EnableWebMvc
+    @Import({SpringSecurityAutoConfiguration.class, ClientRegistrationConfig.class})
+    static class SecurityConfig {
+
+      @Bean
+      SecurityFilterChain buildFilterChain(HttpSecurity http) {
+        return http.with(WebforjSecurityConfigurer.webforj(), configurer -> {
+          configurer.oauth2Login(SsoLoginView.class);
+          configurer.oauth2Logout();
+          configurer.logout("/signout", "/home");
+        }).build();
       }
 
       @Bean
@@ -361,7 +419,7 @@ class WebforjSecurityConfigurerTest {
     }
 
     @Test
-    void shouldPermitCustomOauth2LogoutUrlAndUseAbsoluteSuccessUrl() throws Exception {
+    void shouldPermitCustomLogoutUrlAndUseSuccessUrlWithoutProviderLogout() throws Exception {
       OidcIdToken idToken = new OidcIdToken("id-token", Instant.now(),
           Instant.now().plusSeconds(60), Map.of("sub", "jdoe"));
       DefaultOidcUser user =
@@ -370,8 +428,7 @@ class WebforjSecurityConfigurerTest {
           new OAuth2AuthenticationToken(user, user.getAuthorities(), "acme");
 
       mockMvc.perform(post("/signout").with(csrf()).with(authentication(token)))
-          .andExpect(redirectedUrl("https://provider.example/logout?id_token_hint=id-token"
-              + "&post_logout_redirect_uri=http://localhost/home"));
+          .andExpect(redirectedUrl("/home"));
     }
 
     @Nested

@@ -29,6 +29,7 @@ public class WebforjSecurityConfigurer
   private String logoutUrl;
   private String logoutSuccessUrl;
   private String accessDeniedPage;
+  private boolean providerLogout;
   private Consumer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizedUrl> anyRequestRule =
       AuthorizeHttpRequestsConfigurer.AuthorizedUrl::permitAll;
 
@@ -117,11 +118,10 @@ public class WebforjSecurityConfigurer
 
   /**
    * Configures logout with default settings. Uses "/logout" as the logout URL and redirects to the
-   * login page with "?logout" parameter for form login, or starts provider logout for OAuth2 login.
+   * login page with "?logout" parameter.
    *
    * <p>
-   * With OAuth2 login, the success URL is sent to the provider as the post logout redirect URI and
-   * must be registered with the provider.
+   * With {@link #oauth2Logout()}, the user is redirected to the login page without the parameter.
    * </p>
    *
    * @return this configurer for method chaining
@@ -132,11 +132,10 @@ public class WebforjSecurityConfigurer
 
   /**
    * Configures logout with a custom logout URL. Redirects to the login page with "?logout"
-   * parameter for form login, or starts provider logout for OAuth2 login.
+   * parameter.
    *
    * <p>
-   * With OAuth2 login, the success URL is sent to the provider as the post logout redirect URI and
-   * must be registered with the provider.
+   * With {@link #oauth2Logout()}, the user is redirected to the login page without the parameter.
    * </p>
    *
    * @param logoutUrl the URL that processes logout requests
@@ -150,8 +149,8 @@ public class WebforjSecurityConfigurer
    * Configures logout with custom URLs.
    *
    * <p>
-   * With OAuth2 login, the success URL is sent to the provider as the post logout redirect URI and
-   * must be registered with the provider.
+   * With {@link #oauth2Logout()}, the success URL is sent to the provider as the post logout
+   * redirect URI and must be registered with the provider.
    * </p>
    *
    * @param logoutUrl the URL that processes logout requests
@@ -161,6 +160,33 @@ public class WebforjSecurityConfigurer
   public WebforjSecurityConfigurer logout(String logoutUrl, String logoutSuccessUrl) {
     this.logoutUrl = logoutUrl;
     this.logoutSuccessUrl = logoutSuccessUrl;
+    return this;
+  }
+
+  /**
+   * Ends the session at the OpenID Connect provider on logout.
+   *
+   * <p>
+   * Without this call, logout ends the session of the app only and the user stays signed in at the
+   * provider. With it, a user who signed in through an OpenID Connect provider is sent to the
+   * provider to end that session too, and the provider redirects back to the logout success URL.
+   * Users who signed in another way are redirected to the logout success URL directly.
+   * </p>
+   *
+   * <p>
+   * The logout success URL defaults to the login page without a parameter. It is sent to the
+   * provider as the post logout redirect URI and must be registered with the provider.
+   * </p>
+   *
+   * <p>
+   * Requires {@code spring-security-oauth2-client} on the classpath and a
+   * {@link ClientRegistrationRepository}.
+   * </p>
+   *
+   * @return this configurer for method chaining
+   */
+  public WebforjSecurityConfigurer oauth2Logout() {
+    providerLogout = true;
     return this;
   }
 
@@ -226,17 +252,16 @@ public class WebforjSecurityConfigurer
       configureOauth2Login(http, successHandler);
     }
 
-    if (getEntryLoginPage() != null && logoutUrl == null) {
+    if ((getEntryLoginPage() != null || providerLogout) && logoutUrl == null) {
       logoutUrl = "/logout";
     }
 
     // Configure logout if specified
     if (logoutUrl != null) {
       // Set default logout success URL if not specified
-      if (logoutSuccessUrl == null && getEntryLoginPage() != null) {
-        logoutSuccessUrl = getEntryLoginPage() + "?logout";
-      } else if (logoutSuccessUrl == null) {
-        logoutSuccessUrl = "/login?logout";
+      if (logoutSuccessUrl == null) {
+        String page = getEntryLoginPage() != null ? getEntryLoginPage() : "/login";
+        logoutSuccessUrl = providerLogout ? page : page + "?logout";
       }
 
       configureLogout(http, context);
@@ -331,7 +356,7 @@ public class WebforjSecurityConfigurer
     http.logout(logout -> {
       logout.logoutUrl(logoutUrl);
 
-      if (oauth2LoginPage != null) {
+      if (providerLogout) {
         logout.logoutSuccessHandler(createOidcLogoutSuccessHandler(http, context));
       } else if (logoutSuccessUrl != null) {
         logout.logoutSuccessUrl(logoutSuccessUrl);
