@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+import com.webforj.router.security.RouteSecurityContext;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,6 +27,8 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 
 @ExtendWith(MockitoExtension.class)
 class SpringRouteSecurityContextTest {
@@ -278,6 +281,67 @@ class SpringRouteSecurityContextTest {
 
       Optional<Object> attribute = securityContext.getAttribute("nonexistent");
       assertFalse(attribute.isPresent());
+    }
+
+    @Test
+    void shouldReturnAttributeFromOauth2Principal() {
+      DefaultOAuth2User user =
+          new DefaultOAuth2User(AuthorityUtils.createAuthorityList("ROLE_USER"),
+              Map.of("sub", "jdoe", "email", "jdoe@example.com"), "sub");
+      SecurityContextHolder.getContext()
+          .setAuthentication(new OAuth2AuthenticationToken(user, user.getAuthorities(), "acme"));
+
+      Optional<Object> email = securityContext.getAttribute("email");
+      assertTrue(email.isPresent());
+      assertEquals("jdoe@example.com", email.get());
+    }
+
+    @Test
+    void shouldReturnEmptyForUnknownOauth2Claim() {
+      DefaultOAuth2User user = new DefaultOAuth2User(
+          AuthorityUtils.createAuthorityList("ROLE_USER"), Map.of("sub", "jdoe"), "sub");
+      SecurityContextHolder.getContext()
+          .setAuthentication(new OAuth2AuthenticationToken(user, user.getAuthorities(), "acme"));
+
+      Optional<Object> attribute = securityContext.getAttribute("nonexistent");
+      assertFalse(attribute.isPresent());
+    }
+
+    @Test
+    void shouldReturnDetailForNameMissingFromOauth2Principal() {
+      DefaultOAuth2User user = new DefaultOAuth2User(
+          AuthorityUtils.createAuthorityList("ROLE_USER"), Map.of("sub", "jdoe"), "sub");
+      OAuth2AuthenticationToken token =
+          new OAuth2AuthenticationToken(user, user.getAuthorities(), "acme");
+      token.setDetails(Map.of("tenant", "acme"));
+      SecurityContextHolder.getContext().setAuthentication(token);
+
+      assertEquals(Optional.of("acme"), securityContext.getAttribute("tenant"));
+    }
+
+    @Test
+    void shouldReturnDetailOverOauth2PrincipalClaim() {
+      DefaultOAuth2User user = new DefaultOAuth2User(
+          AuthorityUtils.createAuthorityList("ROLE_USER"), Map.of("tenant", "principal"), "tenant");
+      OAuth2AuthenticationToken token =
+          new OAuth2AuthenticationToken(user, user.getAuthorities(), "acme");
+      token.setDetails(Map.of("tenant", "details"));
+      SecurityContextHolder.getContext().setAuthentication(token);
+
+      assertEquals(Optional.of("details"), securityContext.getAttribute("tenant"));
+    }
+
+    @Test
+    void shouldReturnEmptyWithoutOauth2Classes() throws Exception {
+      String contextName = SpringRouteSecurityContext.class.getName();
+      HidingClassLoader loader =
+          new HidingClassLoader("org.springframework.security.oauth2.", contextName);
+      RouteSecurityContext context = (RouteSecurityContext) Class.forName(contextName, true, loader)
+          .getDeclaredConstructor().newInstance();
+      when(authentication.getDetails()).thenReturn(Map.of("tenant", "acme"));
+      SecurityContextHolder.getContext().setAuthentication(authentication);
+
+      assertEquals(Optional.empty(), context.getAttribute("email"));
     }
 
     @Test

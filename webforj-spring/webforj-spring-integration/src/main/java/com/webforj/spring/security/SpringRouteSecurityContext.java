@@ -8,6 +8,8 @@ import org.springframework.security.authentication.AuthenticationTrustResolverIm
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
+import org.springframework.util.ClassUtils;
 
 /**
  * Spring Security implementation of {@link RouteSecurityContext}.
@@ -16,6 +18,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * @since 25.10
  */
 public class SpringRouteSecurityContext implements RouteSecurityContext {
+  private static final boolean OAUTH2_PRESENT =
+      ClassUtils.isPresent("org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal",
+          SpringRouteSecurityContext.class.getClassLoader());
+
   private final AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
 
   /**
@@ -71,11 +77,19 @@ public class SpringRouteSecurityContext implements RouteSecurityContext {
   @Override
   public Optional<Object> getAttribute(String name) {
     Authentication auth = getAuthentication();
-    if (auth != null && auth.getDetails() instanceof Map) {
-      @SuppressWarnings("unchecked")
-      Map<String, Object> details = (Map<String, Object>) auth.getDetails();
+    if (auth != null && auth.getDetails() instanceof Map<?, ?> details) {
+      Object detail = details.get(name);
+      if (detail != null) {
+        return Optional.of(detail);
+      }
+    }
 
-      return Optional.ofNullable(details.get(name));
+    if (auth != null && OAUTH2_PRESENT
+        && auth.getPrincipal() instanceof OAuth2AuthenticatedPrincipal principal) {
+      Object claim = principal.getAttribute(name);
+      if (claim != null) {
+        return Optional.of(claim);
+      }
     }
 
     return Optional.empty();

@@ -3,22 +3,25 @@ package com.webforj.spring.security;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.util.List;
 
-final class SpringSecurityFreeClassLoader extends ClassLoader {
-  private static final String HIDDEN_PACKAGE = "org.springframework.security.";
-  private static final String OWN_PACKAGE = "com.webforj.spring.security.";
+final class HidingClassLoader extends ClassLoader {
+  private final String hiddenPrefix;
+  private final List<String> ownPrefixes;
 
-  SpringSecurityFreeClassLoader() {
-    super(SpringSecurityFreeClassLoader.class.getClassLoader());
+  HidingClassLoader(String hiddenPrefix, String... ownPrefixes) {
+    super(HidingClassLoader.class.getClassLoader());
+    this.hiddenPrefix = hiddenPrefix;
+    this.ownPrefixes = List.of(ownPrefixes);
   }
 
   @Override
   protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-    if (name.startsWith(HIDDEN_PACKAGE)) {
+    if (name.startsWith(hiddenPrefix)) {
       throw new ClassNotFoundException(name);
     }
 
-    if (!name.startsWith(OWN_PACKAGE)) {
+    if (!isOwn(name)) {
       return super.loadClass(name, resolve);
     }
 
@@ -35,6 +38,11 @@ final class SpringSecurityFreeClassLoader extends ClassLoader {
 
       return loaded;
     }
+  }
+
+  private boolean isOwn(String name) {
+    return ownPrefixes.stream().anyMatch(prefix -> name.startsWith(prefix) && (prefix.endsWith(".")
+        || name.length() == prefix.length() || name.charAt(prefix.length()) == '$'));
   }
 
   private byte[] readBytes(String name) throws ClassNotFoundException {
