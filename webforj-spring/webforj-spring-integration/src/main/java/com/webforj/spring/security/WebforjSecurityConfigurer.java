@@ -29,7 +29,6 @@ public class WebforjSecurityConfigurer
   private String logoutUrl;
   private String logoutSuccessUrl;
   private String accessDeniedPage;
-  private boolean formLoginConfigured;
   private Consumer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizedUrl> anyRequestRule =
       AuthorizeHttpRequestsConfigurer.AuthorizedUrl::permitAll;
 
@@ -85,7 +84,6 @@ public class WebforjSecurityConfigurer
    * @return this configurer for method chaining
    */
   public WebforjSecurityConfigurer loginPage(String loginPage, String loginProcessingUrl) {
-    formLoginConfigured = true;
     this.loginPage = loginPage;
     this.loginProcessingUrl = loginProcessingUrl;
     return this;
@@ -100,9 +98,9 @@ public class WebforjSecurityConfigurer
    *
    * <p>
    * Requires {@code spring-security-oauth2-client} on the classpath, in a Spring Boot application
-   * through {@code spring-boot-starter-oauth2-client}, and a {@link ClientRegistrationRepository}
-   * bean, for example one built from the {@code spring.security.oauth2.client.registration.*}
-   * properties.
+   * through {@code spring-boot-starter-security-oauth2-client}, and a
+   * {@link ClientRegistrationRepository} bean, for example one built from the
+   * {@code spring.security.oauth2.client.registration.*} properties.
    * </p>
    *
    * @param loginPageComponent the login page component class
@@ -204,27 +202,20 @@ public class WebforjSecurityConfigurer
     SpringSecurityConfigurationProperties properties =
         context.getBean(SpringSecurityConfigurationProperties.class);
 
-    if (formLoginConfigured && loginPage == null && properties.getAuthenticationPath() != null) {
-      loginPage = properties.getAuthenticationPath();
+    String configuredPath = properties.getAuthenticationPath();
+    if (loginPage == null && configuredPath != null) {
+      loginPage = configuredPath;
       if (loginProcessingUrl == null) {
-        loginProcessingUrl = properties.getAuthenticationPath();
+        loginProcessingUrl = configuredPath;
       }
     }
 
-    if (formLoginConfigured && loginPage != null && properties.getAuthenticationPath() == null) {
-      properties.setAuthenticationPath(loginPage);
-    } else if (loginPage == null && oauth2LoginPage != null) {
-      properties.setAuthenticationPath(oauth2LoginPage);
+    if (configuredPath == null && getEntryLoginPage() != null) {
+      properties.setAuthenticationPath(getEntryLoginPage());
     }
 
     WebforjAuthenticationSuccessHandler successHandler =
         context.getBeanProvider(WebforjAuthenticationSuccessHandler.class).getIfUnique();
-
-    if (!formLoginConfigured && oauth2LoginPage == null
-        && properties.getAuthenticationPath() != null) {
-      loginPage = properties.getAuthenticationPath();
-      loginProcessingUrl = properties.getAuthenticationPath();
-    }
 
     // Configure form login if specified
     if (loginPage != null) {
@@ -341,7 +332,7 @@ public class WebforjSecurityConfigurer
       logout.logoutUrl(logoutUrl);
 
       if (oauth2LoginPage != null) {
-        logout.logoutSuccessHandler(createOidcLogoutSuccessHandler(context));
+        logout.logoutSuccessHandler(createOidcLogoutSuccessHandler(http, context));
       } else if (logoutSuccessUrl != null) {
         logout.logoutSuccessUrl(logoutSuccessUrl);
       }
@@ -350,12 +341,20 @@ public class WebforjSecurityConfigurer
     });
   }
 
-  private LogoutSuccessHandler createOidcLogoutSuccessHandler(ApplicationContext context) {
-    OidcClientInitiatedLogoutSuccessHandler handler = new OidcClientInitiatedLogoutSuccessHandler(
-        context.getBean(ClientRegistrationRepository.class));
+  private LogoutSuccessHandler createOidcLogoutSuccessHandler(HttpSecurity http,
+      ApplicationContext context) {
+    ClientRegistrationRepository repository =
+        http.getSharedObject(ClientRegistrationRepository.class);
+    if (repository == null) {
+      repository = context.getBean(ClientRegistrationRepository.class);
+    }
+
+    OidcClientInitiatedLogoutSuccessHandler handler =
+        new OidcClientInitiatedLogoutSuccessHandler(repository);
     handler.setPostLogoutRedirectUri(
         logoutSuccessUrl.startsWith("/") ? "{baseUrl}" + logoutSuccessUrl : logoutSuccessUrl);
     handler.setDefaultTargetUrl(logoutSuccessUrl);
+
     return handler;
   }
 
@@ -364,7 +363,6 @@ public class WebforjSecurityConfigurer
   }
 
   private String resolveRouteUrl(Class<? extends Component> component) {
-    Objects.requireNonNull(component, "component cannot be null");
     String path = RoutePathResolver.resolvePath(component);
     if (path == null) {
       throw new IllegalArgumentException(

@@ -244,35 +244,21 @@ class WebforjSecurityConfigurerTest {
       private SpringSecurityConfigurationProperties configuredProperties;
 
       @Test
-      void shouldUseOauth2LoginPageOverConfiguredAuthenticationPath() {
-        assertEquals("/sso", configuredProperties.getAuthenticationPath());
+      void shouldPreserveConfiguredAuthenticationPathOverOauth2Login() {
+        assertEquals("/login", configuredProperties.getAuthenticationPath());
       }
     }
 
     @Configuration
     @EnableWebSecurity
     @EnableWebMvc
-    @Import(SpringSecurityAutoConfiguration.class)
+    @Import({SpringSecurityAutoConfiguration.class, ClientRegistrationConfig.class})
     static class Oauth2LoginSecurityConfig {
 
       @Bean
       SecurityFilterChain buildFilterChain(HttpSecurity http) {
         return http.with(WebforjSecurityConfigurer.webforj(),
             configurer -> configurer.oauth2Login(SsoLoginView.class)).build();
-      }
-
-      @Bean
-      ClientRegistrationRepository createClientRegistrationRepository() {
-        return new InMemoryClientRegistrationRepository(
-            ClientRegistration.withRegistrationId("acme").clientId("client").clientSecret("secret")
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .redirectUri("{baseUrl}/login/oauth2/code/{registrationId}").scope("profile")
-                .authorizationUri("https://provider.example/authorize")
-                .tokenUri("https://provider.example/token")
-                .userInfoUri("https://provider.example/userinfo").userNameAttributeName("sub")
-                .providerConfigurationMetadata(
-                    Map.of("end_session_endpoint", "https://provider.example/logout"))
-                .build());
       }
 
       @Bean
@@ -285,6 +271,61 @@ class WebforjSecurityConfigurerTest {
       OAuth2UserService<OAuth2UserRequest, OAuth2User> createUserService() {
         return request -> new DefaultOAuth2User(AuthorityUtils.createAuthorityList("ROLE_USER"),
             Map.of("sub", "jdoe"), "sub");
+      }
+
+      @Bean
+      SpringConfigurationProperties createSpringConfigurationProperties() {
+        SpringConfigurationProperties properties = new SpringConfigurationProperties();
+        properties.setServletMapping("/*");
+        return properties;
+      }
+    }
+  }
+
+  @Nested
+  @NestedTestConfiguration(EnclosingConfiguration.OVERRIDE)
+  @SpringJUnitWebConfig(Oauth2LoginWithSharedRepository.SecurityConfig.class)
+  class Oauth2LoginWithSharedRepository {
+
+    @Autowired
+    private WebApplicationContext context;
+
+    private MockMvc mockMvc;
+
+    @BeforeEach
+    void setUp() {
+      mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
+    }
+
+    @Test
+    void shouldRedirectToProviderEndSessionEndpointWithoutRepositoryBean() throws Exception {
+      OidcIdToken idToken = new OidcIdToken("id-token", Instant.now(),
+          Instant.now().plusSeconds(60), Map.of("sub", "jdoe"));
+      DefaultOidcUser user =
+          new DefaultOidcUser(AuthorityUtils.createAuthorityList("ROLE_USER"), idToken);
+      OAuth2AuthenticationToken token =
+          new OAuth2AuthenticationToken(user, user.getAuthorities(), "acme");
+
+      mockMvc.perform(post("/logout").with(csrf()).with(authentication(token)))
+          .andExpect(redirectedUrl("https://provider.example/logout?id_token_hint=id-token"
+              + "&post_logout_redirect_uri=http://localhost/sso?logout"));
+    }
+
+    @Configuration
+    @EnableWebSecurity
+    @EnableWebMvc
+    @Import(SpringSecurityAutoConfiguration.class)
+    static class SecurityConfig {
+
+      @Bean
+      SecurityFilterChain buildFilterChain(HttpSecurity http) {
+        ClientRegistrationRepository repository =
+            new ClientRegistrationConfig().createClientRegistrationRepository();
+
+        return http
+            .with(WebforjSecurityConfigurer.webforj(),
+                configurer -> configurer.oauth2Login(SsoLoginView.class))
+            .oauth2Login(oauth2 -> oauth2.clientRegistrationRepository(repository)).build();
       }
 
       @Bean
@@ -350,7 +391,7 @@ class WebforjSecurityConfigurerTest {
     @Configuration
     @EnableWebSecurity
     @EnableWebMvc
-    @Import(SpringSecurityAutoConfiguration.class)
+    @Import({SpringSecurityAutoConfiguration.class, ClientRegistrationConfig.class})
     static class FormAndOauth2LoginSecurityConfig {
 
       @Bean
@@ -360,20 +401,6 @@ class WebforjSecurityConfigurerTest {
           configurer.oauth2Login(SsoLoginView.class);
           configurer.logout("/signout", "/home");
         }).build();
-      }
-
-      @Bean
-      ClientRegistrationRepository createClientRegistrationRepository() {
-        return new InMemoryClientRegistrationRepository(
-            ClientRegistration.withRegistrationId("acme").clientId("client").clientSecret("secret")
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .redirectUri("{baseUrl}/login/oauth2/code/{registrationId}").scope("profile")
-                .authorizationUri("https://provider.example/authorize")
-                .tokenUri("https://provider.example/token")
-                .userInfoUri("https://provider.example/userinfo").userNameAttributeName("sub")
-                .providerConfigurationMetadata(
-                    Map.of("end_session_endpoint", "https://provider.example/logout"))
-                .build());
       }
 
       @Bean
@@ -413,7 +440,7 @@ class WebforjSecurityConfigurerTest {
     @Configuration
     @EnableWebSecurity
     @EnableWebMvc
-    @Import(SpringSecurityAutoConfiguration.class)
+    @Import({SpringSecurityAutoConfiguration.class, ClientRegistrationConfig.class})
     static class SecurityConfig {
 
       @Bean
@@ -422,20 +449,6 @@ class WebforjSecurityConfigurerTest {
           configurer.loginPage();
           configurer.oauth2Login(SsoLoginView.class);
         }).build();
-      }
-
-      @Bean
-      ClientRegistrationRepository createClientRegistrationRepository() {
-        return new InMemoryClientRegistrationRepository(
-            ClientRegistration.withRegistrationId("acme").clientId("client").clientSecret("secret")
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .redirectUri("{baseUrl}/login/oauth2/code/{registrationId}").scope("profile")
-                .authorizationUri("https://provider.example/authorize")
-                .tokenUri("https://provider.example/token")
-                .userInfoUri("https://provider.example/userinfo").userNameAttributeName("sub")
-                .providerConfigurationMetadata(
-                    Map.of("end_session_endpoint", "https://provider.example/logout"))
-                .build());
       }
 
       @Bean
@@ -478,7 +491,7 @@ class WebforjSecurityConfigurerTest {
     @Configuration
     @EnableWebSecurity
     @EnableWebMvc
-    @Import(SpringSecurityAutoConfiguration.class)
+    @Import({SpringSecurityAutoConfiguration.class, ClientRegistrationConfig.class})
     static class SecurityConfig {
 
       @Bean
@@ -487,20 +500,6 @@ class WebforjSecurityConfigurerTest {
           configurer.loginPage();
           configurer.oauth2Login(SsoLoginView.class);
         }).build();
-      }
-
-      @Bean
-      ClientRegistrationRepository createClientRegistrationRepository() {
-        return new InMemoryClientRegistrationRepository(
-            ClientRegistration.withRegistrationId("acme").clientId("client").clientSecret("secret")
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .redirectUri("{baseUrl}/login/oauth2/code/{registrationId}").scope("profile")
-                .authorizationUri("https://provider.example/authorize")
-                .tokenUri("https://provider.example/token")
-                .userInfoUri("https://provider.example/userinfo").userNameAttributeName("sub")
-                .providerConfigurationMetadata(
-                    Map.of("end_session_endpoint", "https://provider.example/logout"))
-                .build());
       }
 
       @Bean
@@ -659,6 +658,24 @@ class WebforjSecurityConfigurerTest {
       SpringConfigurationProperties properties = new SpringConfigurationProperties();
       properties.setServletMapping("/*");
       return properties;
+    }
+  }
+
+  @Configuration
+  static class ClientRegistrationConfig {
+
+    @Bean
+    ClientRegistrationRepository createClientRegistrationRepository() {
+      return new InMemoryClientRegistrationRepository(
+          ClientRegistration.withRegistrationId("acme").clientId("client").clientSecret("secret")
+              .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+              .redirectUri("{baseUrl}/login/oauth2/code/{registrationId}").scope("profile")
+              .authorizationUri("https://provider.example/authorize")
+              .tokenUri("https://provider.example/token")
+              .userInfoUri("https://provider.example/userinfo").userNameAttributeName("sub")
+              .providerConfigurationMetadata(
+                  Map.of("end_session_endpoint", "https://provider.example/logout"))
+              .build());
     }
   }
 
