@@ -8,8 +8,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -261,6 +264,45 @@ class TableTest {
       component.setItems(items);
 
       assertIterableEquals(items, component.getItems());
+    }
+
+    @Test
+    void shouldIgnoreCommitsOfReplacedRepository() {
+      Table<String> table = spy(new Table<>());
+      CollectionRepository<String> list = new CollectionRepository<>(List.of("item1"));
+      CollectionRepository<String> search = new CollectionRepository<>(List.of("item2"));
+      table.setRepository(list);
+      table.setRepository(search);
+
+      list.commit();
+
+      verify(table, never()).handleRepositoryCommit(any());
+    }
+
+    @Test
+    void shouldHandleCommitOnceAfterRepositoryIsSetAgain() {
+      Table<String> table = spy(new Table<>());
+      CollectionRepository<String> list = new CollectionRepository<>(List.of("item1"));
+      CollectionRepository<String> search = new CollectionRepository<>(List.of("item2"));
+      table.setRepository(list);
+      table.setRepository(search);
+      table.setRepository(list);
+
+      list.commit();
+
+      verify(table, times(1)).handleRepositoryCommit(any());
+    }
+
+    @Test
+    void shouldIgnoreCommitsAfterDestroy() {
+      Table<String> table = spy(new Table<>());
+      CollectionRepository<String> list = new CollectionRepository<>(List.of("item1"));
+      table.setRepository(list);
+      table.onDidDestroy();
+
+      list.commit();
+
+      verify(table, never()).handleRepositoryCommit(any());
     }
   }
 
@@ -621,6 +663,20 @@ class TableTest {
       table.refresh();
 
       assertEquals(List.of("Ada", "Jane", "John"),
+          table.getRepository().findAll().map(Person::getName).toList());
+    }
+
+    @Test
+    void shouldStopOrderingTheRowsByColumnWhoseSortingIsDisabled() {
+      Table<Person> table = new Table<>();
+      table.addColumn("name", Person::getName).setSortable(true);
+      table.setItems(Arrays.asList(new Person("John"), new Person("Ada"), new Person("Jane")));
+      table.handleSortChanged(new TableSortChangeEvent<>(table, createSortPayload("asc")));
+
+      table.getColumnById("name").setSortable(false);
+      table.refresh();
+
+      assertEquals(List.of("John", "Ada", "Jane"),
           table.getRepository().findAll().map(Person::getName).toList());
     }
 

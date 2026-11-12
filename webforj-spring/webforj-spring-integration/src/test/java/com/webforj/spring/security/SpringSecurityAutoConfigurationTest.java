@@ -1,8 +1,11 @@
 package com.webforj.spring.security;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import com.webforj.spring.SpringConfigurationProperties;
 import com.webforj.spring.security.evaluator.SpringRouteAccessEvaluator;
@@ -83,24 +86,64 @@ class SpringSecurityAutoConfigurationTest {
     }
 
     @Test
-    void shouldRegisterWebforjSecurityContextHolderStrategy() {
+    void shouldInstallWebforjSecurityContextHolderStrategyWithoutBean() {
       SecurityContextHolderStrategy originalStrategy =
           SecurityContextHolder.getContextHolderStrategy();
 
       try {
         contextRunner.run(context -> {
-          assertTrue(context.containsBean("webforjSecurityContextHolderStrategy"));
-          WebforjSecurityContextHolderStrategy bean =
-              context.getBean(WebforjSecurityContextHolderStrategy.class);
-          assertNotNull(bean);
-
-          SecurityContextHolderStrategy currentStrategy =
-              SecurityContextHolder.getContextHolderStrategy();
-          assertSame(bean, currentStrategy);
+          assertEquals(0, context.getBeanNamesForType(SecurityContextHolderStrategy.class).length);
+          assertInstanceOf(WebforjSecurityContextHolderStrategy.class,
+              SecurityContextHolder.getContextHolderStrategy());
         });
       } finally {
         SecurityContextHolder.setContextHolderStrategy(originalStrategy);
       }
+    }
+
+    @Test
+    void shouldInstallStrategyBeforeSingletonsAreCreated() {
+      SecurityContextHolderStrategy originalStrategy =
+          SecurityContextHolder.getContextHolderStrategy();
+
+      try {
+        contextRunner
+            .withBean(StrategyReader.class,
+                () -> new StrategyReader(SecurityContextHolder.getContextHolderStrategy()))
+            .run(context -> assertInstanceOf(WebforjSecurityContextHolderStrategy.class,
+                context.getBean(StrategyReader.class).getStrategy()));
+      } finally {
+        SecurityContextHolder.setContextHolderStrategy(originalStrategy);
+      }
+    }
+
+    @Test
+    void shouldKeepStrategyWhenApplicationDefinesStrategyBean() {
+      SecurityContextHolderStrategy originalStrategy =
+          SecurityContextHolder.getContextHolderStrategy();
+      SecurityContextHolderStrategy applicationStrategy = mock(SecurityContextHolderStrategy.class);
+
+      try {
+        contextRunner.withBean(SecurityContextHolderStrategy.class, () -> applicationStrategy)
+            .run(context -> {
+              assertSame(applicationStrategy, context.getBean(SecurityContextHolderStrategy.class));
+              assertSame(originalStrategy, SecurityContextHolder.getContextHolderStrategy());
+            });
+      } finally {
+        SecurityContextHolder.setContextHolderStrategy(originalStrategy);
+      }
+    }
+  }
+
+  static final class StrategyReader {
+    private final SecurityContextHolderStrategy strategy;
+
+    StrategyReader(SecurityContextHolderStrategy strategy) {
+      this.strategy = strategy;
+    }
+
+    SecurityContextHolderStrategy getStrategy() {
+      return strategy;
     }
   }
 }

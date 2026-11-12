@@ -378,14 +378,13 @@ public class Binding<C extends ValueAware<C, ViewT>, ViewT, B, BeanValueT> {
       return ValidationResult.valid();
     }
 
-    cachedValue = value;
-    isValueCached = true;
     ValidationResult result;
 
     try {
-      BeanValueT transformedValue = null;
-      transformedValue =
-          getTransformer().map(t -> t.transformToModel(value)).orElse(tryCastingToBeanValue(value));
+      BeanValueT transformedValue = toModelValue(value);
+      if (transformedValue == null && isPrimitiveProperty()) {
+        throw new TransformationException("A value is required.");
+      }
 
       List<String> messages = new ArrayList<>();
       for (Validator<BeanValueT> validator : validators) {
@@ -567,8 +566,7 @@ public class Binding<C extends ValueAware<C, ViewT>, ViewT, B, BeanValueT> {
   public Binding<C, ViewT, B, BeanValueT> read(B bean) {
     doGetGetter(bean).ifPresent(g -> {
       BeanValueT value = g.apply(bean);
-      ViewT transformedValue = getTransformer().map(t -> t.transformToComponent(value))
-          .orElseGet(() -> tryCastingToComponentValue(value));
+      ViewT transformedValue = toComponentValue(value);
       component.setValue(transformedValue);
     });
     return this;
@@ -597,10 +595,12 @@ public class Binding<C extends ValueAware<C, ViewT>, ViewT, B, BeanValueT> {
       }
 
       try {
-        result[0] = validate(cachedValue, true);
+        if (!skipValidation) {
+          result[0] = validate(cachedValue, true);
+        }
+
         if (result[0].isValid()) {
-          BeanValueT transformedValue = getTransformer().map(t -> t.transformToModel(cachedValue))
-              .orElseGet(() -> tryCastingToBeanValue(cachedValue));
+          BeanValueT transformedValue = toModelValue(cachedValue);
           s.accept(bean, transformedValue);
         }
       } catch (TransformationException e) {
@@ -634,11 +634,17 @@ public class Binding<C extends ValueAware<C, ViewT>, ViewT, B, BeanValueT> {
     ViewT value = event.getValue();
 
     if (shouldAutoValidate || shouldAutoWrite) {
-      result = validate(value, shouldAutoValidate);
+      result = validate(value, true);
     }
 
-    if (shouldAutoWrite) {
-      write(autoWriteBean, true);
+    if (shouldAutoWrite && result.isValid()) {
+      cachedValue = value;
+      isValueCached = true;
+      try {
+        write(autoWriteBean, true);
+      } finally {
+        isValueCached = false;
+      }
     }
 
     if (result != null) {
@@ -719,6 +725,24 @@ public class Binding<C extends ValueAware<C, ViewT>, ViewT, B, BeanValueT> {
     }
   }
 
+  private BeanValueT toModelValue(ViewT value) {
+    return transformer != null ? transformer.transformToModel(value) : tryCastingToBeanValue(value);
+  }
+
+  private ViewT toComponentValue(BeanValueT value) {
+    return transformer != null ? transformer.transformToComponent(value)
+        : tryCastingToComponentValue(value);
+  }
+
+  private boolean isPrimitiveProperty() {
+    try {
+      BeanIntrospection.Property prop = BeanIntrospection.of(beanClass).getProperty(property);
+      return prop != null && prop.descriptor().getPropertyType().isPrimitive();
+    } catch (IntrospectionException e) {
+      return false;
+    }
+  }
+
   @SuppressWarnings("unchecked")
   private BeanValueT tryCastingToBeanValue(Object value) {
     try {
@@ -780,7 +804,7 @@ public class Binding<C extends ValueAware<C, ViewT>, ViewT, B, BeanValueT> {
 
     for (Annotation a : annotations) {
       for (Class<?> indicator : REQUIRED_INDICATOR_ANNOTATIONS) {
-        if (indicator.isInstance(a)) {
+        if (indicator.isInstance(a) && marksRequired(a)) {
           return true;
         }
       }
@@ -789,12 +813,27 @@ public class Binding<C extends ValueAware<C, ViewT>, ViewT, B, BeanValueT> {
     return false;
   }
 
+  private static boolean marksRequired(Annotation annotation) {
+    if (!SIZE_ANNOTATION.equals(annotation.annotationType().getName())) {
+      return true;
+    }
+
+    // An empty text has the length 0, so only a minimum above 0 rejects it. The minimum is read
+    // reflectively because Jakarta validation is optional on the classpath.
+    try {
+      return (int) annotation.annotationType().getMethod("min").invoke(annotation) > 0;
+    } catch (ReflectiveOperationException e) {
+      return true;
+    }
+  }
+
+  private static final String SIZE_ANNOTATION = "jakarta.validation.constraints.Size";
   private static final Class<?>[] REQUIRED_INDICATOR_ANNOTATIONS = resolveRequiredIndicators();
 
   private static Class<?>[] resolveRequiredIndicators() {
     List<String> names =
         List.of("jakarta.validation.constraints.NotNull", "jakarta.validation.constraints.NotEmpty",
-            "jakarta.validation.constraints.NotBlank", "jakarta.validation.constraints.Size");
+            "jakarta.validation.constraints.NotBlank", SIZE_ANNOTATION);
     List<Class<?>> resolved = new ArrayList<>(names.size());
     for (String name : names) {
       try {

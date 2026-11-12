@@ -1,6 +1,7 @@
 package com.webforj.component.optioninput;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -67,6 +68,16 @@ class DwcOptionInputTest {
 
       verify(control, times(0)).setSelected(true);
       verify(control, times(0)).isSelected();
+    }
+
+    @Test
+    void shouldUncheckWhenValueIsNull() throws IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+      component.setChecked(true);
+
+      component.setValue(null);
+
+      assertFalse(component.getValue());
     }
 
     @Test

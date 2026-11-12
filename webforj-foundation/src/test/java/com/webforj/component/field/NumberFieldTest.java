@@ -13,10 +13,14 @@ import com.webforj.component.Expanse;
 import com.webforj.component.ReflectionUtils;
 import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.dispatcher.EventListener;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -175,6 +179,45 @@ class NumberFieldTest {
       NumberField spy = spy(component);
       spy.setValue(10.0);
       verify(spy, times(1)).setText("10");
+    }
+
+    @ParameterizedTest
+    @MethodSource({"provideValuesAndTexts", "provideSpecialValuesAndTexts"})
+    void shouldSetValueAsPlainText(Double value, String text) {
+      NumberField spy = spy(component);
+      spy.setValue(value);
+      verify(spy, times(1)).setText(text);
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideValuesAndTexts")
+    void shouldReadBackTheValueThatWasSet(Double value, String text) throws IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+      component.setValue(value);
+
+      assertEquals(text, component.getText());
+      assertEquals(value, component.getValue());
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideValuesAndTexts")
+    void shouldConvertTextToValue(Double value, String text) {
+      assertEquals(value, component.convertValue(text));
+    }
+
+    private static Stream<Arguments> provideValuesAndTexts() {
+      return Stream.of(Arguments.of(10.0, "10"), Arguments.of(0.0, "0"), Arguments.of(-25.0, "-25"),
+          Arguments.of(2147483647.0, "2147483647"), Arguments.of(-2147483648.0, "-2147483648"),
+          Arguments.of(1.5, "1.5"), Arguments.of(0.1, "0.1"), Arguments.of(-12.25, "-12.25"),
+          Arguments.of(123456.789, "123456.789"), Arguments.of(9876543210.0, "9876543210"),
+          Arguments.of(-9876543210.0, "-9876543210"), Arguments.of(1.0E20, "100000000000000000000"),
+          Arguments.of(1.0E-5, "0.00001"));
+    }
+
+    private static Stream<Arguments> provideSpecialValuesAndTexts() {
+      return Stream.of(Arguments.of(null, "null"), Arguments.of(-0.0, "0"),
+          Arguments.of(Double.NaN, "NaN"), Arguments.of(Double.POSITIVE_INFINITY, "Infinity"),
+          Arguments.of(Double.NEGATIVE_INFINITY, "-Infinity"));
     }
   }
 

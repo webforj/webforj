@@ -1,6 +1,7 @@
 package com.webforj.router.security;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -11,7 +12,12 @@ import static org.mockito.Mockito.when;
 import com.webforj.component.Component;
 import com.webforj.router.NavigationContext;
 import com.webforj.router.observer.RouteRendererObserver.LifecycleEvent;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -120,6 +126,38 @@ class RouteSecurityObserverTest {
 
     verify(continueCallback).accept(false);
     verify(securityManager, never()).onAccessDenied(any(), any());
+  }
+
+  @Test
+  void shouldLogCauseOnEvaluationError() {
+    RuntimeException error = new RuntimeException("Test error");
+    doThrow(error).when(securityManager).evaluate(any(), any());
+    List<LogRecord> records = new ArrayList<>();
+    Handler handler = new Handler() {
+      @Override
+      public void publish(LogRecord logRecord) {
+        records.add(logRecord);
+      }
+
+      @Override
+      public void flush() {}
+
+      @Override
+      public void close() {}
+    };
+    Logger logger = Logger.getLogger(RouteSecurityObserver.class.getName());
+    logger.addHandler(handler);
+
+    try {
+      observer.onInstantiate(TestComponent.class, navigationContext, continueCallback);
+    } finally {
+      logger.removeHandler(handler);
+    }
+
+    assertEquals(1, records.size());
+    assertSame(error, records.get(0).getThrown());
+    assertEquals("Error during security evaluation for route: " + TestComponent.class.getName(),
+        records.get(0).getMessage());
   }
 
   private static class TestComponent extends Component {

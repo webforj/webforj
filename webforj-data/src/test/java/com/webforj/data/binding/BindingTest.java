@@ -20,12 +20,15 @@ import com.webforj.data.transformation.TransformationException;
 import com.webforj.data.transformation.transformer.Transformer;
 import com.webforj.data.validation.server.ValidationResult;
 import com.webforj.data.validation.server.validator.Validator;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class BindingTest {
 
@@ -79,6 +82,15 @@ class BindingTest {
   }
 
   @Test
+  void shouldWriteCurrentValueChangedAfterValidate() {
+    mockComponent.setValue("A");
+    fieldBinding.validate();
+    mockComponent.setValue("B");
+    fieldBinding.write(bean);
+    assertEquals("B", bean.getName());
+  }
+
+  @Test
   void shouldDisableClientValidationWhenAutoValidateEnabled() {
     assertFalse(fieldBinding.isAutoValidate());
     assertTrue(mockComponent.isAutoClientValidate());
@@ -109,6 +121,26 @@ class BindingTest {
         new Binding<>(ageComponentMock, PersonBean.class, "age");
 
     assertTrue(ageBinding.isRequired());
+  }
+
+  @Test
+  void shouldNotDetectRequiredFromSizeWithoutMinimum() {
+    NameComponentMock component = new NameComponentMock();
+    Binding<NameComponentMock, String, SizedBean, String> binding =
+        new Binding<>(component, SizedBean.class, "nickname");
+
+    assertFalse(binding.isRequired());
+    assertFalse(component.isRequired());
+  }
+
+  @Test
+  void shouldDetectRequiredFromSizeWithMinimum() {
+    NameComponentMock component = new NameComponentMock();
+    Binding<NameComponentMock, String, SizedBean, String> binding =
+        new Binding<>(component, SizedBean.class, "code");
+
+    assertTrue(binding.isRequired());
+    assertTrue(component.isRequired());
   }
 
   @Nested
@@ -195,6 +227,17 @@ class BindingTest {
       mockComponent.setValue("Foo");
       assertFalse(fieldBinding.write(bean).isValid());
       assertEquals("John Doe", bean.getName());
+    }
+
+    @Test
+    void shouldNotValidateWhenWriteSkipsValidation() {
+      AtomicInteger reports = new AtomicInteger();
+      fieldBinding.setReporter((result, binding) -> reports.incrementAndGet());
+
+      mockComponent.setValue("Foo");
+      assertTrue(fieldBinding.write(bean, true).isValid());
+      assertEquals("Foo", bean.getName());
+      assertEquals(0, reports.get());
     }
 
     @Test
@@ -339,6 +382,50 @@ class BindingTest {
       assertEquals("Write error B", result2.getMessages().get(0));
     }
 
+    @Test
+    void shouldValidateNullReturnedByTransformer() {
+      AtomicReference<String> validated = new AtomicReference<>("unset");
+      fieldBinding.setTransformer(new NullTransformer());
+      fieldBinding.addValidator(value -> {
+        validated.set(value);
+        return ValidationResult.valid();
+      });
+
+      mockComponent.setValue("");
+      assertTrue(fieldBinding.validate(false).isValid());
+      assertNull(validated.get());
+    }
+
+    @Test
+    void shouldWriteNullReturnedByTransformer() {
+      fieldBinding.setTransformer(new NullTransformer());
+      mockComponent.setValue("");
+      assertTrue(fieldBinding.write(bean, false).isValid());
+      assertNull(bean.getName());
+    }
+
+    @Test
+    void shouldReadNullReturnedByTransformer() {
+      fieldBinding.setTransformer(new NullTransformer());
+      mockComponent.setValue("Foo");
+      fieldBinding.read(bean);
+      assertNull(mockComponent.getValue());
+    }
+
+    @Test
+    void shouldReportNullReturnedByTransformerForPrimitiveProperty() {
+      Binding<NameComponentMock, String, PersonBean, Integer> ageBinding =
+          new Binding<>(mockComponent, PersonBean.class, "age");
+      ageBinding.setTransformer(Transformer.of(v -> null, String::valueOf));
+      mockComponent.setValue("");
+
+      ValidationResult result = ageBinding.write(bean, false);
+
+      assertFalse(result.isValid());
+      assertEquals("A value is required.", result.getMessages().get(0));
+      assertEquals(30, bean.getAge());
+    }
+
     private final class FailTransformer implements Transformer<String, String> {
 
       @Override
@@ -349,6 +436,19 @@ class BindingTest {
       @Override
       public String transformToComponent(String modelValue) {
         throw new TransformationException("Transformation failed");
+      }
+    }
+
+    private final class NullTransformer implements Transformer<String, String> {
+
+      @Override
+      public String transformToModel(String viewValue) {
+        return null;
+      }
+
+      @Override
+      public String transformToComponent(String modelValue) {
+        return null;
       }
     }
   }
@@ -384,6 +484,27 @@ class BindingTest {
 
       mockComponent.setValue("Foo");
       assertEquals("Foo bar", localBean.getName());
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldValidateAndReportOncePerAutoWriteChange(boolean autoValidate) {
+      fieldBinding.setAutoValidate(autoValidate);
+      AtomicInteger validations = new AtomicInteger();
+      AtomicInteger reports = new AtomicInteger();
+      fieldBinding.addValidator(value -> {
+        validations.incrementAndGet();
+        return ValidationResult.valid();
+      });
+      fieldBinding.setReporter((result, binding) -> reports.incrementAndGet());
+      PersonBean localBean = new PersonBean();
+      fieldBinding.setAutoWrite(localBean);
+
+      mockComponent.setValue("Foo bar");
+
+      assertEquals("Foo bar", localBean.getName());
+      assertEquals(1, validations.get());
+      assertEquals(1, reports.get());
     }
 
     @Test

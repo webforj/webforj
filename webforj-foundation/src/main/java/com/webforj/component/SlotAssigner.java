@@ -232,9 +232,10 @@ public final class SlotAssigner {
     Optional.ofNullable(assigner)
         .ifPresentOrElse(invoker -> invoker.assign(theSlot, targetControl, slotControl), () -> {
           try {
+            boolean visible = slotControl.isVisible();
             slotControl.setVisible(false);
             targetControl.setSlot(theSlot, slotControl);
-            slotControl.setVisible(true);
+            slotControl.setVisible(visible);
           } catch (BBjException e) {
             String message = "Failed to assign slot \"" + slot + "\" to component \""
                 + this.targetComponent.getClass().getName() + "\".";

@@ -113,6 +113,26 @@ class ColumnTest {
   }
 
   @Test
+  void shouldClearTheSortWhenSortingIsDisabled() {
+    column.setSortable(true).setSortDirection(SortDirection.DESC).setSortIndex(2);
+
+    column.setSortable(false);
+
+    assertEquals(SortDirection.NONE, column.getSortDirection());
+    assertEquals(0, column.getSortIndex());
+  }
+
+  @Test
+  void shouldKeepTheSortOfColumnThatWasNeverSortable() {
+    column.setSortDirection(SortDirection.DESC).setSortIndex(2);
+
+    column.setSortable(false);
+
+    assertEquals(SortDirection.DESC, column.getSortDirection());
+    assertEquals(2, column.getSortIndex());
+  }
+
+  @Test
   void shouldGetValue() {
     column.setValueProvider(String::toUpperCase);
     assertEquals("HELLO", column.getValue("Hello"));

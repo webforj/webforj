@@ -8,21 +8,27 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mockStatic;
 
+import com.google.gson.Gson;
 import com.webforj.component.Component;
 import com.webforj.component.element.Element;
 import com.webforj.component.element.ElementComposite;
 import com.webforj.component.element.PropertyDescriptorTester;
+import com.webforj.component.layout.appnav.AppNavItem.NavigationTarget;
 import com.webforj.router.RouteRegistry;
 import com.webforj.router.Router;
 import com.webforj.router.annotation.Route;
 import com.webforj.router.history.MemoryHistory;
 import com.webforj.router.history.ParametersBag;
 import java.util.Map;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockedStatic;
 
 class AppNavItemTest {
@@ -186,6 +192,21 @@ class AppNavItemTest {
 
       component.setPinKey("explicit");
       assertEquals("explicit", component.getPinKey());
+    }
+
+    @ParameterizedTest
+    @MethodSource("getTargetClientValues")
+    void shouldSerializeTargetToClientValue(NavigationTarget target, String clientValue) {
+      component.setTarget(target);
+
+      assertEquals(clientValue, new Gson().toJson(component.getTarget()));
+    }
+
+    private static Stream<Arguments> getTargetClientValues() {
+      return Stream.of(Arguments.of(NavigationTarget.SELF, "\"_self\""),
+          Arguments.of(NavigationTarget.BLANK, "\"_blank\""),
+          Arguments.of(NavigationTarget.PARENT, "\"_parent\""),
+          Arguments.of(NavigationTarget.TOP, "\"_top\""));
     }
   }
 

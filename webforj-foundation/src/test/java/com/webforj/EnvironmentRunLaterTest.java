@@ -4,17 +4,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 import com.basis.bbj.proxies.BBjAPI;
 import com.basis.bbj.proxies.BBjSysGui;
 import com.basis.startup.type.BBjException;
+import com.webforj.exceptions.WebforjWebManagerException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -22,6 +28,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -384,5 +393,67 @@ class EnvironmentRunLaterTest {
     assertTrue(eventPosted.await(2, TimeUnit.SECONDS), "The named target should be reached");
     assertNotNull(capturedRequestId.get());
     assertFalse(resultRef.get().isDone(), "The result waits for the Environment to process it");
+  }
+
+  @Test
+  void shouldLogTheCauseWhenPostingTheRequestFails() throws Exception {
+    BBjException error = new BBjException("Post failed", 0);
+    AtomicReference<String> requestId = new AtomicReference<>();
+    doAnswer(invocation -> {
+      requestId.set(invocation.getArgument(1));
+      throw error;
+    }).when(mockApi).postCustomEvent(anyString(), anyString());
+    List<LogRecord> records = new ArrayList<>();
+    Logger logger = Logger.getLogger(Environment.class.getName());
+    Handler handler = createRecordingHandler(records);
+    logger.addHandler(handler);
+
+    try {
+      foreignThread.submit(() -> Environment.runLater(environment, () -> "named")).get(2,
+          TimeUnit.SECONDS);
+    } finally {
+      logger.removeHandler(handler);
+    }
+
+    LogRecord errorRecord = records.get(records.size() - 1);
+    assertSame(error, errorRecord.getThrown());
+    assertEquals("Failed to post custom event for request " + requestId.get() + ": Post failed",
+        errorRecord.getMessage());
+  }
+
+  @Test
+  void shouldLogTheCauseWhenRegisteringTheRunLaterCallbackFails() throws Exception {
+    BBjException error = new BBjException("Register failed", 0);
+    doThrow(error).when(mockApi).setCustomEventCallback(anyString(), any(), anyString());
+    List<LogRecord> records = new ArrayList<>();
+    Logger logger = Logger.getLogger(Environment.class.getName());
+    Handler handler = createRecordingHandler(records);
+    logger.addHandler(handler);
+
+    try {
+      assertThrows(WebforjWebManagerException.class, () -> Environment.init(mockApi, 0));
+    } finally {
+      logger.removeHandler(handler);
+    }
+
+    LogRecord errorRecord = records.get(records.size() - 1);
+    assertSame(error, errorRecord.getThrown());
+    assertEquals("Failed to register runLater event handler: Register failed",
+        errorRecord.getMessage());
+  }
+
+  private static Handler createRecordingHandler(List<LogRecord> records) {
+    return new Handler() {
+      @Override
+      public void publish(LogRecord logRecord) {
+        records.add(logRecord);
+      }
+
+      @Override
+      public void flush() {}
+
+      @Override
+      public void close() {}
+    };
   }
 }

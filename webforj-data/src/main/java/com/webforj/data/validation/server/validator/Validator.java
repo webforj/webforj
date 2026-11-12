@@ -79,18 +79,6 @@ public interface Validator<V> {
    * @since 25.12
    */
   public static <V> Validator<V> from(Validator<V> validator, Supplier<String> messageSupplier) {
-    return value -> {
-      ValidationResult result = validator.validate(value);
-      if (result.isValid()) {
-        return ValidationResult.valid();
-      } else {
-        String message = messageSupplier.get();
-        if (message == null || message.isEmpty()) {
-          return ValidationResult.invalid(result.getMessages());
-        } else {
-          return ValidationResult.invalid(message);
-        }
-      }
-    };
+    return new MessageValidator<>(validator, messageSupplier);
   }
 }

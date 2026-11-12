@@ -1,6 +1,7 @@
 package com.webforj.data;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -128,5 +129,75 @@ class PaginatorTest {
     assertEquals(2, repo.getOffset());
     assertEquals(2, repo.getLimit());
     assertIterableEquals(List.of("three", "four"), repo.findAll().toList());
+  }
+
+  @Test
+  void shouldStopListeningToRepositoryWhenDestroyed() {
+    Repository<String> repo = new CollectionRepository<>(
+        List.of("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"));
+    Paginator destroyed = new Paginator(repo, 2);
+    destroyed.setCurrent(3);
+    destroyed.destroy();
+
+    paginator = new Paginator(repo, 2);
+    paginator.setCurrent(2);
+    repo.commit();
+
+    assertEquals(2, repo.getOffset());
+  }
+
+  @Test
+  void shouldCountAllItemsOfPagedRepository() {
+    Repository<String> repo = new CollectionRepository<>(
+        List.of("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"));
+    repo.setOffset(4);
+    repo.setLimit(2);
+
+    paginator = new Paginator(repo, 2);
+
+    assertEquals(10, paginator.getTotalItems());
+  }
+
+  @Test
+  void shouldRestoreRepositoryWindowWhenSizeFails() {
+    Repository<String> repo = new CollectionRepository<>(List.of("one", "two", "three", "four")) {
+      @Override
+      public int size() {
+        throw new IllegalStateException("size failed");
+      }
+    };
+    repo.setOffset(2);
+    repo.setLimit(2);
+
+    assertThrows(IllegalStateException.class, () -> new Paginator(repo, 2));
+
+    assertEquals(2, repo.getOffset());
+    assertEquals(2, repo.getLimit());
+  }
+
+  @Test
+  void shouldNotMoveRepositoryWhenDestroyed() {
+    Repository<String> repo =
+        new CollectionRepository<>(List.of("one", "two", "three", "four", "five", "six"));
+    paginator = new Paginator(repo, 2);
+    paginator.destroy();
+    paginator.setCurrent(3);
+
+    assertEquals(0, repo.getOffset());
+  }
+
+  @Test
+  void shouldSetTotalItemsWhenDestroyed() {
+    Repository<String> repo = new CollectionRepository<>(List.of("one", "two", "three", "four"));
+    paginator = new Paginator(repo, 2);
+    paginator.destroy();
+    paginator.setTotalItems(3);
+
+    assertEquals(3, paginator.getTotalItems());
+  }
+
+  @Test
+  void shouldDestroyWithoutRepository() {
+    assertDoesNotThrow(paginator::destroy);
   }
 }

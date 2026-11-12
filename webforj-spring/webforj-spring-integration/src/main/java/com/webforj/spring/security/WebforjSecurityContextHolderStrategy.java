@@ -24,7 +24,7 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
  */
 public final class WebforjSecurityContextHolderStrategy implements SecurityContextHolderStrategy {
 
-  private final ThreadLocal<SecurityContext> contextHolder = new ThreadLocal<>();
+  private static final ThreadLocal<SecurityContext> contextHolder = new ThreadLocal<>();
 
   @Override
   public void clearContext() {

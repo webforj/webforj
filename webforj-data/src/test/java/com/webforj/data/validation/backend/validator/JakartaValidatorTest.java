@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -14,12 +15,22 @@ import com.webforj.data.validation.server.validator.JakartaValidator;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.MessageInterpolator;
 import jakarta.validation.ValidatorFactory;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import jakarta.validation.metadata.ConstraintDescriptor;
+import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 
 class JakartaValidatorTest {
@@ -110,5 +121,57 @@ class JakartaValidatorTest {
     assertFalse(result.isValid());
     assertEquals(1, result.getMessages().size());
     assertEquals("Invalid data", result.getMessages().get(0));
+  }
+
+  @ParameterizedTest
+  @MethodSource("provideViolationOrders")
+  void shouldReportMessagesInTheSameOrderWhateverTheViolationOrder(
+      List<Class<? extends Annotation>> violationOrder) {
+    Set<ConstraintViolation<PersonBean>> violations = new LinkedHashSet<>();
+    for (Class<? extends Annotation> constraintType : violationOrder) {
+      violations.add(createViolation(constraintType, constraintType.getSimpleName()));
+    }
+
+    when(mockInterpolator.interpolate(anyString(), any(), any(Locale.class)))
+        .thenAnswer(invocation -> invocation.getArgument(0));
+    when(mockValidator.validateValue(PersonBean.class, "name", "a@")).thenReturn(violations);
+
+    ValidationResult result = jakartaValidator.validate("a@");
+
+    assertEquals(List.of("Email", "Size"), result.getMessages());
+  }
+
+  @Test
+  void shouldReportMessagesOfOneConstraintTypeInTemplateOrder() {
+    Set<ConstraintViolation<PersonBean>> violations = new LinkedHashSet<>();
+    violations.add(createViolation(Pattern.class, "Upper"));
+    violations.add(createViolation(Pattern.class, "Digit"));
+
+    when(mockInterpolator.interpolate(anyString(), any(), any(Locale.class)))
+        .thenAnswer(invocation -> invocation.getArgument(0));
+    when(mockValidator.validateValue(PersonBean.class, "name", "a")).thenReturn(violations);
+
+    ValidationResult result = jakartaValidator.validate("a");
+
+    assertEquals(List.of("Digit", "Upper"), result.getMessages());
+  }
+
+  private static Stream<List<Class<? extends Annotation>>> provideViolationOrders() {
+    return Stream.of(List.of(Email.class, Size.class), List.of(Size.class, Email.class));
+  }
+
+  private ConstraintViolation<PersonBean> createViolation(Class<? extends Annotation> type,
+      String messageTemplate) {
+    Annotation annotation = mock(type);
+    doReturn(type).when(annotation).annotationType();
+
+    ConstraintDescriptor<?> descriptor = mock(ConstraintDescriptor.class);
+    doReturn(annotation).when(descriptor).getAnnotation();
+
+    ConstraintViolation<PersonBean> violation = mock(ConstraintViolation.class);
+    doReturn(descriptor).when(violation).getConstraintDescriptor();
+    when(violation.getMessageTemplate()).thenReturn(messageTemplate);
+
+    return violation;
   }
 }

@@ -9,6 +9,7 @@ import jakarta.validation.MessageInterpolator.Context;
 import jakarta.validation.Validation;
 import jakarta.validation.ValidatorFactory;
 import jakarta.validation.metadata.ConstraintDescriptor;
+import java.util.Comparator;
 import java.util.Locale;
 import java.util.Set;
 
@@ -23,6 +24,11 @@ import java.util.Set;
  */
 public class JakartaValidator<B, V>
     implements Validator<V>, BeanAware<B>, PropertyNameAware, LocaleAware<JakartaValidator<B, V>> {
+  private static final Comparator<ConstraintViolation<?>> VIOLATION_ORDER = Comparator
+      .<ConstraintViolation<?>, String>comparing(
+          v -> v.getConstraintDescriptor().getAnnotation().annotationType().getName())
+      .thenComparing(ConstraintViolation::getMessageTemplate);
+
   private Class<B> beanClass;
   private String propertyName;
   private ValidatorFactory validatorFactory;
@@ -85,7 +91,8 @@ public class JakartaValidator<B, V>
     if (violations.isEmpty()) {
       return ValidationResult.valid();
     } else {
-      return ValidationResult.invalid(violations.stream().map(v -> getMessage(v, locale)).toList());
+      return ValidationResult.invalid(
+          violations.stream().sorted(VIOLATION_ORDER).map(v -> getMessage(v, locale)).toList());
     }
   }
 
