@@ -14,6 +14,10 @@ import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthen
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
+import org.springframework.security.web.util.matcher.AndRequestMatcher;
+import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
  * Configures the resource server of a webforJ application to read the bearer token from a cookie
@@ -67,8 +71,10 @@ public final class WebforjBearerTokenConfigurer
         context.getBean(WebforjFrameworkRequestMatcher.class);
     WebforjBearerTokenResolver resolver =
         new WebforjBearerTokenResolver(cookieName, frameworkMatcher);
+    RequestMatcher openPageMatcher = new AndRequestMatcher(frameworkMatcher,
+        new NegatedRequestMatcher(new RequestHeaderRequestMatcher("Sec-Fetch-Mode", "navigate")));
     WebforjBearerTokenContextRepository repository =
-        new WebforjBearerTokenContextRepository(frameworkMatcher);
+        new WebforjBearerTokenContextRepository(openPageMatcher);
     AtomicReference<AuthenticationEntryPoint> entryPoint =
         new AtomicReference<>(new BearerTokenAuthenticationEntryPoint());
     WebforjBearerTokenFailureHandler failureHandler = new WebforjBearerTokenFailureHandler(resolver,

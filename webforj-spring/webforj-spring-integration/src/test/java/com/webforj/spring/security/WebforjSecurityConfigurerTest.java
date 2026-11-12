@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -939,6 +940,41 @@ class WebforjSecurityConfigurerTest {
     }
 
     @Test
+    void shouldStoreLoginOfTokenCookieOnNavigationToPrefixedServletRoot() throws Exception {
+      try (AnnotationConfigWebApplicationContext prefixedContext = createPrefixedContext()) {
+        String token = prefixedContext.getBean(TokenSource.class).createValid("ada", "USER");
+        MockMvc prefixedMvc =
+            MockMvcBuilders.webAppContextSetup(prefixedContext).apply(springSecurity()).build();
+        session.setNew(false);
+        String sessionId = session.getId();
+
+        prefixedMvc.perform(get("/app/").session(session).cookie(new Cookie("jwt", token))
+            .header("Sec-Fetch-Mode", "navigate"));
+
+        assertNotEquals(sessionId, session.getId());
+        assertNotNull(session.getAttribute(KEY));
+        SecurityContext stored = (SecurityContext) session.getAttribute(KEY);
+        assertEquals("ada", stored.getAuthentication().getName());
+      }
+    }
+
+    @Test
+    void shouldStoreNothingForTokenCookieOnOpenPageRequestToPrefixedServletRoot() throws Exception {
+      try (AnnotationConfigWebApplicationContext prefixedContext = createPrefixedContext()) {
+        String token = prefixedContext.getBean(TokenSource.class).createValid("ada", "USER");
+        MockMvc prefixedMvc =
+            MockMvcBuilders.webAppContextSetup(prefixedContext).apply(springSecurity()).build();
+        session.setNew(false);
+        String sessionId = session.getId();
+
+        prefixedMvc.perform(get("/app/").session(session).cookie(new Cookie("jwt", token)));
+
+        assertNull(session.getAttribute(KEY));
+        assertEquals(sessionId, session.getId());
+      }
+    }
+
+    @Test
     void shouldDeleteTokenCookieOnLogout() throws Exception {
       String token = tokens.createValid("ada", "USER");
 
@@ -974,6 +1010,15 @@ class WebforjSecurityConfigurerTest {
 
       assertEquals(1, plainContext.getBeansOfType(SecurityFilterChain.class).size());
       plainContext.close();
+    }
+
+    private AnnotationConfigWebApplicationContext createPrefixedContext() {
+      AnnotationConfigWebApplicationContext prefixedContext =
+          new AnnotationConfigWebApplicationContext();
+      prefixedContext.setServletContext(new MockServletContext());
+      prefixedContext.register(PrefixedBearerTokenSecurityConfig.class);
+      prefixedContext.refresh();
+      return prefixedContext;
     }
 
     private MockMvc createMockMvc(SecurityFilterChain chain) {
@@ -1034,6 +1079,18 @@ class WebforjSecurityConfigurerTest {
       SpringConfigurationProperties springConfigurationProperties() {
         SpringConfigurationProperties properties = new SpringConfigurationProperties();
         properties.setServletMapping("/*");
+        return properties;
+      }
+    }
+
+    @Configuration
+    static class PrefixedBearerTokenSecurityConfig extends BearerTokenSecurityConfig {
+
+      @Override
+      @Bean
+      SpringConfigurationProperties springConfigurationProperties() {
+        SpringConfigurationProperties properties = new SpringConfigurationProperties();
+        properties.setServletMapping("/app/*");
         return properties;
       }
     }
