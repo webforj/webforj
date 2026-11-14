@@ -58,6 +58,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-oauth2-resource-server</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-mcp-apps</artifactId>
       <version>${project.version}</version>
@@ -129,6 +135,12 @@
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-oauth2-jose</artifactId>
       <scope>test</scope>
     </dependency>
 
