@@ -91,6 +91,7 @@
     <module>webforj-testbed</module>
     <module>webforj-webswing</module>
     <module>webforj-push</module>
+    <module>webforj-bbj-security</module>
   </modules>
 
 
