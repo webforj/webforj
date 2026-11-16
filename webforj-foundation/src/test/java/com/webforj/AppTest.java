@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -21,7 +22,9 @@ import com.basis.startup.type.BBjVector;
 import com.typesafe.config.Config;
 import com.webforj.component.window.Frame;
 import com.webforj.environment.ObjectTable;
+import com.webforj.geolocation.Geolocation;
 import com.webforj.i18n.TranslationResolver;
+import com.webforj.router.Router;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -175,6 +178,36 @@ class AppTest {
 
       assertTrue(frames.contains(f1));
       assertTrue(frames.contains(f2));
+    }
+  }
+
+  @Nested
+  class Termination {
+
+    @Test
+    void shouldRunTerminationOnceWhenTerminateIsCalledAgain() throws BBjException {
+      Page page = mock(Page.class);
+      Geolocation geolocation = mock(Geolocation.class);
+      Router router = mock(Router.class);
+      when(sysGui.getWindows()).thenReturn(new BBjVector());
+
+      try (MockedStatic<Environment> mockedEnvironment = mockStatic(Environment.class);
+          MockedStatic<Page> mockedPage = mockStatic(Page.class);
+          MockedStatic<Geolocation> mockedGeolocation = mockStatic(Geolocation.class);
+          MockedStatic<Router> mockedRouter = mockStatic(Router.class)) {
+        mockedEnvironment.when(Environment::getCurrent).thenReturn(environment);
+        mockedPage.when(Page::getCurrent).thenReturn(page);
+        mockedGeolocation.when(Geolocation::getCurrent).thenReturn(geolocation);
+        mockedRouter.when(Router::getCurrent).thenReturn(router);
+
+        app.terminate();
+        app.terminate();
+
+        verify(app, times(1)).onWillTerminate();
+        verify(app, times(1)).onDidTerminate();
+        verify(page, times(1)).destroy();
+        verify(api, times(1)).postPriorityCustomEvent("webforjTerminateSignal", null);
+      }
     }
   }
 
