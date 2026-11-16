@@ -148,6 +148,17 @@ class ComponentRegistryTest {
   }
 
   @Test
+  @DisplayName("Should remove a destroyed component whose id is no longer available")
+  void shouldRemoveDestroyedComponentWithoutStubbedId() {
+    Component child = spy(Component.class);
+    registry.add(child);
+
+    child.destroy();
+
+    assertTrue(registry.getComponents().isEmpty());
+  }
+
+  @Test
   @DisplayName("getComponents should return an unmodifiable list of components")
   void getComponentsShouldReturnUnmodifiableList() {
     registry.add(component);

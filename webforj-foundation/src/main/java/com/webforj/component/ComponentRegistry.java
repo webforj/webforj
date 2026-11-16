@@ -5,6 +5,7 @@ import com.webforj.component.ComponentLifecycleObserver.LifecycleEvent;
 import com.webforj.concern.HasComponents;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +25,16 @@ public final class ComponentRegistry implements HasComponents {
   private final ComponentLifecycleObserver observer =
       (Component component, LifecycleEvent event) -> {
         if (event == LifecycleEvent.DESTROY) {
-          components.remove(component.getComponentId());
+          // The id of a destroyed component is no longer available, so the entry is found by
+          // identity. Children are usually destroyed in insertion order, the match is then the
+          // first entry.
+          Iterator<Component> iterator = components.values().iterator();
+          while (iterator.hasNext()) {
+            if (iterator.next() == component) {
+              iterator.remove();
+              break;
+            }
+          }
         }
 
         if (event == LifecycleEvent.CREATE) {
