@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -159,6 +160,7 @@ public abstract class App {
   private final String appId;
   private boolean isInitialized = false;
   private boolean initializationStarted;
+  private final AtomicBoolean terminated = new AtomicBoolean(false);
   private History routerHistory;
 
   static {
@@ -670,8 +672,16 @@ public abstract class App {
 
   /**
    * Terminate the application.
+   *
+   * <p>
+   * The termination runs once per app. A later call does nothing.
+   * </p>
    */
   public final void terminate() {
+    if (!terminated.compareAndSet(false, true)) {
+      return;
+    }
+
     logger.log(Logger.Level.INFO, String.format("Terminating %s", appId));
 
     // Invoke onWillTerminate hook
