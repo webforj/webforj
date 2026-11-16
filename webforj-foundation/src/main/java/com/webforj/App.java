@@ -1055,16 +1055,28 @@ public abstract class App {
    * @param event The navigation event object
    */
   private void handleFramesVisibility(NavigateEvent event) {
-    event.getContext().getActiveFrame().ifPresent(activeFrame -> {
-      List<Frame> frames = App.getFrames();
-      frames.forEach(f -> {
-        if (!f.equals(activeFrame)) {
-          f.setVisible(false);
-        }
-      });
+    event.getContext().getActiveFrame()
+        .ifPresent(activeFrame -> showOnlyFrame(activeFrame, App.getFrames()));
+  }
 
-      activeFrame.setVisible(true);
+  /**
+   * Hides every frame of the given list except the given one and shows the given one.
+   *
+   * @param activeFrame the frame to show
+   * @param frames the frames of the app
+   */
+  static void showOnlyFrame(Frame activeFrame, List<Frame> frames) {
+    frames.forEach(f -> {
+      if (!f.equals(activeFrame)) {
+        f.setVisible(false);
+      }
     });
+
+    // showing a frame that is already visible changes nothing on screen, but the browser then
+    // computes the layout of the whole page synchronously, while the page is still being built
+    if (!activeFrame.isVisible()) {
+      activeFrame.setVisible(true);
+    }
   }
 
   /**
