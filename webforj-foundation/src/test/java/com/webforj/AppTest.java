@@ -306,4 +306,46 @@ class AppTest {
       assertThrows(IllegalArgumentException.class, () -> App.setBadge(-1));
     }
   }
+
+  @Nested
+  class FramesVisibility {
+
+    @Test
+    void shouldNotShowTheActiveFrameAgainWhenItIsVisible() {
+      Frame active = mock(Frame.class);
+      Frame other = mock(Frame.class);
+      when(active.isVisible()).thenReturn(true);
+
+      App.showOnlyFrame(active, List.of(active, other));
+
+      verify(other).setVisible(false);
+      verify(active, org.mockito.Mockito.never()).setVisible(true);
+    }
+
+    @Test
+    void shouldHideTheOtherFramesBeforeShowingTheActiveOne() {
+      Frame first = mock(Frame.class);
+      Frame second = mock(Frame.class);
+      when(second.isVisible()).thenReturn(false);
+
+      App.showOnlyFrame(second, List.of(first, second));
+
+      org.mockito.InOrder order = org.mockito.Mockito.inOrder(first, second);
+      order.verify(first).setVisible(false);
+      order.verify(second).setVisible(true);
+    }
+
+    @Test
+    void shouldShowTheActiveFrameWhenItIsHidden() {
+      Frame active = mock(Frame.class);
+      Frame other = mock(Frame.class);
+      when(active.isVisible()).thenReturn(false);
+
+      App.showOnlyFrame(active, List.of(other, active));
+
+      verify(other).setVisible(false);
+      verify(active).setVisible(true);
+      verify(active, org.mockito.Mockito.never()).setVisible(false);
+    }
+  }
 }
