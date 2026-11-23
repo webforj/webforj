@@ -9,7 +9,6 @@ import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Stream;
 
 /**
@@ -58,42 +57,54 @@ public final class BBjShipClasspaths {
   }
 
   /**
-   * Adds the servlet and base classpaths that are missing and leaves the ones BBjShip owns as they
-   * are, removing what was added when a write fails.
+   * Adds the servlet and base classpaths that are missing, keeps the servlet classpath BBjShip owns
+   * as it is and updates the base classpath to the BBj libraries.
+   *
+   * <p>
+   * An owned base classpath that differs from the jar files of the BBj library folder is replaced
+   * by them. When a write fails, the classpaths are restored as they were.
+   * </p>
    *
    * @throws IOException if the BBjShip library or the BBj libraries are missing, or a BBjShip
    *         classpath belongs to another application
    * @throws BBjAdminException if BBjServices refuses the registration
    */
-  void addMissing() throws IOException, BBjAdminException {
+  void update() throws IOException, BBjAdminException {
     List<String> names = admin.getClasspathNames();
-    Map<String, List<String>> missing = new LinkedHashMap<>();
+    Map<String, List<String>> writes = new LinkedHashMap<>();
+    Map<String, List<String>> previous = new LinkedHashMap<>();
     if (names.contains(SERVLET_CLASSPATH)) {
       applyServletValidation(admin.getClasspath(SERVLET_CLASSPATH));
     } else {
-      missing.put(SERVLET_CLASSPATH, List.of(BBJ_DEFAULT, readLibrary()));
+      writes.put(SERVLET_CLASSPATH, List.of(BBJ_DEFAULT, readLibrary()));
+      previous.put(SERVLET_CLASSPATH, null);
     }
 
+    List<String> base = null;
     if (names.contains(BASE_CLASSPATH)) {
-      applyBaseValidation(admin.getClasspath(BASE_CLASSPATH));
-    } else {
-      List<String> libraries = readBBjLibraries();
-      applyBaseValidation(libraries);
-      missing.put(BASE_CLASSPATH, libraries);
+      base = admin.getClasspath(BASE_CLASSPATH);
+      applyBaseValidation(base);
     }
 
-    if (missing.isEmpty()) {
+    List<String> libraries = readBBjLibraries();
+    applyBaseValidation(libraries);
+    if (!libraries.equals(base)) {
+      writes.put(BASE_CLASSPATH, libraries);
+      previous.put(BASE_CLASSPATH, base);
+    }
+
+    if (writes.isEmpty()) {
       return;
     }
 
     try {
-      for (Map.Entry<String, List<String>> classpath : missing.entrySet()) {
+      for (Map.Entry<String, List<String>> classpath : writes.entrySet()) {
         admin.setClasspath(classpath.getKey(), classpath.getValue());
       }
 
       admin.commit();
     } catch (BBjAdminException | RuntimeException failure) {
-      applyRollback(missing.keySet(), failure);
+      applyRollback(previous, failure);
       throw failure;
     }
   }
@@ -177,19 +188,33 @@ public final class BBjShipClasspaths {
   private void applyBaseValidation(List<String> entries) throws IOException {
     Path owned = plugin.getBBjLibraries().toRealPath();
     for (String entry : entries) {
-      Path path = Path.of(entry);
-      if (entry.contains("*") || entry.contains("?") || !Files.isRegularFile(path)
-          || !path.getFileName().toString().endsWith(".jar")
-          || !owned.equals(path.toRealPath().getParent())) {
+      if (!isOwnedLibrary(entry, owned)) {
         throw new IOException(UNOWNED_BASE_CLASSPATH);
       }
     }
   }
 
-  private void applyRollback(Set<String> names, Exception failure) {
-    for (String name : names) {
+  private boolean isOwnedLibrary(String entry, Path owned) throws IOException {
+    Path path = Path.of(entry).toAbsolutePath();
+    Path name = path.getFileName();
+    if (entry.contains("*") || entry.contains("?") || name == null
+        || !name.toString().endsWith(".jar")) {
+      return false;
+    }
+
+    if (Files.exists(path)) {
+      return Files.isRegularFile(path) && owned.equals(path.toRealPath().getParent());
+    }
+
+    Path parent = path.getParent();
+
+    return Files.isDirectory(parent) && owned.equals(parent.toRealPath());
+  }
+
+  private void applyRollback(Map<String, List<String>> previous, Exception failure) {
+    for (Map.Entry<String, List<String>> classpath : previous.entrySet()) {
       try {
-        admin.setClasspath(name, null);
+        admin.setClasspath(classpath.getKey(), classpath.getValue());
       } catch (BBjAdminException | RuntimeException cleanup) {
         failure.addSuppressed(cleanup);
       }

@@ -94,7 +94,8 @@ public final class BBjShipSession {
 
   /**
    * Opens the administration session with the resolved credentials and adds the BBjShip runtime
-   * folders, the BBjShip classpaths and the assets context when they are missing.
+   * folders, the BBjShip classpaths and the assets context when they are missing, and updates the
+   * base classpath to the BBj libraries.
    *
    * @param credentials the credentials options of the command
    * @param httpPort the HTTP port of the command, empty when the command has none
@@ -115,7 +116,7 @@ public final class BBjShipSession {
     BBjAdminBase admin = sessions.create(resolved);
     try {
       BBjShipContexts contexts = createContexts(admin);
-      new BBjShipClasspaths(admin, plugin).addMissing();
+      new BBjShipClasspaths(admin, plugin).update();
       assetsStarted = contexts.addAssets(httpPort, sslPort);
       Files.createDirectories(plugin.getDeployments());
       contexts.createDocumentRoots();
