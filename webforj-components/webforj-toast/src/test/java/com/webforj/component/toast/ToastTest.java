@@ -11,7 +11,8 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.webforj.concern.HasTheme;
+import com.basis.bbj.proxies.BBjAPI;
+import com.basis.bbj.proxies.BBjObjectTable;
 import com.basis.bbj.proxies.BBjSysGui;
 import com.basis.bbj.proxies.sysgui.BBjTopLevelWindow;
 import com.basis.startup.type.BBjException;
@@ -20,6 +21,7 @@ import com.webforj.Environment;
 import com.webforj.component.Theme;
 import com.webforj.component.element.PropertyDescriptorTester;
 import com.webforj.component.window.Frame;
+import com.webforj.concern.HasTheme;
 import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -175,11 +177,15 @@ class ToastTest {
   @Test
   void shouldCreateFrameIfNotExists() throws BBjException {
     Environment environment = mock(Environment.class);
+    BBjAPI api = mock(BBjAPI.class);
+    BBjObjectTable objectTable = mock(BBjObjectTable.class);
     BBjSysGui sysGui = mock(BBjSysGui.class);
     BBjTopLevelWindow mockWindow = mock(BBjTopLevelWindow.class); // Create a mock for BBjWindow
 
     try (MockedStatic<Environment> mockedEnvironment = mockStatic(Environment.class)) {
       mockedEnvironment.when(Environment::getCurrent).thenReturn(environment);
+      when(environment.getBBjAPI()).thenReturn(api);
+      when(api.getObjectTable()).thenReturn(objectTable);
       when(environment.getSysGui()).thenReturn(sysGui);
       when(sysGui.addWindow(any(), anyString(), any(byte[].class))).thenReturn(mockWindow);
 
