@@ -376,7 +376,8 @@ class AppTest {
     private Router initializeRoutableApp(boolean isBbjServices, String contextPath)
         throws Exception {
       Page page = mock(Page.class);
-      when(environment.getConfig()).thenReturn(mock(Config.class));
+      Config config = mock(Config.class);
+      when(environment.getConfig()).thenReturn(config);
       RoutableApp routableApp = new RoutableApp();
       routableApp.setRouterHistory(new MemoryHistory());
 
