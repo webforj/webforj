@@ -523,6 +523,46 @@ class BindingTest {
   }
 
   @Nested
+  class ComponentReads {
+    ReadCountingNameComponentMock component;
+    Binding<NameComponentMock, String, PersonBean, String> binding;
+
+    @BeforeEach
+    void setup() {
+      component = new ReadCountingNameComponentMock();
+      binding = new Binding<>(component, PersonBean.class, "name");
+    }
+
+    @Test
+    void shouldReadComponentOnceWhileValueSnapshotIsOpen() {
+      component.setValue("Foo bar");
+
+      binding.openValueSnapshot();
+      binding.validate(true);
+      component.setValue("Changed");
+      binding.write(bean, true);
+      binding.closeValueSnapshot();
+
+      assertEquals("Foo bar", bean.getName());
+      assertEquals(1, component.getReadCount());
+    }
+
+    @Test
+    void shouldReadComponentAgainAfterValueSnapshotIsClosed() {
+      component.setValue("Foo bar");
+      binding.openValueSnapshot();
+      binding.validate(true);
+      binding.closeValueSnapshot();
+
+      component.setValue("Changed");
+      binding.write(bean, true);
+
+      assertEquals("Changed", bean.getName());
+      assertEquals(2, component.getReadCount());
+    }
+  }
+
+  @Nested
   class PathAware {
 
     @Test

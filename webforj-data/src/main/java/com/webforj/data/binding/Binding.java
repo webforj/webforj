@@ -73,6 +73,9 @@ public class Binding<C extends ValueAware<C, ViewT>, ViewT, B, BeanValueT> {
   private B autoWriteBean = null;
   private ViewT cachedValue;
   private boolean isValueCached = false;
+  private ViewT snapshotValue;
+  private int valueSnapshotDepth = 0;
+  private boolean valueSnapshotTaken = false;
   private Class<?> lastBeanClassForGetter;
   private Function<B, BeanValueT> cachedGetter;
   private Class<?> lastBeanClassForSetter;
@@ -428,7 +431,7 @@ public class Binding<C extends ValueAware<C, ViewT>, ViewT, B, BeanValueT> {
    * @return the validation result.
    */
   public ValidationResult validate(boolean report) {
-    return validate(component.getValue(), report);
+    return validate(readComponentValue(), report);
   }
 
   /**
@@ -591,7 +594,7 @@ public class Binding<C extends ValueAware<C, ViewT>, ViewT, B, BeanValueT> {
     final ValidationResult[] result = {ValidationResult.valid()};
     doGetSetter(bean).ifPresent(s -> {
       if (!isValueCached) {
-        cachedValue = component.getValue();
+        cachedValue = readComponentValue();
       }
 
       try {
@@ -627,6 +630,33 @@ public class Binding<C extends ValueAware<C, ViewT>, ViewT, B, BeanValueT> {
     return write(bean, false);
   }
 
+  /**
+   * Starts a value snapshot.
+   *
+   * <p>
+   * While the snapshot is open, the value of the component is requested from the component at most
+   * once and every validation and write of the binding uses that value. A snapshot started while
+   * another one is open joins it, and the value is kept until the first one ends.
+   * </p>
+   */
+  void openValueSnapshot() {
+    valueSnapshotDepth++;
+  }
+
+  /**
+   * Ends the value snapshot started by {@link #openValueSnapshot()}.
+   */
+  void closeValueSnapshot() {
+    if (valueSnapshotDepth > 0) {
+      valueSnapshotDepth--;
+    }
+
+    if (valueSnapshotDepth == 0) {
+      valueSnapshotTaken = false;
+      snapshotValue = null;
+    }
+  }
+
   void handleValueChange(ValueChangeEvent<ViewT> event) {
     boolean shouldAutoValidate = isAutoValidate();
     boolean shouldAutoWrite = isAutoWrite();
@@ -650,6 +680,20 @@ public class Binding<C extends ValueAware<C, ViewT>, ViewT, B, BeanValueT> {
     if (result != null) {
       dispatcher.dispatchEvent(new BindingValidateEvent<>(this, result, value));
     }
+  }
+
+  private ViewT readComponentValue() {
+    if (valueSnapshotTaken) {
+      return snapshotValue;
+    }
+
+    ViewT value = component.getValue();
+    if (valueSnapshotDepth > 0) {
+      snapshotValue = value;
+      valueSnapshotTaken = true;
+    }
+
+    return value;
   }
 
   private String resolveTransformerMessage(TransformationException e) {

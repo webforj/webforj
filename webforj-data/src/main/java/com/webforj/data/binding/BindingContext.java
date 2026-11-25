@@ -480,16 +480,29 @@ public class BindingContext<B>
   /**
    * Updates the bean properties with the values obtained from the bound components.
    *
+   * <p>
+   * Each component is asked for its value once. The value that was validated is the value that is
+   * written to the bean, so a value changed while this method runs, for example by a reporter, is
+   * not written by this call.
+   * </p>
+   *
    * @param bean The bean to sync to
    * @return the validation result.
    */
   public ValidationResult write(B bean) {
-    ValidationResult result = validate();
-    if (result.isValid()) {
-      bindings.values().forEach(binding -> binding.write(bean, true));
-    }
+    List<Binding<?, ?, B, ?>> snapshotBindings = new ArrayList<>(bindings.values());
+    snapshotBindings.forEach(Binding::openValueSnapshot);
 
-    return result;
+    try {
+      ValidationResult result = validate();
+      if (result.isValid()) {
+        bindings.values().forEach(binding -> binding.write(bean, true));
+      }
+
+      return result;
+    } finally {
+      snapshotBindings.forEach(Binding::closeValueSnapshot);
+    }
   }
 
   /**
