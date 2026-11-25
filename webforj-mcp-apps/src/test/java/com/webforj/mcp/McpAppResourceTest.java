@@ -109,6 +109,16 @@ class McpAppResourceTest {
   }
 
   @Test
+  @DisplayName("Should size the embed element to the frame whatever the document height is")
+  void shouldSizeEmbedElementToFrame() {
+    origin.configure("https://app.example.com");
+
+    String page = resource.render();
+
+    assertTrue(page.contains("#bbj-dwc{position:fixed;inset:0}"));
+  }
+
+  @Test
   @DisplayName("Should carry the credentials the cross site embed needs")
   void shouldCarryCredentials() {
     origin.configure("https://app.example.com");
