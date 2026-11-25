@@ -137,8 +137,41 @@ class PageTest {
     when(webManager.isEmbedded()).thenReturn(false);
     when(webManager.executeScript("window.bbjEmbedded === true")).thenReturn(true);
 
-    assertTrue(page.isEmbedded());
-    assertTrue(page.isEmbedded());
+    try (MockedStatic<Environment> mockedEnv = mockStatic(Environment.class)) {
+      mockedEnv.when(Environment::isRunningWithBBjServices).thenReturn(true);
+
+      assertTrue(page.isEmbedded());
+      assertTrue(page.isEmbedded());
+    }
+
+    verify(webManager, times(1)).executeScript("window.bbjEmbedded === true");
+  }
+
+  @Test
+  void shouldTrustTheWebManagerOutsideBBjServicesWhenItReportsNotEmbedded() throws BBjException {
+    when(webManager.isEmbedded()).thenReturn(false);
+
+    try (MockedStatic<Environment> mockedEnv = mockStatic(Environment.class)) {
+      mockedEnv.when(Environment::isRunningWithBBjServices).thenReturn(false);
+
+      assertFalse(page.isEmbedded());
+      assertFalse(page.isEmbedded());
+    }
+
+    verify(webManager, times(1)).isEmbedded();
+    verify(webManager, never()).executeScript(anyString());
+  }
+
+  @Test
+  void shouldAskTheClientOutsideBBjServicesWhenTheWebManagerFails() throws BBjException {
+    when(webManager.isEmbedded()).thenThrow(new IllegalStateException("no command line"));
+    when(webManager.executeScript("window.bbjEmbedded === true")).thenReturn(true);
+
+    try (MockedStatic<Environment> mockedEnv = mockStatic(Environment.class)) {
+      mockedEnv.when(Environment::isRunningWithBBjServices).thenReturn(false);
+
+      assertTrue(page.isEmbedded());
+    }
 
     verify(webManager, times(1)).executeScript("window.bbjEmbedded === true");
   }

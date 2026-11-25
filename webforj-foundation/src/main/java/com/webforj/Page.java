@@ -141,6 +141,11 @@ public final class Page implements HasJsExecution {
         embedded = true;
         return true;
       }
+
+      if (!Environment.isRunningWithBBjServices()) {
+        embedded = false;
+        return false;
+      }
     } catch (Exception ignored) {
       // fall through
     }
