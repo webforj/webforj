@@ -398,6 +398,142 @@ class BindingContextTest {
   }
 
   @Nested
+  class ComponentReads {
+    ReadCountingNameComponentMock nameComponent;
+    ReadCountingNameComponentMock ageComponent;
+    BindingContext<PersonBean> context;
+
+    @BeforeEach
+    void setup() {
+      nameComponent = new ReadCountingNameComponentMock();
+      ageComponent = new ReadCountingNameComponentMock();
+      context = new BindingContext<>(PersonBean.class);
+      context.bind(nameComponent, "name")
+          .useValidator(value -> !value.isEmpty(), "Name is required").add();
+      context.bind(ageComponent, "age", Integer.class)
+          .useTransformer(new StringIntegerTransformer(), "Age must be a number")
+          .useValidator(value -> value > 0, "Age is required").add();
+      context.setAutoValidate(false);
+    }
+
+    @Test
+    void shouldReadEachComponentOnceWhenWriteIsValid() {
+      nameComponent.setValue("Jane Doe");
+      ageComponent.setValue("25");
+
+      ValidationResult result = context.write(bean);
+
+      assertTrue(result.isValid());
+      assertEquals("Jane Doe", bean.getName());
+      assertEquals(25, bean.getAge());
+      assertEquals(1, nameComponent.getReadCount());
+      assertEquals(1, ageComponent.getReadCount());
+    }
+
+    @Test
+    void shouldReadEachComponentOnceWhenWriteIsInvalid() {
+      nameComponent.setValue("");
+      ageComponent.setValue("25");
+
+      ValidationResult result = context.write(bean);
+
+      assertFalse(result.isValid());
+      assertEquals("John Doe", bean.getName());
+      assertEquals(1, nameComponent.getReadCount());
+      assertEquals(1, ageComponent.getReadCount());
+    }
+
+    @Test
+    void shouldKeepTheValueWhenWriteIsCalledDuringWrite() {
+      PersonBean inner = new PersonBean("Inner", 1);
+      AtomicInteger reports = new AtomicInteger();
+      context.getBinding("name").setReporter((result, binding) -> {
+        if (reports.incrementAndGet() == 1) {
+          context.write(inner);
+        }
+      });
+      nameComponent.setValue("Jane Doe");
+      ageComponent.setValue("25");
+
+      context.write(bean);
+
+      assertEquals("Jane Doe", bean.getName());
+      assertEquals("Jane Doe", inner.getName());
+      assertEquals(1, nameComponent.getReadCount());
+    }
+
+    @Test
+    void shouldWriteTheValidatedValue() {
+      AtomicInteger reports = new AtomicInteger();
+      context.getBinding("name").setReporter((result, binding) -> {
+        reports.incrementAndGet();
+        nameComponent.setValue("Changed");
+      });
+      nameComponent.setValue("Jane Doe");
+      ageComponent.setValue("25");
+
+      context.write(bean);
+
+      assertEquals("Jane Doe", bean.getName());
+      assertEquals(1, reports.get());
+    }
+
+    @Test
+    void shouldReadComponentsAgainAfterWrite() {
+      nameComponent.setValue("Jane Doe");
+      ageComponent.setValue("25");
+      context.write(bean);
+
+      nameComponent.setValue("");
+      ValidationResult result = context.validate();
+
+      assertFalse(result.isValid());
+      assertEquals(2, nameComponent.getReadCount());
+    }
+
+    @Test
+    void shouldReadComponentsAgainAfterWriteFails() {
+      RuntimeException failure = new IllegalStateException("reporter failed");
+      context.getBinding("name").setReporter((result, binding) -> {
+        throw failure;
+      });
+      nameComponent.setValue("Jane Doe");
+      ageComponent.setValue("25");
+      PersonBean target = bean;
+
+      RuntimeException thrown = assertThrows(RuntimeException.class, () -> context.write(target));
+      context.getBinding("name").setReporter(null);
+      nameComponent.setValue("");
+
+      assertSame(failure, thrown);
+      assertFalse(context.validate().isValid());
+      assertEquals(2, nameComponent.getReadCount());
+    }
+
+    @Test
+    void shouldCallOverriddenValidateOnWrite() {
+      AtomicInteger validations = new AtomicInteger();
+      BindingContext<PersonBean> overriding = new BindingContext<>(PersonBean.class) {
+        @Override
+        public ValidationResult validate() {
+          validations.incrementAndGet();
+          return super.validate();
+        }
+      };
+      ReadCountingNameComponentMock component = new ReadCountingNameComponentMock();
+      overriding.bind(component, "name").add();
+      component.setValue("Jane Doe");
+
+      overriding.write(bean);
+
+      assertEquals(1, validations.get());
+      assertEquals("Jane Doe", bean.getName());
+      assertEquals(1, component.getReadCount());
+    }
+
+  }
+
+  @Nested
   class AutomaticBinding {
     @Test
     void shouldAutomaticallyBindComponents() {
