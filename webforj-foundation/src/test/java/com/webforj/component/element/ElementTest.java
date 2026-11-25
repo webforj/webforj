@@ -583,7 +583,7 @@ class ElementTest {
 
       BBjWebComponent secondControl = mock(BBjWebComponent.class);
       Element second = new Element("x-waited-name");
-      PendingResult<Element> waiting = second.whenDefined();
+      final PendingResult<Element> waiting = second.whenDefined();
       ReflectionUtils.unNullifyControl(second, secondControl);
       markAttached(second);
       second.onAttach();
@@ -599,10 +599,10 @@ class ElementTest {
     void shouldFailResultWhenScriptCallbackFails() throws Exception {
       Element element = new Element("x-failing-name");
       ReflectionUtils.nullifyControl(element);
-      PendingResult<Object> first = element.executeJsAsync("1");
-      PendingResult<Object> second = element.executeJsAsync("2");
-      lenient().doThrow(mock(BBjException.class)).when(control)
-          .setCallback(eq(ON_EXECUTE_SCRIPT), any(Object.class), anyString());
+      final PendingResult<Object> first = element.executeJsAsync("1");
+      final PendingResult<Object> second = element.executeJsAsync("2");
+      lenient().doThrow(mock(BBjException.class)).when(control).setCallback(eq(ON_EXECUTE_SCRIPT),
+          any(Object.class), anyString());
       ReflectionUtils.unNullifyControl(element, control);
       markAttached(element);
 
@@ -630,18 +630,18 @@ class ElementTest {
     void shouldDeliverResultOfQueuedScript() throws Exception {
       Element element = new Element("x-queued-name");
       ReflectionUtils.nullifyControl(element);
-      PendingResult<Object> result = element.executeJsAsync("1");
+      final PendingResult<Object> result = element.executeJsAsync("1");
       when(control.executeAsyncScript("1", true, true)).thenReturn(7);
       ReflectionUtils.unNullifyControl(element, control);
       markAttached(element);
       element.onAttach();
 
       verify(control, times(1)).setCallback(eq(ON_EXECUTE_SCRIPT), any(Object.class), anyString());
-      element.onExecuteAsyncScriptEvent(executeEvent(element, 7, "ok"));
+      element.onExecuteAsyncScriptEvent(executeEvent(7, "ok"));
       assertTrue(result.isDone());
     }
 
-    private ExecuteAsyncScriptEvent executeEvent(Element element, int index, Object value) {
+    private ExecuteAsyncScriptEvent executeEvent(int index, Object value) {
       ExecuteAsyncScriptEvent event = mock(ExecuteAsyncScriptEvent.class);
       when(event.getIndex()).thenReturn(index);
       when(event.getResult()).thenReturn(value);
