@@ -651,6 +651,7 @@ public final class Element extends DwcContainer<Element> implements HasFocus<Ele
    */
   void onDefinedEventEvent(ElementDefinedEvent event) {
     isDefined = true;
+    DefinedElementNames.add(getNodeName());
     whenDefinedResults.forEach(r -> r.complete(this));
   }
 
@@ -713,8 +714,12 @@ public final class Element extends DwcContainer<Element> implements HasFocus<Ele
   protected void attachControlCallbacks() {
     super.attachControlCallbacks();
     focusableMixin.attachControlCallbacks();
-    scriptEventSinkListenerRegistry.attach();
-    definedEventSinkListenerRegistry.attach();
+
+    if (whenDefinedResults.isEmpty() && DefinedElementNames.contains(getNodeName())) {
+      isDefined = true;
+    } else {
+      definedEventSinkListenerRegistry.attach();
+    }
 
     // loop through all the sinks and attach the callbacks
     registries.values().forEach(sink -> sink.attach());
@@ -995,6 +1000,16 @@ public final class Element extends DwcContainer<Element> implements HasFocus<Ele
      */
     @Override
     protected int doExecuteJsAsync(String script) throws BBjException {
+      try {
+        scriptEventSinkListenerRegistry.attach();
+      } catch (WebforjRuntimeException e) {
+        if (e.getCause() instanceof BBjException cause) {
+          throw cause;
+        }
+
+        throw e;
+      }
+
       return inferControl().executeAsyncScript(script, true, true);
     }
 
