@@ -918,11 +918,11 @@ public abstract class App {
       packages = new String[] {getClass().getPackageName()};
     }
 
-    String root = "webapp/" + getApplicationName();
-    boolean isBbjService = Environment.isRunningWithBBjServices();
-    if (!isBbjService) {
-      root = context;
-      root = root.isBlank() ? "/" : root;
+    String root;
+    if (Environment.isRunningWithBBjServices()) {
+      root = "webapp/" + getApplicationName();
+    } else {
+      root = context.isBlank() ? "/" : context;
     }
 
     // When the app is embedded via DWC embedded deployment the top-level URL is the host HTML

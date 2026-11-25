@@ -5,8 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -20,11 +22,15 @@ import com.basis.bbj.proxies.sysgui.BBjTopLevelWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import com.typesafe.config.Config;
+import com.webforj.annotation.Routify;
 import com.webforj.component.window.Frame;
 import com.webforj.environment.ObjectTable;
+import com.webforj.environment.StringTable;
 import com.webforj.geolocation.Geolocation;
 import com.webforj.i18n.TranslationResolver;
+import com.webforj.router.RouteRegistry;
 import com.webforj.router.Router;
+import com.webforj.router.history.MemoryHistory;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -36,6 +42,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 
 class AppTest {
@@ -338,6 +345,67 @@ class AppTest {
     void shouldRejectNegativeCount() {
       assertThrows(IllegalArgumentException.class, () -> App.setBadge(-1));
     }
+  }
+
+  @Nested
+  class RouterInitialization {
+
+    @ParameterizedTest
+    @MethodSource("provideContextPaths")
+    void shouldUseTheContextPathAsRootWithoutAskingForTheApplicationName(String contextPath,
+        String expectedRoot) throws Exception {
+      Router router = initializeRoutableApp(false, contextPath);
+
+      assertEquals(expectedRoot, router.getRoot().orElse(null));
+      verify(webManager, never()).getApplicationName();
+    }
+
+    @Test
+    void shouldUseTheApplicationNameAsRootInsideBBjServices() throws Exception {
+      when(webManager.getApplicationName()).thenReturn("myapp");
+
+      Router router = initializeRoutableApp(true, "/ctx");
+
+      assertEquals("webapp/myapp", router.getRoot().orElse(null));
+    }
+
+    private static Stream<Arguments> provideContextPaths() {
+      return Stream.of(Arguments.of("/ctx", "/ctx"), Arguments.of("", "/"));
+    }
+
+    private Router initializeRoutableApp(boolean isBbjServices, String contextPath)
+        throws Exception {
+      Page page = mock(Page.class);
+      Config config = mock(Config.class);
+      when(environment.getConfig()).thenReturn(config);
+      RoutableApp routableApp = new RoutableApp();
+      routableApp.setRouterHistory(new MemoryHistory());
+
+      try (MockedStatic<Environment> mockedEnvironment = mockStatic(Environment.class);
+          MockedStatic<Page> mockedPage = mockStatic(Page.class);
+          MockedStatic<StringTable> mockedStringTable = mockStatic(StringTable.class);
+          MockedStatic<ObjectTable> mockedObjectTable = mockStatic(ObjectTable.class);
+          MockedStatic<RouteRegistry> mockedRegistry = mockStatic(RouteRegistry.class)) {
+        mockedEnvironment.when(Environment::getCurrent).thenReturn(environment);
+        mockedEnvironment.when(Environment::isRunningWithBBjServices).thenReturn(isBbjServices);
+        mockedEnvironment.when(Environment::getContextPath).thenReturn(contextPath);
+        mockedPage.when(Page::getCurrent).thenReturn(page);
+        mockedRegistry.when(() -> RouteRegistry.ofPackage(any(String[].class)))
+            .thenReturn(new RouteRegistry());
+
+        routableApp.initialize();
+
+        ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
+        mockedObjectTable
+            .verify(() -> ObjectTable.put(eq(Router.class.getName()), captor.capture()));
+
+        return (Router) captor.getValue();
+      }
+    }
+  }
+
+  @Routify(initializeFrame = false)
+  static class RoutableApp extends App {
   }
 
   @Nested
