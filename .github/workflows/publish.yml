@@ -1,8 +1,12 @@
 name: Publish
 
 on:
+  schedule:
+    - cron: '0 18 * * *'
+      timezone: "Europe/Berlin"
+  workflow_dispatch:
   workflow_run:
-    workflows: ["Verify", "Version"]
+    workflows: ["Version"]
     types: [completed]
     branches: [main]
 

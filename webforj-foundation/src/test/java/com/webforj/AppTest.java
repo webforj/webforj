@@ -10,6 +10,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -25,6 +26,7 @@ import com.webforj.annotation.Routify;
 import com.webforj.component.window.Frame;
 import com.webforj.environment.ObjectTable;
 import com.webforj.environment.StringTable;
+import com.webforj.geolocation.Geolocation;
 import com.webforj.i18n.TranslationResolver;
 import com.webforj.router.RouteRegistry;
 import com.webforj.router.Router;
@@ -183,6 +185,36 @@ class AppTest {
 
       assertTrue(frames.contains(f1));
       assertTrue(frames.contains(f2));
+    }
+  }
+
+  @Nested
+  class Termination {
+
+    @Test
+    void shouldRunTerminationOnceWhenTerminateIsCalledAgain() throws BBjException {
+      Page page = mock(Page.class);
+      Geolocation geolocation = mock(Geolocation.class);
+      Router router = mock(Router.class);
+      when(sysGui.getWindows()).thenReturn(new BBjVector());
+
+      try (MockedStatic<Environment> mockedEnvironment = mockStatic(Environment.class);
+          MockedStatic<Page> mockedPage = mockStatic(Page.class);
+          MockedStatic<Geolocation> mockedGeolocation = mockStatic(Geolocation.class);
+          MockedStatic<Router> mockedRouter = mockStatic(Router.class)) {
+        mockedEnvironment.when(Environment::getCurrent).thenReturn(environment);
+        mockedPage.when(Page::getCurrent).thenReturn(page);
+        mockedGeolocation.when(Geolocation::getCurrent).thenReturn(geolocation);
+        mockedRouter.when(Router::getCurrent).thenReturn(router);
+
+        app.terminate();
+        app.terminate();
+
+        verify(app, times(1)).onWillTerminate();
+        verify(app, times(1)).onDidTerminate();
+        verify(page, times(1)).destroy();
+        verify(api, times(1)).postPriorityCustomEvent("webforjTerminateSignal", null);
+      }
     }
   }
 
@@ -373,5 +405,47 @@ class AppTest {
 
   @Routify(initializeFrame = false)
   static class RoutableApp extends App {
+  }
+
+  @Nested
+  class FramesVisibility {
+
+    @Test
+    void shouldNotShowTheActiveFrameAgainWhenItIsVisible() {
+      Frame active = mock(Frame.class);
+      Frame other = mock(Frame.class);
+      when(active.isVisible()).thenReturn(true);
+
+      App.showOnlyFrame(active, List.of(active, other));
+
+      verify(other).setVisible(false);
+      verify(active, org.mockito.Mockito.never()).setVisible(true);
+    }
+
+    @Test
+    void shouldHideTheOtherFramesBeforeShowingTheActiveOne() {
+      Frame first = mock(Frame.class);
+      Frame second = mock(Frame.class);
+      when(second.isVisible()).thenReturn(false);
+
+      App.showOnlyFrame(second, List.of(first, second));
+
+      org.mockito.InOrder order = org.mockito.Mockito.inOrder(first, second);
+      order.verify(first).setVisible(false);
+      order.verify(second).setVisible(true);
+    }
+
+    @Test
+    void shouldShowTheActiveFrameWhenItIsHidden() {
+      Frame active = mock(Frame.class);
+      Frame other = mock(Frame.class);
+      when(active.isVisible()).thenReturn(false);
+
+      App.showOnlyFrame(active, List.of(other, active));
+
+      verify(other).setVisible(false);
+      verify(active).setVisible(true);
+      verify(active, org.mockito.Mockito.never()).setVisible(false);
+    }
   }
 }

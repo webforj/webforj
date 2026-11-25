@@ -14,7 +14,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -23,6 +25,7 @@ import static org.mockito.Mockito.when;
 import com.basis.bbj.proxies.event.BBjWebEvent;
 import com.basis.bbj.proxies.event.BBjWebEventOptions;
 import com.basis.bbj.proxies.sysgui.BBjWebComponent;
+import com.basis.bbj.proxyif.SysGuiEventConstants;
 import com.basis.startup.type.BBjException;
 import com.webforj.PendingResult;
 import com.webforj.component.Component;
@@ -34,15 +37,21 @@ import com.webforj.component.element.event.ElementDefinedEvent;
 import com.webforj.component.element.event.ElementEvent;
 import com.webforj.component.element.event.ElementEventOptions;
 import com.webforj.component.element.sink.ElementEventSink;
+import com.webforj.component.event.ExecuteAsyncScriptEvent;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
+import com.webforj.environment.ObjectTable;
 import com.webforj.exceptions.WebforjRuntimeException;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -50,6 +59,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -486,6 +496,156 @@ class ElementTest {
       spy.onDefinedEventEvent(mock(ElementDefinedEvent.class));
 
       assertTrue(result.isDone());
+    }
+  }
+
+  @Nested
+  @DisplayName("Browser callbacks")
+  class BrowserCallbacks {
+    private static final int ON_DEFINED = SysGuiEventConstants.ON_DEFINED;
+    private static final int ON_EXECUTE_SCRIPT = SysGuiEventConstants.ON_EXECUTE_SCRIPT;
+
+    private MockedStatic<ObjectTable> objectTable;
+    private Map<String, Object> session = new HashMap<>();
+
+    @BeforeEach
+    void setUp() {
+      objectTable = mockStatic(ObjectTable.class);
+      objectTable.when(() -> ObjectTable.contains(anyString()))
+          .thenAnswer(call -> session.containsKey(call.getArgument(0)));
+      objectTable.when(() -> ObjectTable.get(anyString()))
+          .thenAnswer(call -> session.get(call.getArgument(0)));
+      objectTable.when(() -> ObjectTable.put(anyString(), any()))
+          .thenAnswer(call -> session.put(call.getArgument(0), call.getArgument(1)));
+    }
+
+    @AfterEach
+    void tearDown() {
+      objectTable.close();
+    }
+
+    private Element attached(String name, BBjWebComponent theControl)
+        throws ReflectiveOperationException {
+      Element element = new Element(name);
+      ReflectionUtils.unNullifyControl(element, theControl);
+      markAttached(element);
+      element.onAttach();
+      return element;
+    }
+
+    private void markAttached(Element element) throws ReflectiveOperationException {
+      Field attached = Component.class.getDeclaredField("attached");
+      attached.setAccessible(true);
+      attached.setBoolean(element, true);
+    }
+
+    @Test
+    @DisplayName("should ask the browser to report the definition of a name not seen before")
+    void shouldAskBrowserForNewName() throws Exception {
+      Element element = attached("x-first-name", control);
+
+      verify(control, times(1)).setCallback(eq(ON_DEFINED), any(Object.class), anyString());
+      assertFalse(element.isDefined());
+    }
+
+    @Test
+    @DisplayName("should not ask again for a name the browser of the session already defined")
+    void shouldNotAskAgainForDefinedName() throws Exception {
+      Element first = attached("x-known-name", control);
+      first.onDefinedEventEvent(new ElementDefinedEvent(first, Map.of()));
+
+      BBjWebComponent secondControl = mock(BBjWebComponent.class);
+      Element second = attached("x-known-name", secondControl);
+
+      verify(secondControl, times(0)).setCallback(eq(ON_DEFINED), any(Object.class), anyString());
+      assertTrue(second.isDefined());
+      assertTrue(second.whenDefined().isDone());
+    }
+
+    @Test
+    @DisplayName("should still ask for another name")
+    void shouldStillAskForAnotherName() throws Exception {
+      Element first = attached("x-name-a", control);
+      first.onDefinedEventEvent(new ElementDefinedEvent(first, Map.of()));
+
+      BBjWebComponent secondControl = mock(BBjWebComponent.class);
+      Element second = attached("x-name-b", secondControl);
+
+      verify(secondControl, times(1)).setCallback(eq(ON_DEFINED), any(Object.class), anyString());
+      assertFalse(second.isDefined());
+    }
+
+    @Test
+    @DisplayName("should wait for the browser when a caller waits before the element is created")
+    void shouldWaitForBrowserWhenCallerWaits() throws Exception {
+      Element first = attached("x-waited-name", control);
+      first.onDefinedEventEvent(new ElementDefinedEvent(first, Map.of()));
+
+      BBjWebComponent secondControl = mock(BBjWebComponent.class);
+      Element second = new Element("x-waited-name");
+      final PendingResult<Element> waiting = second.whenDefined();
+      ReflectionUtils.unNullifyControl(second, secondControl);
+      markAttached(second);
+      second.onAttach();
+
+      verify(secondControl, times(1)).setCallback(eq(ON_DEFINED), any(Object.class), anyString());
+      assertFalse(waiting.isDone());
+      second.onDefinedEventEvent(new ElementDefinedEvent(second, Map.of()));
+      assertTrue(waiting.isDone());
+    }
+
+    @Test
+    @DisplayName("should fail the result when the script result callback cannot be registered")
+    void shouldFailResultWhenScriptCallbackFails() throws Exception {
+      Element element = new Element("x-failing-name");
+      ReflectionUtils.nullifyControl(element);
+      final PendingResult<Object> first = element.executeJsAsync("1");
+      final PendingResult<Object> second = element.executeJsAsync("2");
+      lenient().doThrow(mock(BBjException.class)).when(control).setCallback(eq(ON_EXECUTE_SCRIPT),
+          any(Object.class), anyString());
+      ReflectionUtils.unNullifyControl(element, control);
+      markAttached(element);
+
+      assertDoesNotThrow(() -> element.onAttach());
+      assertTrue(first.isCompletedExceptionally());
+      assertTrue(second.isCompletedExceptionally());
+    }
+
+    @Test
+    @DisplayName("should register the script result callback with the first script that returns")
+    void shouldRegisterScriptCallbackLazily() throws Exception {
+      Element element = attached("x-script-name", control);
+      verify(control, times(0)).setCallback(eq(ON_EXECUTE_SCRIPT), any(Object.class), anyString());
+
+      element.executeJsVoidAsync("1");
+      verify(control, times(0)).setCallback(eq(ON_EXECUTE_SCRIPT), any(Object.class), anyString());
+
+      element.executeJsAsync("2");
+      element.executeJsAsync("3");
+      verify(control, times(1)).setCallback(eq(ON_EXECUTE_SCRIPT), any(Object.class), anyString());
+    }
+
+    @Test
+    @DisplayName("should deliver the result of a script queued before the element was created")
+    void shouldDeliverResultOfQueuedScript() throws Exception {
+      Element element = new Element("x-queued-name");
+      ReflectionUtils.nullifyControl(element);
+      final PendingResult<Object> result = element.executeJsAsync("1");
+      when(control.executeAsyncScript("1", true, true)).thenReturn(7);
+      ReflectionUtils.unNullifyControl(element, control);
+      markAttached(element);
+      element.onAttach();
+
+      verify(control, times(1)).setCallback(eq(ON_EXECUTE_SCRIPT), any(Object.class), anyString());
+      element.onExecuteAsyncScriptEvent(executeEvent(7, "ok"));
+      assertTrue(result.isDone());
+    }
+
+    private ExecuteAsyncScriptEvent executeEvent(int index, Object value) {
+      ExecuteAsyncScriptEvent event = mock(ExecuteAsyncScriptEvent.class);
+      when(event.getIndex()).thenReturn(index);
+      when(event.getResult()).thenReturn(value);
+      return event;
     }
   }
 

@@ -5,6 +5,7 @@ Binding for every agent, every time. Not one character of new code may deviate f
 ## Address
 
 - Every message to the maintainer starts with the maintainer's name. When the name is not known, it starts with "Captain". No exception, however short the reply.
+- A generated commit message, PR text or issue is not a message to the maintainer. It starts with its own first line and carries no name and no "Captain".
 - Refer to anyone as they or them unless their pronouns were stated.
 
 ## Approval gates
@@ -111,6 +112,7 @@ The `writing-prose` skill holds in every reply and every file, not only in prose
 
 The maintainer owns the index, the history and the remote.
 
+- Every commit message follows [Conventional Commits](https://www.conventionalcommits.org/), whoever or whatever writes it.
 - Allowed: `git status`, `git diff`, `git diff --cached`, `git log`, `git show`, `git diff --no-index`, `git fetch`.
 - Never, unless that exact operation is ordered: `add`, `add -N`, `reset`, `restore`, `rm`, `mv`, `stash`, `commit`, `checkout -- <file>`, `push`, `merge`, `rebase`, branch deletion.
 - Move files with plain `mv`. Compare a moved file with `git show main:<old path> | diff - <new path>`.
