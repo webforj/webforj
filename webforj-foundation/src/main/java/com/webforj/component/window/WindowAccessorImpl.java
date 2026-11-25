@@ -3,6 +3,9 @@ package com.webforj.component.window;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.webforj.bridge.ComponentAccessor;
 import com.webforj.bridge.WindowAccessor;
+import java.lang.StackWalker.Option;
+import java.lang.StackWalker.StackFrame;
+import java.util.Set;
 
 /**
  * Implementation of the WindowAccessor that provides low-level access to BBj Window for DWCj
@@ -16,14 +19,18 @@ import com.webforj.bridge.WindowAccessor;
  * @see ComponentAccessor
  */
 final class WindowAccessorImpl extends WindowAccessor {
+  // Reflection frames stay visible, so a reflective call is judged by the reflection frame that
+  // invoked the accessor, the frame a full stack trace reports at the same depth.
+  private static final StackWalker STACK_WALKER =
+      StackWalker.getInstance(Set.of(Option.SHOW_REFLECT_FRAMES));
 
   /**
    * {@inheritDoc}
    */
   @Override
   public BBjWindow getBBjWindow(Window window) throws IllegalAccessException {
-    StackTraceElement[] stack = Thread.currentThread().getStackTrace();
-    String caller = stack[2].getClassName();
+    String caller = STACK_WALKER.walk(frames -> frames.skip(1).findFirst())
+        .map(StackFrame::getClassName).orElse("");
     if (!caller.startsWith("com.webforj.")) {
       throw new IllegalAccessException(
           String.format("The class '%s' attempted unauthorized access to BBj Window. "

@@ -5,8 +5,11 @@ import com.basis.startup.type.BBjException;
 import com.webforj.bridge.ComponentAccessor;
 import com.webforj.component.window.Window;
 import com.webforj.exceptions.WebforjRuntimeException;
+import java.lang.StackWalker.Option;
+import java.lang.StackWalker.StackFrame;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Set;
 
 /**
  * Implementation of the ComponentAccessor that provides low-level access to BBj Controls for DWC
@@ -19,6 +22,11 @@ import java.lang.reflect.Method;
  * @see ComponentAccessor
  */
 final class ComponentAccessorImpl extends ComponentAccessor {
+  private static final StackWalker STACK_WALKER =
+      StackWalker.getInstance(Set.of(Option.SHOW_REFLECT_FRAMES));
+  private static final Method CREATE_METHOD = findMethod(Component.class, "create", Window.class);
+  private static final Method GET_BOUND_COMPONENT_METHOD =
+      findMethod(Composite.class, "getBoundComponent");
 
   /**
    * {@inheritDoc}
@@ -32,9 +40,7 @@ final class ComponentAccessorImpl extends ComponentAccessor {
     }
 
     try {
-      Method create = Component.class.getDeclaredMethod("create", Window.class);
-      create.setAccessible(true); // NOSONAR
-      create.invoke(component, window);
+      CREATE_METHOD.invoke(component, window);
 
       if (component instanceof DwcComponent) {
         BBjControl control = getControl(component);
@@ -42,7 +48,7 @@ final class ComponentAccessorImpl extends ComponentAccessor {
           control.setUserData(component);
         }
       }
-    } catch (InvocationTargetException | NoSuchMethodException | BBjException e) {
+    } catch (InvocationTargetException | BBjException e) {
       throw new WebforjRuntimeException(
           String.format("Failed to create component '%s'.", component.getClass().getName()), e);
     }
@@ -65,9 +71,7 @@ final class ComponentAccessorImpl extends ComponentAccessor {
       } else if (component instanceof DwcComponent) {
         return ((DwcComponent<?>) component).getControl();
       } else if (component instanceof Composite) {
-        Method getBoundComponent = Composite.class.getDeclaredMethod("getBoundComponent");
-        getBoundComponent.setAccessible(true); // NOSONAR
-        Object boundComponent = getBoundComponent.invoke(component);
+        Object boundComponent = GET_BOUND_COMPONENT_METHOD.invoke(component);
 
         return getControl((Component) boundComponent);
       } else {
@@ -75,9 +79,6 @@ final class ComponentAccessorImpl extends ComponentAccessor {
             "Cannot find the underlying BBjControl for the given component: "
                 + component.getClass().getName());
       }
-    } catch (NoSuchMethodException e) {
-      throw new IllegalAccessException("The Composite " + component.getClass().getName()
-          + " does not implement the 'initBoundComponent' method.");
     } catch (SecurityException | IllegalArgumentException | InvocationTargetException e) {
       throw new IllegalAccessException(
           "Failed to access 'initBoundComponent' method for Composite component.");
@@ -93,15 +94,27 @@ final class ComponentAccessorImpl extends ComponentAccessor {
     return ctrl.getControl();
   }
 
-  private void verifyCaller() throws IllegalAccessException {
-    StackTraceElement[] stack = Thread.currentThread().getStackTrace();
-    String caller = stack[2].getClassName();
+  private static void verifyCaller() throws IllegalAccessException {
+    String caller = STACK_WALKER.walk(frames -> frames.skip(2).findFirst())
+        .map(StackFrame::getClassName).orElse("");
     if (!caller.startsWith("com.webforj.")) {
       throw new IllegalAccessException(
           String.format("The class '%s' attempted unauthorized access to BBj Control. "
               + "Access is restricted to classes within the 'com.webforj' package hierarchy. "
               + "Ensure that any class interacting with BBj Control adheres "
               + "to this access control policy.", caller));
+    }
+  }
+
+  private static Method findMethod(Class<?> type, String name, Class<?>... parameterTypes) {
+    try {
+      Method method = type.getDeclaredMethod(name, parameterTypes);
+      method.setAccessible(true); // NOSONAR
+
+      return method;
+    } catch (NoSuchMethodException e) {
+      throw new IllegalStateException(
+          String.format("Method '%s' not found in '%s'.", name, type.getName()), e);
     }
   }
 }
