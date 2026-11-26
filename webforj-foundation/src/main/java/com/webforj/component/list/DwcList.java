@@ -58,9 +58,7 @@ public abstract class DwcList<T extends DwcValidatableComponent<T, V>, V>
   private final LinkedHashMap<Object, ListItem> items = new LinkedHashMap<>();
   private final List<ListItem> selectedItems = new ArrayList<>();
 
-  private final ComponentEventSinkRegistry<ListSelectEvent<V>> selectEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<ListSelectEvent<V>>(
-          new ListSelectEventSink<V>(this, getEventDispatcher()), ListSelectEvent.class);
+  private ComponentEventSinkRegistry<ListSelectEvent<V>> selectEventSinkListenerRegistry = null;
 
   private final Search search = new Search();
 
@@ -678,7 +676,7 @@ public abstract class DwcList<T extends DwcValidatableComponent<T, V>, V>
    */
   public ListenerRegistration<ListSelectEvent<V>> addSelectListener(
       EventListener<ListSelectEvent<V>> listener) {
-    return selectEventSinkListenerRegistry.addEventListener(listener);
+    return getSelectEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -769,7 +767,9 @@ public abstract class DwcList<T extends DwcValidatableComponent<T, V>, V>
   @Override
   protected void attachControlCallbacks() {
     super.attachControlCallbacks();
-    selectEventSinkListenerRegistry.attach();
+    if (selectEventSinkListenerRegistry != null) {
+      selectEventSinkListenerRegistry.attach();
+    }
   }
 
   /**
@@ -931,6 +931,15 @@ public abstract class DwcList<T extends DwcValidatableComponent<T, V>, V>
     }
   }
 
+  private ComponentEventSinkRegistry<ListSelectEvent<V>> getSelectEventSinkListenerRegistry() {
+    if (selectEventSinkListenerRegistry == null) {
+      selectEventSinkListenerRegistry = new ComponentEventSinkRegistry<ListSelectEvent<V>>(
+          new ListSelectEventSink<V>(this, getEventDispatcher()), ListSelectEvent.class);
+    }
+
+    return selectEventSinkListenerRegistry;
+  }
+
   /**
    * An item change listener. When a property of a List Item changes, this listener will update the
    * list item in the client.
@@ -970,4 +979,5 @@ public abstract class DwcList<T extends DwcValidatableComponent<T, V>, V>
       }
     }
   }
+
 }

@@ -34,8 +34,8 @@ import com.webforj.exceptions.WebforjRuntimeException;
 public final class DwcFocusableMixin<T extends DwcComponent<T>>
     implements HasFocus<T>, HasFocusStatus, HasEnablement<T> {
   private final DwcComponent<T> component;
-  private final ComponentEventSinkRegistry<FocusEvent> focusEventSinkListenerRegistry;
-  private final ComponentEventSinkRegistry<BlurEvent> blurEventSinkListenerRegistry;
+  private ComponentEventSinkRegistry<FocusEvent> focusEventSinkListenerRegistry = null;
+  private ComponentEventSinkRegistry<BlurEvent> blurEventSinkListenerRegistry = null;
   private boolean enabled = true;
   private boolean focusable = true;
   private Boolean wasFocused = null;
@@ -47,10 +47,6 @@ public final class DwcFocusableMixin<T extends DwcComponent<T>>
    */
   public DwcFocusableMixin(DwcComponent<T> component) {
     this.component = component;
-    focusEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
-        new FocusEventSink(component, component.getEventDispatcher()), FocusEvent.class);
-    blurEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
-        new BlurEventSink(component, component.getEventDispatcher()), BlurEvent.class);
   }
 
   /**
@@ -139,7 +135,7 @@ public final class DwcFocusableMixin<T extends DwcComponent<T>>
    */
   @Override
   public ListenerRegistration<FocusEvent> addFocusListener(EventListener<FocusEvent> listener) {
-    return this.focusEventSinkListenerRegistry.addEventListener(listener);
+    return getFocusEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -147,7 +143,7 @@ public final class DwcFocusableMixin<T extends DwcComponent<T>>
    */
   @Override
   public ListenerRegistration<BlurEvent> addBlurListener(EventListener<BlurEvent> listener) {
-    return this.blurEventSinkListenerRegistry.addEventListener(listener);
+    return getBlurEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -162,8 +158,13 @@ public final class DwcFocusableMixin<T extends DwcComponent<T>>
    * Attaches the component callbacks to the underlying BBj control.
    */
   public void attachControlCallbacks() {
-    focusEventSinkListenerRegistry.attach();
-    blurEventSinkListenerRegistry.attach();
+    if (focusEventSinkListenerRegistry != null) {
+      focusEventSinkListenerRegistry.attach();
+    }
+
+    if (blurEventSinkListenerRegistry != null) {
+      blurEventSinkListenerRegistry.attach();
+    }
   }
 
   /**
@@ -181,5 +182,23 @@ public final class DwcFocusableMixin<T extends DwcComponent<T>>
     if (focusable && this.wasFocused != null) {
       this.focus();
     }
+  }
+
+  private ComponentEventSinkRegistry<FocusEvent> getFocusEventSinkListenerRegistry() {
+    if (focusEventSinkListenerRegistry == null) {
+      focusEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new FocusEventSink(component, component.getEventDispatcher()), FocusEvent.class);
+    }
+
+    return focusEventSinkListenerRegistry;
+  }
+
+  private ComponentEventSinkRegistry<BlurEvent> getBlurEventSinkListenerRegistry() {
+    if (blurEventSinkListenerRegistry == null) {
+      blurEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new BlurEventSink(component, component.getEventDispatcher()), BlurEvent.class);
+    }
+
+    return blurEventSinkListenerRegistry;
   }
 }

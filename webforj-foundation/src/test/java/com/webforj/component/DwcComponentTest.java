@@ -6,9 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -113,6 +115,23 @@ class DwcComponentTest {
       component.removeClassName("class1");
 
       assertEquals(List.of("class2"), component.getClassNameList());
+    }
+
+    @Test
+    @DisplayName("Class names are still known after onAttach")
+    void shouldKeepClassNamesOnceAttached() throws BBjException, IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+      component.addClassName("before");
+      component.removeClassName("removed");
+      ReflectionUtils.unNullifyControl(component, control);
+      component.onAttach();
+      component.addClassName("after");
+      component.removeClassName("gone");
+
+      verify(control, times(1)).addClass("before");
+      verify(control, times(1)).removeClass("removed");
+      verify(control, times(1)).removeClass("gone");
+      assertEquals(List.of("before", "after"), component.getClassNameList());
     }
 
     @Test
@@ -250,6 +269,22 @@ class DwcComponentTest {
 
       verify(control, times(1)).setAttribute("key", "value");
       verify(control, times(1)).getAttribute("key");
+    }
+
+    @Test
+    @DisplayName("onAttach hands the attributes over to the control and keeps no copy")
+    void shouldNotKeepAttributesOnceAttached() throws BBjException, IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+      component.setAttribute("before", "value");
+      ReflectionUtils.unNullifyControl(component, control);
+      component.onAttach();
+      component.setAttribute("after", "value");
+      ReflectionUtils.nullifyControl(component);
+
+      verify(control, times(1)).setAttribute("before", "value");
+      verify(control, times(1)).setAttribute("after", "value");
+      assertNull(component.getAttribute("before"));
+      assertNull(component.getAttribute("after"));
     }
 
     @Test
@@ -396,6 +431,22 @@ class DwcComponentTest {
       component.onAttach();
 
       verify(control, times(1)).setProperty("theme", Theme.DANGER);
+    }
+
+    @Test
+    void shouldNotKeepPropertiesOnceAttached() throws BBjException, IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+      component.setProperty("before", "value");
+      ReflectionUtils.unNullifyControl(component, control);
+      component.onAttach();
+      component.setProperty("after", "value");
+      component.setPropertyClientDefault("after", "value");
+      ReflectionUtils.nullifyControl(component);
+
+      verify(control, times(1)).setProperty("before", "value");
+      verify(control, times(1)).setProperty("after", "value");
+      assertNull(component.getProperty("before"));
+      assertNull(component.getProperty("after"));
     }
 
     @Test
@@ -764,6 +815,28 @@ class DwcComponentTest {
   }
 
   @Test
+  @DisplayName("A listener added before the attach is connected to the control on attach")
+  void shouldConnectListenerAddedBeforeAttach() throws BBjException, IllegalAccessException {
+    ReflectionUtils.nullifyControl(component);
+    component.onMouseEnter(event -> {
+    });
+    ReflectionUtils.unNullifyControl(component, control);
+    component.onAttach();
+
+    verify(control, times(1)).setCallback(anyInt(), any(Object.class), eq("handleEvent"));
+  }
+
+  @Test
+  @DisplayName("A listener added after the attach is connected to the control at once")
+  void shouldConnectListenerAddedAfterAttach() throws BBjException {
+    component.onAttach();
+    component.onMouseEnter(event -> {
+    });
+
+    verify(control, times(1)).setCallback(anyInt(), any(Object.class), eq("handleEvent"));
+  }
+
+  @Test
   @DisplayName("Test mouse events")
   void testMouseEvents() {
     EventListener<MouseEnterEvent> mouseEnterListener = event -> {
@@ -814,6 +887,25 @@ class DwcComponentTest {
 
       verify(control, times(1)).setStyle("key", "value");
       verify(control, times(1)).getStyle("key");
+    }
+
+    @Test
+    void shouldNotKeepStylesOnceAttached() throws BBjException, IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+      component.setStyle("before", "value");
+      component.removeStyle("removed");
+      ReflectionUtils.unNullifyControl(component, control);
+      component.onAttach();
+      component.setStyle("after", "value");
+      component.removeStyle("before");
+      ReflectionUtils.nullifyControl(component);
+
+      verify(control, times(1)).setStyle("before", "value");
+      verify(control, times(1)).unsetStyle("removed");
+      verify(control, times(1)).setStyle("after", "value");
+      verify(control, times(1)).unsetStyle("before");
+      assertNull(component.getStyle("before"));
+      assertNull(component.getStyle("after"));
     }
 
     @Test

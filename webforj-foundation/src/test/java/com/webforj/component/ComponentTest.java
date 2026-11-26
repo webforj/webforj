@@ -14,6 +14,8 @@ import static org.mockito.Mockito.verify;
 import com.webforj.PendingResult;
 import com.webforj.component.ComponentLifecycleObserver.LifecycleEvent;
 import com.webforj.component.window.Window;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -136,6 +138,23 @@ class ComponentTest {
     assertFalse(result.isDone());
     component.create(mock(Window.class));
     assertTrue(result.isDone());
+  }
+
+  @Test
+  @DisplayName("lifecycle observers are notified of create and destroy, a removed one is not")
+  void shouldNotifyLifecycleObservers() {
+    List<LifecycleEvent> events = new ArrayList<>();
+    ComponentLifecycleObserver kept = (c, event) -> events.add(event);
+    ComponentLifecycleObserver removed = (c, event) -> events.add(event);
+    component.removeLifecycleObserver(removed);
+    component.addLifecycleObserver(kept);
+    component.addLifecycleObserver(removed);
+    component.removeLifecycleObserver(removed);
+
+    component.create(mock(Window.class));
+    component.destroy();
+
+    assertEquals(List.of(LifecycleEvent.CREATE, LifecycleEvent.DESTROY), events);
   }
 
   @Test

@@ -95,19 +95,11 @@ public final class Navigator extends DwcFocusableComponent<Navigator>
 
   private static final String PART_NULL_ERROR_MESSAGE = "Part cannot be null";
 
-  private final ComponentEventSinkRegistry<NavigatorMoveFirstEvent> firstEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new NavigatorMoveFirstEventSink(this, getEventDispatcher()),
-          NavigatorMoveFirstEvent.class);
-  private final ComponentEventSinkRegistry<NavigatorMoveLastEvent> lastEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new NavigatorMoveLastEventSink(this, getEventDispatcher()),
-          NavigatorMoveLastEvent.class);
-  private final ComponentEventSinkRegistry<NavigatorMoveNextEvent> nextEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new NavigatorMoveNextEventSink(this, getEventDispatcher()),
-          NavigatorMoveNextEvent.class);
-  private final ComponentEventSinkRegistry<NavigatorMovePreviousEvent> previousEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(
-          new NavigatorMovePreviousEventSink(this, getEventDispatcher()),
-          NavigatorMovePreviousEvent.class);
+  private ComponentEventSinkRegistry<NavigatorMoveFirstEvent> firstEventSinkListenerRegistry = null;
+  private ComponentEventSinkRegistry<NavigatorMoveLastEvent> lastEventSinkListenerRegistry = null;
+  private ComponentEventSinkRegistry<NavigatorMoveNextEvent> nextEventSinkListenerRegistry = null;
+  private ComponentEventSinkRegistry<NavigatorMovePreviousEvent> previousEventSinkListenerRegistry =
+      null;
 
   private Paginator paginator;
   private Paginator ownedPaginator;
@@ -599,7 +591,7 @@ public final class Navigator extends DwcFocusableComponent<Navigator>
    */
   public ListenerRegistration<NavigatorMoveFirstEvent> addMoveFirstEvent(
       EventListener<NavigatorMoveFirstEvent> listener) {
-    return this.firstEventSinkListenerRegistry.addEventListener(listener);
+    return getFirstEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -621,7 +613,7 @@ public final class Navigator extends DwcFocusableComponent<Navigator>
    */
   public ListenerRegistration<NavigatorMoveLastEvent> addMoveLastEvent(
       EventListener<NavigatorMoveLastEvent> listener) {
-    return this.lastEventSinkListenerRegistry.addEventListener(listener);
+    return getLastEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -643,7 +635,7 @@ public final class Navigator extends DwcFocusableComponent<Navigator>
    */
   public ListenerRegistration<NavigatorMoveNextEvent> addMoveNextEvent(
       EventListener<NavigatorMoveNextEvent> listener) {
-    return this.nextEventSinkListenerRegistry.addEventListener(listener);
+    return getNextEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -665,7 +657,7 @@ public final class Navigator extends DwcFocusableComponent<Navigator>
    */
   public ListenerRegistration<NavigatorMovePreviousEvent> addMovePreviousEvent(
       EventListener<NavigatorMovePreviousEvent> listener) {
-    return this.previousEventSinkListenerRegistry.addEventListener(listener);
+    return getPreviousEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -707,10 +699,21 @@ public final class Navigator extends DwcFocusableComponent<Navigator>
   @Override
   protected void attachControlCallbacks() {
     super.attachControlCallbacks();
-    firstEventSinkListenerRegistry.attach();
-    lastEventSinkListenerRegistry.attach();
-    nextEventSinkListenerRegistry.attach();
-    previousEventSinkListenerRegistry.attach();
+    if (firstEventSinkListenerRegistry != null) {
+      firstEventSinkListenerRegistry.attach();
+    }
+
+    if (lastEventSinkListenerRegistry != null) {
+      lastEventSinkListenerRegistry.attach();
+    }
+
+    if (nextEventSinkListenerRegistry != null) {
+      nextEventSinkListenerRegistry.attach();
+    }
+
+    if (previousEventSinkListenerRegistry != null) {
+      previousEventSinkListenerRegistry.attach();
+    }
   }
 
   /**
@@ -770,6 +773,44 @@ public final class Navigator extends DwcFocusableComponent<Navigator>
     }
   }
 
+  private ComponentEventSinkRegistry<NavigatorMoveFirstEvent> getFirstEventSinkListenerRegistry() {
+    if (firstEventSinkListenerRegistry == null) {
+      firstEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new NavigatorMoveFirstEventSink(this, getEventDispatcher()),
+          NavigatorMoveFirstEvent.class);
+    }
+
+    return firstEventSinkListenerRegistry;
+  }
+
+  private ComponentEventSinkRegistry<NavigatorMoveLastEvent> getLastEventSinkListenerRegistry() {
+    if (lastEventSinkListenerRegistry == null) {
+      lastEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new NavigatorMoveLastEventSink(this, getEventDispatcher()), NavigatorMoveLastEvent.class);
+    }
+
+    return lastEventSinkListenerRegistry;
+  }
+
+  private ComponentEventSinkRegistry<NavigatorMoveNextEvent> getNextEventSinkListenerRegistry() {
+    if (nextEventSinkListenerRegistry == null) {
+      nextEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new NavigatorMoveNextEventSink(this, getEventDispatcher()), NavigatorMoveNextEvent.class);
+    }
+
+    return nextEventSinkListenerRegistry;
+  }
+
+  private ComponentEventSinkRegistry<NavigatorMovePreviousEvent> getPreviousEventSinkListenerRegistry() {
+    if (previousEventSinkListenerRegistry == null) {
+      previousEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new NavigatorMovePreviousEventSink(this, getEventDispatcher()),
+          NavigatorMovePreviousEvent.class);
+    }
+
+    return previousEventSinkListenerRegistry;
+  }
+
   /**
    * A paginator change listener. When the paginator changes, the Navigator will be updated in the
    * client side.
@@ -784,4 +825,5 @@ public final class Navigator extends DwcFocusableComponent<Navigator>
       setUnrestrictedProperty(property, ev.getNewValue());
     }
   }
+
 }

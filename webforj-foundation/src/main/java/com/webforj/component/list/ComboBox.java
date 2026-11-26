@@ -55,12 +55,8 @@ import java.util.List;
 public final class ComboBox extends DwcSelectDropdown<ComboBox>
     implements HasReadOnly<ComboBox>, HasHighlightOnFocus<ComboBox>, HasPlaceholder<ComboBox> {
 
-  private final ComponentEventSinkRegistry<ModifyEvent> modifyEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new ModifyEventSink(this, getEventDispatcher()),
-          ModifyEvent.class);
-  private final ComponentEventSinkRegistry<KeypressEvent> keypressEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new KeypressEventSink(this, getEventDispatcher()),
-          KeypressEvent.class);
+  private ComponentEventSinkRegistry<ModifyEvent> modifyEventSinkListenerRegistry = null;
+  private ComponentEventSinkRegistry<KeypressEvent> keypressEventSinkListenerRegistry = null;
 
   private boolean allowCustomValue = true;
 
@@ -190,7 +186,7 @@ public final class ComboBox extends DwcSelectDropdown<ComboBox>
    * @return A registration object for removing the event listener
    */
   public ListenerRegistration<ModifyEvent> addModifyListener(EventListener<ModifyEvent> listener) {
-    return modifyEventSinkListenerRegistry.addEventListener(listener);
+    return getModifyEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -211,7 +207,7 @@ public final class ComboBox extends DwcSelectDropdown<ComboBox>
    */
   public ListenerRegistration<KeypressEvent> addKeypressListener(
       EventListener<KeypressEvent> listener) {
-    return keypressEventSinkListenerRegistry.addEventListener(listener);
+    return getKeypressEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -248,8 +244,13 @@ public final class ComboBox extends DwcSelectDropdown<ComboBox>
   @Override
   protected void attachControlCallbacks() {
     super.attachControlCallbacks();
-    modifyEventSinkListenerRegistry.attach();
-    keypressEventSinkListenerRegistry.attach();
+    if (modifyEventSinkListenerRegistry != null) {
+      modifyEventSinkListenerRegistry.attach();
+    }
+
+    if (keypressEventSinkListenerRegistry != null) {
+      keypressEventSinkListenerRegistry.attach();
+    }
   }
 
   /**
@@ -270,5 +271,23 @@ public final class ComboBox extends DwcSelectDropdown<ComboBox>
   private void configureLisType() {
     setDropdownType("ComboBox");
     setUnrestrictedProperty("fieldHeight", "");
+  }
+
+  private ComponentEventSinkRegistry<ModifyEvent> getModifyEventSinkListenerRegistry() {
+    if (modifyEventSinkListenerRegistry == null) {
+      modifyEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new ModifyEventSink(this, getEventDispatcher()), ModifyEvent.class);
+    }
+
+    return modifyEventSinkListenerRegistry;
+  }
+
+  private ComponentEventSinkRegistry<KeypressEvent> getKeypressEventSinkListenerRegistry() {
+    if (keypressEventSinkListenerRegistry == null) {
+      keypressEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new KeypressEventSink(this, getEventDispatcher()), KeypressEvent.class);
+    }
+
+    return keypressEventSinkListenerRegistry;
   }
 }

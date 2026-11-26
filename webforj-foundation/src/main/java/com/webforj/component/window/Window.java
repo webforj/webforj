@@ -27,9 +27,7 @@ import com.webforj.exceptions.WebforjRuntimeException;
 public abstract class Window extends DwcContainer<Window> {
 
   private BBjWindow wnd;
-  private final ComponentEventSinkRegistry<WindowClickEvent> clickEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new WindowClickEventSink(this, getEventDispatcher()),
-          WindowClickEvent.class);
+  private ComponentEventSinkRegistry<WindowClickEvent> clickEventSinkListenerRegistry = null;
 
   static {
     WindowAccessor.setDefault(new WindowAccessorImpl());
@@ -43,7 +41,7 @@ public abstract class Window extends DwcContainer<Window> {
    */
   public ListenerRegistration<WindowClickEvent> addClickListener(
       EventListener<WindowClickEvent> listener) {
-    return clickEventSinkListenerRegistry.addEventListener(listener);
+    return getClickEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -83,7 +81,9 @@ public abstract class Window extends DwcContainer<Window> {
   @Override
   protected void attachControlCallbacks() {
     super.attachControlCallbacks();
-    clickEventSinkListenerRegistry.attach();
+    if (clickEventSinkListenerRegistry != null) {
+      clickEventSinkListenerRegistry.attach();
+    }
   }
 
   /**
@@ -117,5 +117,14 @@ public abstract class Window extends DwcContainer<Window> {
     } catch (IllegalAccessException e) {
       throw new WebforjRuntimeException("Failed to add component", e);
     }
+  }
+
+  private ComponentEventSinkRegistry<WindowClickEvent> getClickEventSinkListenerRegistry() {
+    if (clickEventSinkListenerRegistry == null) {
+      clickEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new WindowClickEventSink(this, getEventDispatcher()), WindowClickEvent.class);
+    }
+
+    return clickEventSinkListenerRegistry;
   }
 }
