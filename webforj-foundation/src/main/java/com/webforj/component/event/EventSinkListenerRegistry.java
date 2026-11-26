@@ -30,6 +30,7 @@ public class EventSinkListenerRegistry<E extends EventObject, T> {
   private List<DwcListenerRegistration> registrations = null;
   private String singleCallbackId = "";
   private Map<EventListener<E>, String> callbackIds = null;
+  private boolean observingDestroy = false;
 
   /**
    * Creates a new EventSinkManager.
@@ -120,6 +121,29 @@ public class EventSinkListenerRegistry<E extends EventObject, T> {
   }
 
   /**
+   * Forgets the single callback when the component is destroyed.
+   *
+   * <p>
+   * The component is observed once, however often the listeners of the event are added and removed.
+   * </p>
+   *
+   * @param component the component of the sink
+   */
+  private void observeDestroy(Object component) {
+    if (observingDestroy || !(component instanceof Component)) {
+      return;
+    }
+
+    observingDestroy = true;
+    ((Component) component).addLifecycleObserver((destroyed, lifecycleEvent) -> {
+      if (lifecycleEvent == ComponentLifecycleObserver.LifecycleEvent.DESTROY) {
+        callbackIds = null;
+        singleCallbackId = "";
+      }
+    });
+  }
+
+  /**
    * A custom DWC listener registration that will remove the callback from the sink when there are
    * no more listeners registered for the event.
    *
@@ -140,10 +164,18 @@ public class EventSinkListenerRegistry<E extends EventObject, T> {
       DwcEventSink<T> eventSink = getSink();
 
       if (!eventSink.isConnected()) {
+        if (registrations != null) {
+          registrations.remove(this);
+        }
+
         return;
       }
 
       String id = getCallbackId();
+      if (callbackIds != null) {
+        callbackIds.remove(getListener());
+      }
+
       if (eventSink.isMultipleCallbacks()) {
         eventSink.removeCallback(id);
       } else {
@@ -177,17 +209,7 @@ public class EventSinkListenerRegistry<E extends EventObject, T> {
         if (singleCallbackId.equals("")) {
           singleCallbackId = eventSink.setCallback(options);
           putCallbackId(singleCallbackId);
-          Object component = eventSink.getComponent();
-          if (component instanceof Component comp) {
-            comp.addLifecycleObserver((component1, lifecycleEvent) -> {
-              if (lifecycleEvent == ComponentLifecycleObserver.LifecycleEvent.DESTROY) {
-                if (callbackIds != null) {
-                  callbackIds.remove(getListener());
-                }
-                singleCallbackId = "";
-              }
-            });
-          }
+          observeDestroy(eventSink.getComponent());
         }
       }
     }
