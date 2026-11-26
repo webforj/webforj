@@ -1,9 +1,9 @@
 package com.webforj.component.toast;
 
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
@@ -245,7 +245,7 @@ class ToastTest {
   }
 
   @Test
-  void shouldKeepAConstructedToastWhenTheClientReportsItClosed() {
+  void shouldKeepConstructedToastWhenClientReportsItClosed() {
     Frame frame = mock(Frame.class);
     component = new Toast("Hello, World!");
 
@@ -263,7 +263,7 @@ class ToastTest {
   }
 
   @Test
-  void shouldIgnoreTheClosedReportOfADestroyedToast() {
+  void shouldIgnoreClosedReportOfDestroyedToast() {
     Frame frame = mock(Frame.class);
 
     try (MockedStatic<App> mockedApp = mockStatic(App.class)) {
