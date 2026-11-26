@@ -197,4 +197,25 @@ class SlotRegistryTest {
       // no-op
     }
   }
+
+  @Test
+  void shouldNotCreateSlotMapUntilComponentIsAdded() throws ReflectiveOperationException {
+    SlotRegistry empty = new SlotRegistry();
+    java.lang.reflect.Field field = SlotRegistry.class.getDeclaredField("slots");
+    field.setAccessible(true);
+
+    assertTrue(empty.getSlots().isEmpty());
+    assertTrue(empty.getComponentsInSlot("any").isEmpty());
+    assertNull(empty.getFirstComponentInSlot("any"));
+    empty.removeSlot("any");
+    empty.removeComponentsFromSlot(new ComponentMock());
+    empty.dispose();
+    assertFalse(field.get(empty) instanceof java.util.LinkedHashMap);
+
+    ComponentMock component = new ComponentMock();
+    empty.addComponentsToSlot("first", component);
+    assertTrue(field.get(empty) instanceof java.util.LinkedHashMap);
+    assertEquals(List.of(component), empty.getComponentsInSlot("first"));
+    assertEquals(List.of("first"), empty.getSlots());
+  }
 }

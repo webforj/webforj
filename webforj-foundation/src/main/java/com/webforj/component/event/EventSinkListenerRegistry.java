@@ -25,9 +25,11 @@ import java.util.Map;
 public class EventSinkListenerRegistry<E extends EventObject, T> {
   private final DwcEventSink<T> sink;
   private final Class<? super E> event;
-  private final List<DwcListenerRegistration> registrations = new ArrayList<>();
+  // created on first use: most components never get a listener for most of their events, so a
+  // page with many components would otherwise keep two empty collections per event type each
+  private List<DwcListenerRegistration> registrations = null;
   private String singleCallbackId = "";
-  private final Map<EventListener<E>, String> callbackIds = new HashMap<>();
+  private Map<EventListener<E>, String> callbackIds = null;
 
   /**
    * Creates a new EventSinkManager.
@@ -53,6 +55,10 @@ public class EventSinkListenerRegistry<E extends EventObject, T> {
     if (getSink().isConnected()) {
       dwcRegistration.connect();
     } else {
+      if (registrations == null) {
+        registrations = new ArrayList<>();
+      }
+
       registrations.add(dwcRegistration);
     }
 
@@ -72,8 +78,12 @@ public class EventSinkListenerRegistry<E extends EventObject, T> {
    * Catches up the sink with the current state of the event dispatcher.
    */
   public void attach() {
+    if (registrations == null) {
+      return;
+    }
+
     registrations.forEach(DwcListenerRegistration::connect);
-    registrations.clear();
+    registrations = null;
   }
 
   /**
@@ -97,7 +107,7 @@ public class EventSinkListenerRegistry<E extends EventObject, T> {
       return singleCallbackId;
     }
 
-    return callbackIds.get(listener);
+    return callbackIds == null ? null : callbackIds.get(listener);
   }
 
   /**
@@ -107,6 +117,14 @@ public class EventSinkListenerRegistry<E extends EventObject, T> {
    */
   DwcEventSink<T> getSink() {
     return sink;
+  }
+
+  private void putCallbackId(EventListener<E> listener, String callbackId) {
+    if (callbackIds == null) {
+      callbackIds = new HashMap<>();
+    }
+
+    callbackIds.put(listener, callbackId);
   }
 
   /**
@@ -154,16 +172,18 @@ public class EventSinkListenerRegistry<E extends EventObject, T> {
 
       if (eventSink.isMultipleCallbacks()) {
         String callbackId = eventSink.setCallback(options);
-        callbackIds.put(getListener(), callbackId);
+        putCallbackId(getListener(), callbackId);
       } else {
         if (singleCallbackId.equals("")) {
           singleCallbackId = eventSink.setCallback(options);
-          callbackIds.put(getListener(), singleCallbackId);
+          putCallbackId(getListener(), singleCallbackId);
           Object component = eventSink.getComponent();
           if (component instanceof Component comp) {
             comp.addLifecycleObserver((component1, lifecycleEvent) -> {
               if (lifecycleEvent == ComponentLifecycleObserver.LifecycleEvent.DESTROY) {
-                callbackIds.remove(getListener());
+                if (callbackIds != null) {
+                  callbackIds.remove(getListener());
+                }
                 singleCallbackId = "";
               }
             });

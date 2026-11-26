@@ -29,7 +29,9 @@ import java.util.Map;
  */
 public class SlotRegistry {
   public static final String DEFAULT_SLOT = "__default__";
-  private final Map<String, List<Component>> slots = new LinkedHashMap<>();
+  // every component has a slot registry and most never put anything in a slot, so the map is
+  // created when the first component is added
+  private Map<String, List<Component>> slots = Collections.emptyMap();
 
   /**
    * Adds the given components to the specified slot.
@@ -50,6 +52,10 @@ public class SlotRegistry {
       String currentSlot = findComponentSlot(component);
       if (currentSlot != null) {
         throw new IllegalArgumentException("Component is already assigned to slot.");
+      }
+
+      if (!(slots instanceof LinkedHashMap)) {
+        slots = new LinkedHashMap<>();
       }
 
       slots.computeIfAbsent(resolvedSlot, k -> new ArrayList<>()).add(component);
