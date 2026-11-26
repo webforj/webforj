@@ -42,15 +42,9 @@ import com.webforj.exceptions.WebforjRuntimeException;
 @SuppressWarnings("squid:S110")
 public abstract class DwcSelectDropdown<T extends DwcList<T, Object>> extends DwcList<T, Object>
     implements BindAware, HasPrefixAndSuffix<T> {
-  private final ComponentEventSinkRegistry<ListOpenEvent> openEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new ListOpenEventSink(this, getEventDispatcher()),
-          ListOpenEvent.class);
-  private final ComponentEventSinkRegistry<ListCloseEvent> closeEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new ListCloseEventSink(this, getEventDispatcher()),
-          ListCloseEvent.class);
-  private final ComponentEventSinkRegistry<ListClickEvent> clickEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new ListClickEventSink(this, getEventDispatcher()),
-          ListClickEvent.class);
+  private ComponentEventSinkRegistry<ListOpenEvent> openEventSinkListenerRegistry = null;
+  private ComponentEventSinkRegistry<ListCloseEvent> closeEventSinkListenerRegistry = null;
+  private ComponentEventSinkRegistry<ListClickEvent> clickEventSinkListenerRegistry = null;
 
   private String openWidth = "";
   private String openHeight = "";
@@ -359,7 +353,7 @@ public abstract class DwcSelectDropdown<T extends DwcList<T, Object>> extends Dw
    */
   public ListenerRegistration<ListOpenEvent> addOpenListener(
       EventListener<ListOpenEvent> listener) {
-    return openEventSinkListenerRegistry.addEventListener(listener);
+    return getOpenEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -380,7 +374,7 @@ public abstract class DwcSelectDropdown<T extends DwcList<T, Object>> extends Dw
    */
   public ListenerRegistration<ListCloseEvent> addCloseListener(
       EventListener<ListCloseEvent> listener) {
-    return closeEventSinkListenerRegistry.addEventListener(listener);
+    return getCloseEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -401,7 +395,7 @@ public abstract class DwcSelectDropdown<T extends DwcList<T, Object>> extends Dw
    */
   public ListenerRegistration<ListClickEvent> addClickListener(
       EventListener<ListClickEvent> listener) {
-    return clickEventSinkListenerRegistry.addEventListener(listener);
+    return getClickEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -456,9 +450,17 @@ public abstract class DwcSelectDropdown<T extends DwcList<T, Object>> extends Dw
   @Override
   protected void attachControlCallbacks() {
     super.attachControlCallbacks();
-    openEventSinkListenerRegistry.attach();
-    closeEventSinkListenerRegistry.attach();
-    clickEventSinkListenerRegistry.attach();
+    if (openEventSinkListenerRegistry != null) {
+      openEventSinkListenerRegistry.attach();
+    }
+
+    if (closeEventSinkListenerRegistry != null) {
+      closeEventSinkListenerRegistry.attach();
+    }
+
+    if (clickEventSinkListenerRegistry != null) {
+      clickEventSinkListenerRegistry.attach();
+    }
   }
 
   /**
@@ -482,5 +484,32 @@ public abstract class DwcSelectDropdown<T extends DwcList<T, Object>> extends Dw
     } catch (IllegalAccessException e) {
       throw new WebforjRuntimeException(e);
     }
+  }
+
+  private ComponentEventSinkRegistry<ListOpenEvent> getOpenEventSinkListenerRegistry() {
+    if (openEventSinkListenerRegistry == null) {
+      openEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new ListOpenEventSink(this, getEventDispatcher()), ListOpenEvent.class);
+    }
+
+    return openEventSinkListenerRegistry;
+  }
+
+  private ComponentEventSinkRegistry<ListCloseEvent> getCloseEventSinkListenerRegistry() {
+    if (closeEventSinkListenerRegistry == null) {
+      closeEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new ListCloseEventSink(this, getEventDispatcher()), ListCloseEvent.class);
+    }
+
+    return closeEventSinkListenerRegistry;
+  }
+
+  private ComponentEventSinkRegistry<ListClickEvent> getClickEventSinkListenerRegistry() {
+    if (clickEventSinkListenerRegistry == null) {
+      clickEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new ListClickEventSink(this, getEventDispatcher()), ListClickEvent.class);
+    }
+
+    return clickEventSinkListenerRegistry;
   }
 }

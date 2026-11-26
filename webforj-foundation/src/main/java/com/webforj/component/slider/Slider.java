@@ -43,9 +43,7 @@ public final class Slider extends DwcFocusableComponent<Slider> implements HasMi
   static final String PROP_TOOLTIP = "tooltipExpression";
   static final String PROP_FILLED = "connect";
 
-  private final ComponentEventSinkRegistry<SliderSlideEvent> slideEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new SliderSlideEventSink(this, getEventDispatcher()),
-          SliderSlideEvent.class);
+  private ComponentEventSinkRegistry<SliderSlideEvent> slideEventSinkListenerRegistry = null;
 
   private Integer min = 0;
   private Integer max = 100;
@@ -734,7 +732,7 @@ public final class Slider extends DwcFocusableComponent<Slider> implements HasMi
    */
   public ListenerRegistration<SliderSlideEvent> addSlideEvent(
       EventListener<SliderSlideEvent> listener) {
-    return this.slideEventSinkListenerRegistry.addEventListener(listener);
+    return getSlideEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -778,7 +776,9 @@ public final class Slider extends DwcFocusableComponent<Slider> implements HasMi
   @Override
   protected void attachControlCallbacks() {
     super.attachControlCallbacks();
-    slideEventSinkListenerRegistry.attach();
+    if (slideEventSinkListenerRegistry != null) {
+      slideEventSinkListenerRegistry.attach();
+    }
   }
 
   @Override
@@ -847,5 +847,14 @@ public final class Slider extends DwcFocusableComponent<Slider> implements HasMi
     } catch (IllegalAccessException e) {
       throw new WebforjRuntimeException(e);
     }
+  }
+
+  private ComponentEventSinkRegistry<SliderSlideEvent> getSlideEventSinkListenerRegistry() {
+    if (slideEventSinkListenerRegistry == null) {
+      slideEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new SliderSlideEventSink(this, getEventDispatcher()), SliderSlideEvent.class);
+    }
+
+    return slideEventSinkListenerRegistry;
   }
 }

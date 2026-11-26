@@ -250,18 +250,10 @@ public final class Upload extends DwcFocusableComponent<Upload>
     HEADLESS
   }
 
-  private final ComponentEventSinkRegistry<UploadChangeEvent> changeEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new UploadChangeEventSink(this, getEventDispatcher()),
-          UploadChangeEvent.class);
-  private final ComponentEventSinkRegistry<UploadEvent> uploadEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new UploadEventSink(this, getEventDispatcher()),
-          UploadEvent.class);
-  private final ComponentEventSinkRegistry<UploadCancelEvent> cancelEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new UploadCancelEventSink(this, getEventDispatcher()),
-          UploadCancelEvent.class);
-  private final ComponentEventSinkRegistry<UploadFilterChangeEvent> filterChangeEventSinkRegistry =
-      new ComponentEventSinkRegistry<>(new UploadFilterChangeEventSink(this, getEventDispatcher()),
-          UploadFilterChangeEvent.class);
+  private ComponentEventSinkRegistry<UploadChangeEvent> changeEventSinkListenerRegistry = null;
+  private ComponentEventSinkRegistry<UploadEvent> uploadEventSinkListenerRegistry = null;
+  private ComponentEventSinkRegistry<UploadCancelEvent> cancelEventSinkListenerRegistry = null;
+  private ComponentEventSinkRegistry<UploadFilterChangeEvent> filterChangeEventSinkRegistry = null;
 
   private final ComponentRegistry componentRegistry = new ComponentRegistry(this, this::doAdd);
   private final List<FileChooserFilter> filters = new ArrayList<>();
@@ -838,7 +830,7 @@ public final class Upload extends DwcFocusableComponent<Upload>
    */
   public ListenerRegistration<UploadChangeEvent> addChangeListener(
       EventListener<UploadChangeEvent> listener) {
-    return changeEventSinkListenerRegistry.addEventListener(listener);
+    return getChangeEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -859,7 +851,7 @@ public final class Upload extends DwcFocusableComponent<Upload>
    * @return the registration
    */
   public ListenerRegistration<UploadEvent> addUploadListener(EventListener<UploadEvent> listener) {
-    return uploadEventSinkListenerRegistry.addEventListener(listener);
+    return getUploadEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -880,7 +872,7 @@ public final class Upload extends DwcFocusableComponent<Upload>
    */
   public ListenerRegistration<UploadCancelEvent> addCancelListener(
       EventListener<UploadCancelEvent> listener) {
-    return cancelEventSinkListenerRegistry.addEventListener(listener);
+    return getCancelEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -902,7 +894,7 @@ public final class Upload extends DwcFocusableComponent<Upload>
    */
   public ListenerRegistration<UploadFilterChangeEvent> addFilterChangeListener(
       EventListener<UploadFilterChangeEvent> listener) {
-    return filterChangeEventSinkRegistry.addEventListener(listener);
+    return getFilterChangeEventSinkRegistry().addEventListener(listener);
   }
 
   /**
@@ -1094,10 +1086,21 @@ public final class Upload extends DwcFocusableComponent<Upload>
   @Override
   protected void attachControlCallbacks() {
     super.attachControlCallbacks();
-    changeEventSinkListenerRegistry.attach();
-    uploadEventSinkListenerRegistry.attach();
-    cancelEventSinkListenerRegistry.attach();
-    filterChangeEventSinkRegistry.attach();
+    if (changeEventSinkListenerRegistry != null) {
+      changeEventSinkListenerRegistry.attach();
+    }
+
+    if (uploadEventSinkListenerRegistry != null) {
+      uploadEventSinkListenerRegistry.attach();
+    }
+
+    if (cancelEventSinkListenerRegistry != null) {
+      cancelEventSinkListenerRegistry.attach();
+    }
+
+    if (filterChangeEventSinkRegistry != null) {
+      filterChangeEventSinkRegistry.attach();
+    }
   }
 
   @Override
@@ -1401,5 +1404,42 @@ public final class Upload extends DwcFocusableComponent<Upload>
       label = String.format(i18n.getSelectionSummary(), files.size());
     }
     setText(label);
+  }
+
+  private ComponentEventSinkRegistry<UploadChangeEvent> getChangeEventSinkListenerRegistry() {
+    if (changeEventSinkListenerRegistry == null) {
+      changeEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new UploadChangeEventSink(this, getEventDispatcher()), UploadChangeEvent.class);
+    }
+
+    return changeEventSinkListenerRegistry;
+  }
+
+  private ComponentEventSinkRegistry<UploadEvent> getUploadEventSinkListenerRegistry() {
+    if (uploadEventSinkListenerRegistry == null) {
+      uploadEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new UploadEventSink(this, getEventDispatcher()), UploadEvent.class);
+    }
+
+    return uploadEventSinkListenerRegistry;
+  }
+
+  private ComponentEventSinkRegistry<UploadCancelEvent> getCancelEventSinkListenerRegistry() {
+    if (cancelEventSinkListenerRegistry == null) {
+      cancelEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new UploadCancelEventSink(this, getEventDispatcher()), UploadCancelEvent.class);
+    }
+
+    return cancelEventSinkListenerRegistry;
+  }
+
+  private ComponentEventSinkRegistry<UploadFilterChangeEvent> getFilterChangeEventSinkRegistry() {
+    if (filterChangeEventSinkRegistry == null) {
+      filterChangeEventSinkRegistry = new ComponentEventSinkRegistry<>(
+          new UploadFilterChangeEventSink(this, getEventDispatcher()),
+          UploadFilterChangeEvent.class);
+    }
+
+    return filterChangeEventSinkRegistry;
   }
 }

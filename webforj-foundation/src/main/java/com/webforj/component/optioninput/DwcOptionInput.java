@@ -46,15 +46,9 @@ public abstract class DwcOptionInput<T extends DwcValidatableComponent<T, Boolea
     extends DwcValidatableComponent<T, Boolean> implements HasTextPosition<T>,
     HasExpanse<T, Expanse>, HasFocusStatus, HasHelperText<T>, HasLabel<T> {
 
-  private final ComponentEventSinkRegistry<CheckEvent> checkEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new CheckEventSink(this, getEventDispatcher()),
-          CheckEvent.class);
-  private final ComponentEventSinkRegistry<UncheckEvent> uncheckEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new UncheckEventSink(this, getEventDispatcher()),
-          UncheckEvent.class);
-  private final ComponentEventSinkRegistry<ToggleEvent> toggleEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new ToggleEventSink(this, getEventDispatcher()),
-          ToggleEvent.class);
+  private ComponentEventSinkRegistry<CheckEvent> checkEventSinkListenerRegistry = null;
+  private ComponentEventSinkRegistry<UncheckEvent> uncheckEventSinkListenerRegistry = null;
+  private ComponentEventSinkRegistry<ToggleEvent> toggleEventSinkListenerRegistry = null;
 
   private HasTextPosition.Position textPosition = HasTextPosition.Position.RIGHT;
   private boolean checked = false;
@@ -279,7 +273,7 @@ public abstract class DwcOptionInput<T extends DwcValidatableComponent<T, Boolea
    * @return A registration object for removing the event listener
    */
   public ListenerRegistration<CheckEvent> addCheckListener(EventListener<CheckEvent> listener) {
-    return this.checkEventSinkListenerRegistry.addEventListener(listener);
+    return getCheckEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -300,7 +294,7 @@ public abstract class DwcOptionInput<T extends DwcValidatableComponent<T, Boolea
    */
   public ListenerRegistration<UncheckEvent> addUncheckListener(
       EventListener<UncheckEvent> listener) {
-    return this.uncheckEventSinkListenerRegistry.addEventListener(listener);
+    return getUncheckEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -320,7 +314,7 @@ public abstract class DwcOptionInput<T extends DwcValidatableComponent<T, Boolea
    * @return A registration object for removing the event listener
    */
   public ListenerRegistration<ToggleEvent> addToggleListener(EventListener<ToggleEvent> listener) {
-    return this.toggleEventSinkListenerRegistry.addEventListener(listener);
+    return getToggleEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -360,9 +354,17 @@ public abstract class DwcOptionInput<T extends DwcValidatableComponent<T, Boolea
   @Override
   protected void attachControlCallbacks() {
     super.attachControlCallbacks();
-    this.checkEventSinkListenerRegistry.attach();
-    this.uncheckEventSinkListenerRegistry.attach();
-    this.toggleEventSinkListenerRegistry.attach();
+    if (checkEventSinkListenerRegistry != null) {
+      checkEventSinkListenerRegistry.attach();
+    }
+
+    if (uncheckEventSinkListenerRegistry != null) {
+      uncheckEventSinkListenerRegistry.attach();
+    }
+
+    if (toggleEventSinkListenerRegistry != null) {
+      toggleEventSinkListenerRegistry.attach();
+    }
   }
 
   /**
@@ -388,5 +390,31 @@ public abstract class DwcOptionInput<T extends DwcValidatableComponent<T, Boolea
       throw new WebforjRuntimeException(e);
     }
   }
-}
 
+  private ComponentEventSinkRegistry<CheckEvent> getCheckEventSinkListenerRegistry() {
+    if (checkEventSinkListenerRegistry == null) {
+      checkEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new CheckEventSink(this, getEventDispatcher()), CheckEvent.class);
+    }
+
+    return checkEventSinkListenerRegistry;
+  }
+
+  private ComponentEventSinkRegistry<UncheckEvent> getUncheckEventSinkListenerRegistry() {
+    if (uncheckEventSinkListenerRegistry == null) {
+      uncheckEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new UncheckEventSink(this, getEventDispatcher()), UncheckEvent.class);
+    }
+
+    return uncheckEventSinkListenerRegistry;
+  }
+
+  private ComponentEventSinkRegistry<ToggleEvent> getToggleEventSinkListenerRegistry() {
+    if (toggleEventSinkListenerRegistry == null) {
+      toggleEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new ToggleEventSink(this, getEventDispatcher()), ToggleEvent.class);
+    }
+
+    return toggleEventSinkListenerRegistry;
+  }
+}

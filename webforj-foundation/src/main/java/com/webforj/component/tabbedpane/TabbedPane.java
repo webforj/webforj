@@ -197,15 +197,9 @@ public final class TabbedPane extends DwcFocusableComponent<TabbedPane> implemen
         }
       };
 
-  private final ComponentEventSinkRegistry<TabSelectEvent> selectEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new TabSelectEventSink(this, getEventDispatcher()),
-          TabSelectEvent.class);
-  private final ComponentEventSinkRegistry<TabDeselectEvent> deselectEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new TabDeselectEventSink(this, getEventDispatcher()),
-          TabDeselectEvent.class);
-  private final ComponentEventSinkRegistry<TabCloseEvent> closeEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new TabCloseEventSink(this, getEventDispatcher()),
-          TabCloseEvent.class);
+  private ComponentEventSinkRegistry<TabSelectEvent> selectEventSinkListenerRegistry = null;
+  private ComponentEventSinkRegistry<TabDeselectEvent> deselectEventSinkListenerRegistry = null;
+  private ComponentEventSinkRegistry<TabCloseEvent> closeEventSinkListenerRegistry = null;
 
   /**
    * Creates a new tabbed pane.
@@ -1093,7 +1087,7 @@ public final class TabbedPane extends DwcFocusableComponent<TabbedPane> implemen
    */
   public ListenerRegistration<TabSelectEvent> addSelectListener(
       EventListener<TabSelectEvent> listener) {
-    return selectEventSinkListenerRegistry.addEventListener(listener);
+    return getSelectEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -1114,7 +1108,7 @@ public final class TabbedPane extends DwcFocusableComponent<TabbedPane> implemen
    */
   public ListenerRegistration<TabDeselectEvent> addDeselectListener(
       EventListener<TabDeselectEvent> listener) {
-    return deselectEventSinkListenerRegistry.addEventListener(listener);
+    return getDeselectEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -1136,7 +1130,7 @@ public final class TabbedPane extends DwcFocusableComponent<TabbedPane> implemen
    */
   public ListenerRegistration<TabCloseEvent> addCloseListener(
       EventListener<TabCloseEvent> listener) {
-    return closeEventSinkListenerRegistry.addEventListener(listener);
+    return getCloseEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -1184,9 +1178,17 @@ public final class TabbedPane extends DwcFocusableComponent<TabbedPane> implemen
   @Override
   protected void attachControlCallbacks() {
     super.attachControlCallbacks();
-    selectEventSinkListenerRegistry.attach();
-    deselectEventSinkListenerRegistry.attach();
-    closeEventSinkListenerRegistry.attach();
+    if (selectEventSinkListenerRegistry != null) {
+      selectEventSinkListenerRegistry.attach();
+    }
+
+    if (deselectEventSinkListenerRegistry != null) {
+      deselectEventSinkListenerRegistry.attach();
+    }
+
+    if (closeEventSinkListenerRegistry != null) {
+      closeEventSinkListenerRegistry.attach();
+    }
   }
 
   /**
@@ -1371,5 +1373,32 @@ public final class TabbedPane extends DwcFocusableComponent<TabbedPane> implemen
     } catch (IllegalAccessException e) {
       throw new WebforjRuntimeException(e);
     }
+  }
+
+  private ComponentEventSinkRegistry<TabSelectEvent> getSelectEventSinkListenerRegistry() {
+    if (selectEventSinkListenerRegistry == null) {
+      selectEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new TabSelectEventSink(this, getEventDispatcher()), TabSelectEvent.class);
+    }
+
+    return selectEventSinkListenerRegistry;
+  }
+
+  private ComponentEventSinkRegistry<TabDeselectEvent> getDeselectEventSinkListenerRegistry() {
+    if (deselectEventSinkListenerRegistry == null) {
+      deselectEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new TabDeselectEventSink(this, getEventDispatcher()), TabDeselectEvent.class);
+    }
+
+    return deselectEventSinkListenerRegistry;
+  }
+
+  private ComponentEventSinkRegistry<TabCloseEvent> getCloseEventSinkListenerRegistry() {
+    if (closeEventSinkListenerRegistry == null) {
+      closeEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new TabCloseEventSink(this, getEventDispatcher()), TabCloseEvent.class);
+    }
+
+    return closeEventSinkListenerRegistry;
   }
 }

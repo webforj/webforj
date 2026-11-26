@@ -75,23 +75,23 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   private static final String PREFIX_SLOT = "prefix";
   private static final String SUFFIX_SLOT = "suffix";
   private final SlotAssigner slotAssigner = new SlotAssigner(this);
-  private final Set<String> classNames = new LinkedHashSet<>();
-  private final Set<String> removedClassNames = new LinkedHashSet<>();
-  private final List<String> removedStyles = new ArrayList<>();
-  private final Map<String, String> attributes = new HashMap<>();
-  private final Map<String, String> styles = new HashMap<>();
-  private final Map<String, Object> properties = new HashMap<>();
-  private final Map<String, Object> clientDefaultProperties = new HashMap<>();
-  private final EventDispatcher dispatcher = new EventDispatcher();
-  private final ComponentEventSinkRegistry<MouseEnterEvent> mouseEnterEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new MouseEnterEventSink(this, dispatcher),
-          MouseEnterEvent.class);
-  private final ComponentEventSinkRegistry<MouseExitEvent> mouseExitEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new MouseExitEventSink(this, dispatcher),
-          MouseExitEvent.class);
-  private final ComponentEventSinkRegistry<RightMouseDownEvent> rightMouseDownEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new RightMouseDownEventSink(this, dispatcher),
-          RightMouseDownEvent.class);
+  // everything below is created on first use: most components use only a few of them, so a page
+  // with many components would otherwise keep a set of empty collections and helpers for each one
+  private Set<String> classNames = null;
+  private Set<String> removedClassNames = null;
+  private List<String> removedStyles = null;
+  private Map<String, String> attributes = null;
+  private Map<String, String> styles = null;
+  private Map<String, Object> properties = null;
+  private Map<String, Object> clientDefaultProperties = null;
+  private EventDispatcher dispatcher = null;
+  // once the values set before the attach have been applied to the control, the control is the only
+  // copy: the maps used to hold them are released and no longer written
+  private boolean caughtUp = false;
+  private ComponentEventSinkRegistry<MouseEnterEvent> mouseEnterEventSinkListenerRegistry = null;
+  private ComponentEventSinkRegistry<MouseExitEvent> mouseExitEventSinkListenerRegistry = null;
+  private ComponentEventSinkRegistry<RightMouseDownEvent> rightMouseDownEventSinkListenerRegistry =
+      null;
 
   private BBjControl control;
   private boolean readOnly = false;
@@ -224,7 +224,8 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
       // convert to JSON and back to make sure we get the correct type of value as the original
       // implementation does in BBjWebComponent
       Gson gson = new Gson();
-      return gson.fromJson(gson.toJson(properties.get(property)), typeOfV);
+      return gson.fromJson(gson.toJson(properties == null ? null : properties.get(property)),
+          typeOfV);
     }
   }
 
@@ -296,7 +297,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
     }
     // fall back to the internal list - will not return attributes that are added by
     // default
-    return attributes.get(attribute);
+    return attributes == null ? null : attributes.get(attribute);
   }
 
   /**
@@ -312,7 +313,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
       }
     }
 
-    return attributes.containsKey(attribute);
+    return attributes != null && attributes.containsKey(attribute);
   }
 
   /**
@@ -328,7 +329,9 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
       }
     }
 
-    this.attributes.remove(attribute);
+    if (attributes != null) {
+      attributes.remove(attribute);
+    }
     return getSelf();
   }
 
@@ -448,8 +451,16 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
       }
     }
 
-    this.styles.put(property, value);
-    this.removedStyles.remove(property);
+    if (!caughtUp) {
+      if (styles == null) {
+        styles = new HashMap<>();
+      }
+
+      styles.put(property, value);
+      if (removedStyles != null) {
+        removedStyles.remove(property);
+      }
+    }
 
     return getSelf();
   }
@@ -468,7 +479,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
     }
     // fall back to the internal list - will not return styles that are added by
     // default
-    return styles.get(property);
+    return styles == null ? null : styles.get(property);
   }
 
   /**
@@ -485,7 +496,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
     }
     // fall back to the internal list - will not return styles that are added by
     // default
-    return styles.get(property);
+    return styles == null ? null : styles.get(property);
   }
 
   /**
@@ -502,8 +513,17 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
       }
     }
 
-    this.styles.remove(property);
-    this.removedStyles.add(property);
+    if (!caughtUp) {
+      if (styles != null) {
+        styles.remove(property);
+      }
+
+      if (removedStyles == null) {
+        removedStyles = new ArrayList<>();
+      }
+
+      removedStyles.add(property);
+    }
 
     return getSelf();
   }
@@ -522,8 +542,14 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
         }
       }
 
+      if (this.classNames == null) {
+        this.classNames = new LinkedHashSet<>();
+      }
+
       this.classNames.add(className);
-      this.removedClassNames.remove(className);
+      if (this.removedClassNames != null) {
+        this.removedClassNames.remove(className);
+      }
     }
 
     return getSelf();
@@ -543,8 +569,17 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
         }
       }
 
-      this.removedClassNames.add(className);
-      this.classNames.remove(className);
+      if (!caughtUp) {
+        if (this.removedClassNames == null) {
+          this.removedClassNames = new LinkedHashSet<>();
+        }
+
+        this.removedClassNames.add(className);
+      }
+
+      if (this.classNames != null) {
+        this.classNames.remove(className);
+      }
     }
 
     return getSelf();
@@ -555,7 +590,8 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    */
   @Override
   public List<String> getClassNameList() {
-    return Collections.unmodifiableList(new ArrayList<>(classNames));
+    return Collections.unmodifiableList(
+        classNames == null ? new ArrayList<String>() : new ArrayList<>(classNames));
   }
 
   /**
@@ -842,7 +878,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    */
   public ListenerRegistration<MouseEnterEvent> addMouseEnterListener(
       EventListener<MouseEnterEvent> listener) {
-    return mouseEnterEventSinkListenerRegistry.addEventListener(listener);
+    return getMouseEnterEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -864,7 +900,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    */
   public ListenerRegistration<MouseExitEvent> addMouseExitListener(
       EventListener<MouseExitEvent> listener) {
-    return mouseExitEventSinkListenerRegistry.addEventListener(listener);
+    return getMouseExitEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -885,7 +921,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    */
   public ListenerRegistration<RightMouseDownEvent> addRightMouseDownListener(
       EventListener<RightMouseDownEvent> listener) {
-    return rightMouseDownEventSinkListenerRegistry.addEventListener(listener);
+    return getRightMouseDownEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -909,7 +945,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    */
   public final <E extends EventObject> List<EventListener<E>> getEventListeners(
       Class<E> eventClass) {
-    return dispatcher.getListeners(eventClass);
+    return getEventDispatcher().getListeners(eventClass);
   }
 
   /**
@@ -918,6 +954,10 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    * @return The instance of the event dispatcher.
    */
   protected final EventDispatcher getEventDispatcher() {
+    if (dispatcher == null) {
+      dispatcher = new EventDispatcher();
+    }
+
     return dispatcher;
   }
 
@@ -944,6 +984,14 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    * @since 26.10
    */
   protected final void setPropertyClientDefault(String property, Object value) {
+    if (caughtUp) {
+      return;
+    }
+
+    if (clientDefaultProperties == null) {
+      clientDefaultProperties = new HashMap<>();
+    }
+
     clientDefaultProperties.put(property, value);
   }
 
@@ -983,7 +1031,13 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
       }
     }
 
-    properties.put(property, value);
+    if (!caughtUp) {
+      if (properties == null) {
+        properties = new HashMap<>();
+      }
+
+      properties.put(property, value);
+    }
 
     return getSelf();
   }
@@ -1006,7 +1060,13 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
       }
     }
 
-    attributes.put(attribute, value);
+    if (!caughtUp) {
+      if (attributes == null) {
+        attributes = new HashMap<>();
+      }
+
+      attributes.put(attribute, value);
+    }
 
     return getSelf();
   }
@@ -1293,15 +1353,18 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
     } catch (BBjException e) {
       // pass
     } finally {
-      attributes.clear();
-      styles.clear();
-      properties.clear();
-      clientDefaultProperties.clear();
-      classNames.clear();
-      removedClassNames.clear();
-      removedStyles.clear();
+      attributes = null;
+      styles = null;
+      properties = null;
+      clientDefaultProperties = null;
+      classNames = null;
+      removedClassNames = null;
+      removedStyles = null;
       slotAssigner.getSlotRegistry().dispose();
-      dispatcher.removeAllListeners();
+
+      if (dispatcher != null) {
+        dispatcher.removeAllListeners();
+      }
     }
   }
 
@@ -1315,9 +1378,17 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    * </p>
    */
   protected void attachControlCallbacks() {
-    mouseEnterEventSinkListenerRegistry.attach();
-    mouseExitEventSinkListenerRegistry.attach();
-    rightMouseDownEventSinkListenerRegistry.attach();
+    if (mouseEnterEventSinkListenerRegistry != null) {
+      mouseEnterEventSinkListenerRegistry.attach();
+    }
+
+    if (mouseExitEventSinkListenerRegistry != null) {
+      mouseExitEventSinkListenerRegistry.attach();
+    }
+
+    if (rightMouseDownEventSinkListenerRegistry != null) {
+      rightMouseDownEventSinkListenerRegistry.attach();
+    }
   }
 
   /**
@@ -1349,14 +1420,14 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
       setTooltipText(tooltipText);
     }
 
-    if (!attributes.isEmpty()) {
+    if (attributes != null && !attributes.isEmpty()) {
       Map<String, String> clone = new HashMap<>(attributes);
       for (Map.Entry<String, String> entry : clone.entrySet()) {
         setUnrestrictedAttribute(entry.getKey(), entry.getValue());
       }
     }
 
-    if (!properties.isEmpty()) {
+    if (properties != null && !properties.isEmpty()) {
       Map<String, Object> clone = new HashMap<>(properties);
       for (Map.Entry<String, Object> entry : clone.entrySet()) {
         if (!isPropertyClientDefault(entry.getKey(), entry.getValue())) {
@@ -1365,28 +1436,28 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
       }
     }
 
-    if (!styles.isEmpty()) {
+    if (styles != null && !styles.isEmpty()) {
       Map<String, String> clone = new HashMap<>(styles);
       for (Map.Entry<String, String> entry : clone.entrySet()) {
         setStyle(entry.getKey(), entry.getValue());
       }
     }
 
-    if (!removedStyles.isEmpty()) {
+    if (removedStyles != null && !removedStyles.isEmpty()) {
       List<String> clone = new ArrayList<>(removedStyles);
       for (String style : clone) {
         removeStyle(style);
       }
     }
 
-    if (!classNames.isEmpty()) {
+    if (classNames != null && !classNames.isEmpty()) {
       List<String> clone = new ArrayList<>(classNames);
       for (String cl : clone) {
         addClassName(cl);
       }
     }
 
-    if (!removedClassNames.isEmpty()) {
+    if (removedClassNames != null && !removedClassNames.isEmpty()) {
       List<String> clone = new ArrayList<>(removedClassNames);
       for (String cl : clone) {
         removeClassName(cl);
@@ -1402,6 +1473,16 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
     }
 
     getSlotAssigner().attach();
+
+    if (control != null) {
+      caughtUp = true;
+      attributes = null;
+      styles = null;
+      properties = null;
+      clientDefaultProperties = null;
+      removedStyles = null;
+      removedClassNames = null;
+    }
   }
 
   /**
@@ -1418,7 +1499,8 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   }
 
   private boolean isPropertyClientDefault(String property, Object value) {
-    return value != null && clientDefaultProperties.containsKey(property)
+    return value != null && clientDefaultProperties != null
+        && clientDefaultProperties.containsKey(property)
         && value.equals(clientDefaultProperties.get(property));
   }
 
@@ -1433,5 +1515,32 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
     }
 
     return value;
+  }
+
+  private ComponentEventSinkRegistry<MouseEnterEvent> getMouseEnterEventSinkListenerRegistry() {
+    if (mouseEnterEventSinkListenerRegistry == null) {
+      mouseEnterEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new MouseEnterEventSink(this, getEventDispatcher()), MouseEnterEvent.class);
+    }
+
+    return mouseEnterEventSinkListenerRegistry;
+  }
+
+  private ComponentEventSinkRegistry<MouseExitEvent> getMouseExitEventSinkListenerRegistry() {
+    if (mouseExitEventSinkListenerRegistry == null) {
+      mouseExitEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new MouseExitEventSink(this, getEventDispatcher()), MouseExitEvent.class);
+    }
+
+    return mouseExitEventSinkListenerRegistry;
+  }
+
+  private ComponentEventSinkRegistry<RightMouseDownEvent> getRightMouseDownEventSinkListenerRegistry() {
+    if (rightMouseDownEventSinkListenerRegistry == null) {
+      rightMouseDownEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new RightMouseDownEventSink(this, getEventDispatcher()), RightMouseDownEvent.class);
+    }
+
+    return rightMouseDownEventSinkListenerRegistry;
   }
 }

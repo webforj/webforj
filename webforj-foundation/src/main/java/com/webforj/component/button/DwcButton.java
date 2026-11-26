@@ -47,9 +47,7 @@ public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcF
   private static final String BADGE_SLOT = "badge";
   private boolean disableOnClick = false;
 
-  private final ComponentEventSinkRegistry<ButtonClickEvent> clickEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new ButtonClickEventSink(this, getEventDispatcher()),
-          ButtonClickEvent.class);
+  private ComponentEventSinkRegistry<ButtonClickEvent> clickEventSinkListenerRegistry = null;
 
   protected DwcButton() {
     super();
@@ -293,7 +291,7 @@ public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcF
    */
   public ListenerRegistration<ButtonClickEvent> addClickListener(
       EventListener<ButtonClickEvent> listener) {
-    return this.clickEventSinkListenerRegistry.addEventListener(listener);
+    return getClickEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -325,7 +323,9 @@ public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcF
   @Override
   protected void attachControlCallbacks() {
     super.attachControlCallbacks();
-    clickEventSinkListenerRegistry.attach();
+    if (clickEventSinkListenerRegistry != null) {
+      clickEventSinkListenerRegistry.attach();
+    }
   }
 
   /**
@@ -346,5 +346,14 @@ public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcF
     } catch (IllegalAccessException e) {
       throw new WebforjRuntimeException(e);
     }
+  }
+
+  private ComponentEventSinkRegistry<ButtonClickEvent> getClickEventSinkListenerRegistry() {
+    if (clickEventSinkListenerRegistry == null) {
+      clickEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new ButtonClickEventSink(this, getEventDispatcher()), ButtonClickEvent.class);
+    }
+
+    return clickEventSinkListenerRegistry;
   }
 }

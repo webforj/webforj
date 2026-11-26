@@ -97,24 +97,13 @@ public final class Tree extends DwcFocusableComponent<Tree>
   private boolean leafIconsVisible = true;
   private boolean connect = true;
 
-  private final ComponentEventSinkRegistry<TreeSelectEvent> selectEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new TreeSelectEventSink(this, getEventDispatcher()),
-          TreeSelectEvent.class);
-  private final ComponentEventSinkRegistry<TreeDeselectEvent> deselectEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new TreeDeselectEventSink(this, getEventDispatcher()),
-          TreeDeselectEvent.class);
-  private final ComponentEventSinkRegistry<TreeCollapseEvent> collapseEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new TreeCollapseEventSink(this, getEventDispatcher()),
-          TreeCollapseEvent.class);
-  private final ComponentEventSinkRegistry<TreeExpandEvent> expandEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new TreeExpandEventSink(this, getEventDispatcher()),
-          TreeExpandEvent.class);
-  private final ComponentEventSinkRegistry<TreeClickEvent> clickEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new TreeClickEventSink(this, getEventDispatcher()),
-          TreeClickEvent.class);
-  private final ComponentEventSinkRegistry<TreeDoubleClickEvent> doubleClickEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new TreeDoubleClickEventSink(this, getEventDispatcher()),
-          TreeDoubleClickEvent.class);
+  private ComponentEventSinkRegistry<TreeSelectEvent> selectEventSinkListenerRegistry = null;
+  private ComponentEventSinkRegistry<TreeDeselectEvent> deselectEventSinkListenerRegistry = null;
+  private ComponentEventSinkRegistry<TreeCollapseEvent> collapseEventSinkListenerRegistry = null;
+  private ComponentEventSinkRegistry<TreeExpandEvent> expandEventSinkListenerRegistry = null;
+  private ComponentEventSinkRegistry<TreeClickEvent> clickEventSinkListenerRegistry = null;
+  private ComponentEventSinkRegistry<TreeDoubleClickEvent> doubleClickEventSinkListenerRegistry =
+      null;
 
   /**
    * The selection mode for the tree.
@@ -1038,7 +1027,7 @@ public final class Tree extends DwcFocusableComponent<Tree>
    */
   public ListenerRegistration<TreeSelectEvent> addSelectListener(
       EventListener<TreeSelectEvent> listener) {
-    return selectEventSinkListenerRegistry.addEventListener(listener);
+    return getSelectEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -1059,7 +1048,7 @@ public final class Tree extends DwcFocusableComponent<Tree>
    */
   public ListenerRegistration<TreeDeselectEvent> addDeselectListener(
       EventListener<TreeDeselectEvent> listener) {
-    return deselectEventSinkListenerRegistry.addEventListener(listener);
+    return getDeselectEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -1081,7 +1070,7 @@ public final class Tree extends DwcFocusableComponent<Tree>
    */
   public ListenerRegistration<TreeCollapseEvent> addCollapseListener(
       EventListener<TreeCollapseEvent> listener) {
-    return collapseEventSinkListenerRegistry.addEventListener(listener);
+    return getCollapseEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -1103,7 +1092,7 @@ public final class Tree extends DwcFocusableComponent<Tree>
    */
   public ListenerRegistration<TreeExpandEvent> addExpandListener(
       EventListener<TreeExpandEvent> listener) {
-    return expandEventSinkListenerRegistry.addEventListener(listener);
+    return getExpandEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -1124,7 +1113,7 @@ public final class Tree extends DwcFocusableComponent<Tree>
    */
   public ListenerRegistration<TreeClickEvent> addClickListener(
       EventListener<TreeClickEvent> listener) {
-    return clickEventSinkListenerRegistry.addEventListener(listener);
+    return getClickEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -1145,7 +1134,7 @@ public final class Tree extends DwcFocusableComponent<Tree>
    */
   public ListenerRegistration<TreeDoubleClickEvent> addDoubleClickListener(
       EventListener<TreeDoubleClickEvent> listener) {
-    return doubleClickEventSinkListenerRegistry.addEventListener(listener);
+    return getDoubleClickEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -1179,12 +1168,29 @@ public final class Tree extends DwcFocusableComponent<Tree>
   @Override
   protected void attachControlCallbacks() {
     super.attachControlCallbacks();
-    selectEventSinkListenerRegistry.attach();
-    deselectEventSinkListenerRegistry.attach();
-    collapseEventSinkListenerRegistry.attach();
-    expandEventSinkListenerRegistry.attach();
-    clickEventSinkListenerRegistry.attach();
-    doubleClickEventSinkListenerRegistry.attach();
+    if (selectEventSinkListenerRegistry != null) {
+      selectEventSinkListenerRegistry.attach();
+    }
+
+    if (deselectEventSinkListenerRegistry != null) {
+      deselectEventSinkListenerRegistry.attach();
+    }
+
+    if (collapseEventSinkListenerRegistry != null) {
+      collapseEventSinkListenerRegistry.attach();
+    }
+
+    if (expandEventSinkListenerRegistry != null) {
+      expandEventSinkListenerRegistry.attach();
+    }
+
+    if (clickEventSinkListenerRegistry != null) {
+      clickEventSinkListenerRegistry.attach();
+    }
+
+    if (doubleClickEventSinkListenerRegistry != null) {
+      doubleClickEventSinkListenerRegistry.attach();
+    }
   }
 
   /**
@@ -1592,5 +1598,59 @@ public final class Tree extends DwcFocusableComponent<Tree>
               """;
       page.executeJsVoidAsync(script.formatted(uuid, node.getUniqueId(), prop, GSON.toJson(icon)));
     });
+  }
+
+  private ComponentEventSinkRegistry<TreeSelectEvent> getSelectEventSinkListenerRegistry() {
+    if (selectEventSinkListenerRegistry == null) {
+      selectEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new TreeSelectEventSink(this, getEventDispatcher()), TreeSelectEvent.class);
+    }
+
+    return selectEventSinkListenerRegistry;
+  }
+
+  private ComponentEventSinkRegistry<TreeDeselectEvent> getDeselectEventSinkListenerRegistry() {
+    if (deselectEventSinkListenerRegistry == null) {
+      deselectEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new TreeDeselectEventSink(this, getEventDispatcher()), TreeDeselectEvent.class);
+    }
+
+    return deselectEventSinkListenerRegistry;
+  }
+
+  private ComponentEventSinkRegistry<TreeCollapseEvent> getCollapseEventSinkListenerRegistry() {
+    if (collapseEventSinkListenerRegistry == null) {
+      collapseEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new TreeCollapseEventSink(this, getEventDispatcher()), TreeCollapseEvent.class);
+    }
+
+    return collapseEventSinkListenerRegistry;
+  }
+
+  private ComponentEventSinkRegistry<TreeExpandEvent> getExpandEventSinkListenerRegistry() {
+    if (expandEventSinkListenerRegistry == null) {
+      expandEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new TreeExpandEventSink(this, getEventDispatcher()), TreeExpandEvent.class);
+    }
+
+    return expandEventSinkListenerRegistry;
+  }
+
+  private ComponentEventSinkRegistry<TreeClickEvent> getClickEventSinkListenerRegistry() {
+    if (clickEventSinkListenerRegistry == null) {
+      clickEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new TreeClickEventSink(this, getEventDispatcher()), TreeClickEvent.class);
+    }
+
+    return clickEventSinkListenerRegistry;
+  }
+
+  private ComponentEventSinkRegistry<TreeDoubleClickEvent> getDoubleClickEventSinkListenerRegistry() {
+    if (doubleClickEventSinkListenerRegistry == null) {
+      doubleClickEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new TreeDoubleClickEventSink(this, getEventDispatcher()), TreeDoubleClickEvent.class);
+    }
+
+    return doubleClickEventSinkListenerRegistry;
   }
 }

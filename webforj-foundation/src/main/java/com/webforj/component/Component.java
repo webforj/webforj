@@ -32,8 +32,11 @@ import java.util.UUID;
  * @since 23.05
  */
 public abstract class Component {
-  private final Map<Object, Object> userData = new HashMap<>();
-  private final List<ComponentLifecycleObserver> lifecycleObservers = new ArrayList<>();
+  // created on first use: most components never get user data or a pending attach result. A
+  // component inside a container gets one lifecycle observer from the container's registry, so
+  // its list starts with room for one
+  private Map<Object, Object> userData = null;
+  private List<ComponentLifecycleObserver> lifecycleObservers = null;
   private String uuid = "";
   private String name = "";
   private int bbjId = -1;
@@ -41,7 +44,7 @@ public abstract class Component {
   private boolean destroyed = false;
   private Window window;
   private Component parentComponent;
-  private final List<PendingResult<Component>> whenAttachedResults = new ArrayList<>();
+  private List<PendingResult<Component>> whenAttachedResults = null;
 
   static {
     ComponentAccessor.setDefault(new ComponentAccessorImpl());
@@ -175,7 +178,11 @@ public abstract class Component {
    * @return The component itself
    */
   public Component setUserData(Object key, Object data) {
-    this.userData.put(key, data);
+    if (userData == null) {
+      userData = new HashMap<>();
+    }
+
+    userData.put(key, data);
     return this;
   }
 
@@ -186,7 +193,7 @@ public abstract class Component {
    * @return Desired piece of user data
    */
   public Object getUserData(Object key) {
-    return this.userData.get(key);
+    return userData == null ? null : userData.get(key);
   }
 
   /**
@@ -201,7 +208,7 @@ public abstract class Component {
       return;
     }
 
-    this.userData.clear();
+    this.userData = null;
     this.uuid = "";
     this.attached = false;
     this.destroyed = true;
@@ -213,8 +220,10 @@ public abstract class Component {
       LocaleObserverRegistry.getCurrent().unregister(observer);
     }
 
-    for (ComponentLifecycleObserver observer : lifecycleObservers) {
-      observer.onComponentLifecycleEvent(this, LifecycleEvent.DESTROY);
+    if (lifecycleObservers != null) {
+      for (ComponentLifecycleObserver observer : lifecycleObservers) {
+        observer.onComponentLifecycleEvent(this, LifecycleEvent.DESTROY);
+      }
     }
 
     fireGlobalLifecycleEvent(LifecycleEvent.DESTROY);
@@ -288,6 +297,10 @@ public abstract class Component {
    * @param observer The listener to add
    */
   public void addLifecycleObserver(ComponentLifecycleObserver observer) {
+    if (lifecycleObservers == null) {
+      lifecycleObservers = new ArrayList<>(1);
+    }
+
     lifecycleObservers.add(observer);
   }
 
@@ -297,7 +310,9 @@ public abstract class Component {
    * @param observer The listener to remove
    */
   public void removeLifecycleObserver(ComponentLifecycleObserver observer) {
-    lifecycleObservers.remove(observer);
+    if (lifecycleObservers != null) {
+      lifecycleObservers.remove(observer);
+    }
   }
 
   /**
@@ -314,6 +329,10 @@ public abstract class Component {
     }
 
     PendingResult<Component> result = new PendingResult<>();
+    if (whenAttachedResults == null) {
+      whenAttachedResults = new ArrayList<>();
+    }
+
     whenAttachedResults.add(result);
     return result;
   }
@@ -398,13 +417,18 @@ public abstract class Component {
     }
 
     fireGlobalLifecycleEvent(LifecycleEvent.CREATE);
-    for (ComponentLifecycleObserver observer : lifecycleObservers) {
-      observer.onComponentLifecycleEvent(this, LifecycleEvent.CREATE);
+    if (lifecycleObservers != null) {
+      for (ComponentLifecycleObserver observer : lifecycleObservers) {
+        observer.onComponentLifecycleEvent(this, LifecycleEvent.CREATE);
+      }
     }
 
     this.attached = true;
     this.onAttach();
-    whenAttachedResults.forEach(r -> r.complete(this));
+    if (whenAttachedResults != null) {
+      whenAttachedResults.forEach(r -> r.complete(this));
+      whenAttachedResults = null;
+    }
   }
 
   /**

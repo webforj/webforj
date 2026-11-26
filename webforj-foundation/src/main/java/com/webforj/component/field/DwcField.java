@@ -43,12 +43,8 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
     extends DwcValidatableComponent<T, V> implements HasLabel<T>, HasReadOnly<T>, HasRequired<T>,
     HasExpanse<T, Expanse>, HasFocusStatus, HasHighlightOnFocus<T>, HasAutoFocus<T>,
     HasPlaceholder<T>, ValueChangeModeAware<T>, HasHelperText<T>, HasPrefixAndSuffix<T> {
-  private final ComponentEventSinkRegistry<ModifyEvent> modifyEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new ModifyEventSink(this, getEventDispatcher()),
-          ModifyEvent.class);
-  private final ComponentEventSinkRegistry<KeypressEvent> keypressEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new KeypressEventSink(this, getEventDispatcher()),
-          KeypressEvent.class);
+  private ComponentEventSinkRegistry<ModifyEvent> modifyEventSinkListenerRegistry = null;
+  private ComponentEventSinkRegistry<KeypressEvent> keypressEventSinkListenerRegistry = null;
 
   private boolean autoFocus = false;
   private String label = "";
@@ -426,7 +422,7 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
    * @return A registration object for removing the event listener
    */
   public ListenerRegistration<ModifyEvent> addModifyListener(EventListener<ModifyEvent> listener) {
-    return this.modifyEventSinkListenerRegistry.addEventListener(listener);
+    return getModifyEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -479,7 +475,7 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
    */
   public ListenerRegistration<KeypressEvent> addKeypressListener(
       EventListener<KeypressEvent> listener) {
-    return this.keypressEventSinkListenerRegistry.addEventListener(listener);
+    return getKeypressEventSinkListenerRegistry().addEventListener(listener);
   }
 
   /**
@@ -498,8 +494,13 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
   @Override
   protected void attachControlCallbacks() {
     super.attachControlCallbacks();
-    this.modifyEventSinkListenerRegistry.attach();
-    this.keypressEventSinkListenerRegistry.attach();
+    if (modifyEventSinkListenerRegistry != null) {
+      modifyEventSinkListenerRegistry.attach();
+    }
+
+    if (keypressEventSinkListenerRegistry != null) {
+      keypressEventSinkListenerRegistry.attach();
+    }
   }
 
   /**
@@ -520,5 +521,23 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
 
     ValueChangeEvent<V> valueChangeEvent = new ValueChangeEvent<>(this, value);
     getEventDispatcher().dispatchEvent(valueChangeEvent);
+  }
+
+  private ComponentEventSinkRegistry<ModifyEvent> getModifyEventSinkListenerRegistry() {
+    if (modifyEventSinkListenerRegistry == null) {
+      modifyEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new ModifyEventSink(this, getEventDispatcher()), ModifyEvent.class);
+    }
+
+    return modifyEventSinkListenerRegistry;
+  }
+
+  private ComponentEventSinkRegistry<KeypressEvent> getKeypressEventSinkListenerRegistry() {
+    if (keypressEventSinkListenerRegistry == null) {
+      keypressEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
+          new KeypressEventSink(this, getEventDispatcher()), KeypressEvent.class);
+    }
+
+    return keypressEventSinkListenerRegistry;
   }
 }
