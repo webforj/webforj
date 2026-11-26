@@ -1,2 +1,3 @@
 org.springframework.boot.EnvironmentPostProcessor=\
-com.webforj.spring.mcp.McpAppsEnvironmentPostProcessor
+com.webforj.spring.mcp.McpAppsEnvironmentPostProcessor,\
+com.webforj.spring.CompressionEnvironmentPostProcessor
