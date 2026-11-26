@@ -63,7 +63,7 @@
         <artifactId>webforj-mcp-apps</artifactId>
         <version>${project.version}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>com.webforj</groupId>
         <artifactId>webforj-push</artifactId>
@@ -85,6 +85,12 @@
       <dependency>
         <groupId>com.webforj</groupId>
         <artifactId>webforj-testbed-junit</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.webforj</groupId>
+        <artifactId>webforj-bbj-security</artifactId>
         <version>${project.version}</version>
       </dependency>
 
