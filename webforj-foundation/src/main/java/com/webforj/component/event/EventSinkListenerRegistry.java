@@ -119,14 +119,6 @@ public class EventSinkListenerRegistry<E extends EventObject, T> {
     return sink;
   }
 
-  private void putCallbackId(EventListener<E> listener, String callbackId) {
-    if (callbackIds == null) {
-      callbackIds = new HashMap<>();
-    }
-
-    callbackIds.put(listener, callbackId);
-  }
-
   /**
    * A custom DWC listener registration that will remove the callback from the sink when there are
    * no more listeners registered for the event.
@@ -167,16 +159,24 @@ public class EventSinkListenerRegistry<E extends EventObject, T> {
       return EventSinkListenerRegistry.this.getCallbackId(getListener());
     }
 
+    private void putCallbackId(String callbackId) {
+      if (callbackIds == null) {
+        callbackIds = new HashMap<>();
+      }
+
+      callbackIds.put(getListener(), callbackId);
+    }
+
     void connect() {
       DwcEventSink<T> eventSink = getSink();
 
       if (eventSink.isMultipleCallbacks()) {
         String callbackId = eventSink.setCallback(options);
-        putCallbackId(getListener(), callbackId);
+        putCallbackId(callbackId);
       } else {
         if (singleCallbackId.equals("")) {
           singleCallbackId = eventSink.setCallback(options);
-          putCallbackId(getListener(), singleCallbackId);
+          putCallbackId(singleCallbackId);
           Object component = eventSink.getComponent();
           if (component instanceof Component comp) {
             comp.addLifecycleObserver((component1, lifecycleEvent) -> {

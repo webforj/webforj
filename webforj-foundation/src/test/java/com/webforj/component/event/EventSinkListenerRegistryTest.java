@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -141,7 +142,7 @@ class EventSinkListenerRegistryTest {
     verify(sink, times(0)).setCallback(null);
 
     when(sink.isConnected()).thenReturn(true);
-    org.mockito.Mockito.doReturn("cb-1").when(sink).setCallback(null);
+    doReturn("cb-1").when(sink).setCallback(null);
     registry.attach();
     registry.attach();
 
