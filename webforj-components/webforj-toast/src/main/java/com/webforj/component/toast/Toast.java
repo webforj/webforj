@@ -5,6 +5,7 @@ import com.webforj.App;
 import com.webforj.component.Component;
 import com.webforj.component.ComponentLifecycleObserver;
 import com.webforj.component.Theme;
+import com.webforj.component.element.Element;
 import com.webforj.component.element.ElementCompositeContainer;
 import com.webforj.component.element.PropertyDescriptor;
 import com.webforj.component.element.annotation.NodeName;
@@ -108,6 +109,11 @@ public class Toast extends ElementCompositeContainer implements HasClassName<Toa
   }
 
   private Frame frame;
+  private final ComponentLifecycleObserver frameObserver = (component, event) -> {
+    if (event == ComponentLifecycleObserver.LifecycleEvent.DESTROY) {
+      frame = null;
+    }
+  };
 
   @PropertyMethods(setter = "setText", getter = "getText")
   private final PropertyDescriptor<String> messageProp = PropertyDescriptor.property("message", "");
@@ -341,9 +347,7 @@ public class Toast extends ElementCompositeContainer implements HasClassName<Toa
    * @return the component itself.
    */
   public static Toast show(String text, int duration, Theme theme, Placement placement) {
-    Toast toast = new Toast(text, duration, theme, placement);
-    toast.open();
-    return toast;
+    return showDisposable(new Toast(text, duration, theme, placement));
   }
 
   /**
@@ -356,9 +360,7 @@ public class Toast extends ElementCompositeContainer implements HasClassName<Toa
    * @return the component itself.
    */
   public static Toast show(String text, int duration, Theme theme) {
-    Toast toast = new Toast(text, duration, theme);
-    toast.open();
-    return toast;
+    return showDisposable(new Toast(text, duration, theme));
   }
 
   /**
@@ -370,9 +372,7 @@ public class Toast extends ElementCompositeContainer implements HasClassName<Toa
    * @return the component itself.
    */
   public static Toast show(String text, Theme theme) {
-    Toast toast = new Toast(text, theme);
-    toast.open();
-    return toast;
+    return showDisposable(new Toast(text, theme));
   }
 
   /**
@@ -385,9 +385,7 @@ public class Toast extends ElementCompositeContainer implements HasClassName<Toa
    * @return the component itself.
    */
   public static Toast show(String text, int duration, Placement placement) {
-    Toast toast = new Toast(text, duration, placement);
-    toast.open();
-    return toast;
+    return showDisposable(new Toast(text, duration, placement));
   }
 
   /**
@@ -399,9 +397,7 @@ public class Toast extends ElementCompositeContainer implements HasClassName<Toa
    * @return the component itself.
    */
   public static Toast show(String text, Placement placement) {
-    Toast toast = new Toast(text, placement);
-    toast.open();
-    return toast;
+    return showDisposable(new Toast(text, placement));
   }
 
   /**
@@ -413,9 +409,7 @@ public class Toast extends ElementCompositeContainer implements HasClassName<Toa
    * @return the component itself.
    */
   public static Toast show(String text, int duration) {
-    Toast toast = new Toast(text, duration);
-    toast.open();
-    return toast;
+    return showDisposable(new Toast(text, duration));
   }
 
   /**
@@ -425,9 +419,21 @@ public class Toast extends ElementCompositeContainer implements HasClassName<Toa
    * @return the component itself.
    */
   public static Toast show(String text) {
-    Toast toast = new Toast(text);
-    toast.open();
-    return toast;
+    return showDisposable(new Toast(text));
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void onDidDestroy() {
+    super.onDidDestroy();
+
+    // a destroyed toast no longer needs to know when its frame is destroyed, and the frame must
+    // not keep the toast reachable
+    if (frame != null) {
+      frame.removeLifecycleObserver(frameObserver);
+    }
   }
 
   private Frame getFrame(boolean createIfNotExist) {
@@ -452,12 +458,25 @@ public class Toast extends ElementCompositeContainer implements HasClassName<Toa
       }
     }
     if (frame != null) {
-      frame.addLifecycleObserver((component, event) -> {
-        if (event == ComponentLifecycleObserver.LifecycleEvent.DESTROY) {
-          frame = null;
-        }
-      });
+      frame.addLifecycleObserver(frameObserver);
     }
     return frame;
+  }
+
+  private static Toast showDisposable(Toast toast) {
+    // a toast shown through a factory method is not managed by the caller, so it is destroyed
+    // when the client reports that it closed
+    toast.getElement().addEventListener("dwc-closed", event -> {
+      if (!toast.isDestroyed()) {
+        toast.destroy();
+      }
+    });
+    toast.open();
+
+    return toast;
+  }
+
+  Element getOriginalElement() {
+    return getElement();
   }
 }
