@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class EventSinkListenerRegistryTest {
   ComponentEventSinkRegistry<MouseEnterEvent> registry;
@@ -149,6 +150,71 @@ class EventSinkListenerRegistryTest {
     verify(sink, times(1)).setCallback(null);
     assertEquals("cb-1", registry.getCallbackId(listener));
     assertNull(field(registry, "registrations"));
+  }
+
+  @Test
+  void shouldNotConnectAListenerRemovedBeforeAttach() {
+    when(sink.isConnected()).thenReturn(false);
+    registry.addEventListener(e -> {
+    }).remove();
+
+    when(sink.isConnected()).thenReturn(true);
+    registry.attach();
+
+    verify(sink, times(0)).setCallback(any());
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void shouldForgetTheCallbackIdOfARemovedListener(boolean isMultipleCallbacks) {
+    when(sink.isConnected()).thenReturn(true);
+    when(sink.isMultipleCallbacks()).thenReturn(isMultipleCallbacks);
+    doReturn("cb-1").when(sink).setCallback(null);
+    EventListener<MouseEnterEvent> listener = e -> {
+    };
+
+    registry.addEventListener(listener).remove();
+
+    verify(sink, times(1)).removeCallback("cb-1");
+    assertNull(registry.getCallbackId(listener));
+  }
+
+  @Test
+  void shouldObserveTheComponentOnceWhenTheListenerIsAddedAndRemovedRepeatedly() {
+    DwcComponentMock component = spy(new DwcComponentMock());
+    EventSinkMock repeatedSink = spy(new EventSinkMock(component, dispatcher, 0));
+    when(repeatedSink.isConnected()).thenReturn(true);
+    when(repeatedSink.isMultipleCallbacks()).thenReturn(false);
+    doReturn("cb-1").when(repeatedSink).setCallback(null);
+    registry = new ComponentEventSinkRegistry<>(repeatedSink, MouseEnterEvent.class);
+
+    for (int i = 0; i < 3; i++) {
+      registry.addEventListener(e -> {
+      }).remove();
+    }
+
+    verify(component, times(1)).addLifecycleObserver(any());
+  }
+
+  @Test
+  void shouldForgetEveryCallbackIdWhenTheComponentIsDestroyed() {
+    DwcComponentMock component = new DwcComponentMock();
+    EventSinkMock destroyedSink = spy(new EventSinkMock(component, dispatcher, 0));
+    when(destroyedSink.isConnected()).thenReturn(true);
+    when(destroyedSink.isMultipleCallbacks()).thenReturn(false);
+    doReturn("cb-1").when(destroyedSink).setCallback(null);
+    registry = new ComponentEventSinkRegistry<>(destroyedSink, MouseEnterEvent.class);
+    EventListener<MouseEnterEvent> first = e -> {
+    };
+    EventListener<MouseEnterEvent> second = e -> {
+    };
+    registry.addEventListener(first).remove();
+    registry.addEventListener(second);
+
+    component.destroy();
+
+    assertNull(registry.getCallbackId(first));
+    assertNull(registry.getCallbackId(second));
   }
 
   private static Object field(Object target, String name) throws ReflectiveOperationException {
