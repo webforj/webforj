@@ -65,6 +65,6 @@ public class WatchContextListener implements ServletContextListener {
       classLoader = WatchContextListener.class.getClassLoader();
     }
 
-    return ConfigFactory.parseResourcesAnySyntax(classLoader, "webforj.conf");
+    return ConfigFactory.parseResourcesAnySyntax(classLoader, "webforj.conf").resolve();
   }
 }

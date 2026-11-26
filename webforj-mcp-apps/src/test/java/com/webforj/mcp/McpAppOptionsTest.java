@@ -20,6 +20,8 @@ class McpAppOptionsTest {
     System.clearProperty(McpAppOptions.KEY_ALLOWED_ORIGINS);
     System.clearProperty(McpAppOptions.KEY_RESOURCE_DOMAINS);
     System.clearProperty(McpAppOptions.KEY_CONNECT_DOMAINS);
+    System.clearProperty("webforj.conf");
+    System.clearProperty("webforj.test.connect-domain");
   }
 
   @Test
@@ -69,5 +71,26 @@ class McpAppOptionsTest {
 
     assertEquals("http://override.example", options.getOrigin());
     assertEquals(List.of("http://one.example", "http://two.example"), options.getAllowedOrigins());
+  }
+
+  @Test
+  @DisplayName("Should resolve an environment variable referenced in the deployment configuration")
+  void shouldResolveEnvironmentVariableInFile() {
+    System.setProperty("webforj.conf", "!!fixtures/substitution/webforj.conf");
+
+    McpAppOptions options = McpAppOptions.load();
+
+    assertEquals(System.getenv("PATH"), options.getOrigin());
+  }
+
+  @Test
+  @DisplayName("Should resolve a system property referenced in the deployment configuration")
+  void shouldResolveSystemPropertyInFile() {
+    System.setProperty("webforj.conf", "!!fixtures/substitution/webforj.conf");
+    System.setProperty("webforj.test.connect-domain", "http://api.example");
+
+    McpAppOptions options = McpAppOptions.load();
+
+    assertEquals(List.of("http://api.example"), options.getConnectDomains());
   }
 }
