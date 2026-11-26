@@ -215,7 +215,7 @@ public final class MaskedDateFieldSpinner extends MaskedDateField
   protected void onAttach() {
     super.onAttach();
 
-    if (spinField != null) {
+    if (spinField != null && !isControlSpinField(spinField)) {
       setSpinField(spinField);
     }
   }
@@ -236,5 +236,16 @@ public final class MaskedDateFieldSpinner extends MaskedDateField
 
   BBjInputDSpinner inferDateSpinnerField() {
     return (BBjInputDSpinner) inferField();
+  }
+
+  // the control is created with a spin field, a spin field it already has is not sent
+  private boolean isControlSpinField(SpinField value) {
+    BBjInputDSpinner field = inferDateSpinnerField();
+
+    try {
+      return field != null && field.getSpinField() == value.getValue();
+    } catch (BBjException e) {
+      return false;
+    }
   }
 }

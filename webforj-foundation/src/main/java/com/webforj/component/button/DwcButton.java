@@ -53,6 +53,8 @@ public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcF
 
   protected DwcButton() {
     super();
+    // dwc-button starts with the default theme and no client builder changes it
+    setPropertyClientDefault("theme", ButtonTheme.DEFAULT);
     setExpanse(Expanse.MEDIUM);
   }
 

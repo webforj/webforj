@@ -1193,8 +1193,12 @@ public final class Tree extends DwcFocusableComponent<Tree>
   @Override
   protected void onAttach() {
     super.onAttach();
+    // the tree is hidden while its nodes are built, an empty tree has nothing to build
     boolean isVisible = isVisible();
-    setVisible(false);
+    boolean hideWhileBuilding = isVisible && !root.getChildren().isEmpty();
+    if (hideWhileBuilding) {
+      setVisible(false);
+    }
 
     if (!selectionMode.equals(SelectionMode.MULTIPLE)) {
       setSelectionMode(selectionMode);
@@ -1234,7 +1238,9 @@ public final class Tree extends DwcFocusableComponent<Tree>
       expandedFromNodes.forEach(this::expandFrom);
     }
 
-    setVisible(isVisible);
+    if (hideWhileBuilding) {
+      setVisible(true);
+    }
   }
 
   /**

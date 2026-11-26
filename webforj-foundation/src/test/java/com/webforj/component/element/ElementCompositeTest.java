@@ -65,6 +65,62 @@ class ElementCompositeTest {
   }
 
   @Nested
+  @DisplayName("Client defaults")
+  class ClientDefaults {
+
+    @Test
+    void shouldNotSendThePropertyDefaultTheClientStartsWith() throws Exception {
+      BBjWebComponent control = mock(BBjWebComponent.class);
+      PropertyDescriptor<String> theme = PropertyDescriptor.property("theme", "default");
+      composite.setPropertyClientDefault(theme);
+      composite.set(theme, "default");
+      ReflectionUtils.unNullifyControl(composite.getElement(), control);
+
+      composite.getElement().onAttach();
+
+      verify(control, never()).setProperty(eq("theme"), any());
+    }
+
+    @Test
+    void shouldSendValueThatDiffersFromTheClientDefault() throws Exception {
+      BBjWebComponent control = mock(BBjWebComponent.class);
+      PropertyDescriptor<String> theme = PropertyDescriptor.property("theme", "default");
+      composite.setPropertyClientDefault(theme);
+      composite.set(theme, "primary");
+      ReflectionUtils.unNullifyControl(composite.getElement(), control);
+
+      composite.getElement().onAttach();
+
+      verify(control).setProperty("theme", "primary");
+    }
+
+    @Test
+    void shouldSendTheDefaultOfPropertyThatWasNotDeclared() throws Exception {
+      BBjWebComponent control = mock(BBjWebComponent.class);
+      PropertyDescriptor<String> theme = PropertyDescriptor.property("theme", "default");
+      composite.set(theme, "default");
+      ReflectionUtils.unNullifyControl(composite.getElement(), control);
+
+      composite.getElement().onAttach();
+
+      verify(control).setProperty("theme", "default");
+    }
+
+    @Test
+    void shouldIgnoreAnAttributeDeclaredAsClientDefault() throws Exception {
+      BBjWebComponent control = mock(BBjWebComponent.class);
+      PropertyDescriptor<String> role = PropertyDescriptor.attribute("role", "button");
+      composite.setPropertyClientDefault(role);
+      composite.set(role, "button");
+      ReflectionUtils.unNullifyControl(composite.getElement(), control);
+
+      composite.getElement().onAttach();
+
+      verify(control).setAttribute("role", "button");
+    }
+  }
+
+  @Nested
   @DisplayName("Properties API")
   class PropertiesApi {
 

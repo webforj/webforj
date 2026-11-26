@@ -349,7 +349,10 @@ public abstract class DwcMaskedField<T extends DwcField<T, V> & HasReadOnly<T>, 
   @Override
   protected void onAttach() {
     super.onAttach();
-    setMask(this.mask);
+
+    if (!isControlMask(this.mask)) {
+      setMask(this.mask);
+    }
 
     if (this.caretPosition > 0) {
       setCaretPosition(this.caretPosition);
@@ -383,5 +386,16 @@ public abstract class DwcMaskedField<T extends DwcField<T, V> & HasReadOnly<T>, 
 
   Environment getEnvironment() {
     return Environment.getCurrent();
+  }
+
+  // the control is created with the default mask of its type, a mask it already has is not sent
+  private boolean isControlMask(String value) {
+    BBjInput field = inferField();
+
+    try {
+      return field != null && value.equals(field.getMask());
+    } catch (BBjException e) {
+      return false;
+    }
   }
 }

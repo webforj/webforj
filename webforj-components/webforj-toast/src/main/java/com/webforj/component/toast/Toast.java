@@ -136,6 +136,9 @@ public class Toast extends ElementCompositeContainer implements HasClassName<Toa
    * @param placement the toast placement.
    */
   public Toast(String text, int duration, Theme theme, Placement placement) {
+    setPropertyClientDefault(messageProp);
+    setPropertyClientDefault(themeProp);
+    setPropertyClientDefault(placementProp);
     setText(text);
     setDuration(duration);
     setTheme(theme);

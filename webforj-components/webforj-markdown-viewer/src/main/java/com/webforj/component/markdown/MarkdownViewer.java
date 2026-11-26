@@ -55,6 +55,7 @@ public class MarkdownViewer extends ElementComposite
    */
   public MarkdownViewer(String content) {
     super();
+    setPropertyClientDefault(contentProp);
     setContent(content);
     // Listen for client-side progressive render completion
     getElement().addEventListener("dwc-progressive-render-complete", e -> {

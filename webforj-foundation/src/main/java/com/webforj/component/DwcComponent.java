@@ -81,6 +81,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   private final Map<String, String> attributes = new HashMap<>();
   private final Map<String, String> styles = new HashMap<>();
   private final Map<String, Object> properties = new HashMap<>();
+  private final Map<String, Object> clientDefaultProperties = new HashMap<>();
   private final EventDispatcher dispatcher = new EventDispatcher();
   private final ComponentEventSinkRegistry<MouseEnterEvent> mouseEnterEventSinkListenerRegistry =
       new ComponentEventSinkRegistry<>(new MouseEnterEventSink(this, dispatcher),
@@ -96,6 +97,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   private boolean readOnly = false;
   private boolean visible = true;
   private String text = "";
+  private String controlText = null;
   private String tooltipText = "";
   private HasHighlightOnFocus.Behavior highlightOnFocus = HasHighlightOnFocus.Behavior.FOCUS_OR_KEY;
   private HasHorizontalAlignment.Alignment defaultHorizontalAlignment = null;
@@ -928,6 +930,42 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   }
 
   /**
+   * Sets the value a property has in the browser component before the server sets it.
+   *
+   * <p>
+   * When the component attaches and the property still holds exactly this value, the value is kept
+   * on the server but not sent to the control, since the newly created browser component already
+   * has it. Every other value, and every value set after the component is attached, is sent as
+   * before.
+   * </p>
+   *
+   * @param property the name of the property
+   * @param value the value the browser component starts with
+   * @since 26.10
+   */
+  protected final void setPropertyClientDefault(String property, Object value) {
+    clientDefaultProperties.put(property, value);
+  }
+
+  /**
+   * Resolves the text to pass when creating the underlying BBj control.
+   *
+   * <p>
+   * The text is the one {@link #getText()} returns. When the component attaches and its text is
+   * still exactly this plain text, the text is not sent to the control a second time.
+   * </p>
+   *
+   * @return the text to create the control with
+   * @since 26.10
+   */
+  protected final String resolveControlText() {
+    String value = getText();
+    controlText = value;
+
+    return value;
+  }
+
+  /**
    * Sets the value for a property in the component. This method does not check if the property is
    * restricted or not.
    *
@@ -1258,6 +1296,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
       attributes.clear();
       styles.clear();
       properties.clear();
+      clientDefaultProperties.clear();
       classNames.clear();
       removedClassNames.clear();
       removedStyles.clear();
@@ -1298,7 +1337,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
       this.setVisible(visible);
     }
 
-    if (text != null && !text.isEmpty()) {
+    if (text != null && !text.isEmpty() && !isControlCreatedWithText(text)) {
       doSetText(text);
     }
 
@@ -1320,7 +1359,9 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
     if (!properties.isEmpty()) {
       Map<String, Object> clone = new HashMap<>(properties);
       for (Map.Entry<String, Object> entry : clone.entrySet()) {
-        setUnrestrictedProperty(entry.getKey(), entry.getValue());
+        if (!isPropertyClientDefault(entry.getKey(), entry.getValue())) {
+          setUnrestrictedProperty(entry.getKey(), entry.getValue());
+        }
       }
     }
 
@@ -1374,6 +1415,15 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
     T self = (T) this;
 
     return self;
+  }
+
+  private boolean isPropertyClientDefault(String property, Object value) {
+    return value != null && clientDefaultProperties.containsKey(property)
+        && value.equals(clientDefaultProperties.get(property));
+  }
+
+  private boolean isControlCreatedWithText(String value) {
+    return value.equals(controlText) && !HtmlText.isWrappedWithHtmlTag(value);
   }
 
   private String addHtmlTag(String text) {

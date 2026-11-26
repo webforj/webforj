@@ -5,8 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import com.basis.bbj.proxies.sysgui.BBjNavigator;
+import com.webforj.component.DwcComponent;
 import com.webforj.component.ReflectionUtils;
 import com.webforj.component.navigator.event.NavigatorChangeEvent;
 import com.webforj.component.navigator.event.NavigatorMoveFirstEvent;
@@ -16,6 +21,7 @@ import com.webforj.component.navigator.event.NavigatorMovePreviousEvent;
 import com.webforj.data.Paginator;
 import com.webforj.data.repository.CollectionRepository;
 import com.webforj.data.repository.Repository;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -293,6 +299,41 @@ class NavigatorTest {
       component.onChange(e -> {
       });
       assertEquals(1, component.getEventListeners(NavigatorChangeEvent.class).size());
+    }
+  }
+
+  @Nested
+  @DisplayName("Client defaults")
+  class ClientDefaults {
+
+    private void attach(Navigator navigator) throws ReflectiveOperationException {
+      Method onAttach = DwcComponent.class.getDeclaredMethod("onAttach");
+      onAttach.setAccessible(true);
+      onAttach.invoke(navigator);
+    }
+
+    @Test
+    void shouldNotSendValuesTheClientStartsWith() throws Exception {
+      Navigator navigator = new Navigator();
+      ReflectionUtils.unNullifyControl(navigator, control);
+
+      attach(navigator);
+
+      verify(control, never()).setProperty(eq("layout"), any());
+      verify(control, never()).setProperty(eq("totalItems"), any());
+      verify(control, never()).setProperty(eq("size"), any());
+    }
+
+    @Test
+    void shouldSendValuesThatDifferFromTheClientDefaults() throws Exception {
+      Navigator navigator = new Navigator(100, 20, Navigator.Layout.PAGES);
+      ReflectionUtils.unNullifyControl(navigator, control);
+
+      attach(navigator);
+
+      verify(control).setProperty("layout", Navigator.Layout.PAGES);
+      verify(control).setProperty("totalItems", 100);
+      verify(control).setProperty("size", 20);
     }
   }
 }

@@ -159,6 +159,26 @@ public abstract class ElementComposite extends Composite<Element> {
   }
 
   /**
+   * Declares that the client element starts with the default value of the given property.
+   *
+   * <p>
+   * The default value is then not sent to the client when the component is attached. A value that
+   * differs from the default, and any value set after the component is attached, is sent as usual.
+   * Only declare a property whose default value is the same in the client element. An attribute is
+   * always sent, so declaring one has no effect.
+   * </p>
+   *
+   * @param <V> the type of the property
+   * @param property the property whose default value the client element starts with
+   * @since 26.10
+   */
+  protected final <V> void setPropertyClientDefault(PropertyDescriptor<V> property) {
+    if (!property.isAttribute()) {
+      getElement().setClientDefault(property.getName(), property.getDefaultValue());
+    }
+  }
+
+  /**
    * Sets a property or an attribute of the element.
    *
    * @param <V> the type of the property

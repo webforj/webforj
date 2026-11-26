@@ -226,6 +226,10 @@ public final class Navigator extends DwcFocusableComponent<Navigator>
    */
   public Navigator(Paginator paginator, Layout layout) {
     super();
+    // dwc-navigator starts with these values, the client builder sets the preview layout
+    setPropertyClientDefault("layout", Layout.PREVIEW);
+    setPropertyClientDefault("totalItems", 0);
+    setPropertyClientDefault("size", 10);
     setPaginator(paginator);
     setLayout(layout);
     setExpanse(Expanse.MEDIUM);
@@ -718,7 +722,7 @@ public final class Navigator extends DwcFocusableComponent<Navigator>
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(window);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      setControl(w.addNavigator(resolveControlId(w), getText(), flags));
+      setControl(w.addNavigator(resolveControlId(w), resolveControlText(), flags));
     } catch (Exception e) {
       throw new WebforjRuntimeException("Failed to create the BBjNavigator Control", e);
     }
