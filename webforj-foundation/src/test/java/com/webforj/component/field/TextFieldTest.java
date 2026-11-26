@@ -1,9 +1,22 @@
 package com.webforj.component.field;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.basis.bbj.proxies.sysgui.BBjEditBox;
+import com.basis.bbj.proxies.sysgui.BBjWindow;
+import com.basis.startup.type.BBjException;
+import com.webforj.bridge.WindowAccessor;
 import com.webforj.component.Expanse;
+import com.webforj.component.window.Window;
 import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.dispatcher.EventListener;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +27,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -127,5 +141,30 @@ class TextFieldTest {
   void settingGettingTypeWhenControlIsNotNull(TextField.Type type) {
     component.setType(type);
     assertEquals(component.getType(), type);
+  }
+
+  @Nested
+  class Creation {
+
+    @Test
+    void shouldCreateControlWithValueWithoutSendingItAgainOnAttach()
+        throws BBjException, IllegalAccessException {
+      Window window = mock(Window.class);
+      BBjWindow bbjWindow = mock(BBjWindow.class);
+      BBjEditBox editBox = mock(BBjEditBox.class);
+      WindowAccessor windowAccessor = mock(WindowAccessor.class);
+      when(windowAccessor.getBBjWindow(window)).thenReturn(bbjWindow);
+      when(bbjWindow.addEditBox(anyInt(), anyString(), any(byte[].class))).thenReturn(editBox);
+      TextField field = new TextField("label", "value", "placeholder");
+
+      try (MockedStatic<WindowAccessor> accessor = mockStatic(WindowAccessor.class)) {
+        accessor.when(WindowAccessor::getDefault).thenReturn(windowAccessor);
+        field.onCreate(window);
+        field.onAttach();
+      }
+
+      verify(bbjWindow).addEditBox(anyInt(), eq("value"), any(byte[].class));
+      verify(editBox, never()).setText(anyString());
+    }
   }
 }

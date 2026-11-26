@@ -139,6 +139,32 @@ class MaskedDateFieldSpinnerTest {
 
       verify(control).setSpinField(field.getValue());
     }
+
+    @Test
+    void shouldNotSendSpinFieldTheControlAlreadyHas() throws BBjException {
+      BBjInputDSpinner control = mock(BBjInputDSpinner.class);
+      MaskedDateFieldSpinner spy = spy(component);
+      int spinField = spy.getSpinField().getValue();
+      when(spy.inferDateSpinnerField()).thenReturn(control);
+      when(control.getSpinField()).thenReturn(spinField);
+
+      spy.onAttach();
+
+      verify(control, times(0)).setSpinField(spinField);
+    }
+
+    @Test
+    void shouldSendSpinFieldWhenTheControlSpinFieldCannotBeRead() throws BBjException {
+      BBjInputDSpinner control = mock(BBjInputDSpinner.class);
+      MaskedDateFieldSpinner spy = spy(component);
+      BBjException failure = mock(BBjException.class);
+      when(spy.inferDateSpinnerField()).thenReturn(control);
+      when(control.getSpinField()).thenThrow(failure);
+
+      spy.onAttach();
+
+      verify(control).setSpinField(MaskedDateFieldSpinner.SpinField.DAY.getValue());
+    }
   }
 
 }

@@ -1059,4 +1059,14 @@ public final class Element extends DwcContainer<Element> implements HasFocus<Ele
       listener.onEvent(new ElementEvent(Element.this, data, type, id, options));
     }
   }
+
+  /**
+   * Declares the value the client element starts with for the given property.
+   *
+   * @param property the name of the property
+   * @param value the value the client element starts with
+   */
+  void setClientDefault(String property, Object value) {
+    setPropertyClientDefault(property, value);
+  }
 }

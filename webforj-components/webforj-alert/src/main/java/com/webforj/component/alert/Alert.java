@@ -56,6 +56,8 @@ public class Alert extends ElementCompositeContainer implements HasText<Alert>, 
    * @param closable whether the alert is closable
    */
   public Alert(String text, Theme theme, boolean closable) {
+    setPropertyClientDefault(themeProp);
+    setPropertyClientDefault(closableProp);
     this.setText(text);
     this.setTheme(theme);
     this.setClosable(closable);

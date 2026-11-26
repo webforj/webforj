@@ -370,6 +370,44 @@ class DwcComponentTest {
   class PropertiesApi {
 
     @Test
+    void shouldNotSendThePropertyClientDefaultOnAttach()
+        throws BBjException, IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+      component.setPropertyClientDefault("theme", Theme.DEFAULT);
+      component.setTheme(Theme.DEFAULT);
+      component.setProperty("other", "value");
+
+      ReflectionUtils.unNullifyControl(component, control);
+      component.onAttach();
+
+      verify(control, times(0)).setProperty("theme", Theme.DEFAULT);
+      verify(control, times(1)).setProperty("other", "value");
+      assertEquals(Theme.DEFAULT, component.getTheme());
+    }
+
+    @Test
+    void shouldSendAValueOtherThanThePropertyClientDefaultOnAttach()
+        throws BBjException, IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+      component.setPropertyClientDefault("theme", Theme.DEFAULT);
+      component.setTheme(Theme.DANGER);
+
+      ReflectionUtils.unNullifyControl(component, control);
+      component.onAttach();
+
+      verify(control, times(1)).setProperty("theme", Theme.DANGER);
+    }
+
+    @Test
+    void shouldSendThePropertyClientDefaultSetAfterAttach() throws BBjException {
+      component.setPropertyClientDefault("theme", Theme.DEFAULT);
+
+      component.setTheme(Theme.DEFAULT);
+
+      verify(control, times(1)).setProperty("theme", Theme.DEFAULT);
+    }
+
+    @Test
     @DisplayName("Setting/getting properties when control is null")
     void settingGettingPropertiesWhenControlIsNull() throws IllegalAccessException, BBjException {
       ReflectionUtils.nullifyControl(component);
@@ -526,6 +564,46 @@ class DwcComponentTest {
       component.onAttach();
 
       verify(control, times(2)).setText("value");
+    }
+
+    @Test
+    void shouldNotReApplyTextTheControlWasCreatedWith()
+        throws BBjException, IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+      component.setText("value");
+
+      assertEquals("value", component.resolveControlText());
+      ReflectionUtils.unNullifyControl(component, control);
+      component.onAttach();
+
+      verify(control, times(0)).setText("value");
+    }
+
+    @Test
+    void shouldReApplyTextChangedAfterTheControlWasCreated()
+        throws BBjException, IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+      component.setText("created");
+
+      component.resolveControlText();
+      component.setText("changed");
+      ReflectionUtils.unNullifyControl(component, control);
+      component.onAttach();
+
+      verify(control, times(1)).setText("changed");
+    }
+
+    @Test
+    void shouldReApplyHtmlTextWhenTheControlWasCreatedWithItsPlainText()
+        throws BBjException, IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+      component.setHtml("<b>bold</b>");
+
+      assertEquals("bold", component.resolveControlText());
+      ReflectionUtils.unNullifyControl(component, control);
+      component.onAttach();
+
+      verify(control, times(1)).setText("<html><b>bold</b></html>");
     }
 
     @Test

@@ -1,6 +1,9 @@
 package com.webforj.component.field;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -48,6 +51,25 @@ class DwcMaskedFieldTest {
       component.onAttach();
 
       verify(control).setMask(mask);
+    }
+
+    @Test
+    void shouldNotSendMaskTheControlAlreadyHas() throws BBjException {
+      when(control.getMask()).thenReturn(component.getMask());
+
+      component.onAttach();
+
+      verify(control, never()).setMask(anyString());
+    }
+
+    @Test
+    void shouldSendMaskWhenTheControlMaskCannotBeRead() throws BBjException {
+      BBjException failure = mock(BBjException.class);
+      when(control.getMask()).thenThrow(failure);
+
+      component.onAttach();
+
+      verify(control).setMask(component.getMask());
     }
   }
 

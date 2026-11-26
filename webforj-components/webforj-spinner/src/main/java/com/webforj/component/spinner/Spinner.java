@@ -43,6 +43,7 @@ public class Spinner extends ElementComposite implements DwcSpinner<Spinner>, Ha
    */
   public Spinner(Theme theme, SpinnerExpanse expanse) {
     super();
+    setPropertyClientDefault(themeProp);
     setTheme(theme);
     setExpanse(expanse);
   }

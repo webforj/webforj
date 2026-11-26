@@ -5,14 +5,17 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.basis.bbj.proxies.SysGuiProxyConstants;
 import com.basis.bbj.proxies.sysgui.BBjTree;
@@ -21,6 +24,7 @@ import com.basis.startup.type.BBjVector;
 import com.basis.util.common.BasisNumber;
 import com.google.gson.Gson;
 import com.webforj.Page;
+import com.webforj.component.ReflectionUtils;
 import com.webforj.component.tree.event.TreeClickEvent;
 import com.webforj.component.tree.event.TreeCollapseEvent;
 import com.webforj.component.tree.event.TreeDeselectEvent;
@@ -42,6 +46,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.MockedStatic;
 
 
@@ -205,6 +210,45 @@ class TreeTest {
       tree.setSelectionMode(Tree.SelectionMode.SINGLE);
 
       assertTrue(tree.getSelectedItems().isEmpty());
+    }
+  }
+
+  @Nested
+  class AttachTests {
+    @Test
+    void shouldNotHideAnEmptyTreeWhileItIsAttached() throws Exception {
+      ReflectionUtils.unNullifyControl(tree, mockBbjTree);
+      when(mockBbjTree.isVisible()).thenReturn(true);
+
+      tree.onAttach();
+
+      verify(mockBbjTree, never()).setVisible(anyBoolean());
+    }
+
+    @Test
+    void shouldHideTheTreeWhileItsNodesAreBuilt() throws Exception {
+      ReflectionUtils.unNullifyControl(tree, mockBbjTree);
+      when(mockBbjTree.isVisible()).thenReturn(true);
+      tree.add(Tree.node("node"));
+
+      tree.onAttach();
+
+      InOrder order = inOrder(mockBbjTree);
+      order.verify(mockBbjTree).setVisible(false);
+      order.verify(mockBbjTree).setVisible(true);
+      assertTrue(tree.isVisible());
+    }
+
+    @Test
+    void shouldKeepAnInvisibleTreeInvisible() throws Exception {
+      ReflectionUtils.unNullifyControl(tree, mockBbjTree);
+      tree.setVisible(false);
+      tree.add(Tree.node("node"));
+
+      tree.onAttach();
+
+      verify(mockBbjTree, never()).setVisible(true);
+      assertFalse(tree.isVisible());
     }
   }
 
