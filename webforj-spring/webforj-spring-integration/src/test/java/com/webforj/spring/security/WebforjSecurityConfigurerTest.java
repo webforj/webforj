@@ -1,42 +1,75 @@
 package com.webforj.spring.security;
 
 import static org.hamcrest.Matchers.startsWith;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.nimbusds.jose.crypto.RSASSASigner;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
+import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.PlainJWT;
+import com.nimbusds.jwt.SignedJWT;
 import com.webforj.component.Composite;
 import com.webforj.component.element.Element;
 import com.webforj.router.annotation.Route;
 import com.webforj.router.security.AbstractRouteSecurityManager;
 import com.webforj.spring.SpringConfigurationProperties;
+import jakarta.servlet.http.Cookie;
 import java.nio.charset.StandardCharsets;
+import java.security.interfaces.RSAPublicKey;
+import java.security.Principal;
 import java.time.Instant;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpSession;
-import org.springframework.security.config.Customizer;
+import org.springframework.mock.web.MockServletContext;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -48,21 +81,34 @@ import org.springframework.security.oauth2.client.registration.InMemoryClientReg
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenResponse;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.context.NestedTestConfiguration;
 import org.springframework.test.context.NestedTestConfiguration.EnclosingConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -686,6 +732,457 @@ class WebforjSecurityConfigurerTest {
         SpringConfigurationProperties properties = new SpringConfigurationProperties();
         properties.setServletMapping("/*");
         return properties;
+      }
+    }
+  }
+
+
+  @Nested
+  @NestedTestConfiguration(EnclosingConfiguration.OVERRIDE)
+  @SpringJUnitWebConfig(BearerToken.BearerTokenSecurityConfig.class)
+  class BearerToken {
+
+    private static final String KEY =
+        HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
+
+    private static final AuthenticationEntryPoint CUSTOM_ENTRY_POINT =
+        (request, response, exception) -> {
+          response.setStatus(418);
+          response.setHeader("X-Entry-Point", "custom");
+        };
+
+    @Autowired
+    private WebApplicationContext context;
+
+    @Autowired
+    private CountingJwtDecoder decoder;
+
+    @Autowired
+    private TokenSource tokens;
+
+    @Autowired
+    private ObjectProvider<HttpSecurity> httpSecurityProvider;
+
+    private final MockHttpSession session = new MockHttpSession();
+    private MockMvc mockMvc;
+
+    @BeforeEach
+    void setUp() {
+      mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
+      decoder.resetCount();
+    }
+
+    @ParameterizedTest
+    @EnumSource(TokenTransport.class)
+    void shouldKeepBearerLoginInSession(TokenTransport transport) throws Exception {
+      String token = tokens.createValid("ada", "USER");
+
+      mockMvc.perform(transport.createRequest(token).session(session))
+          .andExpect(content().string("ada FACTOR_BEARER,ROLE_USER"));
+
+      SecurityContext stored = (SecurityContext) session.getAttribute(KEY);
+      assertInstanceOf(JwtAuthenticationToken.class, stored.getAuthentication());
+      assertEquals("ada", stored.getAuthentication().getName());
+    }
+
+    @Test
+    void shouldRemoveStoredBearerLoginWithoutToken() throws Exception {
+      String token = tokens.createValid("ada", "USER");
+      mockMvc.perform(get("/account").session(session).cookie(new Cookie("jwt", token)));
+
+      mockMvc.perform(get("/account").session(session));
+
+      assertNull(session.getAttribute(KEY));
+    }
+
+    @Test
+    void shouldAnswerRequestWithoutTokenAnonymously() throws Exception {
+      String token = tokens.createValid("ada", "USER");
+      mockMvc.perform(get("/account").session(session).cookie(new Cookie("jwt", token)));
+
+      mockMvc.perform(get("/account").session(session)).andExpect(content().string("anonymous"));
+    }
+
+    @Test
+    void shouldKeepStoredFormLoginWithoutToken() throws Exception {
+      SecurityContext formLogin = new SecurityContextImpl(UsernamePasswordAuthenticationToken
+          .authenticated("ada", null, List.of(new SimpleGrantedAuthority("ROLE_USER"))));
+      session.setAttribute(KEY, formLogin);
+
+      mockMvc.perform(get("/account").session(session));
+
+      assertSame(formLogin, session.getAttribute(KEY));
+    }
+
+    @Test
+    void shouldReplaceStoredBearerLoginWithLoginOfNewToken() throws Exception {
+      String rootToken = tokens.createValid("root", "ADMIN");
+      String adaToken = tokens.createValid("ada", "USER");
+      mockMvc.perform(get("/account").session(session).cookie(new Cookie("jwt", rootToken)));
+
+      mockMvc.perform(
+          get("/account").session(session).header(HttpHeaders.AUTHORIZATION, "Bearer " + adaToken))
+          .andExpect(content().string("ada FACTOR_BEARER,ROLE_USER"));
+    }
+
+    @ParameterizedTest
+    @EnumSource(RejectedToken.class)
+    void shouldAnswerRejectedCookieTokenAnonymously(RejectedToken rejected) throws Exception {
+      String validToken = tokens.createValid("ada", "USER");
+      String rejectedToken = tokens.createRejected(rejected, "ada", "USER");
+      mockMvc.perform(get("/account").session(session).cookie(new Cookie("jwt", validToken)));
+      decoder.resetCount();
+
+      mockMvc.perform(get("/account").session(session).cookie(new Cookie("jwt", rejectedToken)))
+          .andExpect(status().isOk()).andExpect(content().string("anonymous"));
+
+      assertNull(session.getAttribute(KEY));
+      assertEquals(1, decoder.getCount());
+    }
+
+    @ParameterizedTest
+    @EnumSource(RejectedToken.class)
+    void shouldAnswerRejectedHeaderTokenWithUnauthorized(RejectedToken rejected) throws Exception {
+      String rejectedToken = tokens.createRejected(rejected, "ada", "USER");
+
+      mockMvc
+          .perform(get("/account").session(session).header(HttpHeaders.AUTHORIZATION,
+              "Bearer " + rejectedToken))
+          .andExpect(status().isUnauthorized())
+          .andExpect(header().string(HttpHeaders.WWW_AUTHENTICATE, startsWith("Bearer")));
+
+      assertEquals(1, decoder.getCount());
+    }
+
+    @Test
+    void shouldAnswerRejectedHeaderTokenWithEntryPointOfResourceServer() throws Exception {
+      String rejectedToken = tokens.createRejected(RejectedToken.EXPIRED, "ada", "USER");
+      HttpSecurity http = httpSecurityProvider.getObject();
+      http.with(WebforjSecurityConfigurer.webforj(), configurer -> configurer.bearerToken("jwt"));
+      http.oauth2ResourceServer(server -> server.jwt(jwt -> jwt.decoder(decoder))
+          .authenticationEntryPoint(CUSTOM_ENTRY_POINT));
+      MockMvc chainMvc = createMockMvc(http.build());
+
+      chainMvc.perform(get("/account").header(HttpHeaders.AUTHORIZATION, "Bearer " + rejectedToken))
+          .andExpect(status().isIAmATeapot()).andExpect(header().string("X-Entry-Point", "custom"));
+    }
+
+    @Test
+    void shouldAnswerRejectedHeaderTokenWithEntryPointOfResourceServerBesideLoginPage()
+        throws Exception {
+      String rejectedToken = tokens.createRejected(RejectedToken.EXPIRED, "ada", "USER");
+      HttpSecurity http = httpSecurityProvider.getObject();
+      http.with(WebforjSecurityConfigurer.webforj(),
+          configurer -> configurer.loginPage("/signin").bearerToken("jwt"));
+      http.oauth2ResourceServer(server -> server.jwt(jwt -> jwt.decoder(decoder))
+          .authenticationEntryPoint(CUSTOM_ENTRY_POINT));
+      MockMvc chainMvc = createMockMvc(http.build());
+
+      chainMvc
+          .perform(get("/account").header(HttpHeaders.ACCEPT, "text/html")
+              .header(HttpHeaders.AUTHORIZATION, "Bearer " + rejectedToken))
+          .andExpect(status().isIAmATeapot()).andExpect(header().string("X-Entry-Point", "custom"));
+    }
+
+    @Test
+    void shouldAnswerRejectedHeaderTokenWithUnauthorizedWithoutExceptionHandling()
+        throws Exception {
+      String rejectedToken = tokens.createRejected(RejectedToken.EXPIRED, "ada", "USER");
+      HttpSecurity http = httpSecurityProvider.getObject();
+      http.exceptionHandling(AbstractHttpConfigurer::disable);
+      http.with(WebforjSecurityConfigurer.webforj(), configurer -> configurer.bearerToken("jwt"));
+      http.oauth2ResourceServer(server -> server.jwt(jwt -> jwt.decoder(decoder)));
+      MockMvc chainMvc = createMockMvc(http.build());
+
+      chainMvc.perform(get("/account").header(HttpHeaders.AUTHORIZATION, "Bearer " + rejectedToken))
+          .andExpect(status().isUnauthorized())
+          .andExpect(header().string(HttpHeaders.WWW_AUTHENTICATE, startsWith("Bearer")));
+    }
+
+    @Test
+    void shouldIgnoreTokenCookieOnPostWithoutCsrfToken() throws Exception {
+      String token = tokens.createValid("ada", "USER");
+
+      mockMvc.perform(post("/account").session(session).cookie(new Cookie("jwt", token)))
+          .andExpect(status().isForbidden());
+
+      assertEquals(0, decoder.getCount());
+    }
+
+    @Test
+    void shouldExemptPostWithHeaderTokenFromCsrf() throws Exception {
+      String token = tokens.createValid("ada", "USER");
+
+      mockMvc
+          .perform(post("/account").session(session).header(HttpHeaders.AUTHORIZATION,
+              "Bearer " + token))
+          .andExpect(status().isOk()).andExpect(content().string("ada FACTOR_BEARER,ROLE_USER"));
+    }
+
+    @Test
+    void shouldKeepStoredBearerLoginOnPostWithoutToken() throws Exception {
+      String token = tokens.createValid("ada", "USER");
+      mockMvc.perform(get("/account").session(session).cookie(new Cookie("jwt", token)));
+
+      mockMvc.perform(post("/account").with(csrf()).session(session)).andExpect(status().isOk())
+          .andExpect(content().string("ada FACTOR_BEARER,ROLE_USER"));
+    }
+
+    @Test
+    void shouldStoreNothingForTokenCookieOnFrameworkRequest() throws Exception {
+      String token = tokens.createValid("ada", "USER");
+
+      mockMvc.perform(post("/webapprmi").session(session).cookie(new Cookie("jwt", token)));
+
+      assertNull(session.getAttribute(KEY));
+    }
+
+    @Test
+    void shouldStoreLoginOfTokenCookieOnNavigationToPrefixedServletRoot() throws Exception {
+      try (AnnotationConfigWebApplicationContext prefixedContext = createPrefixedContext()) {
+        String token = prefixedContext.getBean(TokenSource.class).createValid("ada", "USER");
+        MockMvc prefixedMvc =
+            MockMvcBuilders.webAppContextSetup(prefixedContext).apply(springSecurity()).build();
+        session.setNew(false);
+        String sessionId = session.getId();
+
+        prefixedMvc.perform(get("/app/").session(session).cookie(new Cookie("jwt", token))
+            .header("Sec-Fetch-Mode", "navigate"));
+
+        assertNotEquals(sessionId, session.getId());
+        assertNotNull(session.getAttribute(KEY));
+        SecurityContext stored = (SecurityContext) session.getAttribute(KEY);
+        assertEquals("ada", stored.getAuthentication().getName());
+      }
+    }
+
+    @Test
+    void shouldStoreNothingForTokenCookieOnOpenPageRequestToPrefixedServletRoot() throws Exception {
+      try (AnnotationConfigWebApplicationContext prefixedContext = createPrefixedContext()) {
+        String token = prefixedContext.getBean(TokenSource.class).createValid("ada", "USER");
+        MockMvc prefixedMvc =
+            MockMvcBuilders.webAppContextSetup(prefixedContext).apply(springSecurity()).build();
+        session.setNew(false);
+        String sessionId = session.getId();
+
+        prefixedMvc.perform(get("/app/").session(session).cookie(new Cookie("jwt", token)));
+
+        assertNull(session.getAttribute(KEY));
+        assertEquals(sessionId, session.getId());
+      }
+    }
+
+    @Test
+    void shouldDeleteTokenCookieOnLogout() throws Exception {
+      String token = tokens.createValid("ada", "USER");
+
+      mockMvc
+          .perform(post("/logout").with(csrf()).session(session).cookie(new Cookie("jwt", token)))
+          .andExpect(cookie().maxAge("jwt", 0));
+    }
+
+    @Test
+    void shouldRejectBearerTokenWithoutResourceServer() {
+      HttpSecurity http = httpSecurityProvider.getObject();
+      http.with(WebforjSecurityConfigurer.webforj(), configurer -> configurer.bearerToken("jwt"));
+
+      IllegalStateException exception =
+          assertThrows(IllegalStateException.class, () -> http.build());
+
+      assertEquals("The bearer token cookie needs a resource server. "
+          + "Configure it with HttpSecurity.oauth2ResourceServer.", exception.getMessage());
+    }
+
+    @Test
+    void shouldBuildWithoutResourceServerClasses() throws Exception {
+      ClassLoader loader = new HidingClassLoader(
+          "org.springframework.security.oauth2.server.resource.", "com.webforj.spring.security.");
+      Class<?> configType = Class.forName(PlainSecurityConfig.class.getName(), true, loader);
+      AnnotationConfigWebApplicationContext plainContext =
+          new AnnotationConfigWebApplicationContext();
+      plainContext.setClassLoader(loader);
+      plainContext.setServletContext(new MockServletContext());
+      plainContext.register(configType);
+
+      assertDoesNotThrow(plainContext::refresh);
+
+      assertEquals(1, plainContext.getBeansOfType(SecurityFilterChain.class).size());
+      plainContext.close();
+    }
+
+    private AnnotationConfigWebApplicationContext createPrefixedContext() {
+      AnnotationConfigWebApplicationContext prefixedContext =
+          new AnnotationConfigWebApplicationContext();
+      prefixedContext.setServletContext(new MockServletContext());
+      prefixedContext.register(PrefixedBearerTokenSecurityConfig.class);
+      prefixedContext.refresh();
+      return prefixedContext;
+    }
+
+    private MockMvc createMockMvc(SecurityFilterChain chain) {
+      return MockMvcBuilders.webAppContextSetup(context).addFilters(new FilterChainProxy(chain))
+          .build();
+    }
+
+    enum TokenTransport {
+      COOKIE, HEADER;
+
+      MockHttpServletRequestBuilder createRequest(String token) {
+        MockHttpServletRequestBuilder request = get("/account");
+        return this == COOKIE ? request.cookie(new Cookie("jwt", token))
+            : request.header(HttpHeaders.AUTHORIZATION, "Bearer " + token);
+      }
+    }
+
+    enum RejectedToken {
+      EXPIRED, OTHER_KEY, UNSIGNED
+    }
+
+    @Configuration
+    @EnableWebSecurity
+    @EnableWebMvc
+    @Import(SpringSecurityAutoConfiguration.class)
+    static class BearerTokenSecurityConfig {
+
+      @Bean
+      SecurityFilterChain filterChain(HttpSecurity http, CountingJwtDecoder decoder) {
+        JwtGrantedAuthoritiesConverter authorities = new JwtGrantedAuthoritiesConverter();
+        authorities.setAuthoritiesClaimName("roles");
+        authorities.setAuthorityPrefix("ROLE_");
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(authorities);
+        http.with(WebforjSecurityConfigurer.webforj(), configurer -> configurer.bearerToken("jwt"));
+        http.oauth2ResourceServer(server -> server
+            .jwt(jwt -> jwt.decoder(decoder).jwtAuthenticationConverter(converter)));
+        return http.build();
+      }
+
+      @Bean
+      TokenSource tokenSource() throws JOSEException {
+        return new TokenSource();
+      }
+
+      @Bean
+      CountingJwtDecoder countingJwtDecoder(TokenSource tokens) throws JOSEException {
+        return new CountingJwtDecoder(
+            NimbusJwtDecoder.withPublicKey(tokens.getPublicKey()).build());
+      }
+
+      @Bean
+      AccountController accountController() {
+        return new AccountController();
+      }
+
+      @Bean
+      SpringConfigurationProperties springConfigurationProperties() {
+        SpringConfigurationProperties properties = new SpringConfigurationProperties();
+        properties.setServletMapping("/*");
+        return properties;
+      }
+    }
+
+    @Configuration
+    static class PrefixedBearerTokenSecurityConfig extends BearerTokenSecurityConfig {
+
+      @Override
+      @Bean
+      SpringConfigurationProperties springConfigurationProperties() {
+        SpringConfigurationProperties properties = new SpringConfigurationProperties();
+        properties.setServletMapping("/app/*");
+        return properties;
+      }
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    @EnableWebSecurity
+    static class PlainSecurityConfig {
+
+      @Bean
+      SecurityFilterChain filterChain(HttpSecurity http) {
+        return http.with(WebforjSecurityConfigurer.webforj()).build();
+      }
+
+      @Bean
+      SpringSecurityConfigurationProperties springSecurityConfigurationProperties() {
+        return new SpringSecurityConfigurationProperties();
+      }
+
+      @Bean
+      WebforjFrameworkRequestMatcher webforjFrameworkRequestMatcher() {
+        return new WebforjFrameworkRequestMatcher(new SpringConfigurationProperties());
+      }
+    }
+
+    @RestController
+    static class AccountController {
+
+      @RequestMapping("/account")
+      String readAccount(Principal principal) {
+        if (!(principal instanceof Authentication authentication)) {
+          return "anonymous";
+        }
+
+        return authentication.getName() + " " + authentication.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority).sorted().collect(Collectors.joining(","));
+      }
+    }
+
+    static class CountingJwtDecoder implements JwtDecoder {
+      private final JwtDecoder delegate;
+      private final AtomicInteger count = new AtomicInteger();
+
+      CountingJwtDecoder(JwtDecoder delegate) {
+        this.delegate = delegate;
+      }
+
+      @Override
+      public Jwt decode(String token) {
+        count.incrementAndGet();
+        return delegate.decode(token);
+      }
+
+      int getCount() {
+        return count.get();
+      }
+
+      void resetCount() {
+        count.set(0);
+      }
+    }
+
+    static class TokenSource {
+      private final RSAKey key = new RSAKeyGenerator(2048).generate();
+      private final RSAKey otherKey = new RSAKeyGenerator(2048).generate();
+
+      TokenSource() throws JOSEException {}
+
+      RSAPublicKey getPublicKey() throws JOSEException {
+        return key.toRSAPublicKey();
+      }
+
+      String createValid(String subject, String role) throws JOSEException {
+        return sign(key, createClaims(subject, role, Instant.now().plusSeconds(3600)));
+      }
+
+      String createRejected(RejectedToken rejected, String subject, String role)
+          throws JOSEException {
+        Instant future = Instant.now().plusSeconds(3600);
+        return switch (rejected) {
+          case EXPIRED -> sign(key, createClaims(subject, role, Instant.now().minusSeconds(3600)));
+          case OTHER_KEY -> sign(otherKey, createClaims(subject, role, future));
+          case UNSIGNED -> new PlainJWT(createClaims(subject, role, future)).serialize();
+        };
+      }
+
+      private JWTClaimsSet createClaims(String subject, String role, Instant expiresAt) {
+        return new JWTClaimsSet.Builder().subject(subject).claim("roles", List.of(role))
+            .issueTime(new Date()).expirationTime(Date.from(expiresAt)).build();
+      }
+
+      private String sign(RSAKey signingKey, JWTClaimsSet claims) throws JOSEException {
+        SignedJWT jwt = new SignedJWT(new JWSHeader(JWSAlgorithm.RS256), claims);
+        jwt.sign(new RSASSASigner(signingKey));
+        return jwt.serialize();
       }
     }
   }
