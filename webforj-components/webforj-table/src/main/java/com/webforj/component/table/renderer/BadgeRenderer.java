@@ -159,17 +159,16 @@ public class BadgeRenderer<T> extends AbstractElementRenderer<T> {
   @Override
   public String build() {
     setAttribute(EXPANSE_ATTR, "", false);
-
+    String html = super.build();
+    String content = getContent();
     if (icon != null) {
       String iconHtml =
           "<dwc-icon name='" + icon.getName() + "' pool='" + icon.getPool() + "'></dwc-icon> ";
-      String html = super.build();
-      String content = getContent();
       String resolvedContent = content == null ? "<%- cell.value %>" : content;
-      return html.replace(resolvedContent, iconHtml + resolvedContent);
+      html = html.replace(resolvedContent, iconHtml + resolvedContent);
     }
 
-    return super.build();
+    return content == null ? toValueTemplate(html) : html;
   }
 
   private static String toHex(Color color) {

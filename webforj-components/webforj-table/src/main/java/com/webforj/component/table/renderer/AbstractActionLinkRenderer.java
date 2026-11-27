@@ -62,17 +62,16 @@ abstract class AbstractActionLinkRenderer<T> extends AbstractElementRenderer<T> 
     setAttribute("href", "<%- '" + getHrefPrefix() + "' + cell.value %>", false);
     setAttribute("tabindex", "-1", false);
     setAttribute("style", "color:inherit;text-decoration:none", false);
-
+    String html = super.build();
     if (icon != null) {
       String iconHtml = "<dwc-icon name='" + icon.getName() + "' pool='" + icon.getPool()
           + "' theme='" + toAttributeValue(iconTheme) + "'></dwc-icon> ";
-      String html = super.build();
       String content = getContent();
       String resolvedContent = content == null ? "<%- cell.value %>" : content;
-      return html.replace(resolvedContent, iconHtml + resolvedContent);
+      html = html.replace(resolvedContent, iconHtml + resolvedContent);
     }
 
-    return super.build();
+    return toValueTemplate(html);
   }
 
   private void applyIconTheme(IconDefinition<?> icon) {

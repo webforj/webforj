@@ -409,16 +409,16 @@ public class Condition {
   }
 
   private static Condition buildEqualTo(String valueExpr, String value) {
-    return new Condition("String(" + valueExpr + ") === '" + escape(value) + "'");
+    return new Condition(buildText(valueExpr) + " === '" + escape(value) + "'");
   }
 
   private static Condition buildEqualToIgnoreCase(String valueExpr, String value) {
     return new Condition(
-        "String(" + valueExpr + ").toLowerCase() === '" + escape(value).toLowerCase() + "'");
+        buildText(valueExpr) + ".toLowerCase() === '" + escape(value).toLowerCase() + "'");
   }
 
   private static Condition buildEqualToNumber(String valueExpr, Number value) {
-    return new Condition("Number(" + valueExpr + ") === " + value);
+    return new Condition(buildNumber(valueExpr) + " === " + value);
   }
 
   private static Condition buildIn(String valueExpr, boolean ignoreCase, String... values) {
@@ -433,20 +433,27 @@ public class Condition {
     }
 
     sb.append("].indexOf(")
-        .append(
-            ignoreCase ? "String(" + valueExpr + ").toLowerCase()" : "String(" + valueExpr + ")")
+        .append(ignoreCase ? buildText(valueExpr) + ".toLowerCase()" : buildText(valueExpr))
         .append(") !== -1");
 
     return new Condition(sb.toString());
   }
 
   private static Condition buildCompare(String valueExpr, String op, Number value) {
-    return new Condition("Number(" + valueExpr + ") " + op + " " + value);
+    return new Condition(buildNumber(valueExpr) + " " + op + " " + value);
   }
 
   private static Condition buildBetween(String valueExpr, Number min, Number max) {
     return new Condition(
-        "Number(" + valueExpr + ") >= " + min + " && Number(" + valueExpr + ") <= " + max);
+        buildNumber(valueExpr) + " >= " + min + " && Number(" + valueExpr + ") <= " + max);
+  }
+
+  private static String buildText(String valueExpr) {
+    return "String(" + valueExpr + " == null ? '' : " + valueExpr + ")";
+  }
+
+  private static String buildNumber(String valueExpr) {
+    return valueExpr + " != null && " + valueExpr + " !== '' && Number(" + valueExpr + ")";
   }
 
   private static Condition buildIsNull(String valueExpr) {
@@ -463,11 +470,11 @@ public class Condition {
   }
 
   private static Condition buildContains(String valueExpr, String text) {
-    return new Condition("String(" + valueExpr + ").indexOf('" + escape(text) + "') !== -1");
+    return new Condition(buildText(valueExpr) + ".indexOf('" + escape(text) + "') !== -1");
   }
 
   private static Condition buildContainsIgnoreCase(String valueExpr, String text) {
-    return new Condition("String(" + valueExpr + ").toLowerCase().indexOf('"
+    return new Condition(buildText(valueExpr) + ".toLowerCase().indexOf('"
         + escape(text).toLowerCase() + "') !== -1");
   }
 

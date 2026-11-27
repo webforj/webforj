@@ -41,4 +41,20 @@ class PercentageRendererTest {
     PercentageRenderer<String> r = new PercentageRenderer<>();
     assertFalse(r.build().contains("theme="));
   }
+
+  @Test
+  void shouldBuildNothingForEmptyValue() {
+    PercentageRenderer<String> r = new PercentageRenderer<>();
+    String html = r.build();
+    assertTrue(html.startsWith("<% if (cell.value != null && cell.value !== '') { %>"));
+    assertTrue(html.endsWith("<% } %>"));
+  }
+
+  @Test
+  void shouldBuildNothingForEmptyValueWithProgressBar() {
+    PercentageRenderer<String> r = new PercentageRenderer<>(null, true);
+    String html = r.build();
+    assertTrue(html.startsWith("<% if (cell.value != null && cell.value !== '') { %>"));
+    assertTrue(html.endsWith("<% } %>"));
+  }
 }

@@ -67,4 +67,12 @@ class StatusDotRendererTest {
     r.setDefaultColor(Theme.DANGER);
     assertEquals("var(--dwc-color-danger)", r.getDefaultColor());
   }
+
+  @Test
+  void shouldBuildNothingForEmptyValue() {
+    StatusDotRenderer<String> r = new StatusDotRenderer<>();
+    String html = r.build();
+    assertTrue(html.startsWith("<% if (cell.value != null && cell.value !== '') { %>"));
+    assertTrue(html.endsWith("<% } %>"));
+  }
 }

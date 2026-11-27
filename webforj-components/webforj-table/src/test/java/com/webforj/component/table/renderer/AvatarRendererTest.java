@@ -40,8 +40,9 @@ class AvatarRendererTest {
     AvatarRenderer<String> r = new AvatarRenderer<>();
     String html = r.build();
     assertTrue(html.contains("label='<%- cell.value %>'"));
-    assertTrue(html.contains(
-        "initials='<%- cell.value.trim().split(' ').filter(s => s).map(s => s[0]).join('') %>'"));
+    assertTrue(
+        html.contains("initials='<%- String(cell.value == null ? '' : cell.value).trim().split(' ')"
+            + ".filter(s => s).map(s => s[0]).join('') %>'"));
   }
 
   @Test
@@ -86,5 +87,28 @@ class AvatarRendererTest {
     AvatarRenderer<String> r = new AvatarRenderer<>("John Doe");
     r.setSrc("https://example.com/avatars/<%= cell.value %>.png");
     assertTrue(r.build().contains("src='https://example.com/avatars/<%= cell.value %>.png'"));
+  }
+
+  @Test
+  void shouldBuildNothingForEmptyValue() {
+    AvatarRenderer<String> r = new AvatarRenderer<>();
+    String html = r.build();
+    assertTrue(html.startsWith("<% if (cell.value != null && cell.value !== '') { %>"));
+    assertTrue(html.endsWith("<% } %>"));
+  }
+
+  @Test
+  void shouldBuildAlwaysWithOwnLabel() {
+    AvatarRenderer<String> r = new AvatarRenderer<>("Ada Lovelace");
+    assertFalse(r.build().contains("cell.value != null"));
+  }
+
+  @Test
+  void shouldBuildAlwaysWithOwnIcon() {
+    AvatarRenderer<String> r = new AvatarRenderer<>();
+    r.setIcon(new TestIconDefinition("user", "tabler"));
+    String html = r.build();
+    assertFalse(html.contains("cell.value != null &&"));
+    assertFalse(html.contains("cell.value.trim()"));
   }
 }

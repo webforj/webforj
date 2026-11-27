@@ -38,7 +38,8 @@ class ConditionalRendererTest {
     renderer.when("Rock", rockRenderer);
 
     String result = renderer.build();
-    assertTrue(result.contains("<% if (String(cell.value) === 'Rock') { %>"));
+    assertTrue(
+        result.contains("<% if (String(cell.value == null ? '' : cell.value) === 'Rock') { %>"));
     assertTrue(result.contains("<dwc-badge theme='primary'></dwc-badge>"));
     assertTrue(result.contains("<% } %>"));
   }
@@ -51,9 +52,11 @@ class ConditionalRendererTest {
     renderer.when("Jazz", jazzRenderer);
 
     String result = renderer.build();
-    assertTrue(result.contains("<% if (String(cell.value) === 'Rock') { %>"));
+    assertTrue(
+        result.contains("<% if (String(cell.value == null ? '' : cell.value) === 'Rock') { %>"));
     assertTrue(result.contains("<rock/>"));
-    assertTrue(result.contains("<% } else if (String(cell.value) === 'Jazz') { %>"));
+    assertTrue(result
+        .contains("<% } else if (String(cell.value == null ? '' : cell.value) === 'Jazz') { %>"));
     assertTrue(result.contains("<jazz/>"));
     assertTrue(result.contains("<% } %>"));
   }
@@ -66,7 +69,8 @@ class ConditionalRendererTest {
     renderer.otherwise(fallback);
 
     String result = renderer.build();
-    assertTrue(result.contains("<% if (String(cell.value) === 'Rock') { %>"));
+    assertTrue(
+        result.contains("<% if (String(cell.value == null ? '' : cell.value) === 'Rock') { %>"));
     assertTrue(result.contains("<rock/>"));
     assertTrue(result.contains("<% } else { %>"));
     assertTrue(result.contains("<default/>"));
@@ -79,7 +83,8 @@ class ConditionalRendererTest {
     renderer.when(Condition.greaterThan(100), highRenderer);
 
     String result = renderer.build();
-    assertTrue(result.contains("<% if (Number(cell.value) > 100) { %>"));
+    assertTrue(result.contains(
+        "<% if (cell.value != null && cell.value !== '' && Number(cell.value) > 100) { %>"));
     assertTrue(result.contains("<high/>"));
   }
 
@@ -89,7 +94,8 @@ class ConditionalRendererTest {
     renderer.when(Condition.in("Rock", "Jazz"), matched);
 
     String result = renderer.build();
-    assertTrue(result.contains("['Rock','Jazz'].indexOf(String(cell.value)) !== -1"));
+    assertTrue(result
+        .contains("['Rock','Jazz'].indexOf(String(cell.value == null ? '' : cell.value)) !== -1"));
     assertTrue(result.contains("<matched/>"));
   }
 
@@ -99,7 +105,9 @@ class ConditionalRendererTest {
     renderer.when(Condition.greaterThan(10).and(Condition.lessThan(50)), rangeRenderer);
 
     String result = renderer.build();
-    assertTrue(result.contains("(Number(cell.value) > 10) && (Number(cell.value) < 50)"));
+    assertTrue(
+        result.contains("(cell.value != null && cell.value !== '' && Number(cell.value) > 10)"
+            + " && (cell.value != null && cell.value !== '' && Number(cell.value) < 50)"));
   }
 
   @Test

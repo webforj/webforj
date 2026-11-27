@@ -69,4 +69,18 @@ class BadgeRendererTest {
     assertNull(r.getIcon());
     assertFalse(r.build().contains("dwc-icon"));
   }
+
+  @Test
+  void shouldBuildNothingForEmptyValue() {
+    BadgeRenderer<String> r = new BadgeRenderer<>();
+    String html = r.build();
+    assertTrue(html.startsWith("<% if (cell.value != null && cell.value !== '') { %>"));
+    assertTrue(html.endsWith("<% } %>"));
+  }
+
+  @Test
+  void shouldBuildAlwaysWithOwnContent() {
+    BadgeRenderer<String> r = new BadgeRenderer<>("New");
+    assertFalse(r.build().contains("cell.value != null"));
+  }
 }

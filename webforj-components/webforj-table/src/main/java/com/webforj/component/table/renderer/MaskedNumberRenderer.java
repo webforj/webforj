@@ -102,6 +102,7 @@ public class MaskedNumberRenderer<T> extends AbstractVoidElementRenderer<T> {
   @Override
   public String build() {
     setAttribute("value", "<%- cell.value %>", false);
-    return super.build();
+
+    return toValueTemplate(super.build());
   }
 }

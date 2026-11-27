@@ -1838,7 +1838,7 @@ public class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T
       String columnId = column.getId();
       Object value = column.getValue(item);
 
-      data.addProperty(columnId, String.valueOf(value));
+      data.addProperty(columnId, Objects.toString(value, null));
 
       if (column.getClientType() == null && value != null) {
         // try to determine the type of the column
@@ -1884,14 +1884,16 @@ public class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T
     String[] keys = mapKeys(key);
 
     ClientItem clientItem = buildItem(commit);
+    // the key is written as a JSON text, so a quote or a backslash in it cannot break the script
+    String rowKey = gson.toJson(keys[0]);
 
     // refresh row parts
     JsonArray rowParts = clientItem.rowParts();
     if (rowParts != null && !rowParts.isEmpty()) {
       String script = String.format("""
           component.__rowPart__ = component.__rowPart__ || {};
-          component.__rowPart__['%s'] = %s;
-          """, keys[0], rowParts.toString());
+          component.__rowPart__[%s] = %s;
+          """, rowKey, rowParts.toString());
       el.executeJsVoidAsync(script);
     }
 
@@ -1900,12 +1902,14 @@ public class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T
     if (cellParts != null && !cellParts.isEmpty()) {
       String script = String.format("""
           component.__cellPart__ = component.__cellPart__ || {};
-          component.__cellPart__['%s'] = %s;
-          """, keys[0], cellParts);
+          component.__cellPart__[%s] = %s;
+          """, rowKey, cellParts);
       el.executeJsVoidAsync(script);
     }
 
-    el.callJsFunctionVoidAsync("updateRow", keys[0], clientItem.data());
+    el.executeJsVoidAsync("""
+        component.updateRow(%s, %s);
+        """.formatted(rowKey, clientItem.data()));
   }
 
   void handleSortChanged(TableSortChangeEvent<T> e) {

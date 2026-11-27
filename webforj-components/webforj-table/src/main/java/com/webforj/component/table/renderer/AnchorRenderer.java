@@ -155,6 +155,7 @@ public class AnchorRenderer<T> extends AbstractElementRenderer<T> {
   @Override
   public String build() {
     setAttribute("tabindex", "-1", false);
-    return super.build();
+
+    return getContent() == null ? toValueTemplate(super.build()) : super.build();
   }
 }

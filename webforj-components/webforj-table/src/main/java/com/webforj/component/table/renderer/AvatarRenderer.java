@@ -233,23 +233,25 @@ public class AvatarRenderer<T> extends AbstractVoidElementRenderer<T> {
       setAttribute(LABEL_ATTR, "<%- cell.value %>", false);
       if (initials == null) {
         setAttribute(INITIALS_ATTR,
-            "<%- cell.value.trim().split(' ').filter(s => s).map(s => s[0]).join('') %>", false);
+            "<%- String(cell.value == null ? '' : cell.value).trim().split(' ').filter(s => s)"
+                + ".map(s => s[0]).join('') %>",
+            false);
       }
     } else if (initials == null) {
       setAttribute(INITIALS_ATTR, computeInitials(label), false);
     }
 
     setAttribute(EXPANSE_ATTR, "", false);
-
+    String html = super.build();
     if (icon != null) {
       String iconHtml =
           "<dwc-icon name='" + icon.getName() + "' pool='" + icon.getPool() + "'></dwc-icon>";
-      String html = super.build();
       String closeTag = "</" + getNodeName() + ">";
+
       return html.replace(closeTag, iconHtml + closeTag);
     }
 
-    return super.build();
+    return label == null ? toValueTemplate(html) : html;
   }
 
   private static String computeInitials(String label) {

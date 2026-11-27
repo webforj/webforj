@@ -419,6 +419,21 @@ public abstract class Renderer<T> {
   }
 
   /**
+   * Converts a template to one that renders nothing for a cell without a value.
+   *
+   * <p>
+   * A cell has no value when its value is null or an empty text.
+   * </p>
+   *
+   * @param html the template to render for a cell with a value
+   *
+   * @return the template
+   */
+  static String toValueTemplate(String html) {
+    return "<% if (cell.value != null && cell.value !== '') { %>" + html + "<% } %>";
+  }
+
+  /**
    * Returns all attributes formatted as an HTML attribute string.
    *
    * @return the attributes string (e.g., {@code "name='value' theme='primary'"})

@@ -1,6 +1,7 @@
 package com.webforj.component.table.renderer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -46,5 +47,19 @@ class AnchorRendererTest {
     AnchorRenderer<String> r = new AnchorRenderer<>();
     r.setDownload("doc.pdf");
     assertTrue(r.build().contains("download='doc.pdf'"));
+  }
+
+  @Test
+  void shouldBuildNothingForEmptyValue() {
+    AnchorRenderer<String> r = new AnchorRenderer<>();
+    String html = r.build();
+    assertTrue(html.startsWith("<% if (cell.value != null && cell.value !== '') { %>"));
+    assertTrue(html.endsWith("<% } %>"));
+  }
+
+  @Test
+  void shouldBuildAlwaysWithOwnContent() {
+    AnchorRenderer<String> r = new AnchorRenderer<>("Open");
+    assertFalse(r.build().contains("cell.value != null"));
   }
 }

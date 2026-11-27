@@ -165,6 +165,8 @@ public class ImageRenderer<T> extends AbstractVoidElementRenderer<T> {
   public String build() {
     if (src == null) {
       setAttribute(SRC_ATTR, "<%- cell.value %>", false);
+
+      return toValueTemplate(super.build());
     }
 
     return super.build();

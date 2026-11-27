@@ -284,6 +284,7 @@ public class ProgressBarRenderer<T> extends AbstractVoidElementRenderer<T> {
       setAttribute(VALUE_ATTR, "<%- cell.value %>", false);
     }
     setAttribute(STYLE_ATTR, "--dwc-progressbar-height:15px;--dwc-font-size-s:0.8rem", false);
-    return super.build();
+
+    return value == null ? toValueTemplate(super.build()) : super.build();
   }
 }

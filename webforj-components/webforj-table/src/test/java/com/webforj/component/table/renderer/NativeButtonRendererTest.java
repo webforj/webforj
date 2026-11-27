@@ -39,4 +39,18 @@ class NativeButtonRendererTest {
     assertTrue(r.isEnabled());
     assertFalse(r.build().contains("disabled="));
   }
+
+  @Test
+  void shouldBuildNothingForEmptyValue() {
+    NativeButtonRenderer<String> r = new NativeButtonRenderer<>();
+    String html = r.build();
+    assertTrue(html.startsWith("<% if (cell.value != null && cell.value !== '') { %>"));
+    assertTrue(html.endsWith("<% } %>"));
+  }
+
+  @Test
+  void shouldBuildAlwaysWithOwnContent() {
+    NativeButtonRenderer<String> r = new NativeButtonRenderer<>("Open");
+    assertFalse(r.build().contains("cell.value != null"));
+  }
 }

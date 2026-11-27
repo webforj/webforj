@@ -52,4 +52,12 @@ class MaskedDateTimeRendererTest {
     assertEquals("%Hz:%mz:%sz", r.getMask());
     assertTrue(r.build().contains("mask='%Hz:%mz:%sz'"));
   }
+
+  @Test
+  void shouldBuildNothingForEmptyValue() {
+    MaskedDateTimeRenderer<String> r = new MaskedDateTimeRenderer<>();
+    String html = r.build();
+    assertTrue(html.startsWith("<% if (cell.value != null && cell.value !== '') { %>"));
+    assertTrue(html.endsWith("<% } %>"));
+  }
 }

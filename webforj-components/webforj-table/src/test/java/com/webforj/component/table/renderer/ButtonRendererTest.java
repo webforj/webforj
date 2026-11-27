@@ -46,4 +46,18 @@ class ButtonRendererTest {
     r.setEnabled(true);
     assertFalse(r.build().contains("disabled="));
   }
+
+  @Test
+  void shouldBuildNothingForEmptyValue() {
+    ButtonRenderer<String> r = new ButtonRenderer<>();
+    String html = r.build();
+    assertTrue(html.startsWith("<% if (cell.value != null && cell.value !== '') { %>"));
+    assertTrue(html.endsWith("<% } %>"));
+  }
+
+  @Test
+  void shouldBuildAlwaysWithOwnContent() {
+    ButtonRenderer<String> r = new ButtonRenderer<>("Open");
+    assertFalse(r.build().contains("cell.value != null"));
+  }
 }

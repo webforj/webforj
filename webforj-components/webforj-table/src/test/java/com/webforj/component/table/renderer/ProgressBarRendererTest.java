@@ -60,4 +60,18 @@ class ProgressBarRendererTest {
     assertTrue(html.contains("text='{{x}}% done'"));
     assertTrue(html.contains("indeterminate='true'"));
   }
+
+  @Test
+  void shouldBuildNothingForEmptyValue() {
+    ProgressBarRenderer<String> r = new ProgressBarRenderer<>();
+    String html = r.build();
+    assertTrue(html.startsWith("<% if (cell.value != null && cell.value !== '') { %>"));
+    assertTrue(html.endsWith("<% } %>"));
+  }
+
+  @Test
+  void shouldBuildAlwaysWithOwnValue() {
+    ProgressBarRenderer<String> r = new ProgressBarRenderer<>(40);
+    assertFalse(r.build().contains("cell.value != null"));
+  }
 }

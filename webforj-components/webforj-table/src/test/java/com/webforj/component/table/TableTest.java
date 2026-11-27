@@ -16,6 +16,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
 import com.webforj.PendingResult;
 import com.webforj.component.ComponentUtil;
 import com.webforj.component.element.Element;
@@ -303,6 +305,43 @@ class TableTest {
       list.commit();
 
       verify(table, never()).handleRepositoryCommit(any());
+    }
+
+    @Test
+    void shouldSendNoTextForNullCellValues() {
+      Table<EntityWithLongId> table = spy(new Table<>());
+      Element elMock = mock(Element.class);
+      when(table.el()).thenReturn(elMock);
+      when(elMock.isDefined()).thenReturn(true);
+      table.addColumn("name", EntityWithLongId::getName);
+
+      table.setItems(List.of(new EntityWithLongId(1L, "Ada"), new EntityWithLongId(2L, null)));
+
+      assertEquals(JsonParser.parseString("""
+          [
+            {"__APPID__": "1", "name": "Ada"},
+            {"__APPID__": "2"}
+          ]
+          """), table.getProperty("data", JsonArray.class));
+    }
+
+    @Test
+    void shouldUpdateRowWithJsonNullForNullCellValue() {
+      Table<EntityWithLongId> table = spy(new Table<>());
+      Element elMock = mock(Element.class);
+      when(table.el()).thenReturn(elMock);
+      when(elMock.isDefined()).thenReturn(true);
+      table.addColumn("name", EntityWithLongId::getName);
+      EntityWithLongId entity = new EntityWithLongId(1L, null);
+      CollectionRepository<EntityWithLongId> repository =
+          new CollectionRepository<>(List.of(entity));
+      table.setRepository(repository);
+
+      repository.commit(entity);
+
+      verify(elMock).executeJsVoidAsync("""
+          component.updateRow("1", {"__APPID__":"1","name":null});
+          """);
     }
   }
 

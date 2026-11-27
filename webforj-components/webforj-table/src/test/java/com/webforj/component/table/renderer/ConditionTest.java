@@ -13,25 +13,29 @@ class ConditionTest {
     @Test
     void shouldMatchString() {
       Condition condition = Condition.equalTo("Rock");
-      assertEquals("String(cell.value) === 'Rock'", condition.toExpression());
+      assertEquals("String(cell.value == null ? '' : cell.value) === 'Rock'",
+          condition.toExpression());
     }
 
     @Test
     void shouldMatchNumber() {
       Condition condition = Condition.equalTo(42);
-      assertEquals("Number(cell.value) === 42", condition.toExpression());
+      assertEquals("cell.value != null && cell.value !== '' && Number(cell.value) === 42",
+          condition.toExpression());
     }
 
     @Test
     void shouldEscapeSingleQuotes() {
       Condition condition = Condition.equalTo("Rock'n'Roll");
-      assertEquals("String(cell.value) === 'Rock\\'n\\'Roll'", condition.toExpression());
+      assertEquals("String(cell.value == null ? '' : cell.value) === 'Rock\\'n\\'Roll'",
+          condition.toExpression());
     }
 
     @Test
     void shouldIgnoreCase() {
       Condition condition = Condition.equalToIgnoreCase("Rock");
-      assertEquals("String(cell.value).toLowerCase() === 'rock'", condition.toExpression());
+      assertEquals("String(cell.value == null ? '' : cell.value).toLowerCase() === 'rock'",
+          condition.toExpression());
     }
   }
 
@@ -41,28 +45,31 @@ class ConditionTest {
     @Test
     void shouldMatchSingleValue() {
       Condition condition = Condition.in("Rock");
-      assertEquals("['Rock'].indexOf(String(cell.value)) !== -1", condition.toExpression());
+      assertEquals("['Rock'].indexOf(String(cell.value == null ? '' : cell.value)) !== -1",
+          condition.toExpression());
     }
 
     @Test
     void shouldMatchMultipleValues() {
       Condition condition = Condition.in("Rock", "Jazz", "Pop");
-      assertEquals("['Rock','Jazz','Pop'].indexOf(String(cell.value)) !== -1",
+      assertEquals(
+          "['Rock','Jazz','Pop'].indexOf(String(cell.value == null ? '' : cell.value)) !== -1",
           condition.toExpression());
     }
 
     @Test
     void shouldEscapeSingleQuotes() {
       Condition condition = Condition.in("R&B", "Rock'n'Roll");
-      assertEquals("['R&B','Rock\\'n\\'Roll'].indexOf(String(cell.value)) !== -1",
+      assertEquals(
+          "['R&B','Rock\\'n\\'Roll'].indexOf(String(cell.value == null ? '' : cell.value)) !== -1",
           condition.toExpression());
     }
 
     @Test
     void shouldIgnoreCase() {
       Condition condition = Condition.inIgnoreCase("Rock", "Jazz");
-      assertEquals("['rock','jazz'].indexOf(String(cell.value).toLowerCase()) !== -1",
-          condition.toExpression());
+      assertEquals("['rock','jazz'].indexOf(String(cell.value == null ? '' : "
+          + "cell.value).toLowerCase()) !== -1", condition.toExpression());
     }
   }
 
@@ -72,45 +79,50 @@ class ConditionTest {
     @Test
     void shouldCreateGreaterThan() {
       Condition condition = Condition.greaterThan(100);
-      assertEquals("Number(cell.value) > 100", condition.toExpression());
+      assertEquals("cell.value != null && cell.value !== '' && Number(cell.value) > 100",
+          condition.toExpression());
     }
 
     @Test
     void shouldCreateGreaterThanOrEqual() {
       Condition condition = Condition.greaterThanOrEqual(100);
-      assertEquals("Number(cell.value) >= 100", condition.toExpression());
+      assertEquals("cell.value != null && cell.value !== '' && Number(cell.value) >= 100",
+          condition.toExpression());
     }
 
     @Test
     void shouldCreateLessThan() {
       Condition condition = Condition.lessThan(50);
-      assertEquals("Number(cell.value) < 50", condition.toExpression());
+      assertEquals("cell.value != null && cell.value !== '' && Number(cell.value) < 50",
+          condition.toExpression());
     }
 
     @Test
     void shouldCreateLessThanOrEqual() {
       Condition condition = Condition.lessThanOrEqual(50);
-      assertEquals("Number(cell.value) <= 50", condition.toExpression());
+      assertEquals("cell.value != null && cell.value !== '' && Number(cell.value) <= 50",
+          condition.toExpression());
     }
 
     @Test
     void shouldCreateBetween() {
       Condition condition = Condition.between(10, 50);
-      assertEquals("Number(cell.value) >= 10 && Number(cell.value) <= 50",
-          condition.toExpression());
+      assertEquals("cell.value != null && cell.value !== '' && Number(cell.value) >= 10 && "
+          + "Number(cell.value) <= 50", condition.toExpression());
     }
 
     @Test
     void shouldHandleDecimals() {
       Condition condition = Condition.greaterThan(10.5);
-      assertEquals("Number(cell.value) > 10.5", condition.toExpression());
+      assertEquals("cell.value != null && cell.value !== '' && Number(cell.value) > 10.5",
+          condition.toExpression());
     }
 
     @Test
     void shouldHandleBetweenWithDecimals() {
       Condition condition = Condition.between(1.5, 9.99);
-      assertEquals("Number(cell.value) >= 1.5 && Number(cell.value) <= 9.99",
-          condition.toExpression());
+      assertEquals("cell.value != null && cell.value !== '' && Number(cell.value) >= 1.5 && "
+          + "Number(cell.value) <= 9.99", condition.toExpression());
     }
   }
 
@@ -143,19 +155,22 @@ class ConditionTest {
     @Test
     void shouldMatchText() {
       Condition condition = Condition.contains("jazz");
-      assertEquals("String(cell.value).indexOf('jazz') !== -1", condition.toExpression());
+      assertEquals("String(cell.value == null ? '' : cell.value).indexOf('jazz') !== -1",
+          condition.toExpression());
     }
 
     @Test
     void shouldEscapeSingleQuotes() {
       Condition condition = Condition.contains("it's");
-      assertEquals("String(cell.value).indexOf('it\\'s') !== -1", condition.toExpression());
+      assertEquals("String(cell.value == null ? '' : cell.value).indexOf('it\\'s') !== -1",
+          condition.toExpression());
     }
 
     @Test
     void shouldIgnoreCase() {
       Condition condition = Condition.containsIgnoreCase("Jazz");
-      assertEquals("String(cell.value).toLowerCase().indexOf('jazz') !== -1",
+      assertEquals(
+          "String(cell.value == null ? '' : cell.value).toLowerCase().indexOf('jazz') !== -1",
           condition.toExpression());
     }
   }
@@ -176,14 +191,18 @@ class ConditionTest {
     @Test
     void shouldComposeWithAnd() {
       Condition combined = Condition.greaterThan(10).and(Condition.lessThan(50));
-      assertEquals("(Number(cell.value) > 10) && (Number(cell.value) < 50)",
+      assertEquals(
+          "(cell.value != null && cell.value !== '' && Number(cell.value) > 10) && "
+              + "(cell.value != null && cell.value !== '' && Number(cell.value) < 50)",
           combined.toExpression());
     }
 
     @Test
     void shouldComposeWithOr() {
       Condition combined = Condition.equalTo("Rock").or(Condition.equalTo("Jazz"));
-      assertEquals("(String(cell.value) === 'Rock') || (String(cell.value) === 'Jazz')",
+      assertEquals(
+          "(String(cell.value == null ? '' : cell.value) === 'Rock') || (String(cell.value == "
+              + "null ? '' : cell.value) === 'Jazz')",
           combined.toExpression());
     }
 
@@ -197,7 +216,9 @@ class ConditionTest {
     @Test
     void shouldChainAndOrNegate() {
       Condition condition = Condition.greaterThan(10).and(Condition.lessThan(50)).negate();
-      assertEquals("!((Number(cell.value) > 10) && (Number(cell.value) < 50))",
+      assertEquals(
+          "!((cell.value != null && cell.value !== '' && Number(cell.value) > 10) && "
+              + "(cell.value != null && cell.value !== '' && Number(cell.value) < 50))",
           condition.toExpression());
     }
   }
@@ -208,49 +229,55 @@ class ConditionTest {
     @Test
     void shouldCreateEqualToString() {
       Condition condition = Condition.column("status").equalTo("active");
-      assertEquals("String(cell.row.getValue('status')) === 'active'", condition.toExpression());
+      assertEquals(
+          "String(cell.row.getValue('status') == null ? '' : cell.row.getValue('status')) === "
+              + "'active'",
+          condition.toExpression());
     }
 
     @Test
     void shouldCreateEqualToNumber() {
       Condition condition = Condition.column("price").equalTo(42);
-      assertEquals("Number(cell.row.getValue('price')) === 42", condition.toExpression());
+      assertEquals("cell.row.getValue('price') != null && cell.row.getValue('price') !== '' && "
+          + "Number(cell.row.getValue('price')) === 42", condition.toExpression());
     }
 
     @Test
     void shouldCreateEqualToIgnoreCase() {
       Condition condition = Condition.column("status").equalToIgnoreCase("Active");
-      assertEquals("String(cell.row.getValue('status')).toLowerCase() === 'active'",
+      assertEquals(
+          "String(cell.row.getValue('status') == null ? '' : "
+              + "cell.row.getValue('status')).toLowerCase() === 'active'",
           condition.toExpression());
     }
 
     @Test
     void shouldCreateIn() {
       Condition condition = Condition.column("genre").in("Rock", "Jazz");
-      assertEquals("['Rock','Jazz'].indexOf(String(cell.row.getValue('genre'))) !== -1",
-          condition.toExpression());
+      assertEquals("['Rock','Jazz'].indexOf(String(cell.row.getValue('genre') == null ? '' : "
+          + "cell.row.getValue('genre'))) !== -1", condition.toExpression());
     }
 
     @Test
     void shouldCreateInIgnoreCase() {
       Condition condition = Condition.column("genre").inIgnoreCase("Rock", "Jazz");
-      assertEquals(
-          "['rock','jazz'].indexOf(String(cell.row.getValue('genre')).toLowerCase()) !== -1",
-          condition.toExpression());
+      assertEquals("['rock','jazz'].indexOf(String(cell.row.getValue('genre') == null ? '' : "
+          + "cell.row.getValue('genre')).toLowerCase()) !== -1", condition.toExpression());
     }
 
     @Test
     void shouldCreateGreaterThan() {
       Condition condition = Condition.column("price").greaterThan(100);
-      assertEquals("Number(cell.row.getValue('price')) > 100", condition.toExpression());
+      assertEquals("cell.row.getValue('price') != null && cell.row.getValue('price') !== '' && "
+          + "Number(cell.row.getValue('price')) > 100", condition.toExpression());
     }
 
     @Test
     void shouldCreateBetween() {
       Condition condition = Condition.column("score").between(1, 10);
-      assertEquals(
-          "Number(cell.row.getValue('score')) >= 1 && Number(cell.row.getValue('score')) <= 10",
-          condition.toExpression());
+      assertEquals("cell.row.getValue('score') != null && cell.row.getValue('score') !== '' && "
+          + "Number(cell.row.getValue('score')) >= 1 && Number(cell.row.getValue('score')) <= "
+          + "10", condition.toExpression());
     }
 
     @Test
@@ -270,7 +297,9 @@ class ConditionTest {
     @Test
     void shouldCreateContains() {
       Condition condition = Condition.column("description").contains("jazz");
-      assertEquals("String(cell.row.getValue('description')).indexOf('jazz') !== -1",
+      assertEquals(
+          "String(cell.row.getValue('description') == null ? '' : "
+              + "cell.row.getValue('description')).indexOf('jazz') !== -1",
           condition.toExpression());
     }
 
@@ -278,16 +307,17 @@ class ConditionTest {
     void shouldCombineWithCellConditions() {
       Condition condition =
           Condition.greaterThan(100).and(Condition.column("status").equalTo("active"));
-      assertEquals(
-          "(Number(cell.value) > 100) && (String(cell.row.getValue('status')) === 'active')",
-          condition.toExpression());
+      assertEquals("(cell.value != null && cell.value !== '' && Number(cell.value) > 100) && "
+          + "(String(cell.row.getValue('status') == null ? '' : cell.row.getValue('status')) "
+          + "=== 'active')", condition.toExpression());
     }
 
     @Test
     void shouldCombineCellValueWithColumn() {
       Condition condition = Condition.equalTo("Rock").and(Condition.column("stock").greaterThan(0));
-      assertEquals("(String(cell.value) === 'Rock') && (Number(cell.row.getValue('stock')) > 0)",
-          condition.toExpression());
+      assertEquals("(String(cell.value == null ? '' : cell.value) === 'Rock') && "
+          + "(cell.row.getValue('stock') != null && cell.row.getValue('stock') !== '' && "
+          + "Number(cell.row.getValue('stock')) > 0)", condition.toExpression());
     }
   }
 }
