@@ -1,1 +1,2 @@
 com.webforj.i18n.LocaleAutoDetectListener
+com.webforj.matchmedia.MediaQueryLifecycleListener
