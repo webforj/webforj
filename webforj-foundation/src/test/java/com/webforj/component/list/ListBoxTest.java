@@ -302,6 +302,35 @@ class ListBoxTest {
   }
 
   @Nested
+  @DisplayName("Value API")
+  class ValueApi {
+
+    @Test
+    void shouldClearSelectionWhenValueIsNull() throws IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+      component.setSelectionMode(SelectionMode.MULTIPLE);
+      component.add("key-1", "value-1");
+      component.add("key-2", "value-2");
+      component.setValue(List.of("key-1", "key-2"));
+      assertEquals(List.of("key-1", "key-2"), component.getValue());
+
+      component.setValue(null);
+
+      assertEquals(List.of(), component.getValue());
+    }
+
+    @Test
+    void shouldDeselectAllInControlWhenValueIsNull() throws BBjException {
+      component.add("key-1", "value-1");
+      component.setValue(List.of("key-1"));
+
+      component.setValue(null);
+
+      verify(control, times(1)).deselectAll();
+    }
+  }
+
+  @Nested
   @DisplayName("Text API")
   class TextApi {
 

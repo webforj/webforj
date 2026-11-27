@@ -1,6 +1,7 @@
 package com.webforj.component.list;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -123,6 +124,35 @@ class DwcSelectDropdownTest {
 
     component.deselect();
     verify(control, times(1)).deselect();
+  }
+
+  @Nested
+  @DisplayName("Value API")
+  class ValueApi {
+
+    @Test
+    void shouldClearSelectionWhenValueIsNull() throws IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+      component.add("first", "First");
+      component.add("second", "Second");
+      component.setValue("second");
+      assertEquals("second", component.getValue());
+
+      component.setValue(null);
+
+      assertNull(component.getValue());
+      assertEquals(-1, component.getSelectedIndex());
+    }
+
+    @Test
+    void shouldDeselectControlWhenValueIsNull() throws BBjException {
+      component.add("first", "First");
+      component.setValue("first");
+
+      component.setValue(null);
+
+      verify(control, times(1)).deselect();
+    }
   }
 
   @Test

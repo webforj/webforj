@@ -278,12 +278,20 @@ public abstract class DwcSelectDropdown<T extends DwcList<T, Object>> extends Dw
   /**
    * Alias for {@link #selectKey(Object)}.
    *
+   * <p>
+   * A {@code null} key clears the selection.
+   * </p>
+   *
    * @param key the key of the item to be selected.
    *
    * @return the component itself.
    */
   @Override
   public T setValue(Object key) {
+    if (key == null) {
+      return deselect();
+    }
+
     try {
       return selectKey(key);
     } catch (IllegalArgumentException e) {
