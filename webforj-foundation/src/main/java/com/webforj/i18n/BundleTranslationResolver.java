@@ -25,6 +25,12 @@ import java.util.ResourceBundle;
  * </ul>
  *
  * <p>
+ * A key missing in the bundles of the requested locale and in the base bundle is resolved from the
+ * bundle of the {@link #getDefaultLocale() default locale}. A locale without a bundle resolves from
+ * the base bundle, then from the default locale.
+ * </p>
+ *
+ * <p>
  * The resolver supports {@link MessageFormat} style placeholders in translation values. For
  * example:
  * </p>
@@ -114,20 +120,13 @@ public class BundleTranslationResolver implements TranslationResolver {
 
     Locale resolvedLocale = locale != null ? locale : getDefaultLocale();
     Object[] resolvedArgs = args != null ? args : new Object[0];
-    String value = key;
-
-    ResourceBundle bundle = getBundle(resolvedLocale);
-    if (bundle != null) {
-      try {
-        value = bundle.getString(key);
-      } catch (MissingResourceException e) {
-        if (logger.isLoggable(Level.WARNING)) {
-          logger.log(Level.WARNING, "Missing translation key ''{0}'' for locale ''{1}''", key,
-              resolvedLocale);
-        }
-      }
+    Optional<String> found = findValue(key, resolvedLocale);
+    if (found.isEmpty() && getBundle(resolvedLocale) != null && logger.isLoggable(Level.WARNING)) {
+      logger.log(Level.WARNING, "Missing translation key ''{0}'' for locale ''{1}''", key,
+          resolvedLocale);
     }
 
+    String value = found.orElse(key);
     if (resolvedArgs.length > 0) {
       try {
         value = new MessageFormat(value, resolvedLocale).format(resolvedArgs);
@@ -155,12 +154,12 @@ public class BundleTranslationResolver implements TranslationResolver {
     Locale resolvedLocale = locale != null ? locale : getDefaultLocale();
     Object[] resolvedArgs = args != null ? args : new Object[0];
 
-    ResourceBundle bundle = getBundle(resolvedLocale);
-    if (bundle == null || !bundle.containsKey(key)) {
+    Optional<String> found = findValue(key, resolvedLocale);
+    if (found.isEmpty()) {
       return Optional.empty();
     }
 
-    String value = bundle.getString(key);
+    String value = found.get();
     if (resolvedArgs.length > 0) {
       try {
         value = new MessageFormat(value, resolvedLocale).format(resolvedArgs);
@@ -196,6 +195,11 @@ public class BundleTranslationResolver implements TranslationResolver {
   /**
    * Loads the resource bundle for the specified locale.
    *
+   * <p>
+   * A locale without a bundle loads the base bundle. The bundle of the JVM locale, which
+   * {@link ResourceBundle} picks for such a locale, is not returned.
+   * </p>
+   *
    * @param locale the locale to load the bundle for
    * @return the resource bundle, or null if not found
    */
@@ -206,9 +210,74 @@ public class BundleTranslationResolver implements TranslationResolver {
         loader = Thread.currentThread().getContextClassLoader();
       }
 
-      return ResourceBundle.getBundle(bundleName, locale, loader);
+      ResourceBundle bundle = ResourceBundle.getBundle(bundleName, locale, loader);
+
+      return isBundleOf(bundle, locale) ? bundle : null;
     } catch (MissingResourceException e) {
       return null;
     }
+  }
+
+  /**
+   * Finds the value of a key in the bundles of the locale, then in the base bundle, then in the
+   * bundles of the default locale.
+   *
+   * @param key the translation key
+   * @param locale the requested locale
+   *
+   * @return the value, or empty when no bundle holds the key
+   */
+  private Optional<String> findValue(String key, Locale locale) {
+    Optional<String> value = findValueIn(key, locale);
+    if (value.isEmpty()) {
+      value = findValueIn(key, Locale.ROOT);
+    }
+
+    if (value.isEmpty()) {
+      Locale defaultLocale = getDefaultLocale();
+      if (defaultLocale != null && !defaultLocale.equals(locale)) {
+        value = findValueIn(key, defaultLocale);
+      }
+    }
+
+    return value;
+  }
+
+  /**
+   * Finds the value of a key in the bundles of one locale.
+   *
+   * @param key the translation key
+   * @param locale the locale to load the bundle for
+   *
+   * @return the value, or empty when the locale has no bundle or the bundle lacks the key
+   */
+  private Optional<String> findValueIn(String key, Locale locale) {
+    ResourceBundle bundle = getBundle(locale);
+    if (bundle == null || !bundle.containsKey(key)) {
+      return Optional.empty();
+    }
+
+    return Optional.of(bundle.getString(key));
+  }
+
+  /**
+   * Checks whether a loaded bundle belongs to the locale it was requested for.
+   *
+   * @param bundle the loaded bundle
+   * @param locale the locale the bundle was requested for
+   *
+   * @return false when the bundle is the one of the JVM locale, which {@link ResourceBundle}
+   *         returns for a locale without a bundle
+   */
+  private boolean isBundleOf(ResourceBundle bundle, Locale locale) {
+    Locale bundleLocale = bundle.getLocale();
+    if (bundleLocale.equals(locale)) {
+      return true;
+    }
+
+    ResourceBundle.Control control =
+        ResourceBundle.Control.getControl(ResourceBundle.Control.FORMAT_DEFAULT);
+
+    return control.getCandidateLocales(bundleName, locale).contains(bundleLocale);
   }
 }

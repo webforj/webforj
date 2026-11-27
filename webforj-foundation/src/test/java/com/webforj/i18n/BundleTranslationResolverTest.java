@@ -12,9 +12,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.ResourceBundle;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
+import org.junit.jupiter.api.parallel.Resources;
 import org.mockito.MockedStatic;
 
 class BundleTranslationResolverTest {
@@ -109,6 +112,100 @@ class BundleTranslationResolverTest {
     @Test
     void shouldUseDefaultLocaleWhenNullLocalePassed() {
       assertEquals("Welcome", resolver.resolve("welcome", null));
+    }
+  }
+
+  @Nested
+  class DefaultLocaleFallback {
+
+    @Test
+    void shouldResolveKeyMissingInLocaleFromDefaultLocale() {
+      BundleTranslationResolver fallback =
+          new BundleTranslationResolver("fallback", List.of(Locale.ENGLISH, Locale.GERMAN));
+
+      assertEquals("Hallo", fallback.resolve("greeting", Locale.GERMAN));
+      assertEquals("Goodbye", fallback.resolve("farewell", Locale.GERMAN));
+      assertEquals(Optional.of("Goodbye"), fallback.find("farewell", Locale.GERMAN));
+    }
+
+    @Test
+    void shouldResolveBaseBundleBeforeDefaultLocale() {
+      BundleTranslationResolver fallback =
+          new BundleTranslationResolver("fallback", List.of(Locale.ENGLISH, Locale.GERMAN));
+
+      assertEquals("Base title", fallback.resolve("title", Locale.GERMAN));
+      assertEquals("Base only", fallback.resolve("base.only", Locale.GERMAN));
+    }
+
+    @Test
+    void shouldResolveFromDefaultLocaleAfterPlainBundleLookup() {
+      ResourceBundle.getBundle("fallback", Locale.GERMAN);
+      BundleTranslationResolver fallback =
+          new BundleTranslationResolver("fallback", List.of(Locale.ENGLISH, Locale.GERMAN));
+
+      assertEquals("Goodbye", fallback.resolve("farewell", Locale.GERMAN));
+    }
+
+    @Test
+    void shouldResolveEachResolverFromOwnDefaultLocale() {
+      BundleTranslationResolver english =
+          new BundleTranslationResolver("fallback", List.of(Locale.ENGLISH, Locale.GERMAN));
+      BundleTranslationResolver german =
+          new BundleTranslationResolver("fallback", List.of(Locale.GERMAN, Locale.ENGLISH));
+
+      assertEquals("Goodbye", english.resolve("farewell", Locale.ITALIAN));
+      assertEquals("Hallo", german.resolve("greeting", Locale.ITALIAN));
+      assertEquals("farewell", german.resolve("farewell", Locale.ITALIAN));
+    }
+
+    @Test
+    void shouldResolveRootLocaleFromBaseBundleThenDefaultLocale() {
+      BundleTranslationResolver fallback =
+          new BundleTranslationResolver("fallback", List.of(Locale.ENGLISH, Locale.GERMAN));
+
+      assertEquals("Base title", fallback.resolve("title", Locale.ROOT));
+      assertEquals("Goodbye", fallback.resolve("farewell", Locale.ROOT));
+    }
+
+    @Test
+    @ResourceLock(Resources.LOCALE)
+    void shouldResolveLocaleWithoutBundleFromDefaultLocaleNotJvmLocale() {
+      BundleTranslationResolver labels =
+          new BundleTranslationResolver("labels", List.of(Locale.ENGLISH));
+      Locale jvmLocale = Locale.getDefault();
+      Locale.setDefault(Locale.FRENCH);
+
+      try {
+        assertEquals("Save", labels.resolve("save", Locale.JAPANESE));
+      } finally {
+        Locale.setDefault(jvmLocale);
+      }
+    }
+
+    @Test
+    void shouldResolveFromBundleReturnedByOverriddenGetBundle() {
+      BundleTranslationResolver labels =
+          new BundleTranslationResolver("labels", List.of(Locale.ENGLISH)) {
+            @Override
+            protected ResourceBundle getBundle(Locale locale) {
+              return super.getBundle(Locale.JAPANESE.equals(locale) ? Locale.FRENCH : locale);
+            }
+          };
+
+      assertEquals("Enregistrer", labels.resolve("save", Locale.JAPANESE));
+    }
+
+    @Test
+    void shouldResolveKeyWhenDefaultLocaleIsNull() {
+      BundleTranslationResolver fallback =
+          new BundleTranslationResolver("fallback", List.of(Locale.ENGLISH)) {
+            @Override
+            public Locale getDefaultLocale() {
+              return null;
+            }
+          };
+
+      assertEquals("farewell", fallback.resolve("farewell", Locale.GERMAN));
     }
   }
 
