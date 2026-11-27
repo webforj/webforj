@@ -101,6 +101,17 @@ class BBjApiMockTest {
   }
 
   @Test
+  void shouldRejectTimerWithoutPositiveSeconds() {
+    BBjApiMock mock = new BBjApiMock();
+    BBjAPI api = mock.getApi();
+    BasisNumber seconds = BasisNumber.createBasisNumber(0);
+
+    assertThrows(BBjException.class,
+        () -> api.createTimer("tick", seconds, new Object(), CALLBACK_METHOD));
+    assertFalse(mock.hasTimer("tick"));
+  }
+
+  @Test
   void shouldKeepNamespaceState() throws BBjException {
     BBjApiMock mock = new BBjApiMock();
     BBjAPI api = mock.getApi();

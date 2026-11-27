@@ -47,6 +47,8 @@ class IntervalTest {
     assertEquals(2.0f, interval.getDelay());
 
     assertThrows(IllegalArgumentException.class, () -> interval.setDelay(-1.0f));
+    assertThrows(IllegalArgumentException.class, () -> interval.setDelay(0f));
+    assertThrows(IllegalArgumentException.class, () -> new Interval(0f, listener));
   }
 
   @Test

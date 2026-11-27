@@ -14,6 +14,7 @@ import com.basis.bbj.proxies.BBjWebManager;
 import com.basis.bbj.proxies.event.BBjCustomEvent;
 import com.basis.bbj.proxies.event.BBjTimerEvent;
 import com.basis.startup.type.BBjException;
+import com.basis.startup.type.BBjNumber;
 import com.webforj.testbed.ShownOptionDialog;
 import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
@@ -217,6 +218,10 @@ public class BBjApiMock extends RuntimeMock {
         yield null;
       }
       case "createTimer" -> {
+        if (((BBjNumber) args[1]).doubleValue() <= 0) {
+          throw new BBjException("The timer interval must be greater than 0 seconds", 0);
+        }
+
         if (args.length == 4) {
           timers.put(args[0], new Callback(args[2], (String) args[3]));
         }

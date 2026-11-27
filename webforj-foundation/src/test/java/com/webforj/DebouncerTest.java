@@ -63,6 +63,12 @@ class DebouncerTest {
   }
 
   @Test
+  @DisplayName("should throw on zero delay")
+  void shouldThrowOnZeroDelay() {
+    assertThrows(IllegalArgumentException.class, () -> new Debouncer(0f));
+  }
+
+  @Test
   @DisplayName("should throw on null action")
   void shouldThrowOnNullAction() {
     Debouncer debouncer = new Debouncer(0.5f);
