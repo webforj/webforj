@@ -1,6 +1,7 @@
 package com.webforj.component.table.renderer;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -85,6 +86,28 @@ public class ConditionalRenderer<T> extends Renderer<T> {
 
     fireChangeEvent();
     return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>
+   * The renderers of the conditions come in the order they were added, followed by the fallback
+   * renderer.
+   * </p>
+   */
+  @Override
+  public List<Renderer<T>> getNestedRenderers() {
+    List<Renderer<T>> renderers = new ArrayList<>();
+    for (ConditionEntry<T> entry : entries) {
+      renderers.add(entry.renderer);
+    }
+
+    if (fallback != null) {
+      renderers.add(fallback);
+    }
+
+    return Collections.unmodifiableList(renderers);
   }
 
   /** {@inheritDoc} */

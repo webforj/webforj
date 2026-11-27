@@ -1757,6 +1757,9 @@ public class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T
    *
    * <p>
    * A {@link RendererClickEvent} is delivered to the click listeners of the renderer of its column.
+   * When the data of the event names a renderer under {@code rendererKey}, the click is delivered
+   * to that renderer, which reaches a renderer held by the renderer of the column. A click that
+   * names a renderer the column does not hold is ignored.
    * </p>
    */
   @Override
@@ -1764,6 +1767,11 @@ public class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T
     if (event instanceof RendererClickEvent<?> click) {
       Column<T, ?> column = getColumnById(click.getColumnKey());
       Renderer<T> renderer = column == null ? null : column.getRenderer();
+
+      if (renderer != null) {
+        Object named = click.getData().get("rendererKey");
+        renderer = named == null ? renderer : findRenderer(renderer, named.toString());
+      }
 
       if (renderer != null) {
         Element element = getElement();
@@ -1988,6 +1996,21 @@ public class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T
     }
 
     return appKeys;
+  }
+
+  private Renderer<T> findRenderer(Renderer<T> holder, String key) {
+    if (holder.getKey().equals(key)) {
+      return holder;
+    }
+
+    for (Renderer<T> held : holder.getNestedRenderers()) {
+      Renderer<T> found = findRenderer(held, key);
+      if (found != null) {
+        return found;
+      }
+    }
+
+    return null;
   }
 
   // the order of the rows is server state, the repository holds it whether or not a client exists.

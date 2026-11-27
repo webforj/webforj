@@ -10,19 +10,30 @@ import com.webforj.Environment;
 import com.webforj.automation.FrameEnvironment;
 import com.webforj.automation.act.UserInteraction;
 import com.webforj.automation.act.exception.InteractionRejectedException;
+import com.webforj.component.icons.TablerIcon;
 import com.webforj.component.table.Column;
 import com.webforj.component.table.Table;
 import com.webforj.component.table.event.renderer.RendererClickEvent;
 import com.webforj.component.table.renderer.ButtonRenderer;
+import com.webforj.component.table.renderer.CompositeRenderer;
+import com.webforj.component.table.renderer.ConditionalRenderer;
+import com.webforj.component.table.renderer.CurrencyRenderer;
+import com.webforj.component.table.renderer.IconButtonRenderer;
 import com.webforj.component.window.Frame;
 import com.webforj.data.repository.OrderCriteria;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockedStatic;
 
 class TableInteractionTest {
@@ -231,6 +242,61 @@ class TableInteractionTest {
   }
 
   @Test
+  void shouldClickTheRendererOfTheGivenRowAndColumn() throws Exception {
+    Environment environment = FrameEnvironment.create(null);
+
+    try (MockedStatic<Environment> current = mockStatic(Environment.class);
+        MockedStatic<App> app = mockStatic(App.class)) {
+      current.when(Environment::getCurrent).thenReturn(environment);
+      Frame frame = new Frame("Orders");
+      app.when(App::getFrames).thenReturn(List.of(frame));
+      Table<String> table = new Table<>();
+      table.setItems(List.of("Ada", "Linus"));
+      List<String> clicked = new ArrayList<>();
+      Column<String, String> edit = table.addColumn("edit",
+          new ButtonRenderer<>("Edit", event -> clicked.add("edit " + event.getItem())));
+      Column<String, String> delete = table.addColumn("delete",
+          new ButtonRenderer<>("Delete", event -> clicked.add("delete " + event.getItem())));
+      frame.add(table);
+
+      UserInteraction.perform(table, TableInteraction.clickRenderer("Linus", delete));
+      UserInteraction.perform(table, TableInteraction.clickRenderer("Ada", edit));
+
+      assertEquals(List.of("delete Linus", "edit Ada"), clicked);
+    }
+  }
+
+  @Test
+  void shouldRejectTheRendererClickTheTableDoesNotOffer() throws Exception {
+    Environment environment = FrameEnvironment.create(null);
+
+    try (MockedStatic<Environment> current = mockStatic(Environment.class);
+        MockedStatic<App> app = mockStatic(App.class)) {
+      current.when(Environment::getCurrent).thenReturn(environment);
+      Frame frame = new Frame("Orders");
+      app.when(App::getFrames).thenReturn(List.of(frame));
+      Table<String> table = createTable("Ada");
+      Column<String, ?> name = table.getColumns().get(0);
+      Column<String, String> action =
+          table.addColumn("action", new ButtonRenderer<>("Go", event -> {
+          }));
+      frame.add(table);
+
+      Consumer<Table<String>> plainColumn = TableInteraction.clickRenderer("Ada", name);
+      assertTrue(assertThrows(InteractionRejectedException.class,
+          () -> UserInteraction.perform(table, plainColumn)).getMessage()
+          .contains("holds the column 'name' without a renderer"));
+      Consumer<Table<String>> missingItem = TableInteraction.clickRenderer("Linus", action);
+      assertTrue(assertThrows(InteractionRejectedException.class,
+          () -> UserInteraction.perform(table, missingItem)).getMessage().contains("Linus"));
+      Column<String, ?> foreign = new Table<String>().addColumn("other", item -> item);
+      Consumer<Table<String>> foreignColumn = TableInteraction.clickRenderer("Ada", foreign);
+      assertTrue(assertThrows(InteractionRejectedException.class,
+          () -> UserInteraction.perform(table, foreignColumn)).getMessage().contains("other"));
+    }
+  }
+
+  @Test
   void shouldSelectTableRowsByItemAndByKey() throws Exception {
     Environment environment = FrameEnvironment.create(null);
 
@@ -253,6 +319,125 @@ class TableInteractionTest {
       assertEquals(List.of("Grace", "Ada"), selections);
       assertTrue(table.getSelectedItems().containsAll(List.of("Grace", "Ada")));
     }
+  }
+
+  @Test
+  void shouldClickTheRendererNestedInTheRendererOfTheColumn() throws Exception {
+    Environment environment = FrameEnvironment.create(null);
+
+    try (MockedStatic<Environment> current = mockStatic(Environment.class);
+        MockedStatic<App> app = mockStatic(App.class)) {
+      current.when(Environment::getCurrent).thenReturn(environment);
+      Frame frame = new Frame("Orders");
+      app.when(App::getFrames).thenReturn(List.of(frame));
+      Table<String> table = new Table<>();
+      table.setItems(List.of("Ada", "Linus"));
+      List<String> clicked = new ArrayList<>();
+      ButtonRenderer<String> edit =
+          new ButtonRenderer<>("Edit", event -> clicked.add("edit " + event.getItem()));
+      ButtonRenderer<String> delete =
+          new ButtonRenderer<>("Delete", event -> clicked.add("delete " + event.getItem()));
+      ButtonRenderer<String> open =
+          new ButtonRenderer<>("Open", event -> clicked.add("open " + event.getItem()));
+      Column<String, String> actions =
+          table.addColumn("actions", new CompositeRenderer<>(edit, delete));
+      Column<String, String> state =
+          table.addColumn("state", new ConditionalRenderer<String>().when("Ada", open));
+      frame.add(table);
+
+      UserInteraction.perform(table, TableInteraction.clickRenderer("Ada", state, open));
+      UserInteraction.perform(table, TableInteraction.clickRenderer("Linus", actions, delete));
+      UserInteraction.perform(table, TableInteraction.clickRenderer("Ada", actions, edit));
+
+      assertEquals(List.of("open Ada", "delete Linus", "edit Ada"), clicked);
+    }
+  }
+
+  @Test
+  void shouldRejectTheNestedRendererClickTheUserCannotMake() throws Exception {
+    Environment environment = FrameEnvironment.create(null);
+
+    try (MockedStatic<Environment> current = mockStatic(Environment.class);
+        MockedStatic<App> app = mockStatic(App.class)) {
+      current.when(Environment::getCurrent).thenReturn(environment);
+      Frame frame = new Frame("Orders");
+      app.when(App::getFrames).thenReturn(List.of(frame));
+      Table<String> table = createTable("Ada");
+      ButtonRenderer<String> edit = new ButtonRenderer<>("Edit");
+      ButtonRenderer<String> delete = new ButtonRenderer<>("Delete");
+      delete.setEnabled(false);
+      ButtonRenderer<String> other = new ButtonRenderer<>("Other");
+      Column<String, String> actions =
+          table.addColumn("actions", new CompositeRenderer<>(edit, delete));
+      frame.add(table);
+
+      Consumer<Table<String>> foreign = TableInteraction.clickRenderer("Ada", actions, other);
+      assertTrue(assertThrows(InteractionRejectedException.class,
+          () -> UserInteraction.perform(table, foreign)).getMessage()
+          .contains("holds the column 'actions' without the given renderer"));
+      Consumer<Table<String>> disabled = TableInteraction.clickRenderer("Ada", actions, delete);
+      assertTrue(assertThrows(InteractionRejectedException.class,
+          () -> UserInteraction.perform(table, disabled)).getMessage()
+          .contains("holds the column 'actions' with a disabled renderer"));
+      ButtonRenderer<String> elsewhere = new ButtonRenderer<>("Elsewhere");
+      new Table<String>().addColumn("elsewhere", elsewhere);
+      CompositeRenderer<String> holder = new CompositeRenderer<>();
+      Column<String, String> shared = table.addColumn("shared", holder);
+      holder.add(elsewhere);
+      Consumer<Table<String>> attached = TableInteraction.clickRenderer("Ada", shared, elsewhere);
+      assertTrue(assertThrows(InteractionRejectedException.class,
+          () -> UserInteraction.perform(table, attached)).getMessage()
+          .contains("holds the column 'shared' with a renderer of another table"));
+    }
+  }
+
+  @ParameterizedTest
+  @MethodSource("createRendererClicksTheUserCannotMake")
+  void shouldRejectTheRendererClickTheUserCannotMake(
+      Function<Table<String>, Column<String, ?>> columns, String message) throws Exception {
+    Environment environment = FrameEnvironment.create(null);
+
+    try (MockedStatic<Environment> current = mockStatic(Environment.class);
+        MockedStatic<App> app = mockStatic(App.class)) {
+      current.when(Environment::getCurrent).thenReturn(environment);
+      Frame frame = new Frame("Orders");
+      app.when(App::getFrames).thenReturn(List.of(frame));
+      Table<String> table = createTable("Ada");
+      Column<String, ?> column = columns.apply(table);
+      frame.add(table);
+
+      Consumer<Table<String>> click = TableInteraction.clickRenderer("Ada", column);
+      assertTrue(assertThrows(InteractionRejectedException.class,
+          () -> UserInteraction.perform(table, click)).getMessage().contains(message));
+    }
+  }
+
+  private static Stream<Arguments> createRendererClicksTheUserCannotMake() {
+    Function<Table<String>, Column<String, ?>> currency = table -> table
+        .addColumn("price", item -> item).setRenderer(new CurrencyRenderer<>(Locale.US));
+    Function<Table<String>, Column<String, ?>> conditional =
+        table -> table.addColumn("state", item -> item)
+            .setRenderer(new ConditionalRenderer<String>().otherwise(new ButtonRenderer<>("Go")));
+    Function<Table<String>, Column<String, ?>> disabledButton =
+        table -> table.addColumn("action", new ButtonRenderer<String>("Go").setEnabled(false));
+    Function<Table<String>, Column<String, ?>> disabledIconButton =
+        table -> table.addColumn("remove",
+            new IconButtonRenderer<String>(TablerIcon.create("trash")).setEnabled(false));
+    Function<Table<String>, Column<String, ?>> hidden =
+        table -> table.addColumn("action", new ButtonRenderer<String>("Go")).setHidden(true);
+    Function<Table<String>, Column<String, ?>> duplicate = table -> {
+      table.addColumn("action", new ButtonRenderer<String>("Go"));
+
+      return table.addColumn("action", new ButtonRenderer<String>("Go"));
+    };
+
+    return Stream.of(
+        Arguments.of(currency, "holds the column 'price' without a renderer a user can click"),
+        Arguments.of(conditional, "holds the column 'state' without a renderer a user can click"),
+        Arguments.of(disabledButton, "holds the column 'action' with a disabled renderer"),
+        Arguments.of(disabledIconButton, "holds the column 'remove' with a disabled renderer"),
+        Arguments.of(hidden, "holds the column 'action' hidden"),
+        Arguments.of(duplicate, "holds more than one column with the id 'action'"));
   }
 
   private static Table<String> createTable(String... items) {

@@ -65,6 +65,18 @@ public class CompositeRenderer<T> extends Renderer<T> {
   }
 
   /**
+   * {@inheritDoc}
+   *
+   * <p>
+   * The renderers come in the order they were added.
+   * </p>
+   */
+  @Override
+  public List<Renderer<T>> getNestedRenderers() {
+    return List.copyOf(renderers);
+  }
+
+  /**
    * Sets the spacing (gap) between sub-renderers.
    *
    * @param spacing the CSS gap value (e.g., {@code "8px"}, {@code "var(--dwc-space-s)"})

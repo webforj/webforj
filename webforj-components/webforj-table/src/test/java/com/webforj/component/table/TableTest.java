@@ -34,6 +34,7 @@ import com.webforj.component.table.event.selection.TableItemDeselectEvent;
 import com.webforj.component.table.event.selection.TableItemSelectEvent;
 import com.webforj.component.table.event.selection.TableItemSelectionChange;
 import com.webforj.component.table.renderer.ButtonRenderer;
+import com.webforj.component.table.renderer.CompositeRenderer;
 import com.webforj.component.table.renderer.Renderer;
 import com.webforj.data.HasEntityKey;
 import com.webforj.data.repository.CollectionRepository;
@@ -1134,6 +1135,36 @@ class TableTest {
       assertEquals(1, received.size());
       assertEquals("1", received.get(0).getItemKey());
       assertEquals(column.getId(), received.get(0).getColumnKey());
+    }
+
+    @Test
+    void shouldDeliverRendererClickToTheNestedRendererItNames() {
+      List<String> received = new ArrayList<>();
+      ButtonRenderer<String> edit = new ButtonRenderer<>("Edit", e -> received.add("edit"));
+      ButtonRenderer<String> delete = new ButtonRenderer<>("Delete", e -> received.add("delete"));
+      Column<String, ?> column =
+          component.addColumn("actions", new CompositeRenderer<>(edit, delete));
+      Map<String, Object> data =
+          Map.of("itemKey", "1", "columnKey", column.getId(), "rendererKey", delete.getKey());
+
+      ComponentUtil.fireComponentEvent(component, new RendererClickEvent<>(component, data));
+
+      assertEquals(List.of("delete"), received);
+    }
+
+    @Test
+    void shouldIgnoreRendererClickNamingRendererTheColumnDoesNotHold() {
+      List<String> received = new ArrayList<>();
+      ButtonRenderer<String> delete = new ButtonRenderer<>("Delete", e -> received.add("delete"));
+      component.addColumn("actions", new CompositeRenderer<>(delete));
+      Column<String, ?> other =
+          component.addColumn("other", new ButtonRenderer<String>("Go", e -> received.add("go")));
+      Map<String, Object> data =
+          Map.of("itemKey", "1", "columnKey", other.getId(), "rendererKey", delete.getKey());
+
+      ComponentUtil.fireComponentEvent(component, new RendererClickEvent<>(component, data));
+
+      assertEquals(List.of(), received);
     }
 
     @ParameterizedTest

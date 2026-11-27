@@ -9,6 +9,7 @@ import com.webforj.component.layout.flexlayout.FlexAlignment;
 import com.webforj.component.layout.flexlayout.FlexDirection;
 import com.webforj.component.layout.flexlayout.FlexJustifyContent;
 import com.webforj.component.layout.flexlayout.FlexWrap;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class CompositeRendererTest {
@@ -103,5 +104,14 @@ class CompositeRendererTest {
     String html = r.build();
     assertTrue(html.startsWith("<span style='"));
     assertTrue(html.endsWith("</span>"));
+  }
+
+  @Test
+  void shouldGetNestedRenderersInTheOrderTheyWereAdded() {
+    ButtonRenderer<String> edit = new ButtonRenderer<>("Edit");
+    ButtonRenderer<String> delete = new ButtonRenderer<>("Delete");
+    CompositeRenderer<String> composite = new CompositeRenderer<>(edit, delete);
+
+    assertEquals(List.of(edit, delete), composite.getNestedRenderers());
   }
 }
