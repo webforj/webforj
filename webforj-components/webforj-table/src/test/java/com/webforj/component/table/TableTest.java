@@ -1153,7 +1153,7 @@ class TableTest {
     }
 
     @Test
-    void shouldIgnoreRendererClickNamingARendererTheColumnDoesNotHold() {
+    void shouldIgnoreRendererClickNamingRendererTheColumnDoesNotHold() {
       List<String> received = new ArrayList<>();
       ButtonRenderer<String> delete = new ButtonRenderer<>("Delete", e -> received.add("delete"));
       component.addColumn("actions", new CompositeRenderer<>(delete));

@@ -322,7 +322,7 @@ class TableInteractionTest {
   }
 
   @Test
-  void shouldClickTheRendererHeldByTheRendererOfTheColumn() throws Exception {
+  void shouldClickTheRendererNestedInTheRendererOfTheColumn() throws Exception {
     Environment environment = FrameEnvironment.create(null);
 
     try (MockedStatic<Environment> current = mockStatic(Environment.class);
@@ -345,16 +345,16 @@ class TableInteractionTest {
           table.addColumn("state", new ConditionalRenderer<String>().when("Ada", open));
       frame.add(table);
 
+      UserInteraction.perform(table, TableInteraction.clickRenderer("Ada", state, open));
       UserInteraction.perform(table, TableInteraction.clickRenderer("Linus", actions, delete));
       UserInteraction.perform(table, TableInteraction.clickRenderer("Ada", actions, edit));
-      UserInteraction.perform(table, TableInteraction.clickRenderer("Ada", state, open));
 
-      assertEquals(List.of("delete Linus", "edit Ada", "open Ada"), clicked);
+      assertEquals(List.of("open Ada", "delete Linus", "edit Ada"), clicked);
     }
   }
 
   @Test
-  void shouldRejectTheHeldRendererClickAUserCannotMake() throws Exception {
+  void shouldRejectTheNestedRendererClickTheUserCannotMake() throws Exception {
     Environment environment = FrameEnvironment.create(null);
 
     try (MockedStatic<Environment> current = mockStatic(Environment.class);
@@ -392,8 +392,8 @@ class TableInteractionTest {
   }
 
   @ParameterizedTest
-  @MethodSource("createRendererClicksAUserCannotMake")
-  void shouldRejectTheRendererClickAUserCannotMake(
+  @MethodSource("createRendererClicksTheUserCannotMake")
+  void shouldRejectTheRendererClickTheUserCannotMake(
       Function<Table<String>, Column<String, ?>> columns, String message) throws Exception {
     Environment environment = FrameEnvironment.create(null);
 
@@ -412,7 +412,7 @@ class TableInteractionTest {
     }
   }
 
-  private static Stream<Arguments> createRendererClicksAUserCannotMake() {
+  private static Stream<Arguments> createRendererClicksTheUserCannotMake() {
     Function<Table<String>, Column<String, ?>> currency = table -> table
         .addColumn("price", item -> item).setRenderer(new CurrencyRenderer<>(Locale.US));
     Function<Table<String>, Column<String, ?>> conditional =
