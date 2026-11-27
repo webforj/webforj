@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 
 import com.webforj.component.table.event.renderer.RendererChangeEvent;
 import com.webforj.dispatcher.EventListener;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -167,6 +168,16 @@ class ConditionalRendererTest {
     // Modify sub-renderer — should propagate
     subRenderer.setAttribute("foo", "bar");
     verify(listener, org.mockito.Mockito.atLeast(2)).onEvent(any(RendererChangeEvent.class));
+  }
+
+  @Test
+  void shouldGetNestedRenderersOfConditionsThenFallback() {
+    Renderer<String> rock = createMockRenderer("<rock/>");
+    Renderer<String> jazz = createMockRenderer("<jazz/>");
+    Renderer<String> other = createMockRenderer("<other/>");
+    renderer.when("Rock", rock).when("Jazz", jazz).otherwise(other);
+
+    assertEquals(List.of(rock, jazz, other), renderer.getNestedRenderers());
   }
 
   private Renderer<String> createMockRenderer(String output) {

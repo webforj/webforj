@@ -379,6 +379,17 @@ public abstract class Renderer<T> {
   }
 
   /**
+   * Gets the renderers nested in this renderer.
+   *
+   * @return an unmodifiable list of the nested renderers, empty when it has none
+   *
+   * @since 26.10
+   */
+  public List<Renderer<T>> getNestedRenderers() {
+    return List.of();
+  }
+
+  /**
    * Builds the client-side template for rendering cells.
    *
    * @return the template string

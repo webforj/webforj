@@ -20,9 +20,16 @@ import com.webforj.component.table.event.column.TableColumnMoveEvent;
 import com.webforj.component.table.event.column.TableColumnResizeEvent;
 import com.webforj.component.table.event.item.TableItemClickEvent;
 import com.webforj.component.table.event.item.TableItemDoubleClickEvent;
+import com.webforj.component.table.event.renderer.RendererClickEvent;
 import com.webforj.component.table.event.selection.TableItemDeselectEvent;
 import com.webforj.component.table.event.selection.TableItemSelectEvent;
 import com.webforj.component.table.event.selection.TableItemSelectionChange;
+import com.webforj.component.table.renderer.AbstractVoidElementRenderer;
+import com.webforj.component.table.renderer.CompositeRenderer;
+import com.webforj.component.table.renderer.ConditionalRenderer;
+import com.webforj.component.table.renderer.IconButtonRenderer;
+import com.webforj.component.table.renderer.NativeButtonRenderer;
+import com.webforj.component.table.renderer.Renderer;
 import com.webforj.data.repository.OrderCriteria;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,8 +38,9 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 /**
- * Selects, clicks, sorts, moves and resizes the rows and columns of tables, following the selection
- * mode of the table and leaving the selection as it is on a click.
+ * Selects, clicks, sorts, moves and resizes the rows and columns of tables and clicks the renderers
+ * of their cells, following the selection mode of the table and leaving the selection as it is on a
+ * click.
  *
  * @author Hyyan Abo Fakher
  * @since 26.03
@@ -148,6 +156,68 @@ public final class TableInteraction extends AbstractComponentInteraction<Table<O
       data.put("newWidth", width);
       column.setWidth(width);
       fire(new TableColumnResizeEvent(toUntyped(table), data));
+    };
+  }
+
+  /**
+   * Returns the interaction that clicks the renderer of the given column in the row of the given
+   * item.
+   *
+   * <pre>{@code
+   * UserInteraction.perform(table, TableInteraction.clickRenderer(order, delete))
+   * }</pre>
+   *
+   * @param <T> the type of the rows of the table
+   * @param item the item of the row
+   * @param column the column whose renderer is clicked
+   *
+   * @return the interaction to perform on the table
+   * @throws InteractionRejectedException when performed, if the table does not hold the item or the
+   *         column, the column is hidden or shares its id with another column, or its renderer is
+   *         disabled or is not one a user can click
+   *
+   * @since 26.10
+   */
+  public static <T> Consumer<Table<T>> clickRenderer(T item, Column<T, ?> column) {
+    return table -> fireRendererClick(table, item, column, column.getRenderer());
+  }
+
+  /**
+   * Returns the interaction that clicks the given renderer in the cell of the given column and the
+   * row of the given item.
+   *
+   * <p>
+   * Use it for a column whose renderer holds other renderers, such as a {@link CompositeRenderer}
+   * or a {@link ConditionalRenderer}. The table cannot tell which renderer of a
+   * {@link ConditionalRenderer} a row shows, so the click reaches the given renderer whatever the
+   * conditions are.
+   * </p>
+   *
+   * <pre>{@code
+   * UserInteraction.perform(table, TableInteraction.clickRenderer(order, actions, delete))
+   * }</pre>
+   *
+   * @param <T> the type of the rows of the table
+   * @param item the item of the row
+   * @param column the column whose cell holds the renderer
+   * @param renderer the renderer to click, the renderer of the column or one it holds
+   *
+   * @return the interaction to perform on the table
+   * @throws InteractionRejectedException when performed, if the table does not hold the item or the
+   *         column, the column is hidden, shares its id with another column or does not hold the
+   *         renderer, or the renderer is disabled or is not one a user can click
+   *
+   * @since 26.10
+   */
+  public static <T> Consumer<Table<T>> clickRenderer(T item, Column<T, ?> column,
+      Renderer<T> renderer) {
+    return table -> {
+      String id = resolveColumnId(table, column);
+      if (!hasRenderer(column.getRenderer(), renderer)) {
+        throw reject(table, HOLDS_COLUMN + id + "' without the given renderer");
+      }
+
+      fireRendererClick(table, item, column, renderer);
     };
   }
 
@@ -274,6 +344,58 @@ public final class TableInteraction extends AbstractComponentInteraction<Table<O
     }
 
     return table.getItemKeysRegistry().getKey(item);
+  }
+
+  private static <T> void fireRendererClick(Table<T> table, T item, Column<T, ?> column,
+      Renderer<T> renderer) {
+    String id = resolveColumnId(table, column);
+    if (table.getColumnById(id) != column) {
+      throw reject(table,
+          "holds more than one column with the id '" + id + "' and a click reaches only the first");
+    }
+
+    if (column.isHidden()) {
+      throw reject(table, HOLDS_COLUMN + id + "' hidden and a user cannot click its renderer");
+    }
+
+    if (!(renderer instanceof AbstractVoidElementRenderer)) {
+      throw reject(table, HOLDS_COLUMN + id + "' without a renderer a user can click");
+    }
+
+    if (renderer.getTable() != table) {
+      throw reject(table, HOLDS_COLUMN + id + "' with a renderer of another table");
+    }
+
+    if (!isEnabled(renderer)) {
+      throw reject(table,
+          HOLDS_COLUMN + id + "' with a disabled renderer and a user cannot click it");
+    }
+
+    Table<Object> untyped = toUntyped(table);
+    Map<String, Object> data = createCellData(untyped, item, untyped.getColumnById(id));
+    data.put("rendererKey", renderer.getKey());
+    fire(new RendererClickEvent<>(untyped, data));
+  }
+
+  private static <T> boolean hasRenderer(Renderer<T> holder, Renderer<T> renderer) {
+    if (holder == null) {
+      return false;
+    }
+
+    return holder == renderer
+        || holder.getNestedRenderers().stream().anyMatch(held -> hasRenderer(held, renderer));
+  }
+
+  private static boolean isEnabled(Renderer<?> renderer) {
+    if (renderer instanceof IconButtonRenderer<?> button) {
+      return button.isEnabled();
+    }
+
+    if (renderer instanceof NativeButtonRenderer<?> button) {
+      return button.isEnabled();
+    }
+
+    return true;
   }
 
   private static <T> String resolveColumnId(Table<T> table, Column<T, ?> column) {
