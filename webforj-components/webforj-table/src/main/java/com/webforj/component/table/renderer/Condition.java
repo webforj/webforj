@@ -418,7 +418,7 @@ public class Condition {
   }
 
   private static Condition buildEqualToNumber(String valueExpr, Number value) {
-    return new Condition(buildHasValue(valueExpr) + " && Number(" + valueExpr + ") === " + value);
+    return new Condition(buildNumber(valueExpr) + " === " + value);
   }
 
   private static Condition buildIn(String valueExpr, boolean ignoreCase, String... values) {
@@ -440,21 +440,20 @@ public class Condition {
   }
 
   private static Condition buildCompare(String valueExpr, String op, Number value) {
-    return new Condition(
-        buildHasValue(valueExpr) + " && Number(" + valueExpr + ") " + op + " " + value);
+    return new Condition(buildNumber(valueExpr) + " " + op + " " + value);
   }
 
   private static Condition buildBetween(String valueExpr, Number min, Number max) {
-    return new Condition(buildHasValue(valueExpr) + " && Number(" + valueExpr + ") >= " + min
-        + " && Number(" + valueExpr + ") <= " + max);
+    return new Condition(
+        buildNumber(valueExpr) + " >= " + min + " && Number(" + valueExpr + ") <= " + max);
   }
 
   private static String buildText(String valueExpr) {
     return "String(" + valueExpr + " == null ? '' : " + valueExpr + ")";
   }
 
-  private static String buildHasValue(String valueExpr) {
-    return valueExpr + " != null && " + valueExpr + " !== ''";
+  private static String buildNumber(String valueExpr) {
+    return valueExpr + " != null && " + valueExpr + " !== '' && Number(" + valueExpr + ")";
   }
 
   private static Condition buildIsNull(String valueExpr) {
