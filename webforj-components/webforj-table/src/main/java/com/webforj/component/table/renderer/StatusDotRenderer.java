@@ -168,7 +168,7 @@ public class StatusDotRenderer<T> extends Renderer<T> {
     sb.append("<%- cell.value %>");
     sb.append("</span>");
 
-    return sb.toString();
+    return toValueTemplate(sb.toString());
   }
 
   private static String toHex(Color color) {

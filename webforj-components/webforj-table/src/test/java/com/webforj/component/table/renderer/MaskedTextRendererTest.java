@@ -29,4 +29,12 @@ class MaskedTextRendererTest {
     assertEquals("XX-XXX-XXXX", r.getMask());
     assertTrue(r.build().contains("mask='XX-XXX-XXXX'"));
   }
+
+  @Test
+  void shouldBuildNothingForEmptyValue() {
+    MaskedTextRenderer<String> r = new MaskedTextRenderer<>();
+    String html = r.build();
+    assertTrue(html.startsWith("<% if (cell.value != null && cell.value !== '') { %>"));
+    assertTrue(html.endsWith("<% } %>"));
+  }
 }

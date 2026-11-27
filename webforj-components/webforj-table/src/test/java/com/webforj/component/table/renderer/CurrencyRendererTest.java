@@ -63,4 +63,12 @@ class CurrencyRendererTest {
     assertTrue(html.contains("window." + key + " = new Intl.NumberFormat"));
     assertTrue(html.contains("window." + key + ".format(cell.value)"));
   }
+
+  @Test
+  void shouldBuildNothingForEmptyValue() {
+    CurrencyRenderer<String> r = new CurrencyRenderer<>(Locale.US);
+    String html = r.build();
+    assertTrue(html.startsWith("<% if (cell.value != null && cell.value !== '') { %>"));
+    assertTrue(html.endsWith("<% } %>"));
+  }
 }

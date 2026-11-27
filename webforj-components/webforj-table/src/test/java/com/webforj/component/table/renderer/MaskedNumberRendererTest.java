@@ -50,4 +50,12 @@ class MaskedNumberRendererTest {
     assertEquals("###,##0.00", r.getMask());
     assertTrue(r.build().contains("mask='###,##0.00'"));
   }
+
+  @Test
+  void shouldBuildNothingForEmptyValue() {
+    MaskedNumberRenderer<String> r = new MaskedNumberRenderer<>();
+    String html = r.build();
+    assertTrue(html.startsWith("<% if (cell.value != null && cell.value !== '') { %>"));
+    assertTrue(html.endsWith("<% } %>"));
+  }
 }

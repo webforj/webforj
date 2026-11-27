@@ -46,4 +46,12 @@ class EmailRendererTest {
     r.setIcon(icon);
     assertEquals(icon, r.getIcon());
   }
+
+  @Test
+  void shouldBuildNothingForEmptyValue() {
+    EmailRenderer<String> r = new EmailRenderer<>();
+    String html = r.build();
+    assertTrue(html.startsWith("<% if (cell.value != null && cell.value !== '') { %>"));
+    assertTrue(html.endsWith("<% } %>"));
+  }
 }

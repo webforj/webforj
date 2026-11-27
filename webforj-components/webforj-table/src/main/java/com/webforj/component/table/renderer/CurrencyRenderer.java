@@ -114,7 +114,8 @@ public class CurrencyRenderer<T> extends Renderer<T> {
     String span = "<span style='display:block;text-align:right;"
         + "font-variant-numeric:tabular-nums'>" + "<%- window.KEY.format(cell.value) %></span>";
 
-    return init.replace("KEY", key).replace("LANG", languageTag).replace("CUR", currencyCode)
-        + span.replace("KEY", key);
+    return toValueTemplate(
+        init.replace("KEY", key).replace("LANG", languageTag).replace("CUR", currencyCode)
+            + span.replace("KEY", key));
   }
 }

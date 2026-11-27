@@ -61,4 +61,18 @@ class ImageRendererTest {
     String html = r.build();
     assertTrue(html.contains("src='https://placehold.co/40x40?text=<%= cell.value %>'"));
   }
+
+  @Test
+  void shouldBuildNothingForEmptyValue() {
+    ImageRenderer<String> r = new ImageRenderer<>();
+    String html = r.build();
+    assertTrue(html.startsWith("<% if (cell.value != null && cell.value !== '') { %>"));
+    assertTrue(html.endsWith("<% } %>"));
+  }
+
+  @Test
+  void shouldBuildAlwaysWithOwnSrc() {
+    ImageRenderer<String> r = new ImageRenderer<>("logo.png");
+    assertFalse(r.build().contains("cell.value != null"));
+  }
 }
