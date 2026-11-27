@@ -319,13 +319,22 @@ public final class ListBox extends DwcList<ListBox, List<Object>>
   }
 
   /**
-   * Alias for {@link #setItems(ListItem...)}.
+   * Alias for {@link #selectKey(Object...)}.
    *
-   * @param value the items to set
+   * <p>
+   * A {@code null} value clears the selection.
+   * </p>
+   *
+   * @param value the keys of the items to select
+   *
    * @return the component itself
    */
   @Override
   public ListBox setValue(List<Object> value) {
+    if (value == null) {
+      return deselectAll();
+    }
+
     try {
       return selectKey(value.toArray());
     } catch (IllegalArgumentException e) {
