@@ -4,11 +4,12 @@ import java.time.Duration;
 import java.util.UUID;
 
 /**
- * Holds a task with a UUID id and a Duration estimate.
+ * Holds a task with a UUID id, a Duration estimate and a note.
  */
 public class TaskBean {
   private UUID id = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
   private Duration estimate = Duration.ofMinutes(90);
+  private String note = "Review";
 
   /**
    * Gets the id.
@@ -44,5 +45,23 @@ public class TaskBean {
    */
   public void setEstimate(Duration estimate) {
     this.estimate = estimate;
+  }
+
+  /**
+   * Gets the note.
+   *
+   * @return the note
+   */
+  public String getNote() {
+    return note;
+  }
+
+  /**
+   * Sets the note.
+   *
+   * @param note the note
+   */
+  public void setNote(String note) {
+    this.note = note;
   }
 }
