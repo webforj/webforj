@@ -37,6 +37,7 @@ public final class Interval {
    *        millisecond resolution, but a very small timeout value will cause a flood of events
    *        faster than the program can respond to them.
    * @param listener the listener to be added to the interval
+   * @throws IllegalArgumentException if the delay is not greater than 0
    */
   public Interval(float delay, EventListener<ElapsedEvent> listener) {
     setDelay(delay);
@@ -56,15 +57,16 @@ public final class Interval {
    * </p>
    *
    * <p>
-   * The delay must be greater than or equal to 0. If the timer is running, the delay will be
-   * updated after the timer is stopped and restarted.
+   * The delay must be greater than 0. If the timer is running, the delay will be updated after the
+   * timer is stopped and restarted.
    * </p>
    *
    * @param delay the delay of the interval
+   * @throws IllegalArgumentException if the delay is not greater than 0
    */
   public void setDelay(float delay) {
-    if (delay < 0) {
-      throw new IllegalArgumentException("The delay must be greater than or equal to 0");
+    if (delay <= 0) {
+      throw new IllegalArgumentException("The delay must be greater than 0");
     }
 
     this.delay = delay;

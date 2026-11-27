@@ -36,11 +36,11 @@ public final class Debouncer {
    * Creates a new debouncer.
    *
    * @param delay the debounce delay in seconds
-   * @throws IllegalArgumentException if delay is negative
+   * @throws IllegalArgumentException if delay is not greater than 0
    */
   public Debouncer(float delay) {
-    if (delay < 0) {
-      throw new IllegalArgumentException("Delay must be >= 0");
+    if (delay <= 0) {
+      throw new IllegalArgumentException("Delay must be greater than 0");
     }
     this.delay = delay;
   }
