@@ -12,6 +12,7 @@ import com.webforj.error.ErrorHandler;
 import com.webforj.error.GlobalErrorHandler;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.exceptions.WebforjWebManagerException;
+import com.webforj.i18n.LocaleUtils;
 import com.webforj.servlet.WebforjServlet;
 import jakarta.servlet.http.HttpSession;
 import java.lang.System.Logger;
@@ -782,7 +783,11 @@ public final class Environment {
             : null;
 
     if (locale != null && !locale.isEmpty()) {
-      StringTable.put("!LOCALE", locale);
+      LocaleUtils.parseLocale(locale).ifPresentOrElse(App::setLocale,
+          () -> logger.log(Level.WARNING,
+              "The value \"{0}\" of webforj.locale is not a locale and is ignored."
+                  + " Use a language tag such as de-DE.",
+              locale));
     }
   }
 }
