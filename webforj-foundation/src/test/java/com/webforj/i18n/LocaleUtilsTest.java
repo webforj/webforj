@@ -97,6 +97,7 @@ class LocaleUtilsTest {
           Arguments.of("zh-Hant-TW", Locale.forLanguageTag("zh-Hant-TW")),
           Arguments.of("zh_TW_#Hant", Locale.forLanguageTag("zh-Hant-TW")),
           Arguments.of("sr__#Latn", Locale.forLanguageTag("sr-Latn")),
+          Arguments.of("_DE_#Latn", Locale.forLanguageTag("und-Latn-DE")),
           Arguments.of("zh_TW_#Hant_u-ca-roc", Locale.forLanguageTag("zh-Hant-TW-u-ca-roc")),
           Arguments.of("ja_JP_#u-ca-japanese", Locale.forLanguageTag("ja-JP-u-ca-japanese")),
           Arguments.of("ja_JP_JP_#u-ca-japanese", Locale.of("ja", "JP", "JP")),

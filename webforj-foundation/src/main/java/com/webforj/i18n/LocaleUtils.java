@@ -1,12 +1,14 @@
 package com.webforj.i18n;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
-import java.util.StringJoiner;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -74,27 +76,24 @@ public final class LocaleUtils {
   private static Locale parseLocaleString(String text) {
     int hash = text.indexOf('#');
     String base = hash < 0 ? text : text.substring(0, hash).replaceFirst("_$", "");
-    String[] parts = base.split("_", 3);
-    String country = parts.length > 1 ? parts[1] : "";
-    String variant = parts.length > 2 ? parts[2] : "";
-    Locale locale = Locale.of(parts[0], country, variant);
+    Iterator<String> parts = Arrays.asList(base.split("_", 3)).iterator();
+    String language = parts.next();
+    String country = parts.hasNext() ? parts.next() : "";
+    String variant = parts.hasNext() ? parts.next() : "";
+    Locale locale = Locale.of(language, country, variant);
     if (hash < 0 || locale.toString().equals(text)) {
       return locale;
     }
 
-    String[] suffix = text.substring(hash + 1).split("_", 2);
-    boolean hasScript = !suffix[0].contains("-");
-    StringJoiner tag = new StringJoiner("-");
-    tag.add(parts[0]);
-    if (hasScript) {
-      tag.add(suffix[0]);
-    }
+    String suffix = text.substring(hash + 1);
+    int separator = suffix.indexOf('_');
+    String head = separator < 0 ? suffix : suffix.substring(0, separator);
+    String script = head.contains("-") ? "" : head;
+    String extensions = suffix.substring(script.length()).replaceFirst("^_", "");
+    String tag =
+        Stream.of(language.isEmpty() ? "und" : language, script, country, variant.replace('_', '-'),
+            extensions).filter(part -> !part.isEmpty()).collect(Collectors.joining("-"));
 
-    Stream.of(country, variant.replace('_', '-')).filter(part -> !part.isEmpty()).forEach(tag::add);
-    if (!hasScript || suffix.length > 1) {
-      tag.add(suffix[suffix.length - 1]);
-    }
-
-    return Locale.forLanguageTag(tag.toString());
+    return Locale.forLanguageTag(tag);
   }
 }
