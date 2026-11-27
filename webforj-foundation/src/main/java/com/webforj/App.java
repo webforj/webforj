@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -156,6 +157,7 @@ public abstract class App {
    */
   public static final AppCloseAction NONE_ACTION = new NoneAction();
 
+  private static final String LOCALE_KEY = Locale.class.getName();
   private static final AtomicInteger appCounter = new AtomicInteger(0);
   private final String appId;
   private boolean isInitialized = false;
@@ -243,6 +245,7 @@ public abstract class App {
    */
   public static void setLocale(Locale locale) {
     StringTable.put("!LOCALE", locale.toString());
+    ObjectTable.put(LOCALE_KEY, locale);
     LocaleObserverRegistry.getCurrent().fireLocaleChange(locale);
   }
 
@@ -259,7 +262,16 @@ public abstract class App {
    */
   public static Locale getLocale() {
     try {
-      return new Locale(StringTable.get("!LOCALE"));
+      String stored = StringTable.get("!LOCALE");
+      if (ObjectTable.contains(LOCALE_KEY) && ObjectTable.get(LOCALE_KEY) instanceof Locale locale
+          && locale.toString().equals(stored)) {
+        return locale;
+      }
+
+      Optional<Locale> parsed = LocaleUtils.parseLocale(stored);
+      parsed.ifPresent(locale -> ObjectTable.put(LOCALE_KEY, locale));
+
+      return parsed.orElseGet(Locale::getDefault);
     } catch (Exception e) {
       return Locale.getDefault();
     }

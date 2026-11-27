@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -32,10 +33,14 @@ import com.webforj.router.RouteRegistry;
 import com.webforj.router.Router;
 import com.webforj.router.history.MemoryHistory;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -447,6 +452,125 @@ class AppTest {
       verify(other).setVisible(false);
       verify(active).setVisible(true);
       verify(active, org.mockito.Mockito.never()).setVisible(false);
+    }
+  }
+
+  @Nested
+  class LocaleRoundTrip {
+
+    Map<String, String> strings;
+    Map<String, Object> objects;
+    MockedStatic<StringTable> mockedStringTable;
+    MockedStatic<ObjectTable> mockedObjectTable;
+
+    @BeforeEach
+    void setUp() {
+      strings = new HashMap<>();
+      objects = new HashMap<>();
+      mockedStringTable = mockStatic(StringTable.class);
+      mockedObjectTable = mockStatic(ObjectTable.class);
+
+      mockedStringTable.when(() -> StringTable.put(anyString(), anyString()))
+          .thenAnswer(call -> strings.put(call.getArgument(0), call.getArgument(1)));
+      mockedStringTable.when(() -> StringTable.get(anyString()))
+          .thenAnswer(call -> strings.get(call.getArgument(0)));
+      mockedObjectTable.when(() -> ObjectTable.put(anyString(), any()))
+          .thenAnswer(call -> objects.put(call.getArgument(0), call.getArgument(1)));
+      mockedObjectTable.when(() -> ObjectTable.get(anyString()))
+          .thenAnswer(call -> objects.get(call.getArgument(0)));
+      mockedObjectTable.when(() -> ObjectTable.contains(anyString()))
+          .thenAnswer(call -> objects.containsKey(call.getArgument(0)));
+    }
+
+    @AfterEach
+    void tearDown() {
+      mockedStringTable.close();
+      mockedObjectTable.close();
+    }
+
+    static Stream<Arguments> localeProvider() {
+      return Stream.of(Arguments.of(Locale.GERMAN), Arguments.of(Locale.GERMANY),
+          Arguments.of(Locale.forLanguageTag("pt-BR")),
+          Arguments.of(Locale.forLanguageTag("es-419")),
+          Arguments.of(Locale.forLanguageTag("zh-Hant-TW")),
+          Arguments.of(Locale.forLanguageTag("sr-Latn")),
+          Arguments.of(Locale.forLanguageTag("ja-JP-u-ca-japanese")),
+          Arguments.of(Locale.of("ja", "JP", "JP")), Arguments.of(Locale.of("th", "TH", "TH")),
+          Arguments.of(Locale.of("no", "NO", "NY")));
+    }
+
+    @ParameterizedTest
+    @MethodSource("localeProvider")
+    void shouldReturnTheLocaleThatWasSet(Locale locale) {
+      App.setLocale(locale);
+
+      assertEquals(locale, App.getLocale());
+    }
+
+    @Test
+    void shouldStoreTheLocaleAsItsString() {
+      App.setLocale(Locale.GERMANY);
+
+      assertEquals("de_DE", strings.get("!LOCALE"));
+    }
+
+    static Stream<Arguments> storedLocaleProvider() {
+      return Stream.of(Arguments.of("fr_FR", Locale.FRANCE), Arguments.of("de-DE", Locale.GERMANY));
+    }
+
+    @ParameterizedTest
+    @MethodSource("storedLocaleProvider")
+    void shouldParseTheStoredLocaleWhenNoneWasSet(String stored, Locale expected) {
+      strings.put("!LOCALE", stored);
+
+      assertEquals(expected, App.getLocale());
+    }
+
+    @Test
+    void shouldKeepTheParsedLocale() {
+      strings.put("!LOCALE", "fr_FR");
+
+      App.getLocale();
+
+      assertEquals(Locale.FRANCE, objects.get(Locale.class.getName()));
+    }
+
+    @Test
+    void shouldParseTheStoredLocaleWhenItChangedAfterTheSet() {
+      App.setLocale(Locale.GERMANY);
+      strings.put("!LOCALE", "fr_FR");
+
+      assertEquals(Locale.FRANCE, App.getLocale());
+    }
+
+    @Test
+    void shouldParseTheStoredLocaleWhenTheKeptObjectIsNotLocale() {
+      objects.put(Locale.class.getName(), "fr_FR");
+      strings.put("!LOCALE", "fr_FR");
+
+      assertEquals(Locale.FRANCE, App.getLocale());
+    }
+
+    @Test
+    void shouldStoreNothingWhenTheLocaleIsNull() {
+      assertThrows(NullPointerException.class, () -> App.setLocale(null));
+      assertTrue(objects.isEmpty());
+      assertTrue(strings.isEmpty());
+    }
+
+    @Test
+    void shouldReturnTheDefaultLocaleWhenTheStoredValueIsUnparsable() {
+      strings.put("!LOCALE", "!!!");
+
+      assertEquals(Locale.getDefault(), App.getLocale());
+    }
+
+    @Test
+    void shouldReturnTheDefaultLocaleWhenTheStringTableFails() {
+      mockedStringTable.when(() -> StringTable.get("!LOCALE"))
+          .thenThrow(new NoSuchElementException());
+
+      assertEquals(Locale.getDefault(), App.getLocale());
     }
   }
 }

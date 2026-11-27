@@ -9,11 +9,13 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.basis.bbj.proxies.BBjAPI;
 import com.basis.bbj.proxies.BBjInterpreter;
+import com.basis.bbj.proxies.BBjObjectTable;
 import com.basis.bbj.proxies.BBjSysGui;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -23,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.ServiceLoader;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -180,6 +183,61 @@ class EnvironmentTest {
         verify(fileConfig).withFallback(defaultConfig);
       } finally {
         Files.deleteIfExists(tempConfigFile);
+      }
+    }
+
+    @Test
+    void shouldStoreTheConfiguredLocaleTagAsLocaleString() throws Exception {
+      System.setProperty("webforj.conf", "!!custom-config.conf");
+
+      try (var configFactoryStatic = mockStatic(ConfigFactory.class)) {
+        Config resourceConfig = mock(Config.class);
+        Config defaultConfig = mock(Config.class);
+
+        configFactoryStatic.when(() -> ConfigFactory.parseResourcesAnySyntax(any(ClassLoader.class),
+            eq("custom-config.conf"))).thenReturn(resourceConfig);
+        configFactoryStatic.when(() -> ConfigFactory.parseResourcesAnySyntax(any(ClassLoader.class),
+            eq("webforj-default.conf"))).thenReturn(defaultConfig);
+
+        when(resourceConfig.withFallback(defaultConfig)).thenReturn(resourceConfig);
+        when(resourceConfig.hasPath("webforj.locale")).thenReturn(true);
+        when(resourceConfig.getString("webforj.locale")).thenReturn("de-DE");
+
+        BBjAPI mockApi = mock(BBjAPI.class);
+        BBjObjectTable objectTable = mock(BBjObjectTable.class);
+        when(mockApi.openSysGui(anyString())).thenReturn(mock(BBjSysGui.class));
+        when(mockApi.getObjectTable()).thenReturn(objectTable);
+
+        Environment.init(mockApi, 0);
+
+        verify(mockApi).setStbl("!LOCALE", "de_DE");
+        verify(objectTable).put(anyString(), eq(Locale.GERMANY));
+      }
+    }
+
+    @Test
+    void shouldIgnoreConfiguredLocaleThatIsNotLocale() throws Exception {
+      System.setProperty("webforj.conf", "!!custom-config.conf");
+
+      try (var configFactoryStatic = mockStatic(ConfigFactory.class)) {
+        Config resourceConfig = mock(Config.class);
+        Config defaultConfig = mock(Config.class);
+
+        configFactoryStatic.when(() -> ConfigFactory.parseResourcesAnySyntax(any(ClassLoader.class),
+            eq("custom-config.conf"))).thenReturn(resourceConfig);
+        configFactoryStatic.when(() -> ConfigFactory.parseResourcesAnySyntax(any(ClassLoader.class),
+            eq("webforj-default.conf"))).thenReturn(defaultConfig);
+
+        when(resourceConfig.withFallback(defaultConfig)).thenReturn(resourceConfig);
+        when(resourceConfig.hasPath("webforj.locale")).thenReturn(true);
+        when(resourceConfig.getString("webforj.locale")).thenReturn("C");
+
+        BBjAPI mockApi = mock(BBjAPI.class);
+        when(mockApi.openSysGui(anyString())).thenReturn(mock(BBjSysGui.class));
+
+        Environment.init(mockApi, 0);
+
+        verify(mockApi, never()).setStbl(eq("!LOCALE"), anyString());
       }
     }
   }
